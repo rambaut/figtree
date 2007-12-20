@@ -67,6 +67,9 @@ public class TreeMenuFactory implements MenuFactory {
 	        item = new JMenuItem(((TreeMenuHandler)frame).getAnnotateAction());
 	        menu.add(item);
 
+	        item = new JMenuItem(((TreeMenuHandler)frame).getAnnotateFromTipsAction());
+	        menu.add(item);
+
 	        item = new JMenuItem(((TreeMenuHandler)frame).getClearAnnotationsAction());
 	        menu.add(item);
 
@@ -131,6 +134,10 @@ public class TreeMenuFactory implements MenuFactory {
             menu.add(item);
 
 	        item = new JMenuItem(TreeMenuHandler.ANNOTATE);
+	        item.setEnabled(false);
+	        menu.add(item);
+
+	        item = new JMenuItem(TreeMenuHandler.ANNOTATE_FROM_TIPS);
 	        item.setEnabled(false);
 	        menu.add(item);
 

@@ -1,0 +1,64 @@
+<project name="FigTree" default="dist" basedir=".">
+    <description>
+        Build file for TreeDraw
+        $Id:$
+    </description>
+
+    <!-- set global properties for this build -->
+    <property name="src" location="src"/>
+    <property name="build" location="build"/>
+
+    <property name="lib" location="lib"/>
+    <property name="dist" location="dist"/>
+
+    <property environment="env"/>
+
+    <target name="clean">
+        <mkdir dir="${build}"/>
+        <delete includeEmptyDirs="true">
+            <fileset dir="${build}" includes="**/*"/>
+        </delete>
+
+    </target>
+
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp/>
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${build}"/>
+        <mkdir dir="${dist}"/>
+        <mkdir dir="${lib}"/>
+    </target>
+
+    <target name="copyLibs" depends="init">
+        <copy file="../JEBL/dist/jebl.jar" tofile="${lib}/jebl.jar"/>
+    </target>
+
+    <target name="compile" depends="init,copyLibs">
+        <!-- Compile the java code from ${src} into ${build} -->
+        <javac source="1.5" srcdir="${src}" destdir="${build}"
+               classpath="${lib}/jebl.jar:${lib}/quaqua.jar:${lib}/itext-1.4.5.jar">
+            <include name="figtree/**"/>
+        </javac>
+        <copy todir="${build}" verbose="true">
+            <fileset dir="${src}" includes="figtree/**/*.png,figtree/**/*.gif"/>
+        </copy>
+    </target>
+
+    <target name="dist" depends="compile" description="generate the distribution">
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}"/>
+
+        <jar jarfile="${dist}/figtree.jar">
+            <fileset dir="${build}" includes="**/*.class,**/*.properties,**/*.png,**/*.gif"/>
+            <manifest>
+                <attribute name="Built-By" value="${user.name}"/>
+                <attribute name="Main-Class" value="figtree.application.FigTreeApplication"/>
+            </manifest>
+            <zipgroupfileset dir="${lib}" includes="jebl.jar"/>
+            <zipgroupfileset dir="${lib}" includes="itext-1.4.5.jar"/>
+        </jar>
+
+    </target>
+
+</project>

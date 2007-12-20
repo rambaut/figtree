@@ -7,6 +7,9 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.util.Map;
+import java.util.HashMap;
+
+import figtree.treeviewer.ControllerPanel;
 
 /**
  * @author Andrew Rambaut
@@ -24,7 +27,8 @@ public class RectilinearTreeLayoutController extends AbstractController {
         this.treeLayout = treeLayout;
 
         titleLabel = new JLabel("Rectangular Layout");
-	    optionsPanel = new OptionsPanel(2, 2, "SmallSystemFont");
+
+	    optionsPanel = new ControllerPanel(2, 2);
 
         final int sliderMax = 10000;
         rootLengthSlider = new JSlider(SwingConstants.HORIZONTAL, 0, sliderMax, 0);

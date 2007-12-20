@@ -68,6 +68,8 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		setSize(new java.awt.Dimension(1024, 768));
 
 		Toolbar toolBar = new Toolbar();
+		toolBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.darkGray));
+
 		toolBar.setRollover(true);
 		toolBar.setFloatable(false);
 
@@ -82,13 +84,16 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		Icon settingsToolIcon = IconUtils.getIcon(this.getClass(), "images/projectTool.png");
 		Icon colourToolIcon = IconUtils.getIcon(this.getClass(), "images/coloursTool.png");
 
-		Icon nextButtonIcon = IconUtils.getIcon(this.getClass(), "images/nextButton.png");
-		Icon nextButtonInactiveIcon = IconUtils.getIcon(this.getClass(), "images/nextButtonInactive.png");
-		Icon nextButtonPressedIcon = IconUtils.getIcon(this.getClass(), "images/nextButtonPressed.png");
+		Icon nextIcon = IconUtils.getIcon(this.getClass(), "images/next.png");
+		Icon prevIcon = IconUtils.getIcon(this.getClass(), "images/prev.png");
 
-		Icon previousButtonIcon = IconUtils.getIcon(this.getClass(), "images/previousButton.png");
-		Icon previousButtonInactiveIcon = IconUtils.getIcon(this.getClass(), "images/previousButtonInactive.png");
-		Icon previousButtonPressedIcon = IconUtils.getIcon(this.getClass(), "images/previousButtonPressed.png");
+//		Icon nextButtonIcon = IconUtils.getIcon(this.getClass(), "images/nextButton.png");
+//		Icon nextButtonInactiveIcon = IconUtils.getIcon(this.getClass(), "images/nextButtonInactive.png");
+//		Icon nextButtonPressedIcon = IconUtils.getIcon(this.getClass(), "images/nextButtonPressed.png");
+//
+//		Icon previousButtonIcon = IconUtils.getIcon(this.getClass(), "images/previousButton.png");
+//		Icon previousButtonInactiveIcon = IconUtils.getIcon(this.getClass(), "images/previousButtonInactive.png");
+//		Icon previousButtonPressedIcon = IconUtils.getIcon(this.getClass(), "images/previousButtonPressed.png");
 
 		cartoonAction = new ToolbarAction("Cartoon", CARTOON_NODE, cartoonNodeToolIcon) {
 			public void actionPerformed(ActionEvent e){
@@ -97,7 +102,6 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		};
 
 		cartoonToolButton = new ToolbarToggleButton(cartoonAction, true);
-		cartoonToolButton.putClientProperty("Quaqua.Button.style", "toolBarRollover");
 		toolBar.addComponent(cartoonToolButton);
 		cartoonToolButton.setEnabled(false);
 
@@ -189,11 +193,20 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 
 		Box box1 = Box.createHorizontalBox();
 		final JToggleButton toggle1 = new JToggleButton("Node");
-		final JToggleButton toggle2 = new JToggleButton("Clade");
-		final JToggleButton toggle3 = new JToggleButton("Taxa");
+		toggle1.putClientProperty("JButton.buttonType", "segmentedTextured");
+		toggle1.putClientProperty("JButton.segmentPosition", "first");
 		toggle1.putClientProperty( "Quaqua.Button.style", "toggleWest");
+
+		final JToggleButton toggle2 = new JToggleButton("Clade");
+		toggle2.putClientProperty("JButton.buttonType", "segmentedTextured");
+		toggle2.putClientProperty("JButton.segmentPosition", "middle");
 		toggle2.putClientProperty( "Quaqua.Button.style", "toggleCenter");
+
+		final JToggleButton toggle3 = new JToggleButton("Taxa");
+		toggle3.putClientProperty("JButton.buttonType", "segmentedTextured");
+		toggle3.putClientProperty("JButton.segmentPosition", "last");
 		toggle3.putClientProperty( "Quaqua.Button.style", "toggleEast");
+
 		ButtonGroup buttonGroup = new ButtonGroup();
 		buttonGroup.add(toggle1);
 		buttonGroup.add(toggle2);
@@ -259,29 +272,35 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		toolBar.addFlexibleSpace();
 
 		final ToolbarAction prevTreeToolbarAction =
-				new ToolbarAction("Prev", "Previous Tree...",
-						previousButtonIcon, previousButtonInactiveIcon, previousButtonPressedIcon) {
+				new ToolbarAction(null, "Previous Tree...", prevIcon) {
 					public void actionPerformed(ActionEvent e){
 						treeViewer.showPreviousTree();
 					}
 				};
-		JButton prevTreeToolButton = new ToolbarButton(prevTreeToolbarAction);
-		prevTreeToolButton.putClientProperty("Quaqua.Button.style", "toolBarRollover");
-		toolBar.addComponent(prevTreeToolButton);
+		JButton prevTreeToolButton = new ToolbarButton(prevTreeToolbarAction, true);
+		prevTreeToolButton.putClientProperty("JButton.buttonType", "segmentedTextured");
+		prevTreeToolButton.putClientProperty("JButton.segmentPosition", "first");
+		prevTreeToolButton.putClientProperty( "Quaqua.Button.style", "toggleWest");
 
 		final ToolbarAction nextTreeToolbarAction =
-				new ToolbarAction("Next", "Next Tree...",
-						nextButtonIcon, nextButtonInactiveIcon, nextButtonPressedIcon) {
+				new ToolbarAction(null, "Next Tree...", nextIcon) {
 					public void actionPerformed(ActionEvent e){
 						treeViewer.showNextTree();
 					}
 				};
-		JButton nextTreeToolButton = new ToolbarButton(nextTreeToolbarAction);
-		nextTreeToolButton.putClientProperty("Quaqua.Button.style", "toolBarRollover");
-		toolBar.addComponent(nextTreeToolButton);
+		JButton nextTreeToolButton = new ToolbarButton(nextTreeToolbarAction, true);
+		nextTreeToolButton.putClientProperty("JButton.buttonType", "segmentedTextured");
+		nextTreeToolButton.putClientProperty("JButton.segmentPosition", "last");
+		nextTreeToolButton.putClientProperty( "Quaqua.Button.style", "toggleEast");
 
 		nextTreeToolbarAction.setEnabled(treeViewer.getCurrentTreeIndex() < treeViewer.getTreeCount() - 1);
 		prevTreeToolbarAction.setEnabled(treeViewer.getCurrentTreeIndex() > 0);
+
+		Box box2 = Box.createHorizontalBox();
+		box2.add(Box.createVerticalStrut(annotationToolIcon.getIconHeight()));
+		box2.add(prevTreeToolButton);
+		box2.add(nextTreeToolButton);
+		toolBar.addComponent(new GenericToolbarItem("Prev/Next", "Navigate through the trees", box2));
 
 		treeViewer.addTreeViewerListener(new TreeViewerListener() {
 			public void treeChanged() {
@@ -334,17 +353,24 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 
 		toolBar.addComponent(panel3);
 
-		statusBar = new StatusBar(" ");
+		statusBar = new StatusBar("FigTree");
+		statusBar.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createCompoundBorder(
+						BorderFactory.createMatteBorder(1, 0, 0, 0, Color.darkGray),
+						BorderFactory.createMatteBorder(1, 0, 0, 0, Color.lightGray)),
+				BorderFactory.createEmptyBorder(2, 12, 2, 12)));
+		statusBar.setOpaque(false);
 		statusBar.setStatusProvider(treeViewer.getStatusProvider());
 
 		JPanel topPanel = new JPanel(new BorderLayout(0,0));
 		topPanel.add(toolBar, BorderLayout.NORTH);
-		topPanel.add(statusBar, BorderLayout.CENTER);
 
 		getContentPane().setLayout(new java.awt.BorderLayout(0, 0));
 		getContentPane().add(topPanel, BorderLayout.NORTH);
 
 		getContentPane().add(figTreePanel, BorderLayout.CENTER);
+
+		getContentPane().add(statusBar, BorderLayout.SOUTH);
 
 		treeViewer.addTreeSelectionListener(new TreeSelectionListener() {
 			public void selectionChanged() {
@@ -382,6 +408,28 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		}
 		annotationDefinitionsDialog.showDialog(definitions);
 		treeViewer.fireAnnotationsChanged();
+	}
+
+	private void annotateFromTips() {
+		List<String> annotationNames = new ArrayList<String>();
+		annotationNames.add("Colour");
+		for (AnnotationDefinition definition : treeViewer.getAnnotationDefinitions()) {
+			annotationNames.add(definition.getName());
+		}
+
+		if (annotatedFromTipsDialog == null) {
+			annotatedFromTipsDialog = new AnnotatedFromTipsDialog(this);
+		}
+
+		if (annotatedFromTipsDialog.showDialog(annotationNames) != JOptionPane.CANCEL_OPTION) {
+			String annotationName = annotatedFromTipsDialog.getAnnotationName();
+			if (annotationName.equals("Colour")) {
+				annotationName = "!color";
+			}
+
+			treeViewer.annotateFromTips(annotationName);
+			setDirty();
+		}
 	}
 
 	private void cartoonSelected(boolean selected) {
@@ -1117,6 +1165,10 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		return annotateAction;
 	}
 
+	public Action getAnnotateFromTipsAction() {
+		return annotateFromTipsAction;
+	}
+
 	public AbstractAction getClearAnnotationsAction() {
 		return clearAnnotationsAction;
 	}
@@ -1192,11 +1244,19 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 			};
 
 	private ToolbarAction annotateAction;
+
+	private AbstractAction annotateFromTipsAction = new AbstractAction(ANNOTATE_FROM_TIPS) {
+		public void actionPerformed(ActionEvent ae) {
+			annotateFromTips();
+		}
+	};
+
 	private AbstractAction clearAnnotationsAction = new AbstractAction(CLEAR_ANNOTATIONS) {
 		public void actionPerformed(ActionEvent ae) {
 			// treeViewer.clearAnnotations();
 		}
 	};
+
 	private AbstractAction defineAnnotationsAction = new AbstractAction(DEFINE_ANNOTATIONS) {
 		public void actionPerformed(ActionEvent ae) {
 			defineAnnotations();
@@ -1215,4 +1275,5 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 	private FindDialog findDialog = null;
 	private AnnotationDefinitionsDialog annotationDefinitionsDialog = null;
 	private AnnotationDialog annotationDialog = null;
+	private AnnotatedFromTipsDialog annotatedFromTipsDialog = null;
 }

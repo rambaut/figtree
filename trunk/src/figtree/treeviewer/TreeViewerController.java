@@ -11,6 +11,7 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.prefs.Preferences;
 
 /**
@@ -57,9 +58,9 @@ public class TreeViewerController extends AbstractController {
 
 		final TreeLayoutType defaultLayout = TreeLayoutType.valueOf(PREFS.get(CONTROLLER_KEY + "." + LAYOUT_KEY, DEFAULT_LAYOUT));
 
-
 		titleLabel = new JLabel(CONTROLLER_TITLE);
-		optionsPanel = new OptionsPanel(2, 2, "SmallSystemFont");
+
+		optionsPanel = new ControllerPanel(2, 2);
 
 		rectilinearTreeLayout = new RectilinearTreeLayout();
 		rectilinearTreeLayoutController = new RectilinearTreeLayoutController(rectilinearTreeLayout);
@@ -83,8 +84,14 @@ public class TreeViewerController extends AbstractController {
 		polarTreeToggle.setToolTipText("Polar tree layout");
 		radialTreeToggle.setToolTipText("Radial tree layout");
 		rectangularTreeToggle.putClientProperty("Quaqua.Button.style", "toggleWest");
+		rectangularTreeToggle.putClientProperty("JButton.buttonType", "segmentedTextured");
+		rectangularTreeToggle.putClientProperty("JButton.segmentPosition", "first");
 		polarTreeToggle.putClientProperty("Quaqua.Button.style", "toggleCenter");
+		polarTreeToggle.putClientProperty("JButton.buttonType", "segmentedTextured");
+		polarTreeToggle.putClientProperty("JButton.segmentPosition", "middle");
 		radialTreeToggle.putClientProperty("Quaqua.Button.style", "toggleEast");
+		radialTreeToggle.putClientProperty("JButton.buttonType", "segmentedTextured");
+		radialTreeToggle.putClientProperty("JButton.segmentPosition", "last");
 		ButtonGroup buttonGroup = new ButtonGroup();
 		buttonGroup.add(rectangularTreeToggle);
 		buttonGroup.add(polarTreeToggle);

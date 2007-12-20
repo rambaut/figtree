@@ -11,7 +11,10 @@ import java.awt.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.prefs.Preferences;
+
+import figtree.treeviewer.ControllerPanel;
 
 /**
  * @author Andrew Rambaut
@@ -60,7 +63,7 @@ public class ScaleAxisPainterController extends AbstractController {
 		scaleAxisPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
 		scaleAxisPainter.setScaleBarStroke(new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
-		optionsPanel = new OptionsPanel(2, 2, "SmallSystemFont");
+		optionsPanel = new ControllerPanel(2, 2);
 
 		titleCheckBox = new JCheckBox(getTitle());
 

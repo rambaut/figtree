@@ -18,6 +18,7 @@ import figtree.treeviewer.painters.ScalePainter;
 import figtree.treeviewer.painters.ScaleGridPainter;
 import figtree.treeviewer.painters.NodeBarPainter;
 import figtree.treeviewer.treelayouts.TreeLayout;
+import figtree.treeviewer.annotations.AnnotationDefinition;
 import org.virion.jam.panels.StatusProvider;
 
 import javax.swing.*;
@@ -32,7 +33,6 @@ import java.util.List;
  * @version $Id: DefaultTreeViewer.java 822 2007-10-26 13:50:26Z rambaut $
  */
 public class DefaultTreeViewer extends TreeViewer {
-
 	private final static double MAX_ZOOM = 20;
 	private final static double MAX_VERTICAL_EXPANSION = 20;
 
@@ -335,7 +335,7 @@ public class DefaultTreeViewer extends TreeViewer {
 		}
 		return false;
 	}
-	
+
 	public void cartoonSelectedNodes() {
 		treePane.cartoonSelectedNodes();
 		fireTreeSettingsChanged();

@@ -17,41 +17,45 @@ import java.awt.event.MouseMotionListener;
  */
 public class TreePaneRollOver extends StatusProvider.Helper implements MouseMotionListener {
 
-    public TreePaneRollOver(TreePane treePane) {
-        this.treePane = treePane;
-        treePane.addMouseMotionListener(this);
+	public TreePaneRollOver(TreePane treePane) {
+		this.treePane = treePane;
+		treePane.addMouseMotionListener(this);
 
-    }
+	}
 
-    public void mouseEntered(MouseEvent mouseEvent) {
-    }
+	public void mouseEntered(MouseEvent mouseEvent) {
+	}
 
-    public void mouseExited(MouseEvent mouseEvent) {
-    }
+	public void mouseExited(MouseEvent mouseEvent) {
+	}
 
-    public void mouseMoved(MouseEvent mouseEvent) {
-        RootedTree tree = treePane.getTree();
-        Node node = treePane.getNodeAt((Graphics2D) treePane.getGraphics(), mouseEvent.getPoint());
-        if (node != null) {
-            StringBuilder sb = new StringBuilder();
-            if (!tree.isExternal(node)) {
-                int n = RootedTreeUtils.getTipCount(tree, node);
-                sb.append("Subtree: ").append(n).append(" tips");
-            } else {
-                sb.append("Tip: \"").append(tree.getTaxon(node).toString()).append("\"");
-            }
-            sb.append(" [height = ").append(formatter.getFormattedValue(tree.getHeight(node)));
-            sb.append(", length = ").append(formatter.getFormattedValue(tree.getLength(node)));
-            sb.append("]");
-            fireStatusChanged(StatusPanel.NORMAL, sb.toString());
-        } else {
-            fireStatusChanged(StatusPanel.NORMAL, " ");
-        }
-    }
+	public void mouseMoved(MouseEvent mouseEvent) {
+		RootedTree tree = treePane.getTree();
+		if (tree != null) {
+			Node node = treePane.getNodeAt((Graphics2D) treePane.getGraphics(), mouseEvent.getPoint());
+			if (node != null) {
+				StringBuilder sb = new StringBuilder();
+				if (!tree.isExternal(node)) {
+					int n = RootedTreeUtils.getTipCount(tree, node);
+					sb.append("Subtree: ").append(n).append(" tips");
+				} else {
+					sb.append("Tip: \"").append(tree.getTaxon(node).toString()).append("\"");
+				}
+				sb.append(" [height = ").append(formatter.getFormattedValue(tree.getHeight(node)));
+				sb.append(", length = ").append(formatter.getFormattedValue(tree.getLength(node)));
+				sb.append("]");
+				fireStatusChanged(StatusPanel.NORMAL, sb.toString());
+			} else {
+				fireStatusChanged(StatusPanel.NORMAL, " ");
+			}
+		} else {
+			fireStatusChanged(StatusPanel.NORMAL, " ");
+		}
+	}
 
-    public void mouseDragged(MouseEvent mouseEvent) {
-    }
+	public void mouseDragged(MouseEvent mouseEvent) {
+	}
 
-    private TreePane treePane;
-    private NumberFormatter formatter = new NumberFormatter(4); ;
+	private TreePane treePane;
+	private NumberFormatter formatter = new NumberFormatter(4); ;
 }

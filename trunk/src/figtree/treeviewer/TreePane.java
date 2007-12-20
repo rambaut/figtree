@@ -7,6 +7,7 @@ import figtree.treeviewer.decorators.Decorator;
 import figtree.treeviewer.decorators.ContinuousGradientColorDecorator;
 import figtree.treeviewer.painters.*;
 import figtree.treeviewer.treelayouts.*;
+import figtree.treeviewer.annotations.AnnotationDefinition;
 
 import javax.swing.*;
 import java.awt.*;

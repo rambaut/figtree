@@ -12,7 +12,10 @@ import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.prefs.Preferences;
+
+import figtree.treeviewer.ControllerPanel;
 
 /**
  * @author Andrew Rambaut
@@ -55,7 +58,7 @@ public class LabelPainterController extends AbstractController {
         labelPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
         labelPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
 
-        optionsPanel = new OptionsPanel(2, 2, "SmallSystemFont");
+	    optionsPanel = new ControllerPanel(2, 2);
 
         titleCheckBox = new JCheckBox(getTitle());
         titleCheckBox.setSelected(labelPainter.isVisible());

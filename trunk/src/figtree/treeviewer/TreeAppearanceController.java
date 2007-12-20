@@ -63,7 +63,7 @@ public class TreeAppearanceController extends AbstractController {
 
         titleLabel = new JLabel(CONTROLLER_TITLE);
 
-	    optionsPanel = new OptionsPanel(2, 2, "SmallSystemFont");
+	    optionsPanel = new ControllerPanel(2, 2);
 
         branchLineWidthSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.01, 48.0, 1.0));
 
