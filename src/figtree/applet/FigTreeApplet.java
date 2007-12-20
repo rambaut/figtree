@@ -86,16 +86,23 @@ public class FigTreeApplet extends JApplet {
 
     public void start() {
         String tree = getParameter("tree");
+        String treefile = getParameter("treefile");
 
         if (tree != null && tree.length() > 0) {
             URL fileURL = null;
             try {
                 fileURL = new URL(tree);
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileURL.openStream()));
+                readData(bufferedReader, true);
             } catch (MalformedURLException e) {
                 treeViewer.setStatusText(e.getMessage());
+            } catch (IOException e) {
+                treeViewer.setStatusText(e.getMessage());
             }
+        } else if (treefile != null && treefile.length() > 0) {
             try {
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileURL.openStream()));
+                BufferedReader bufferedReader = new BufferedReader(new StringReader(treefile));
                 readData(bufferedReader, true);
             } catch (IOException e) {
                 treeViewer.setStatusText(e.getMessage());

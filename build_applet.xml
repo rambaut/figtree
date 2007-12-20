@@ -35,7 +35,8 @@
 		<!-- Compile the java code from ${src} into ${build} -->
 		<javac source="1.5" srcdir="${src}" destdir="${build}"
 		       classpath="${lib}/jebl.jar:${lib}/quaqua.jar:${lib}/itext-1.4.5.jar">
-			<include name="figtree/applet/**:figtree/treeviewer/**"/>
+            <exclude name="**"/>
+			<include name="figtree/applet/**,figtree/treeviewer/**"/>
 		</javac>
 		<copy todir="${build}" verbose="true">
 			<fileset dir="${src}" includes="figtree/**/*.png,figtree/**/*.gif"/>
@@ -48,22 +49,9 @@
 
 		<jar jarfile="${dist}/figtreeapplet.jar">
 			<fileset dir="${build}"
-			         includes="**/*.class,**/*.properties,**/*.png,**/*.gif"
-				excludes="figtree/application/**"/>
+			         includes="**/*.class,**/*.properties,**/*.png,**/*.gif"/>
 			<fileset dir="../JEBL/build"
-			         includes="**/*.class,**/*.properties,**/*.png,**/*.gif"
-				excludes="jebl/gui/**,
-				jebl/evolution/align/**,
-				jebl/evolution/aligners/**,
-				jebl/evolution/alignments/**,
-				jebl/evolution/characterReconstruction/**,
-				jebl/evolution/characters/**,
-				jebl/evolution/coalescent/**,
-				jebl/evolution/distances/**,
-				jebl/evolution/parsimony/**,
-				jebl/evolution/sequences/**,
-				jebl/evolution/substmodel/**,
-				jebl/evolution/treesimulation/**"/>
+			         includes="**/*.class,**/*.properties,**/*.png,**/*.gif"/>
 
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
