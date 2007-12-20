@@ -26,7 +26,7 @@ import java.net.MalformedURLException;
  * @version $Id: FigTreeApplet.java,v 1.1 2007/08/14 15:50:41 rambaut Exp $
  */
 public class FigTreeApplet extends JApplet {
-    private ExtendedTreeViewer treeViewer;
+    private AppletTreeViewer treeViewer;
     private ControlPalette controlPalette;
     private FigTreeAppletPanel figTreePanel;
 
@@ -36,23 +36,17 @@ public class FigTreeApplet extends JApplet {
     private JPopupMenu filterPopup;
 
     public void init() {
-        treeViewer = new ExtendedTreeViewer();
-        controlPalette = new BasicControlPalette(200, BasicControlPalette.DisplayMode.ONLY_ONE_OPEN);
+        treeViewer = new AppletTreeViewer();
+        controlPalette = new AppletControlPalette();
 
         figTreePanel = new FigTreeAppletPanel(treeViewer, controlPalette);
-
-        Toolbar toolBar = new Toolbar();
-        toolBar.setRollover(true);
-        toolBar.setFloatable(false);
-
-        toolBar.addFlexibleSpace();
 
         filterPopup = new JPopupMenu();
         for (DefaultTreeViewer.SearchType searchType : DefaultTreeViewer.SearchType.values()) {
             filterPopup.add(searchType.toString());
         }
         filterPanel = new SearchPanel("Filter", filterPopup, true);
-
+		filterPanel.setOpaque(false);
         filterPanel.addSearchPanelListener(new SearchPanelListener() {
 
             /**
@@ -79,21 +73,12 @@ public class FigTreeApplet extends JApplet {
             }
         });
 
-        JPanel panel3 = new JPanel(new FlowLayout());
-
-        panel3.add(filterPanel);
-
-        toolBar.addComponent(panel3);
 
         statusBar = new StatusBar("");
         statusBar.setStatusProvider(treeViewer);
+	    statusBar.add(filterPanel, BorderLayout.EAST);
 
-        JPanel topPanel = new JPanel(new BorderLayout(0,0));
-        topPanel.add(toolBar, BorderLayout.NORTH);
-        topPanel.add(statusBar, BorderLayout.CENTER);
-
-        getContentPane().setLayout(new java.awt.BorderLayout(0, 0));
-        getContentPane().add(topPanel, BorderLayout.NORTH);
+        getContentPane().add(statusBar, BorderLayout.NORTH);
 
         getContentPane().add(figTreePanel, BorderLayout.CENTER);
 

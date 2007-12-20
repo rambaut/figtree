@@ -25,6 +25,7 @@ public interface TreeMenuHandler {
 
     public static final String DEFINE_ANNOTATIONS = "Define Annotations...";
 	public static final String ANNOTATE = "Annotate...";
+	public static final String ANNOTATE_FROM_TIPS = "Annotate from Tips...";
 	public static final String CLEAR_ANNOTATIONS = "Clear Annotations";
 
 	Action getNextTreeAction();
@@ -44,6 +45,7 @@ public interface TreeMenuHandler {
 
 	Action getDefineAnnotationsAction();
 	Action getAnnotateAction();
+	Action getAnnotateFromTipsAction();
 	Action getClearAnnotationsAction();
 
 }

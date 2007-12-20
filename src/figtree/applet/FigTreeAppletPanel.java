@@ -1,6 +1,5 @@
 package figtree.applet;
 
-import figtree.treeviewer.ExtendedTreeViewer;
 import org.virion.jam.controlpalettes.ControlPalette;
 
 import javax.swing.*;
@@ -19,50 +18,52 @@ import figtree.treeviewer.decorators.AttributableDecorator;
  */
 public class FigTreeAppletPanel extends JPanel {
 
-	public FigTreeAppletPanel(final ExtendedTreeViewer treeViewer, ControlPalette controlPalette) {
+	public FigTreeAppletPanel(final AppletTreeViewer treeViewer, ControlPalette controlPalette) {
 
 		controlPalette.getPanel().setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
         controlPalette.getPanel().setBackground(new Color(231, 237, 246));
         controlPalette.getPanel().setOpaque(true);
 
-		TreeViewerController treeViewerController = new TreeViewerController(treeViewer);
-        controlPalette.addController(treeViewerController);
+		// Create a tip label painter and its controller
+		final BasicLabelPainter tipLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.TIP);
+		// Create a node label painter and its controller
+		final BasicLabelPainter nodeLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.NODE);
+		nodeLabelPainter.setVisible(false);
+		final BasicLabelPainter branchLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.BRANCH);
+		branchLabelPainter.setVisible(false);
 
-		controlPalette.addController(new TreeAppearanceController(treeViewer));
+		TreeViewerController treeViewerController = new TreeViewerController(treeViewer);
+
+		controlPalette.addController(treeViewerController);
+
+		controlPalette.addController(new TreeAppearanceController(treeViewer,
+				"tipLabels", tipLabelPainter,
+				"nodeLabels", nodeLabelPainter,
+				"branchLabels", branchLabelPainter));
 
 		controlPalette.addController(new TreesController(treeViewer));
 
-		// Create a tip label painter and its controller
-		final BasicLabelPainter tipLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.TIP);
-		controlPalette.addController(new LabelPainterController("Tip Labels", "tipLabels", tipLabelPainter));
+		controlPalette.addController(new LabelPainterController("tipLabels", tipLabelPainter,
+				"nodeLabels", nodeLabelPainter,
+				"branchLabels", branchLabelPainter));
 		treeViewer.setTipLabelPainter(tipLabelPainter);
+		treeViewer.setNodeLabelPainter(nodeLabelPainter);
+		treeViewer.setBranchLabelPainter(branchLabelPainter);
 
         AttributableDecorator tipDecorator = new AttributableDecorator();
         tipDecorator.setPaintAttributeName("!color");
         tipDecorator.setFontAttributeName("!font");
         tipLabelPainter.setTextDecorator(tipDecorator);
 
-		// Create a node label painter and its controller
-		final BasicLabelPainter nodeLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.NODE);
-		nodeLabelPainter.setVisible(false);
-		controlPalette.addController(new LabelPainterController("Node Labels", "nodeLabels", nodeLabelPainter));
-		treeViewer.setNodeLabelPainter(nodeLabelPainter);
-
-		// Create a branch label painter and its controller
-		final BasicLabelPainter branchLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.BRANCH);
-		branchLabelPainter.setVisible(false);
-		controlPalette.addController(new LabelPainterController("Branch Labels", "branchLabels", branchLabelPainter));
-		treeViewer.setBranchLabelPainter(branchLabelPainter);
-
 		// Create a scale bar painter and its controller
 		final ScaleBarPainter scaleBarPainter = new ScaleBarPainter();
-		controlPalette.addController(new ScaleBarPainterController(scaleBarPainter));
+		// controlPalette.addController(new ScaleBarPainterController(scaleBarPainter));
 		treeViewer.addScalePainter(scaleBarPainter);
 
 		setLayout(new BorderLayout());
 
 		add(treeViewer, BorderLayout.CENTER);
-		add(controlPalette.getPanel(), BorderLayout.WEST);
+		add(controlPalette.getPanel(), BorderLayout.SOUTH);
 
     }
 

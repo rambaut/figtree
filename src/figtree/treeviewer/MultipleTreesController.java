@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @author Andrew Rambaut
@@ -18,8 +19,9 @@ public class MultipleTreesController extends AbstractController {
 	public MultipleTreesController(final TreeViewer treeViewer) {
 
 		titleLabel = new JLabel("Current Tree");
-		optionsPanel = new OptionsPanel(2, 2, "SmallSystemFont");
 
+		optionsPanel = new ControllerPanel(2, 2);
+		
 		final JLabel treeNameLabel = new JLabel("Tree 1");
 		final SpinnerNumberModel spinnerModel = new SpinnerNumberModel(1, 1, 100000, 1);
 		JSpinner currentTreeSpinner = new JSpinner(spinnerModel);

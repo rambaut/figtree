@@ -9,6 +9,9 @@ import javax.swing.event.ChangeListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
+import java.util.HashMap;
+
+import figtree.treeviewer.ControllerPanel;
 
 /**
  * @author Andrew Rambaut
@@ -39,7 +42,7 @@ public class NodeShapeController extends AbstractController {
         this.title = title;
         this.nodeShapePainter = nodeShapePainter;
 
-	    optionsPanel = new OptionsPanel(2, 2, "SmallSystemFont");
+	    optionsPanel = new ControllerPanel(2, 2);
 
         titleCheckBox = new JCheckBox(getTitle());
         titleCheckBox.setSelected(this.nodeShapePainter.isVisible());

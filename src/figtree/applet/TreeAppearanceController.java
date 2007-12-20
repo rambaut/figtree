@@ -4,6 +4,7 @@ import jebl.evolution.trees.Tree;
 import jebl.evolution.graphs.Node;
 import figtree.treeviewer.TreeViewer;
 import figtree.treeviewer.TreeViewerListener;
+import figtree.treeviewer.painters.LabelPainter;
 import figtree.treeviewer.decorators.*;
 import jebl.util.Attributable;
 import org.virion.jam.controlpalettes.AbstractController;
@@ -16,6 +17,8 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 /**
  * @author Andrew Rambaut
@@ -39,7 +42,32 @@ public class TreeAppearanceController extends AbstractController {
     private static Color DEFAULT_SELECTION_COLOUR = new Color(180, 213, 254);
     private static float DEFAULT_BRANCH_LINE_WIDTH = 1.0f;
 
-    public TreeAppearanceController(final TreeViewer treeViewer) {
+	private static final String FONT_NAME_KEY = "fontName";
+	private static final String FONT_SIZE_KEY = "fontSize";
+	private static final String FONT_STYLE_KEY = "fontStyle";
+
+	private static final String NUMBER_FORMATTING_KEY = "numberFormatting";
+
+	private static final String DISPLAY_ATTRIBUTE_KEY = "displayAttribute";
+	private static final String SIGNIFICANT_DIGITS_KEY = "significantDigits";
+
+	// The defaults if there is nothing in the preferences
+	private static String DEFAULT_FONT_NAME = "sansserif";
+	private static int DEFAULT_FONT_SIZE = 6;
+	private static int DEFAULT_FONT_STYLE = Font.PLAIN;
+
+	private static String DEFAULT_NUMBER_FORMATTING = "#.####";
+
+	private static String DECIMAL_NUMBER_FORMATTING = "#.####";
+	private static String SCIENTIFIC_NUMBER_FORMATTING = "0.###E0";
+
+    public TreeAppearanceController(final TreeViewer treeViewer,
+                                    String tipKey,
+                                  final LabelPainter tipLabelPainter,
+                                  String nodeKey,
+                                  final LabelPainter nodeLabelPainter,
+                                  String branchKey,
+		                                  final LabelPainter branchLabelPainter) {
         this.treeViewer = treeViewer;
 
         final AttributableDecorator branchDecorator = new AttributableDecorator();
@@ -57,19 +85,23 @@ public class TreeAppearanceController extends AbstractController {
         treeViewer.setSelectionPaint(new Color(selectionRGB));
         treeViewer.setBranchStroke(new BasicStroke(branchLineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
-        titleLabel = new JLabel(CONTROLLER_TITLE);
+	    this.tipKey = tipKey;
+		this.nodeKey = nodeKey;
+		this.branchKey = branchKey;
+
+	    final String defaultFontName = DEFAULT_FONT_NAME;
+	    final int defaultFontStyle = DEFAULT_FONT_STYLE;
+	    final int defaultFontSize = DEFAULT_FONT_SIZE;
+	    final String defaultNumberFormatting = DEFAULT_NUMBER_FORMATTING;
+
+	    tipLabelPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
+	    tipLabelPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
+		nodeLabelPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
+		nodeLabelPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
+		branchLabelPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
+		branchLabelPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
 
         optionsPanel = new OptionsPanel();
-
-        branchLineWidthSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.01, 48.0, 1.0));
-
-        branchLineWidthSpinner.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
-                float lineWidth = ((Double) branchLineWidthSpinner.getValue()).floatValue();
-                treeViewer.setBranchStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
-            }
-        });
-        optionsPanel.addComponentWithLabel("Line Weight:", branchLineWidthSpinner);
 
         branchColorAttributeCombo = new JComboBox(new String[] { "No attributes" });
         setupAttributes(treeViewer.getTrees());
@@ -113,16 +145,53 @@ public class TreeAppearanceController extends AbstractController {
 
         optionsPanel.addComponentWithLabel("Color by:", branchColorAttributeCombo);
 
-        treeViewer.addTreeViewerListener(new TreeViewerListener() {
-            public void treeChanged() {
-                setupAttributes(treeViewer.getTrees());
-                optionsPanel.repaint();
-            }
+	    branchLineWidthSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.01, 48.0, 1.0));
 
-            public void treeSettingsChanged() {
-                // nothing to do
-            }
-        });
+	    branchLineWidthSpinner.addChangeListener(new ChangeListener() {
+	        public void stateChanged(ChangeEvent changeEvent) {
+	            float lineWidth = ((Double) branchLineWidthSpinner.getValue()).floatValue();
+	            treeViewer.setBranchStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
+	        }
+	    });
+	    optionsPanel.addComponentWithLabel("Line Weight:", branchLineWidthSpinner);
+
+	    Font font = tipLabelPainter.getFont();
+	    fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 48, 1));
+
+	    optionsPanel.addComponentWithLabel("Font Size:", fontSizeSpinner);
+
+	    fontSizeSpinner.addChangeListener(new ChangeListener() {
+	        public void stateChanged(ChangeEvent changeEvent) {
+	            final float size = ((Double) fontSizeSpinner.getValue()).floatValue();
+	            Font font = tipLabelPainter.getFont().deriveFont(size);
+	            tipLabelPainter.setFont(font);
+		        font = nodeLabelPainter.getFont().deriveFont(size);
+		        nodeLabelPainter.setFont(font);
+		        font = branchLabelPainter.getFont().deriveFont(size);
+		        branchLabelPainter.setFont(font);
+	        }
+	    });
+
+		NumberFormat format = tipLabelPainter.getNumberFormat();
+		 int digits = format.getMaximumFractionDigits();
+		digitsSpinner = new JSpinner(new SpinnerNumberModel(digits, 2, 14, 1));
+		digitsSpinner.addChangeListener(new ChangeListener() {
+		    public void stateChanged(ChangeEvent changeEvent) {
+		        final int digits = (Integer)digitsSpinner.getValue();
+		        NumberFormat format = tipLabelPainter.getNumberFormat();
+		        format.setMaximumFractionDigits(digits);
+		        tipLabelPainter.setNumberFormat(format);
+
+			    format = nodeLabelPainter.getNumberFormat();
+			    format.setMaximumFractionDigits(digits);
+			    nodeLabelPainter.setNumberFormat(format);
+
+			    format = branchLabelPainter.getNumberFormat();
+			    format.setMaximumFractionDigits(digits);
+			    branchLabelPainter.setNumberFormat(format);
+		    }
+		});
+
     }
 
     private void setupAttributes(Collection<? extends Tree> trees) {
@@ -185,7 +254,7 @@ public class TreeAppearanceController extends AbstractController {
     }
 
     public JComponent getTitleComponent() {
-        return titleLabel;
+        return null;
     }
 
     public JPanel getPanel() {
@@ -208,24 +277,25 @@ public class TreeAppearanceController extends AbstractController {
 
         branchColorAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BRANCH_COLOR_ATTRIBUTE_KEY));
         branchLineWidthSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY));
+
+	    fontSizeSpinner.setValue((Double)settings.get(tipKey+"."+FONT_SIZE_KEY));
+	    digitsSpinner.setValue((Integer)settings.get(tipKey+"."+SIGNIFICANT_DIGITS_KEY));
     }
 
     public void getSettings(Map<String, Object> settings) {
-        // These settings don't have controls yet but they will!
-        settings.put(CONTROLLER_KEY + "." + FOREGROUND_COLOUR_KEY, treeViewer.getForeground());
-        settings.put(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY, treeViewer.getBackground());
-        settings.put(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY, treeViewer.getSelectionPaint());
-
-        settings.put(CONTROLLER_KEY + "." + BRANCH_COLOR_ATTRIBUTE_KEY, branchColorAttributeCombo.getSelectedItem().toString());
-        settings.put(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY, branchLineWidthSpinner.getValue());
     }
 
 
-    private final JLabel titleLabel;
     private final OptionsPanel optionsPanel;
 
     private final JComboBox branchColorAttributeCombo;
     private final JSpinner branchLineWidthSpinner;
+	private final JSpinner fontSizeSpinner;
+	private final JSpinner digitsSpinner;
 
     private final TreeViewer treeViewer;
+
+	private final String tipKey;
+	private final String nodeKey;
+	private final String branchKey;
 }

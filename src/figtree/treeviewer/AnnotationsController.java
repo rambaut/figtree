@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @author Andrew Rambaut
@@ -20,9 +21,8 @@ public class AnnotationsController extends AbstractController {
         this.treePane = treePane;
 
         titleLabel = new JLabel("Annotations");
-	    optionsPanel = new OptionsPanel(2, 2, "SmallSystemFont");
 
-        OptionsPanel optionsPanel = new OptionsPanel();
+	    optionsPanel = new ControllerPanel(2, 2);
 
         final JComboBox combo2 = new JComboBox();
         combo2.addItem("None");

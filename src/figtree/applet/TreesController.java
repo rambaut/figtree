@@ -2,7 +2,7 @@ package figtree.applet;
 
 import jebl.evolution.trees.SortedRootedTree;
 import jebl.evolution.trees.TransformedRootedTree;
-import figtree.treeviewer.TreeViewer;
+import figtree.treeviewer.*;
 import org.virion.jam.controlpalettes.AbstractController;
 import org.virion.jam.panels.OptionsPanel;
 
@@ -23,133 +23,131 @@ public class TreesController extends AbstractController {
 
 	private static final String CONTROLLER_KEY = "trees";
 
-    private static final String TRANSFORM_KEY = "transform";
-    private static final String TRANSFORM_TYPE_KEY = "transformType";
-    private static final String ORDER_KEY = "order";
-    private static final String ORDER_TYPE_KEY = "orderType";
+	private static final String TRANSFORM_KEY = "transform";
+	private static final String TRANSFORM_TYPE_KEY = "transformType";
+	private static final String ORDER_KEY = "order";
+	private static final String ORDER_TYPE_KEY = "orderType";
+	private static final String ROOTING_KEY = "rooting";
+	private static final String ROOTING_TYPE_KEY = "rootingType";
 
 
-    public TreesController(final TreeViewer treeViewer) {
-        this.treeViewer = treeViewer;
+	public TreesController(final TreeViewer treeViewer) {
+		this.treeViewer = treeViewer;
 
-        titleLabel = new JLabel(CONTROLLER_TITLE);
+		titleLabel = new JLabel(CONTROLLER_TITLE);
 
-        optionsPanel = new OptionsPanel();
+		optionsPanel = new OptionsPanel();
 
-        transformCheck = new JCheckBox("Transform branches");
-        transformCheck.setOpaque(false);
-        optionsPanel.addComponent(transformCheck);
+		rootingCheck = new JCheckBox("Midpoint root");
+		rootingCheck.setOpaque(false);
+		optionsPanel.addComponent(rootingCheck);
 
-        transformCheck.setSelected(treeViewer.isTransformBranchesOn());
+		rootingCheck.setSelected(treeViewer.isRootingOn());
 
-        transformCombo = new JComboBox(TransformedRootedTree.Transform.values());
-        transformCombo.setOpaque(false);
-        transformCombo.setSelectedItem(treeViewer.getBranchTransform());
-        transformCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
-                treeViewer.setBranchTransform(
-                        (TransformedRootedTree.Transform) transformCombo.getSelectedItem());
+		rootingCheck.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent changeEvent) {
+				treeViewer.setRootingOn(rootingCheck.isSelected());
+				treeViewer.setRootingType(TreePane.RootingType.MID_POINT);
+			}
+		});
 
-            }
-        });
-        final JLabel label1 = optionsPanel.addComponentWithLabel("Transform:", transformCombo);
-        label1.setEnabled(transformCheck.isSelected());
-        transformCombo.setEnabled(transformCheck.isSelected());
+		orderCombo = new JComboBox(new String[] {"Off",
+				SortedRootedTree.BranchOrdering.INCREASING_NODE_DENSITY.toString(),
+				SortedRootedTree.BranchOrdering.DECREASING_NODE_DENSITY.toString()});
+		orderCombo.setOpaque(false);
+		orderCombo.setSelectedItem(treeViewer.isOrderBranchesOn() ?
+				treeViewer.getBranchOrdering().ordinal() + 1 : 0);
+		orderCombo.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent itemEvent) {
+				if (orderCombo.getSelectedIndex() == 0) {
+					treeViewer.setOrderBranchesOn(false);
+				} else {
+					treeViewer.setOrderBranchesOn(true);
+					treeViewer.setBranchOrdering(SortedRootedTree.BranchOrdering.values()[orderCombo.getSelectedIndex() - 1]);
+				}
+			}
+		});
 
-        transformCheck.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
-                final boolean selected = transformCheck.isSelected();
-                label1.setEnabled(selected);
-                transformCombo.setEnabled(selected);
+		optionsPanel.addComponentWithLabel("Order:", orderCombo);
 
-                treeViewer.setTransformBranchesOn(selected);
-            }
-        });
+		transformCombo = new JComboBox(new String[] {"Off",
+				TransformedRootedTree.Transform.CLADOGRAM.toString(),
+				TransformedRootedTree.Transform.EQUAL_LENGTHS.toString(),
+				TransformedRootedTree.Transform.PROPORTIONAL.toString()});
+		transformCombo.setOpaque(false);
+		transformCombo.setSelectedItem(treeViewer.isOrderBranchesOn() ?
+				treeViewer.getBranchTransform().ordinal() + 1 : 0);
+		transformCombo.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent itemEvent) {
+				if (transformCombo.getSelectedIndex() == 0) {
+					treeViewer.setTransformBranchesOn(false);
+				} else {
+					treeViewer.setTransformBranchesOn(true);
+					treeViewer.setBranchTransform(TransformedRootedTree.Transform.values()[transformCombo.getSelectedIndex() - 1]);
+				}
+			}
+		});
+		optionsPanel.addComponentWithLabel("Transform:", transformCombo);
+	}
 
-        orderCheck = new JCheckBox("Order branches");
-        orderCheck.setOpaque(false);
-        optionsPanel.addComponent(orderCheck);
+	public JComponent getTitleComponent() {
+		return titleLabel;
+	}
 
-        orderCheck.setSelected(treeViewer.isOrderBranchesOn());
+	public JPanel getPanel() {
+		return optionsPanel;
+	}
 
-        orderCombo = new JComboBox(SortedRootedTree.BranchOrdering.values());
-        orderCombo.setOpaque(false);
-        orderCombo.setSelectedItem(treeViewer.getBranchOrdering());
-        orderCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
-                treeViewer.setBranchOrdering(
-                        (SortedRootedTree.BranchOrdering) orderCombo.getSelectedItem());
-            }
-        });
+	public boolean isInitiallyVisible() {
+		return false;
+	}
 
-        final JLabel label2 = optionsPanel.addComponentWithLabel("Ordering:", orderCombo);
-        label2.setEnabled(orderCheck.isSelected());
-        orderCombo.setEnabled(orderCheck.isSelected());
+	public void initialize() {
+	}
 
-        orderCheck.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
-                label2.setEnabled(orderCheck.isSelected());
-                orderCombo.setEnabled(orderCheck.isSelected());
+	public void setSettings(Map<String,Object> settings) {
+		if (((Boolean)settings.get(CONTROLLER_KEY + "." + TRANSFORM_KEY))) {
+			String transformName = (String)settings.get(CONTROLLER_KEY + "." + TRANSFORM_TYPE_KEY);
+			int i = 0;
+			for (TransformedRootedTree.Transform transform : TransformedRootedTree.Transform.values()) {
+				if (transform.toString().equalsIgnoreCase(transformName)) {
+					transformCombo.setSelectedIndex(i);
+				}
+				i++;
+			}
+		} else {
+			transformCombo.setSelectedIndex(0);
+		}
 
-                treeViewer.setOrderBranchesOn(orderCheck.isSelected());
-            }
-        });
-
-    }
-
-    public JComponent getTitleComponent() {
-        return titleLabel;
-    }
-
-    public JPanel getPanel() {
-        return optionsPanel;
-    }
-
-    public boolean isInitiallyVisible() {
-        return false;
-    }
-
-    public void initialize() {
-        treeViewer.setTransformBranchesOn(transformCheck.isSelected());
-        treeViewer.setBranchTransform((TransformedRootedTree.Transform) transformCombo.getSelectedItem());
-        treeViewer.setOrderBranchesOn(orderCheck.isSelected());
-        treeViewer.setBranchOrdering((SortedRootedTree.BranchOrdering) orderCombo.getSelectedItem());
-    }
-
-    public void setSettings(Map<String,Object> settings) {
-        transformCheck.setSelected((Boolean) settings.get(CONTROLLER_KEY + "." + TRANSFORM_KEY));
-        String transformName = (String)settings.get(CONTROLLER_KEY + "." + TRANSFORM_TYPE_KEY);
-        for (TransformedRootedTree.Transform transform : TransformedRootedTree.Transform.values()) {
-            if (transform.toString().equalsIgnoreCase(transformName)) {
-                transformCombo.setSelectedItem(transform);
-            }
-        }
-
-        orderCheck.setSelected((Boolean) settings.get(CONTROLLER_KEY + "." + ORDER_KEY));
-        String orderName = (String)settings.get(CONTROLLER_KEY + "." + ORDER_TYPE_KEY);
-        for (SortedRootedTree.BranchOrdering order : SortedRootedTree.BranchOrdering.values()) {
-            if (order.toString().equalsIgnoreCase(orderName)) {
-                orderCombo.setSelectedItem(order);
-            }
-        }
-    }
-
-    public void getSettings(Map<String, Object> settings) {
-        settings.put(CONTROLLER_KEY + "." + TRANSFORM_KEY, transformCheck.isSelected());
-        settings.put(CONTROLLER_KEY + "." + TRANSFORM_TYPE_KEY, transformCombo.getSelectedItem().toString());
-        settings.put(CONTROLLER_KEY + "." + ORDER_KEY, orderCheck.isSelected());
-        settings.put(CONTROLLER_KEY + "." + ORDER_TYPE_KEY, orderCombo.getSelectedItem().toString());
-    }
+		if (((Boolean)settings.get(CONTROLLER_KEY + "." + ORDER_KEY))) {
+			String orderName = (String)settings.get(CONTROLLER_KEY + "." + ORDER_TYPE_KEY);
+			int i = 0;
+			for (SortedRootedTree.BranchOrdering order : SortedRootedTree.BranchOrdering.values()) {
+				if (order.toString().equalsIgnoreCase(orderName)) {
+					orderCombo.setSelectedIndex(i);
+				}
+				i++;
+			}
+		} else {
+			orderCombo.setSelectedIndex(0);
+		}
 
 
-    private final JLabel titleLabel;
-    private final OptionsPanel optionsPanel;
+		rootingCheck.setSelected((Boolean) settings.get(CONTROLLER_KEY + "." + ROOTING_KEY));
+	}
 
-    private final JCheckBox transformCheck;
-    private final JComboBox transformCombo;
+	public void getSettings(Map<String, Object> settings) {
+	}
 
-    private final JCheckBox orderCheck;
-    private final JComboBox orderCombo;
 
-    private final TreeViewer treeViewer;
+	private final JLabel titleLabel;
+	private final OptionsPanel optionsPanel;
+
+	private final JComboBox transformCombo;
+
+	private final JComboBox orderCombo;
+
+	private final JCheckBox rootingCheck;
+
+	private final TreeViewer treeViewer;
 }
