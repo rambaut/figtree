@@ -3,7 +3,6 @@ package figtree.applet;
 import jebl.evolution.trees.Tree;
 import jebl.evolution.graphs.Node;
 import figtree.treeviewer.TreeViewer;
-import figtree.treeviewer.TreeViewerListener;
 import figtree.treeviewer.painters.LabelPainter;
 import figtree.treeviewer.decorators.*;
 import jebl.util.Attributable;
@@ -103,11 +102,11 @@ public class TreeAppearanceController extends AbstractController {
 
         optionsPanel = new OptionsPanel();
 
-        branchColorAttributeCombo = new JComboBox(new String[] { "No attributes" });
+        branchColourAttributeCombo = new JComboBox(new String[] { "No attributes" });
         setupAttributes(treeViewer.getTrees());
-        branchColorAttributeCombo.addItemListener(new ItemListener() {
+        branchColourAttributeCombo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
-                if (branchColorAttributeCombo.getSelectedIndex() == 0) {
+                if (branchColourAttributeCombo.getSelectedIndex() == 0) {
                     treeViewer.setBranchColouringDecorator(null, null);
                     treeViewer.setBranchDecorator(branchDecorator);
                 } else {
@@ -117,7 +116,7 @@ public class TreeAppearanceController extends AbstractController {
                             nodes.add(node);
                         }
                     }
-                    String attribute = (String)branchColorAttributeCombo.getSelectedItem();
+                    String attribute = (String) branchColourAttributeCombo.getSelectedItem();
                     if (attribute != null && attribute.length() > 0) {
                         if (attribute.endsWith("*")) {
                             Decorator decorator = new DiscreteColorDecorator();
@@ -143,7 +142,7 @@ public class TreeAppearanceController extends AbstractController {
             }
         });
 
-        optionsPanel.addComponentWithLabel("Color by:", branchColorAttributeCombo);
+        optionsPanel.addComponentWithLabel("Color by:", branchColourAttributeCombo);
 
 	    branchLineWidthSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.01, 48.0, 1.0));
 
@@ -195,19 +194,19 @@ public class TreeAppearanceController extends AbstractController {
     }
 
     private void setupAttributes(Collection<? extends Tree> trees) {
-        Object selected = branchColorAttributeCombo.getSelectedItem();
+        Object selected = branchColourAttributeCombo.getSelectedItem();
 
-        branchColorAttributeCombo.removeAllItems();
-        branchColorAttributeCombo.addItem("User Selection");
+        branchColourAttributeCombo.removeAllItems();
+        branchColourAttributeCombo.addItem("User Selection");
         if (trees == null) {
             return;
         }
         for (Tree tree : trees) {
             for (String name : getAttributeNames(tree.getNodes())) {
-                branchColorAttributeCombo.addItem(name);
+                branchColourAttributeCombo.addItem(name);
             }
         }
-        branchColorAttributeCombo.setSelectedItem(selected);
+        branchColourAttributeCombo.setSelectedItem(selected);
     }
 
     private String[] getAttributeNames(Collection<? extends Attributable> items) {
@@ -275,7 +274,7 @@ public class TreeAppearanceController extends AbstractController {
         treeViewer.setBackground((Color)settings.get(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY));
         treeViewer.setSelectionPaint((Color)settings.get(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY));
 
-        branchColorAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BRANCH_COLOR_ATTRIBUTE_KEY));
+        branchColourAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BRANCH_COLOR_ATTRIBUTE_KEY));
         branchLineWidthSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY));
 
 	    fontSizeSpinner.setValue((Double)settings.get(tipKey+"."+FONT_SIZE_KEY));
@@ -283,12 +282,21 @@ public class TreeAppearanceController extends AbstractController {
     }
 
     public void getSettings(Map<String, Object> settings) {
+        settings.put(CONTROLLER_KEY + "." + FOREGROUND_COLOUR_KEY, treeViewer.getForeground());
+        settings.put(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY, treeViewer.getBackground());
+        settings.put(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY, treeViewer.getSelectionPaint());
+
+        settings.put(CONTROLLER_KEY + "." + BRANCH_COLOR_ATTRIBUTE_KEY, branchColourAttributeCombo.getSelectedItem().toString());
+        settings.put(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY, branchLineWidthSpinner.getValue());
+
+        settings.put(tipKey+"."+FONT_SIZE_KEY, fontSizeSpinner.getValue());
+        settings.put(tipKey+"."+SIGNIFICANT_DIGITS_KEY, digitsSpinner.getValue());
     }
 
 
     private final OptionsPanel optionsPanel;
 
-    private final JComboBox branchColorAttributeCombo;
+    private final JComboBox branchColourAttributeCombo;
     private final JSpinner branchLineWidthSpinner;
 	private final JSpinner fontSizeSpinner;
 	private final JSpinner digitsSpinner;

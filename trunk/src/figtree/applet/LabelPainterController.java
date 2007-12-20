@@ -38,7 +38,8 @@ public class LabelPainterController extends AbstractController {
         optionsPanel = new OptionsPanel();
 
 	    tipComboBox = setupComboBox("Tips: ", tipLabelPainter);
-	    nodeComboBox = setupComboBox("Nodes: ", nodeLabelPainter);
+        tipComboBox.setSelectedIndex(1);
+        nodeComboBox = setupComboBox("Nodes: ", nodeLabelPainter);
 	    branchComboBox = setupComboBox("Branches: ", branchLabelPainter);
 
    }
@@ -90,6 +91,9 @@ public class LabelPainterController extends AbstractController {
     }
 
     public void getSettings(Map<String, Object> settings) {
+        settings.put(tipKey+"."+DISPLAY_ATTRIBUTE_KEY, tipComboBox.getSelectedItem().toString());
+        settings.put(nodeKey+"."+DISPLAY_ATTRIBUTE_KEY, nodeComboBox.getSelectedItem().toString());
+        settings.put(branchKey+"."+DISPLAY_ATTRIBUTE_KEY, branchComboBox.getSelectedItem().toString());
     }
 
     public String getTitle() {
