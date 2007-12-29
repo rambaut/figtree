@@ -3,6 +3,7 @@ package figtree.applet;
 import jebl.evolution.trees.Tree;
 import jebl.evolution.graphs.Node;
 import figtree.treeviewer.TreeViewer;
+import figtree.treeviewer.TreeViewerListener;
 import figtree.treeviewer.painters.LabelPainter;
 import figtree.treeviewer.decorators.*;
 import jebl.util.Attributable;
@@ -25,21 +26,21 @@ import java.text.NumberFormat;
  */
 public class TreeAppearanceController extends AbstractController {
 
-    private static final String CONTROLLER_TITLE = "Appearance";
+	private static final String CONTROLLER_TITLE = "Appearance";
 
-    private static final String CONTROLLER_KEY = "appearance";
+	private static final String CONTROLLER_KEY = "appearance";
 
-    private static final String FOREGROUND_COLOUR_KEY = "foregroundColour";
-    private static final String BACKGROUND_COLOUR_KEY = "backgroundColour";
-    private static final String SELECTION_COLOUR_KEY = "selectionColour";
-    private static final String BRANCH_COLOR_ATTRIBUTE_KEY = "branchColorAttribute";
-    private static final String BRANCH_LINE_WIDTH_KEY = "branchLineWidth";
+	private static final String FOREGROUND_COLOUR_KEY = "foregroundColour";
+	private static final String BACKGROUND_COLOUR_KEY = "backgroundColour";
+	private static final String SELECTION_COLOUR_KEY = "selectionColour";
+	private static final String BRANCH_COLOR_ATTRIBUTE_KEY = "branchColorAttribute";
+	private static final String BRANCH_LINE_WIDTH_KEY = "branchLineWidth";
 
-    // The defaults if there is nothing in the preferences
-    private static Color DEFAULT_FOREGROUND_COLOUR = Color.BLACK;
-    private static Color DEFAULT_BACKGROUND_COLOUR = Color.WHITE;
-    private static Color DEFAULT_SELECTION_COLOUR = new Color(180, 213, 254);
-    private static float DEFAULT_BRANCH_LINE_WIDTH = 1.0f;
+	// The defaults if there is nothing in the preferences
+	private static Color DEFAULT_FOREGROUND_COLOUR = Color.BLACK;
+	private static Color DEFAULT_BACKGROUND_COLOUR = Color.WHITE;
+	private static Color DEFAULT_SELECTION_COLOUR = new Color(180, 213, 254);
+	private static float DEFAULT_BRANCH_LINE_WIDTH = 1.0f;
 
 	private static final String FONT_NAME_KEY = "fontName";
 	private static final String FONT_SIZE_KEY = "fontSize";
@@ -60,250 +61,285 @@ public class TreeAppearanceController extends AbstractController {
 	private static String DECIMAL_NUMBER_FORMATTING = "#.####";
 	private static String SCIENTIFIC_NUMBER_FORMATTING = "0.###E0";
 
-    public TreeAppearanceController(final TreeViewer treeViewer,
-                                    String tipKey,
-                                  final LabelPainter tipLabelPainter,
-                                  String nodeKey,
-                                  final LabelPainter nodeLabelPainter,
-                                  String branchKey,
-		                                  final LabelPainter branchLabelPainter) {
-        this.treeViewer = treeViewer;
+	public TreeAppearanceController(final TreeViewer treeViewer,
+	                                String tipKey,
+	                                final LabelPainter tipLabelPainter,
+	                                String nodeKey,
+	                                final LabelPainter nodeLabelPainter,
+	                                String branchKey,
+	                                final LabelPainter branchLabelPainter) {
+		this(treeViewer, tipKey, tipLabelPainter, nodeKey, nodeLabelPainter, branchKey, branchLabelPainter, true);
+	}
 
-        final AttributableDecorator branchDecorator = new AttributableDecorator();
-        branchDecorator.setPaintAttributeName("!color");
-        branchDecorator.setStrokeAttributeName("!stroke");
-        treeViewer.setBranchDecorator(branchDecorator);
+	public TreeAppearanceController(final TreeViewer treeViewer,
+	                                String tipKey,
+	                                final LabelPainter tipLabelPainter,
+	                                String nodeKey,
+	                                final LabelPainter nodeLabelPainter,
+	                                String branchKey,
+	                                final LabelPainter branchLabelPainter,
+	                                boolean hideColouring) {
+		this.treeViewer = treeViewer;
 
-        int foregroundRGB = DEFAULT_FOREGROUND_COLOUR.getRGB();
-        int backgroundRGB = DEFAULT_BACKGROUND_COLOUR.getRGB();
-        int selectionRGB = DEFAULT_SELECTION_COLOUR.getRGB();
-        float branchLineWidth = DEFAULT_BRANCH_LINE_WIDTH;
+		this.hideColouring = hideColouring;
 
-        treeViewer.setForeground(new Color(foregroundRGB));
-        treeViewer.setBackground(new Color(backgroundRGB));
-        treeViewer.setSelectionPaint(new Color(selectionRGB));
-        treeViewer.setBranchStroke(new BasicStroke(branchLineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		final AttributableDecorator branchDecorator = new AttributableDecorator();
+		branchDecorator.setPaintAttributeName("!color");
+		branchDecorator.setStrokeAttributeName("!stroke");
+		treeViewer.setBranchDecorator(branchDecorator);
 
-	    this.tipKey = tipKey;
+		int foregroundRGB = DEFAULT_FOREGROUND_COLOUR.getRGB();
+		int backgroundRGB = DEFAULT_BACKGROUND_COLOUR.getRGB();
+		int selectionRGB = DEFAULT_SELECTION_COLOUR.getRGB();
+		float branchLineWidth = DEFAULT_BRANCH_LINE_WIDTH;
+
+		treeViewer.setForeground(new Color(foregroundRGB));
+		treeViewer.setBackground(new Color(backgroundRGB));
+		treeViewer.setSelectionPaint(new Color(selectionRGB));
+		treeViewer.setBranchStroke(new BasicStroke(branchLineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+		this.tipKey = tipKey;
 		this.nodeKey = nodeKey;
 		this.branchKey = branchKey;
 
-	    final String defaultFontName = DEFAULT_FONT_NAME;
-	    final int defaultFontStyle = DEFAULT_FONT_STYLE;
-	    final int defaultFontSize = DEFAULT_FONT_SIZE;
-	    final String defaultNumberFormatting = DEFAULT_NUMBER_FORMATTING;
+		final String defaultFontName = DEFAULT_FONT_NAME;
+		final int defaultFontStyle = DEFAULT_FONT_STYLE;
+		final int defaultFontSize = DEFAULT_FONT_SIZE;
+		final String defaultNumberFormatting = DEFAULT_NUMBER_FORMATTING;
 
-	    tipLabelPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
-	    tipLabelPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
+		tipLabelPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
+		tipLabelPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
 		nodeLabelPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
 		nodeLabelPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
 		branchLabelPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
 		branchLabelPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
 
-        optionsPanel = new OptionsPanel();
+		optionsPanel = new OptionsPanel();
 
-        branchColourAttributeCombo = new JComboBox(new String[] { "No attributes" });
-        setupAttributes(treeViewer.getTrees());
-        branchColourAttributeCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
-                if (branchColourAttributeCombo.getSelectedIndex() == 0) {
-                    treeViewer.setBranchColouringDecorator(null, null);
-                    treeViewer.setBranchDecorator(branchDecorator);
-                } else {
-                    Set<Node> nodes = new HashSet<Node>();
-                    for (Tree tree : treeViewer.getTrees()) {
-                        for (Node node : tree.getNodes()) {
-                            nodes.add(node);
-                        }
-                    }
-                    String attribute = (String) branchColourAttributeCombo.getSelectedItem();
-                    if (attribute != null && attribute.length() > 0) {
-                        if (attribute.endsWith("*")) {
-                            Decorator decorator = new DiscreteColorDecorator();
+		if (!hideColouring) {
+			branchColourAttributeCombo = new JComboBox(new String[] { "No attributes" });
+			setupAttributes(treeViewer.getTrees());
+			branchColourAttributeCombo.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent itemEvent) {
+					if (branchColourAttributeCombo.getSelectedIndex() == 0) {
+						treeViewer.setBranchColouringDecorator(null, null);
+						treeViewer.setBranchDecorator(branchDecorator);
+					} else {
+						Set<Node> nodes = new HashSet<Node>();
+						for (Tree tree : treeViewer.getTrees()) {
+							for (Node node : tree.getNodes()) {
+								nodes.add(node);
+							}
+						}
+						String attribute = (String) branchColourAttributeCombo.getSelectedItem();
+						if (attribute != null && attribute.length() > 0) {
+							if (attribute.endsWith("*")) {
+								Decorator decorator = new DiscreteColorDecorator();
 
-                            treeViewer.setBranchColouringDecorator(attribute.substring(0, attribute.length() - 2), decorator);
-                            treeViewer.setBranchDecorator(null);
-                        } else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
-	                        Decorator decorator = new DiscreteColorDecorator(attribute, nodes);
+								treeViewer.setBranchColouringDecorator(attribute.substring(0, attribute.length() - 2), decorator);
+								treeViewer.setBranchDecorator(null);
+							} else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
+								Decorator decorator = new DiscreteColorDecorator(attribute, nodes);
 
-	                        treeViewer.setBranchColouringDecorator(null, null);
-	                        treeViewer.setBranchDecorator(decorator);
-                        } else {
+								treeViewer.setBranchColouringDecorator(null, null);
+								treeViewer.setBranchDecorator(decorator);
+							} else {
 
-                            Decorator decorator = new ContinuousColorDecorator(
-		                            new ContinousScale(attribute, nodes, true, false),
-                                    new Color(192, 16, 0), new Color(0, 16, 192));
+								Decorator decorator = new ContinuousColorDecorator(
+										new ContinousScale(attribute, nodes, true, false),
+										new Color(192, 16, 0), new Color(0, 16, 192));
 
-                            treeViewer.setBranchColouringDecorator(null, null);
-                            treeViewer.setBranchDecorator(decorator);
-                        }
-                    }
-                }
-            }
-        });
+								treeViewer.setBranchColouringDecorator(null, null);
+								treeViewer.setBranchDecorator(decorator);
+							}
+						}
+					}
+				}
+			});
 
-        optionsPanel.addComponentWithLabel("Color by:", branchColourAttributeCombo);
+			optionsPanel.addComponentWithLabel("Colour by:", branchColourAttributeCombo);
+		} else {
+			branchColourAttributeCombo = null;
+		}
 
-	    branchLineWidthSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.01, 48.0, 1.0));
+		branchLineWidthSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.01, 48.0, 1.0));
 
-	    branchLineWidthSpinner.addChangeListener(new ChangeListener() {
-	        public void stateChanged(ChangeEvent changeEvent) {
-	            float lineWidth = ((Double) branchLineWidthSpinner.getValue()).floatValue();
-	            treeViewer.setBranchStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
-	        }
-	    });
-	    optionsPanel.addComponentWithLabel("Line Weight:", branchLineWidthSpinner);
+		branchLineWidthSpinner.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent changeEvent) {
+				float lineWidth = ((Double) branchLineWidthSpinner.getValue()).floatValue();
+				treeViewer.setBranchStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
+			}
+		});
+		optionsPanel.addComponentWithLabel("Line Weight:", branchLineWidthSpinner);
 
-	    Font font = tipLabelPainter.getFont();
-	    fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 48, 1));
+		Font font = tipLabelPainter.getFont();
+		fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 48, 1));
 
-	    optionsPanel.addComponentWithLabel("Font Size:", fontSizeSpinner);
+		optionsPanel.addComponentWithLabel("Font Size:", fontSizeSpinner);
 
-	    fontSizeSpinner.addChangeListener(new ChangeListener() {
-	        public void stateChanged(ChangeEvent changeEvent) {
-	            final float size = ((Double) fontSizeSpinner.getValue()).floatValue();
-	            Font font = tipLabelPainter.getFont().deriveFont(size);
-	            tipLabelPainter.setFont(font);
-		        font = nodeLabelPainter.getFont().deriveFont(size);
-		        nodeLabelPainter.setFont(font);
-		        font = branchLabelPainter.getFont().deriveFont(size);
-		        branchLabelPainter.setFont(font);
-	        }
-	    });
-
-		NumberFormat format = tipLabelPainter.getNumberFormat();
-		 int digits = format.getMaximumFractionDigits();
-		digitsSpinner = new JSpinner(new SpinnerNumberModel(digits, 2, 14, 1));
-		digitsSpinner.addChangeListener(new ChangeListener() {
-		    public void stateChanged(ChangeEvent changeEvent) {
-		        final int digits = (Integer)digitsSpinner.getValue();
-		        NumberFormat format = tipLabelPainter.getNumberFormat();
-		        format.setMaximumFractionDigits(digits);
-		        tipLabelPainter.setNumberFormat(format);
-
-			    format = nodeLabelPainter.getNumberFormat();
-			    format.setMaximumFractionDigits(digits);
-			    nodeLabelPainter.setNumberFormat(format);
-
-			    format = branchLabelPainter.getNumberFormat();
-			    format.setMaximumFractionDigits(digits);
-			    branchLabelPainter.setNumberFormat(format);
-		    }
+		fontSizeSpinner.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent changeEvent) {
+				final float size = ((Double) fontSizeSpinner.getValue()).floatValue();
+				Font font = tipLabelPainter.getFont().deriveFont(size);
+				tipLabelPainter.setFont(font);
+				font = nodeLabelPainter.getFont().deriveFont(size);
+				nodeLabelPainter.setFont(font);
+				font = branchLabelPainter.getFont().deriveFont(size);
+				branchLabelPainter.setFont(font);
+			}
 		});
 
-    }
+		NumberFormat format = tipLabelPainter.getNumberFormat();
+		int digits = format.getMaximumFractionDigits();
+		digitsSpinner = new JSpinner(new SpinnerNumberModel(digits, 2, 14, 1));
+		digitsSpinner.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent changeEvent) {
+				final int digits = (Integer)digitsSpinner.getValue();
+				NumberFormat format = tipLabelPainter.getNumberFormat();
+				format.setMaximumFractionDigits(digits);
+				tipLabelPainter.setNumberFormat(format);
 
-    private void setupAttributes(Collection<? extends Tree> trees) {
-        Object selected = branchColourAttributeCombo.getSelectedItem();
+				format = nodeLabelPainter.getNumberFormat();
+				format.setMaximumFractionDigits(digits);
+				nodeLabelPainter.setNumberFormat(format);
 
-        branchColourAttributeCombo.removeAllItems();
-        branchColourAttributeCombo.addItem("User Selection");
-        if (trees == null) {
-            return;
-        }
-        for (Tree tree : trees) {
-            for (String name : getAttributeNames(tree.getNodes())) {
-                branchColourAttributeCombo.addItem(name);
-            }
-        }
-        branchColourAttributeCombo.setSelectedItem(selected);
-    }
+				format = branchLabelPainter.getNumberFormat();
+				format.setMaximumFractionDigits(digits);
+				branchLabelPainter.setNumberFormat(format);
+			}
+		});
 
-    private String[] getAttributeNames(Collection<? extends Attributable> items) {
-        Set<String> attributeNames = new TreeSet<String>();
+		if (!hideColouring) {
+			treeViewer.addTreeViewerListener(new TreeViewerListener() {
+				public void treeChanged() {
+					setupAttributes(treeViewer.getTrees());
+					optionsPanel.repaint();
+				}
 
-        for (Attributable item : items) {
-            for (String name : item.getAttributeNames()) {
-                if (!name.startsWith("!")) {
-                    Object attr = item.getAttribute(name);
-                    if (!(attr instanceof Object[])) {
-                        attributeNames.add(name);
-                    } else {
-                        boolean isColouring = true;
+				public void treeSettingsChanged() {
+					// nothing to do
+				}
+			});
+		}
+	}
 
-                        Object[] array = (Object[])attr;
-                        boolean isIndex = true;
-                        for (Object element : array) {
-                            if (isIndex && !(element instanceof Integer) ||
-                                    !isIndex && !(element instanceof Double)) {
-                                isColouring = false;
-                                break;
-                            }
-                            isIndex = !isIndex;
-                        }
+	private void setupAttributes(Collection<? extends Tree> trees) {
+		Object selected = branchColourAttributeCombo.getSelectedItem();
 
-                        if (isIndex) {
-                            // a colouring should finish on an index (which means isIndex should be false)...
-                            isColouring = false;
-                        }
+		branchColourAttributeCombo.removeAllItems();
+		branchColourAttributeCombo.addItem("User Selection");
+		if (trees == null) {
+			return;
+		}
+		for (Tree tree : trees) {
+			for (String name : getAttributeNames(tree.getNodes())) {
+				branchColourAttributeCombo.addItem(name);
+			}
+		}
+		branchColourAttributeCombo.setSelectedItem(selected);
+	}
 
-                        if (isColouring) {
-                            attributeNames.add(name + " *");
-                        }
+	private String[] getAttributeNames(Collection<? extends Attributable> items) {
+		Set<String> attributeNames = new TreeSet<String>();
 
-                    }
-                }
-            }
-        }
+		for (Attributable item : items) {
+			for (String name : item.getAttributeNames()) {
+				if (!name.startsWith("!")) {
+					Object attr = item.getAttribute(name);
+					if (!(attr instanceof Object[])) {
+						attributeNames.add(name);
+					} else {
+						boolean isColouring = true;
 
-        String[] attributeNameArray = new String[attributeNames.size()];
-        attributeNames.toArray(attributeNameArray);
+						Object[] array = (Object[])attr;
+						boolean isIndex = true;
+						for (Object element : array) {
+							if (isIndex && !(element instanceof Integer) ||
+									!isIndex && !(element instanceof Double)) {
+								isColouring = false;
+								break;
+							}
+							isIndex = !isIndex;
+						}
 
-        return attributeNameArray;
-    }
+						if (isIndex) {
+							// a colouring should finish on an index (which means isIndex should be false)...
+							isColouring = false;
+						}
 
-    public JComponent getTitleComponent() {
-        return null;
-    }
+						if (isColouring) {
+							attributeNames.add(name + " *");
+						}
 
-    public JPanel getPanel() {
-        return optionsPanel;
-    }
+					}
+				}
+			}
+		}
 
-    public boolean isInitiallyVisible() {
-        return false;
-    }
+		String[] attributeNameArray = new String[attributeNames.size()];
+		attributeNames.toArray(attributeNameArray);
 
-    public void initialize() {
-        // nothing to do
-    }
+		return attributeNameArray;
+	}
 
-    public void setSettings(Map<String,Object> settings) {
-        // These settings don't have controls yet but they will!
-        treeViewer.setForeground((Color)settings.get(CONTROLLER_KEY + "." + FOREGROUND_COLOUR_KEY));
-        treeViewer.setBackground((Color)settings.get(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY));
-        treeViewer.setSelectionPaint((Color)settings.get(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY));
+	public JComponent getTitleComponent() {
+		return null;
+	}
 
-        branchColourAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BRANCH_COLOR_ATTRIBUTE_KEY));
-        branchLineWidthSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY));
+	public JPanel getPanel() {
+		return optionsPanel;
+	}
 
-	    fontSizeSpinner.setValue((Double)settings.get(tipKey+"."+FONT_SIZE_KEY));
-	    digitsSpinner.setValue((Integer)settings.get(tipKey+"."+SIGNIFICANT_DIGITS_KEY));
-    }
+	public boolean isInitiallyVisible() {
+		return false;
+	}
 
-    public void getSettings(Map<String, Object> settings) {
-        settings.put(CONTROLLER_KEY + "." + FOREGROUND_COLOUR_KEY, treeViewer.getForeground());
-        settings.put(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY, treeViewer.getBackground());
-        settings.put(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY, treeViewer.getSelectionPaint());
+	public void initialize() {
+		// nothing to do
+	}
 
-        settings.put(CONTROLLER_KEY + "." + BRANCH_COLOR_ATTRIBUTE_KEY, branchColourAttributeCombo.getSelectedItem().toString());
-        settings.put(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY, branchLineWidthSpinner.getValue());
+	public void setSettings(Map<String,Object> settings) {
+		// These settings don't have controls yet but they will!
+		treeViewer.setForeground((Color)settings.get(CONTROLLER_KEY + "." + FOREGROUND_COLOUR_KEY));
+		treeViewer.setBackground((Color)settings.get(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY));
+		treeViewer.setSelectionPaint((Color)settings.get(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY));
 
-        settings.put(tipKey+"."+FONT_SIZE_KEY, fontSizeSpinner.getValue());
-        settings.put(tipKey+"."+SIGNIFICANT_DIGITS_KEY, digitsSpinner.getValue());
-    }
+		if (branchColourAttributeCombo != null) {
+			branchColourAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BRANCH_COLOR_ATTRIBUTE_KEY));
+		}
+		branchLineWidthSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY));
+
+		fontSizeSpinner.setValue((Double)settings.get(tipKey+"."+FONT_SIZE_KEY));
+		digitsSpinner.setValue((Integer)settings.get(tipKey+"."+SIGNIFICANT_DIGITS_KEY));
+	}
+
+	public void getSettings(Map<String, Object> settings) {
+		settings.put(CONTROLLER_KEY + "." + FOREGROUND_COLOUR_KEY, treeViewer.getForeground());
+		settings.put(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY, treeViewer.getBackground());
+		settings.put(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY, treeViewer.getSelectionPaint());
+
+		if (branchColourAttributeCombo != null) {
+			settings.put(CONTROLLER_KEY + "." + BRANCH_COLOR_ATTRIBUTE_KEY, branchColourAttributeCombo.getSelectedItem().toString());
+		}
+		settings.put(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY, branchLineWidthSpinner.getValue());
+
+		settings.put(tipKey+"."+FONT_SIZE_KEY, fontSizeSpinner.getValue());
+		settings.put(tipKey+"."+SIGNIFICANT_DIGITS_KEY, digitsSpinner.getValue());
+	}
 
 
-    private final OptionsPanel optionsPanel;
+	private final OptionsPanel optionsPanel;
 
-    private final JComboBox branchColourAttributeCombo;
-    private final JSpinner branchLineWidthSpinner;
+	private final JComboBox branchColourAttributeCombo;
+	private final JSpinner branchLineWidthSpinner;
 	private final JSpinner fontSizeSpinner;
 	private final JSpinner digitsSpinner;
 
-    private final TreeViewer treeViewer;
+	private final TreeViewer treeViewer;
 
 	private final String tipKey;
 	private final String nodeKey;
 	private final String branchKey;
+
+	private final boolean hideColouring;
 }
