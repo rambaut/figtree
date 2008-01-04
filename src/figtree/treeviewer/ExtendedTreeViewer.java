@@ -57,8 +57,10 @@ public class ExtendedTreeViewer extends DefaultTreeViewer implements StatusProvi
 			names.addAll(node.getAttributeNames());
 		}
 		for (String name : names) {
-			AnnotationDefinition annotation = new AnnotationDefinition(name, AnnotationDefinition.Type.REAL);
-			getAnnotationDefinitions().add(annotation);
+			if (!name.startsWith("!")) {
+				AnnotationDefinition annotation = new AnnotationDefinition(name, AnnotationDefinition.Type.REAL);
+				getAnnotationDefinitions().add(annotation);
+			}
 		}
 		super.addTree(tree);
 
@@ -83,6 +85,7 @@ public class ExtendedTreeViewer extends DefaultTreeViewer implements StatusProvi
 				taxon.setAttribute(definition.getName(), annotation.get(taxon));
 			}
 		}
+		fireAnnotationsChanged();
 	}
 
 	public void showStatus() {
@@ -109,28 +112,44 @@ public class ExtendedTreeViewer extends DefaultTreeViewer implements StatusProvi
 		return annotations;
 	}
 
-	public void annotateFromTips(String annotationName) {
+	public void annotateNodesFromTips(String annotationName) {
 		List<Object> stateCodes = new ArrayList<Object>();
 		Map<Taxon, Integer> stateMap = new HashMap<Taxon, Integer>();
 
 		Tree tree = treePane.getTree();
-		int index = 0;
 		for (Node node : tree.getExternalNodes()) {
 			Taxon taxon = tree.getTaxon(node);
 			Object state = taxon.getAttribute(annotationName);
-			stateCodes.add(state);
+			int index = stateCodes.indexOf(state);
+			if (index == -1) {
+				index = stateCodes.size();
+				stateCodes.add(state);
+			}
 			stateMap.put(taxon, index);
 			node.setAttribute(annotationName, state);
-			index ++;
 		}
-
-
 
 		Parsimony parsimony = new Parsimony(stateCodes.size(), stateMap);
 
 		for (Node node : tree.getInternalNodes()) {
-			Object state = stateCodes.get(parsimony.getState(tree, node));
+			Integer stateIndex = parsimony.getState(tree, node);
+			Object state = null;
+			if (stateIndex != null) {
+				state = stateCodes.get(stateIndex);
+			}
 			node.setAttribute(annotationName, state);
+		}
+
+		fireAnnotationsChanged();
+	}
+
+	public void annotateTipsFromNodes(String annotationName) {
+
+		Tree tree = treePane.getTree();
+		for (Node node : tree.getExternalNodes()) {
+			Taxon taxon = tree.getTaxon(node);
+			Object state = taxon.getAttribute(annotationName);
+			taxon.setAttribute(annotationName, state);
 		}
 
 		fireAnnotationsChanged();
@@ -146,6 +165,7 @@ public class ExtendedTreeViewer extends DefaultTreeViewer implements StatusProvi
 		for (AnnotationsListener listener : listeners) {
 			listener.annotationsChanged();
 		}
+		fireTreeChanged();
 	}
 
 	private List<AnnotationDefinition> annotations = null;
