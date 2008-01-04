@@ -83,6 +83,9 @@ public class BasicLabelPainter extends LabelPainter<Node> {
 					for (Node node : tree.getExternalNodes()) {
 						nodeAttributes.addAll(node.getAttributeNames());
 					}
+					for (Taxon taxon : tree.getTaxa()) {
+						nodeAttributes.addAll(taxon.getAttributeNames());
+					}
 				} else if (intent == PainterIntent.NODE) {
 					for (Node node : tree.getInternalNodes()) {
 						nodeAttributes.addAll(node.getAttributeNames());
@@ -169,7 +172,15 @@ public class BasicLabelPainter extends LabelPainter<Node> {
 			}
 		}
 
-		return formatValue(node.getAttribute(displayAttribute));
+		Object value = node.getAttribute(displayAttribute);
+		if (value == null) {
+			Taxon taxon = tree.getTaxon(node);
+			if (taxon != null) {
+				value = taxon.getAttribute(displayAttribute);
+			}				
+		}
+
+		return formatValue(value);
 	}
 
 	private String formatValue(Object value) {

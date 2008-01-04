@@ -104,7 +104,7 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
         } else if (dragMode == DragMode.SELECT) {
             boolean isCrossHairShown = treePane.isCrosshairShown();
 
-            treePane.setCrosshairShown(false);
+             treePane.setCrosshairShown(false);
 
             Node selectedNode = treePane.getNodeAt((Graphics2D) treePane.getGraphics(), mouseEvent.getPoint());
             if (!mouseEvent.isShiftDown()) {

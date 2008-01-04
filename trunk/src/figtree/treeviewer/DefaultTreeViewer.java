@@ -12,13 +12,13 @@ package figtree.treeviewer;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.*;
+import jebl.util.Attributable;
 import figtree.treeviewer.decorators.Decorator;
 import figtree.treeviewer.painters.LabelPainter;
 import figtree.treeviewer.painters.ScalePainter;
 import figtree.treeviewer.painters.ScaleGridPainter;
 import figtree.treeviewer.painters.NodeBarPainter;
 import figtree.treeviewer.treelayouts.TreeLayout;
-import figtree.treeviewer.annotations.AnnotationDefinition;
 import org.virion.jam.panels.StatusProvider;
 
 import javax.swing.*;
@@ -224,12 +224,12 @@ public class DefaultTreeViewer extends TreeViewer {
 		return treePane.getSelectedTips();
 	}
 
-	public void selectTaxa(SearchType searchType, String searchString, boolean caseSensitive) {
+	public void selectTaxa(String attributeName, TextSearchType searchType, String searchString, boolean caseSensitive) {
 		treePane.clearSelection();
 
 		String query = searchString;
 
-		if (searchType != SearchType.REG_EX) {
+		if (searchType != TextSearchType.REG_EX) {
 			query = (caseSensitive ? searchString : searchString.toUpperCase());
 			query = query.trim();
 		}
@@ -238,43 +238,40 @@ public class DefaultTreeViewer extends TreeViewer {
 
 		for (Node node : tree.getExternalNodes()) {
 			Taxon taxon = tree.getTaxon(node);
-			String target = (caseSensitive ? taxon.getName() : taxon.getName().toUpperCase());
-			switch (searchType) {
-				case CONTAINS:
-					if (target.contains(query)) {
-						treePane.addSelectedTip(node);
-					}
+
+			if (attributeName == null) {
+				Object target = taxon.getName();
+				if (matchesItem(searchType, target, query, caseSensitive)) {
+					treePane.addSelectedTip(node);
 					break;
-				case STARTS_WITH:
-					if (target.startsWith(query)) {
+				}
+				for (String name : taxon.getAttributeNames()) {
+					target = taxon.getAttribute(name);
+					if (matchesItem(searchType, target, query, caseSensitive)) {
 						treePane.addSelectedTip(node);
+						break;
 					}
-					break;
-				case ENDS_WITH:
-					if (target.endsWith(query)) {
-						treePane.addSelectedTip(node);
-					}
-					break;
-				case MATCHES:
-					if (target.equals(query)) {
-						treePane.addSelectedTip(node);
-					}
-					break;
-				case REG_EX:
-					if (target.matches(query)) {
-						treePane.addSelectedTip(node);
-					}
-					break;
+				}
+			} else {
+				Object target;
+				if (attributeName.equals("!name")) {
+					target = taxon.getName();
+				} else {
+					target = taxon.getAttribute(attributeName);
+				}
+				if (matchesItem(searchType, target, query, caseSensitive)) {
+					treePane.addSelectedTip(node);
+				}
 			}
 		}
 	}
 
-	public void selectNodes(String attribute, SearchType searchType, String searchString, boolean caseSensitive) {
+	public void selectNodes(String attributeName, TextSearchType searchType, String searchString, boolean caseSensitive) {
 		treePane.clearSelection();
 
 		String query = searchString;
 
-		if (searchType != SearchType.REG_EX) {
+		if (searchType != TextSearchType.REG_EX) {
 			query = (caseSensitive ? searchString : searchString.toUpperCase());
 			query = query.trim();
 		}
@@ -282,52 +279,130 @@ public class DefaultTreeViewer extends TreeViewer {
 		Tree tree = treePane.getTree();
 
 		for (Node node : tree.getNodes()) {
-			if (attribute == null) {
-				for (String attributeName : node.getAttributeNames()) {
-					if (selectNodeWithAttribute(node, attributeName, searchType, query, caseSensitive)) {
+			if (attributeName == null) {
+				for (String name : node.getAttributeNames()) {
+					Object target = node.getAttribute(name);
+					if (matchesItem(searchType, target, query, caseSensitive)) {
+						treePane.addSelectedNode(node);
 						break;
 					}
 				}
 			} else {
-				selectNodeWithAttribute(node, attribute, searchType, query, caseSensitive);
+				Object target = node.getAttribute(attributeName);
+				if (matchesItem(searchType, target, query, caseSensitive)) {
+					treePane.addSelectedNode(node);
+				}
 			}
 		}
 	}
 
-	private boolean selectNodeWithAttribute(Node node, String attribute, SearchType searchType, String query, boolean caseSensitive) {
-		Object value = node.getAttribute(attribute);
+	private boolean matchesItem(TextSearchType searchType, Object object, String query, boolean caseSensitive) {
 
-		if (value != null) {
-			String target = (caseSensitive ?
-					value.toString() : value.toString().toUpperCase());
+		if (object != null) {
+			String target = object.toString();
+			if (caseSensitive) {
+				target = target.toUpperCase();
+			}
 			switch (searchType) {
 				case CONTAINS:
 					if (target.contains(query)) {
-						treePane.addSelectedNode(node);
 						return true;
 					}
 					break;
 				case STARTS_WITH:
 					if (target.startsWith(query)) {
-						treePane.addSelectedNode(node);
 						return true;
 					}
 					break;
 				case ENDS_WITH:
 					if (target.endsWith(query)) {
-						treePane.addSelectedNode(node);
 						return true;
 					}
 					break;
 				case MATCHES:
 					if (target.equals(query)) {
-						treePane.addSelectedNode(node);
 						return true;
 					}
 					break;
 				case REG_EX:
 					if (target.matches(query)) {
+						return true;
+					}
+					break;
+			}
+		}
+		return false;
+	}
+
+	public void selectTaxa(String attributeName, NumberSearchType searchType, Number searchValue) {
+		treePane.clearSelection();
+
+		Tree tree = treePane.getTree();
+
+		for (Node node : tree.getExternalNodes()) {
+			Taxon taxon = tree.getTaxon(node);
+			if (matchesItem(taxon, attributeName, searchType, searchValue)) {
+				treePane.addSelectedTip(node);
+			}
+		}
+	}
+
+	public void selectNodes(String attributeName, NumberSearchType searchType, Number searchValue) {
+		treePane.clearSelection();
+
+		Tree tree = treePane.getTree();
+
+		for (Node node : tree.getNodes()) {
+			if (attributeName == null) {
+				for (String name : node.getAttributeNames()) {
+					if (matchesItem(node, name, searchType, searchValue)) {
 						treePane.addSelectedNode(node);
+						break;
+					}
+				}
+			} else {
+				if (matchesItem(node, attributeName, searchType, searchValue)) {
+					treePane.addSelectedNode(node);
+				}
+			}
+		}
+	}
+
+	private boolean matchesItem(Attributable item, String attributeName, NumberSearchType searchType, Number searchValue) {
+		Object o = item.getAttribute(attributeName);
+
+		if (o != null && o instanceof Number) {
+
+			Number value = (Number)o;
+
+			switch (searchType) {
+				case EQUALS:
+					if (value.equals(searchValue)) {
+						return true;
+					}
+					break;
+				case EQUALS_OR_GREATER_THAN:
+					if (value.doubleValue() >= searchValue.doubleValue()) {
+						return true;
+					}
+					break;
+				case EQUALS_OR_LESS_THAN:
+					if (searchValue.equals(value)) {
+						return true;
+					}
+					break;
+				case GREATER_THAN:
+					if (searchValue.equals(value)) {
+						return true;
+					}
+					break;
+				case LESS_THAN:
+					if (searchValue.equals(value)) {
+						return true;
+					}
+					break;
+				case NOT_EQUALS:
+					if (searchValue.equals(value)) {
 						return true;
 					}
 					break;
@@ -346,13 +421,28 @@ public class DefaultTreeViewer extends TreeViewer {
 		fireTreeSettingsChanged();
 	}
 
+	public void clearCollapsedNodes() {
+		treePane.clearCollapsedNodes();
+		fireTreeSettingsChanged();
+	}
+
 	public void rerootOnSelectedBranch() {
 		treePane.rerootOnSelectedBranch();
 		fireTreeSettingsChanged();
 	}
 
+	public void clearRooting() {
+		treePane.clearRooting();
+		fireTreeSettingsChanged();
+	}
+
 	public void rotateSelectedNode() {
 		treePane.rotateSelectedNode();
+		fireTreeSettingsChanged();
+	}
+
+	public void clearRotations() {
+		treePane.clearSelectedNodeRotations();
 		fireTreeSettingsChanged();
 	}
 
@@ -363,6 +453,18 @@ public class DefaultTreeViewer extends TreeViewer {
 
 	public void annotateSelectedTips(String name, Object value) {
 		treePane.annotateSelectedTips(name, value);
+		fireTreeSettingsChanged();
+	}
+
+	public void clearAnnotation(String name) {
+		treePane.clearSelectedNodeAnnotation(name);
+		treePane.clearSelectedTipAnnotation(name);
+		fireTreeSettingsChanged();
+	}
+
+	public void clearColouring() {
+		treePane.clearSelectedNodeAnnotation("!color");
+		treePane.clearSelectedTipAnnotation("!color");
 		fireTreeSettingsChanged();
 	}
 

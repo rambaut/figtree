@@ -79,8 +79,9 @@ public class TreeAppearanceController extends AbstractController {
 	    branchColourAttributeCombo = new JComboBox(new String[] { "No attributes" });
 	    setupAttributes(treeViewer.getTrees());
 
-	    optionsPanel.addComponentWithLabel("Width by:", branchWidthAttributeCombo);
 	    optionsPanel.addComponentWithLabel("Colour by:", branchColourAttributeCombo);
+	    optionsPanel.addSeparator();
+	    optionsPanel.addComponentWithLabel("Width by:", branchWidthAttributeCombo);
 
 
         branchWidthAttributeCombo.addItemListener(new ItemListener() {

@@ -88,6 +88,7 @@ public class FigTreePanel extends JPanel {
 
         treeViewer.addAnnotationsListener(new AnnotationsListener() {
             public void annotationsChanged() {
+	            
                 tipLabelPainter.setupAttributes(treeViewer.getTrees());
                 nodeLabelPainter.setupAttributes(treeViewer.getTrees());
                 nodeBarPainter.setupAttributes(treeViewer.getTrees());

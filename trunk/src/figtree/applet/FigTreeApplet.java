@@ -1,17 +1,14 @@
 package figtree.applet;
 
-import figtree.treeviewer.DefaultTreeViewer;
 import jebl.evolution.trees.Tree;
 import jebl.evolution.io.NewickImporter;
 import jebl.evolution.io.ImportException;
-import org.virion.jam.controlpalettes.BasicControlPalette;
 import org.virion.jam.controlpalettes.ControlPalette;
 import org.virion.jam.panels.SearchPanel;
 import org.virion.jam.panels.SearchPanelListener;
 import org.virion.jam.panels.StatusBar;
-import org.virion.jam.toolbar.Toolbar;
 import figtree.application.FigTreeNexusImporter;
-import figtree.treeviewer.ExtendedTreeViewer;
+import figtree.treeviewer.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,7 +48,7 @@ public class FigTreeApplet extends JApplet {
 		figTreePanel = new FigTreeAppletPanel(treeViewer, controlPalette1, controlPalette2, style);
 
 		filterPopup = new JPopupMenu();
-		for (DefaultTreeViewer.SearchType searchType : DefaultTreeViewer.SearchType.values()) {
+		for (TreeViewer.TextSearchType searchType : TreeViewer.TextSearchType.values()) {
 			filterPopup.add(searchType.toString());
 		}
 		filterPanel = new SearchPanel("Filter", filterPopup, true);
@@ -69,8 +66,8 @@ public class FigTreeApplet extends JApplet {
 			public void searchStarted(String searchString) {
 				int index = filterPopup.getSelectionModel().getSelectedIndex();
 				if (index == -1) index = 0;
-				DefaultTreeViewer.SearchType searchType = DefaultTreeViewer.SearchType.values()[index];
-				treeViewer.selectTaxa(searchType, searchString, false);
+				TreeViewer.TextSearchType searchType = TreeViewer.TextSearchType.values()[index];
+				treeViewer.selectTaxa("!name", searchType, searchString, false);
 			}
 
 			/**

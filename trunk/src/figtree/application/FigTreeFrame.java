@@ -316,7 +316,7 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		toolBar.addFlexibleSpace();
 
 		filterPopup = new JPopupMenu();
-		for (DefaultTreeViewer.SearchType searchType : DefaultTreeViewer.SearchType.values()) {
+		for (TreeViewer.TextSearchType searchType : TreeViewer.TextSearchType.values()) {
 			filterPopup.add(searchType.toString());
 		}
 		filterPanel = new SearchPanel("Filter", filterPopup, true);
@@ -334,8 +334,8 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 			public void searchStarted(String searchString) {
 				int index = filterPopup.getSelectionModel().getSelectedIndex();
 				if (index == -1) index = 0;
-				DefaultTreeViewer.SearchType searchType = DefaultTreeViewer.SearchType.values()[index];
-				treeViewer.selectTaxa(searchType, searchString, false);
+				TreeViewer.TextSearchType searchType = TreeViewer.TextSearchType.values()[index];
+				treeViewer.selectTaxa("!name", searchType, searchString, false);
 			}
 
 			/**
@@ -410,24 +410,46 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		treeViewer.fireAnnotationsChanged();
 	}
 
-	private void annotateFromTips() {
+	private void annotateNodesFromTips() {
 		List<String> annotationNames = new ArrayList<String>();
 		annotationNames.add("Colour");
 		for (AnnotationDefinition definition : treeViewer.getAnnotationDefinitions()) {
 			annotationNames.add(definition.getName());
 		}
 
-		if (annotatedFromTipsDialog == null) {
-			annotatedFromTipsDialog = new AnnotatedFromTipsDialog(this);
+		if (selectAnnotationDialog == null) {
+			selectAnnotationDialog = new SelectAnnotationDialog(this);
 		}
 
-		if (annotatedFromTipsDialog.showDialog(annotationNames) != JOptionPane.CANCEL_OPTION) {
-			String annotationName = annotatedFromTipsDialog.getAnnotationName();
+		if (selectAnnotationDialog.showDialog(annotationNames) != JOptionPane.CANCEL_OPTION) {
+			String annotationName = selectAnnotationDialog.getAnnotationName();
 			if (annotationName.equals("Colour")) {
 				annotationName = "!color";
 			}
 
-			treeViewer.annotateFromTips(annotationName);
+			treeViewer.annotateNodesFromTips(annotationName);
+			setDirty();
+		}
+	}
+
+	private void annotateTipsFromNodes() {
+		List<String> annotationNames = new ArrayList<String>();
+		annotationNames.add("Colour");
+		for (AnnotationDefinition definition : treeViewer.getAnnotationDefinitions()) {
+			annotationNames.add(definition.getName());
+		}
+
+		if (selectAnnotationDialog == null) {
+			selectAnnotationDialog = new SelectAnnotationDialog(this);
+		}
+
+		if (selectAnnotationDialog.showDialog(annotationNames) != JOptionPane.CANCEL_OPTION) {
+			String annotationName = selectAnnotationDialog.getAnnotationName();
+			if (annotationName.equals("Colour")) {
+				annotationName = "!color";
+			}
+
+			treeViewer.annotateTipsFromNodes(annotationName);
 			setDirty();
 		}
 	}
@@ -795,7 +817,7 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 
 	}
 
-	protected Map<AnnotationDefinition, Map<Taxon, Object>> importAnnotationsFromFile(File file) throws FileNotFoundException, IOException {
+	protected Map<AnnotationDefinition, Map<Taxon, Object>> importAnnotationsFromFile(File file) throws IOException {
 
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 
@@ -812,11 +834,13 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		while (line != null) {
 			String[] values = line.split("\t");
 
-			taxa.add(values[0]);
-			for (int i = 1; i < values.length; i++) {
-				if (i < labels.length) {
-					List<String> column = columns.get(labels[i]);
-					column.add(values[i]);
+			if (values.length > 0) {
+				taxa.add(values[0]);
+				for (int i = 1; i < values.length; i++) {
+					if (i < labels.length) {
+						List<String> column = columns.get(labels[i]);
+						column.add(values[i]);
+					}
 				}
 			}
 			line = reader.readLine();
@@ -1105,15 +1129,28 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
 		if (findDialog.showDialog(definitions) != JOptionPane.CANCEL_OPTION) {
 			String target = findDialog.getSearchTarget();
-			DefaultTreeViewer.SearchType searchType = findDialog.getSearchType();
-			String searchText = findDialog.getSearchText();
-			boolean caseSensitive = findDialog.isCaseSensitive();
-			if (target.equals(FindDialog.TAXON_LABEL)) {
-				treeViewer.selectTaxa(searchType, searchText, caseSensitive);
-			} else if (target.equals(FindDialog.ANY_ANNOTATION)) {
-				treeViewer.selectNodes(null, searchType, searchText, caseSensitive);
+			if (findDialog.isNumericSearchType()) {
+				TreeViewer.NumberSearchType searchType = findDialog.getNumberSearchType();
+				Number searchValue = findDialog.getSearchValue();
+				if (target.equals(FindDialog.TAXON_LABEL)) {
+					treeViewer.selectTaxa("!name", searchType, searchValue);
+				} else if (target.equals(FindDialog.ANY_ANNOTATION)) {
+					treeViewer.selectNodes(null, searchType, searchValue);
+				} else {
+					treeViewer.selectNodes(target, searchType, searchValue);
+				}
+
 			} else {
-				treeViewer.selectNodes(target, searchType, searchText, caseSensitive);
+				TreeViewer.TextSearchType searchType = findDialog.getTextSearchType();
+				String searchText = findDialog.getSearchText();
+				boolean caseSensitive = findDialog.isCaseSensitive();
+				if (target.equals(FindDialog.TAXON_LABEL)) {
+					treeViewer.selectTaxa("!name", searchType, searchText, caseSensitive);
+				} else if (target.equals(FindDialog.ANY_ANNOTATION)) {
+					treeViewer.selectNodes(null, searchType, searchText, caseSensitive);
+				} else {
+					treeViewer.selectNodes(target, searchType, searchText, caseSensitive);
+				}
 			}
 		}
 	}
@@ -1165,8 +1202,12 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		return annotateAction;
 	}
 
-	public Action getAnnotateFromTipsAction() {
-		return annotateFromTipsAction;
+	public Action getAnnotateNodesFromTipsAction() {
+		return annotateNodesFromTipsAction;
+	}
+
+	public Action getAnnotateTipsFromNodesAction() {
+		return annotateTipsFromNodesAction;
 	}
 
 	public AbstractAction getClearAnnotationsAction() {
@@ -1224,36 +1265,42 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 	private ToolbarAction cartoonAction;
 	private ToolbarAction collapseAction;
 	private AbstractAction clearCollapsedAction = new AbstractAction(CLEAR_COLLAPSED) {
-				public void actionPerformed(ActionEvent e){
-					//treeViewer.clearCollapsedNodes();
-				}
-			};
+		public void actionPerformed(ActionEvent e){
+			treeViewer.clearCollapsedNodes();
+		}
+	};
 
 	private ToolbarAction rerootAction;
 	private AbstractAction clearRootingAction = new AbstractAction(CLEAR_ROOTING) {
-				public void actionPerformed(ActionEvent e){
-					//treeViewer.clearRooting();
-				}
-			};
+		public void actionPerformed(ActionEvent e){
+			treeViewer.clearRooting();
+		}
+	};
 
 	private ToolbarAction rotateAction;
 	private AbstractAction clearRotationsAction = new AbstractAction(CLEAR_ROTATIONS) {
-				public void actionPerformed(ActionEvent e){
-					//treeViewer.clearRotations();
-				}
-			};
+		public void actionPerformed(ActionEvent e){
+			treeViewer.clearRotations();
+		}
+	};
 
 	private ToolbarAction annotateAction;
 
-	private AbstractAction annotateFromTipsAction = new AbstractAction(ANNOTATE_FROM_TIPS) {
+	private AbstractAction annotateNodesFromTipsAction = new AbstractAction(ANNOTATE_NODES_FROM_TIPS) {
 		public void actionPerformed(ActionEvent ae) {
-			annotateFromTips();
+			annotateNodesFromTips();
+		}
+	};
+
+	private AbstractAction annotateTipsFromNodesAction = new AbstractAction(ANNOTATE_TIPS_FROM_NODES) {
+		public void actionPerformed(ActionEvent ae) {
+			annotateTipsFromNodes();
 		}
 	};
 
 	private AbstractAction clearAnnotationsAction = new AbstractAction(CLEAR_ANNOTATIONS) {
 		public void actionPerformed(ActionEvent ae) {
-			// treeViewer.clearAnnotations();
+			// treeViewer.clearAnnotation();
 		}
 	};
 
@@ -1266,7 +1313,7 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 	private ToolbarAction colourAction;
 	private AbstractAction clearColouringAction = new AbstractAction(CLEAR_COLOURING) {
 		public void actionPerformed(ActionEvent ae) {
-			// treeViewer.clearColouring();
+			treeViewer.clearColouring();
 		}
 	};
 
@@ -1275,5 +1322,5 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 	private FindDialog findDialog = null;
 	private AnnotationDefinitionsDialog annotationDefinitionsDialog = null;
 	private AnnotationDialog annotationDialog = null;
-	private AnnotatedFromTipsDialog annotatedFromTipsDialog = null;
+	private SelectAnnotationDialog selectAnnotationDialog = null;
 }

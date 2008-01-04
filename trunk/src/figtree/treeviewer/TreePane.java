@@ -179,6 +179,20 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
 	}
 
+	public void clearRotation(Node node) {
+		if (node != null) {
+			Boolean rotate = (Boolean)node.getAttribute("!rotate");
+			if (rotate != null) {
+				node.removeAttribute("!rotate");
+			}
+
+			calibrated = false;
+			invalidate();
+			repaint();
+		}
+
+	}
+
 	public void setBranchDecorator(Decorator branchDecorator) {
 		this.branchDecorator = branchDecorator;
 		repaint();
@@ -566,6 +580,30 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		}
 	}
 
+	public void clearCollapsedNodes() {
+		clearSelectedCollapsedNodes(tree.getRootNode());
+	}
+
+	private void clearSelectedCollapsedNodes(Node node) {
+
+		if (!tree.isExternal(node)) {
+			if (selectedNodes.contains(node)) {
+				if (node.getAttribute(COLLAPSE_ATTRIBUTE_NAME) != null) {
+					node.removeAttribute(COLLAPSE_ATTRIBUTE_NAME);
+				}
+				if (node.getAttribute(CARTOON_ATTRIBUTE_NAME) != null) {
+					node.removeAttribute(CARTOON_ATTRIBUTE_NAME);
+				}
+				calibrated = false;
+				repaint();
+			} else {
+				for (Node child : tree.getChildren(node)) {
+					clearSelectedCollapsedNodes(child);
+				}
+			}
+		}
+	}
+
 	public void rerootOnSelectedBranch() {
 
 		for (Node selectedNode : selectedNodes) {
@@ -577,9 +615,24 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		repaint();
 	}
 
+	public void clearRooting() {
+		rootingNode = null;
+
+		setupTree();
+
+		fireSettingsChanged();
+	}
+
 	public void rotateSelectedNode() {
 		for (Node selectedNode : selectedNodes) {
 			rotateNode(selectedNode);
+		}
+		repaint();
+	}
+
+	public void clearSelectedNodeRotations() {
+		for (Node selectedNode : selectedNodes) {
+			clearRotation(selectedNode);
 		}
 		repaint();
 	}
@@ -595,6 +648,21 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		for (Node selectedTip : selectedTips) {
 			Taxon selectedTaxon = tree.getTaxon(selectedTip);
 			selectedTaxon.setAttribute(name, value);
+		}
+		repaint();
+	}
+
+	public void clearSelectedNodeAnnotation(String name) {
+		for (Node selectedNode : selectedNodes) {
+			selectedNode.removeAttribute(name);
+		}
+		repaint();
+	}
+
+	public void clearSelectedTipAnnotation(String name) {
+		for (Node selectedTip : selectedTips) {
+			Taxon selectedTaxon = tree.getTaxon(selectedTip);
+			selectedTaxon.removeAttribute(name);
 		}
 		repaint();
 	}
@@ -852,18 +920,18 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		Paint oldPaint = g2.getPaint();
 		Stroke oldStroke = g2.getStroke();
 
-		if (isCrosshairShown && cursorPosition != null && dragRectangle == null) {
-			g2.setPaint(cursorPaint);
-			g2.setStroke(cursorStroke);
-			double x = Math.max(treeBounds.getX(),
-					Math.min(cursorPosition.getX(), treeBounds.getX() + treeBounds.getWidth()));
-			double y = Math.max(treeBounds.getY(),
-					Math.min(cursorPosition.getY(), treeBounds.getY() + treeBounds.getHeight()));
-
-			g2.draw(new Line2D.Double(0.0, y, getWidth(), y));
-			g2.draw(new Line2D.Double(x, 0.0, x, getHeight()));
-
-		}
+//		if (isCrosshairShown && cursorPosition != null && dragRectangle == null) {
+//			g2.setPaint(cursorPaint);
+//			g2.setStroke(cursorStroke);
+//			double x = Math.max(treeBounds.getX(),
+//					Math.min(cursorPosition.getX(), treeBounds.getX() + treeBounds.getWidth()));
+//			double y = Math.max(treeBounds.getY(),
+//					Math.min(cursorPosition.getY(), treeBounds.getY() + treeBounds.getHeight()));
+//
+//			g2.draw(new Line2D.Double(0.0, y, getWidth(), y));
+//			g2.draw(new Line2D.Double(x, 0.0, x, getHeight()));
+//
+//		}
 
 		for (Node selectedNode : selectedNodes) {
 			Shape branchPath = treeLayoutCache.getBranchPath(selectedNode);

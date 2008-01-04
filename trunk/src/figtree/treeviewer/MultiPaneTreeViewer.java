@@ -265,86 +265,16 @@ public class MultiPaneTreeViewer extends TreeViewer {
 		return Collections.emptySet();
 	}
 
-	public void selectTaxa(MultiPaneTreeViewer.SearchType searchType, String searchString, boolean caseSensitive) {
-//        treePane.clearSelection();
-//
-//        if (searchType == MultiPaneTreeViewer.SearchType.MATCHES && !caseSensitive) {
-//            throw new IllegalArgumentException("Regular expression matching cannot be case-insensitive");
-//        }
-//
-//        String query = (caseSensitive ? searchString : searchString.toUpperCase());
-//
-//        Tree tree = treePane.getTree();
-//
-//        for (Node node : tree.getExternalNodes()) {
-//            Taxon taxon = tree.getTaxon(node);
-//            String target = (caseSensitive ? taxon.getName() : taxon.getName().toUpperCase());
-//            switch (searchType) {
-//                case CONTAINS:
-//                    if (target.contains(query)) {
-//                        treePane.addSelectedTip(node);
-//                    }
-//                    break;
-//                case STARTS_WITH:
-//                    if (target.startsWith(query)) {
-//                        treePane.addSelectedTip(node);
-//                    }
-//                    break;
-//                case ENDS_WITH:
-//                    if (target.endsWith(query)) {
-//                        treePane.addSelectedTip(node);
-//                    }
-//                    break;
-//                case MATCHES:
-//                    if (target.matches(query)) {
-//                        treePane.addSelectedTip(node);
-//                    }
-//                    break;
-//            }
-//        }
+	public void selectTaxa(String attributeName, TextSearchType searchType, String searchString, boolean caseSensitive) {
 	}
 
-	public void selectNodes(String attribute, MultiPaneTreeViewer.SearchType searchType, String searchString, boolean caseSensitive) {
-//        treePane.clearSelection();
-//
-//        if (searchType == MultiPaneTreeViewer.SearchType.MATCHES && !caseSensitive) {
-//            throw new IllegalArgumentException("Regular expression matching cannot be case-insensitive");
-//        }
-//
-//        String query = (caseSensitive ? searchString : searchString.toUpperCase());
-//
-//        Tree tree = treePane.getTree();
-//
-//        for (Node node : tree.getNodes()) {
-//            Object value = node.getAttribute(attribute);
-//
-//            if (value != null) {
-//                String target = (caseSensitive ?
-//                        value.toString() : value.toString().toUpperCase());
-//                switch (searchType) {
-//                    case CONTAINS:
-//                        if (target.contains(query)) {
-//                            treePane.addSelectedNode(node);
-//                        }
-//                        break;
-//                    case STARTS_WITH:
-//                        if (target.startsWith(query)) {
-//                            treePane.addSelectedNode(node);
-//                        }
-//                        break;
-//                    case ENDS_WITH:
-//                        if (target.endsWith(query)) {
-//                            treePane.addSelectedNode(node);
-//                        }
-//                        break;
-//                    case MATCHES:
-//                        if (target.matches(query)) {
-//                            treePane.addSelectedNode(node);
-//                        }
-//                        break;
-//                }
-//            }
-//        }
+	public void selectNodes(String attribute, TextSearchType searchType, String searchString, boolean caseSensitive) {
+	}
+
+	public void selectTaxa(String attributeName, NumberSearchType searchType, Number searchValue) {
+	}
+
+	public void selectNodes(String attributeName, NumberSearchType searchType, Number searchValue) {
 	}
 
 	public void collapseSelectedNodes() {

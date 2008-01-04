@@ -53,9 +53,13 @@ public abstract class TreeViewer extends JPanel implements Printable {
 
 	public abstract Set<Node> getSelectedTips();
 
-    public abstract void selectTaxa(SearchType searchType, String searchString, boolean caseSensitive);
+    public abstract void selectTaxa(String attributeName, TextSearchType searchType, String searchString, boolean caseSensitive);
 
-	public abstract void selectNodes(String attribute, SearchType searchType, String searchString, boolean caseSensitive);
+	public abstract void selectNodes(String attributeName, TextSearchType searchType, String searchString, boolean caseSensitive);
+
+	public abstract void selectTaxa(String attributeName, NumberSearchType searchType, Number searchValue);
+
+	public abstract void selectNodes(String attributeName, NumberSearchType searchType, Number searchValue);
 
 	public abstract void collapseSelectedNodes();
 
@@ -134,14 +138,33 @@ public abstract class TreeViewer extends JPanel implements Printable {
 	public abstract void removeTreeViewerListener(TreeViewerListener listener);
 
 
-	public enum SearchType {
-	    CONTAINS("Contains"),
-	    STARTS_WITH("Starts with"),
-	    ENDS_WITH("Ends with"),
-	    MATCHES("Matches"),
-		REG_EX("Regular Expression");
+	public enum TextSearchType {
+	    CONTAINS("contains"),
+	    STARTS_WITH("starts with"),
+	    ENDS_WITH("ends with"),
+	    MATCHES("matches"),
+		REG_EX("regular Expression");
 
-	    SearchType(String name) {
+	    TextSearchType(String name) {
+	        this.name = name;
+	    }
+
+	    public String toString() {
+	        return name;
+	    }
+
+	    private final String name;
+	}
+
+	public enum NumberSearchType {
+	    EQUALS("equals"),
+		NOT_EQUALS("doesn't equals"),
+	    GREATER_THAN("greater than"),
+		EQUALS_OR_GREATER_THAN("equals or greater than"),
+	    LESS_THAN("less than"),
+		EQUALS_OR_LESS_THAN("equals or less than");
+
+	    NumberSearchType(String name) {
 	        this.name = name;
 	    }
 

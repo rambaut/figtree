@@ -67,11 +67,14 @@ public class TreeMenuFactory implements MenuFactory {
 	        item = new JMenuItem(((TreeMenuHandler)frame).getAnnotateAction());
 	        menu.add(item);
 
-	        item = new JMenuItem(((TreeMenuHandler)frame).getAnnotateFromTipsAction());
+	        item = new JMenuItem(((TreeMenuHandler)frame).getAnnotateNodesFromTipsAction());
 	        menu.add(item);
 
-	        item = new JMenuItem(((TreeMenuHandler)frame).getClearAnnotationsAction());
+	        item = new JMenuItem(((TreeMenuHandler)frame).getAnnotateTipsFromNodesAction());
 	        menu.add(item);
+
+//	        item = new JMenuItem(((TreeMenuHandler)frame).getClearAnnotationsAction());
+//	        menu.add(item);
 
 	        menu.addSeparator();
 
@@ -137,13 +140,17 @@ public class TreeMenuFactory implements MenuFactory {
 	        item.setEnabled(false);
 	        menu.add(item);
 
-	        item = new JMenuItem(TreeMenuHandler.ANNOTATE_FROM_TIPS);
+	        item = new JMenuItem(TreeMenuHandler.ANNOTATE_NODES_FROM_TIPS);
 	        item.setEnabled(false);
 	        menu.add(item);
 
-	        item = new JMenuItem(TreeMenuHandler.CLEAR_ANNOTATIONS);
+	        item = new JMenuItem(TreeMenuHandler.ANNOTATE_TIPS_FROM_NODES);
 	        item.setEnabled(false);
 	        menu.add(item);
+
+//	        item = new JMenuItem(TreeMenuHandler.CLEAR_ANNOTATIONS);
+//	        item.setEnabled(false);
+//	        menu.add(item);
 
 	        menu.addSeparator();
 
