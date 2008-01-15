@@ -299,10 +299,7 @@ public class DefaultTreeViewer extends TreeViewer {
 	private boolean matchesItem(TextSearchType searchType, Object object, String query, boolean caseSensitive) {
 
 		if (object != null) {
-			String target = object.toString();
-			if (caseSensitive) {
-				target = target.toUpperCase();
-			}
+			String target = (caseSensitive ? object.toString() : object.toString().toUpperCase());
 			switch (searchType) {
 				case CONTAINS:
 					if (target.contains(query)) {
