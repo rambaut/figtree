@@ -21,8 +21,11 @@ public class ControllerPanel extends OptionsPanel {
 
 	protected void adjustComponent(JComponent comp) {
 		comp.putClientProperty("Quaqua.Component.visualMargin", new Insets(0,0,0,0));
-		comp.setFont(UIManager.getFont("SmallSystemFont"));
-		comp.putClientProperty("JComponent.sizeVariant", "small");
+        Font font = UIManager.getFont("SmallSystemFont");
+        if (font != null) {
+            comp.setFont(font);
+        }
+        comp.putClientProperty("JComponent.sizeVariant", "small");
 		if (comp instanceof JButton) {
 			comp.putClientProperty("JButton.buttonType", "roundRect");
 		}
