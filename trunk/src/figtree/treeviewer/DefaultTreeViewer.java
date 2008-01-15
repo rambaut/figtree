@@ -337,11 +337,19 @@ public class DefaultTreeViewer extends TreeViewer {
 	public void selectTaxa(String attributeName, NumberSearchType searchType, Number searchValue) {
 		treePane.clearSelection();
 
-		Tree tree = treePane.getTree();
+		RootedTree tree = treePane.getTree();
 
 		for (Node node : tree.getExternalNodes()) {
-			Taxon taxon = tree.getTaxon(node);
-			if (matchesItem(taxon, attributeName, searchType, searchValue)) {
+			Object value = null;
+			if (attributeName.equals("!length")) {
+				value = tree.getLength(node);
+			} else if (attributeName.equals("!height")) {
+				value = tree.getHeight(node);
+			} else {
+				Taxon taxon = tree.getTaxon(node);
+				value = taxon.getAttribute(attributeName);
+			}
+			if (matchesItem(value, searchType, searchValue)) {
 				treePane.addSelectedTip(node);
 			}
 		}
@@ -350,30 +358,27 @@ public class DefaultTreeViewer extends TreeViewer {
 	public void selectNodes(String attributeName, NumberSearchType searchType, Number searchValue) {
 		treePane.clearSelection();
 
-		Tree tree = treePane.getTree();
+		RootedTree tree = treePane.getTree();
 
 		for (Node node : tree.getNodes()) {
-			if (attributeName == null) {
-				for (String name : node.getAttributeNames()) {
-					if (matchesItem(node, name, searchType, searchValue)) {
-						treePane.addSelectedNode(node);
-						break;
-					}
-				}
+			Object value = null;
+			if (attributeName.equals("!length")) {
+				value = tree.getLength(node);
+			} else if (attributeName.equals("!height")) {
+				value = tree.getHeight(node);
 			} else {
-				if (matchesItem(node, attributeName, searchType, searchValue)) {
-					treePane.addSelectedNode(node);
-				}
+				value = node.getAttribute(attributeName);
+			}
+			if (matchesItem(value, searchType, searchValue)) {
+				treePane.addSelectedNode(node);
 			}
 		}
 	}
 
-	private boolean matchesItem(Attributable item, String attributeName, NumberSearchType searchType, Number searchValue) {
-		Object o = item.getAttribute(attributeName);
+	private boolean matchesItem(Object item, NumberSearchType searchType, Number searchValue) {
+		if (item != null && item instanceof Number) {
 
-		if (o != null && o instanceof Number) {
-
-			Number value = (Number)o;
+			Number value = (Number)item;
 
 			switch (searchType) {
 				case EQUALS:
@@ -387,22 +392,22 @@ public class DefaultTreeViewer extends TreeViewer {
 					}
 					break;
 				case EQUALS_OR_LESS_THAN:
-					if (searchValue.equals(value)) {
+					if (value.doubleValue() <= searchValue.doubleValue()) {
 						return true;
 					}
 					break;
 				case GREATER_THAN:
-					if (searchValue.equals(value)) {
+					if (value.doubleValue() > searchValue.doubleValue()) {
 						return true;
 					}
 					break;
 				case LESS_THAN:
-					if (searchValue.equals(value)) {
+					if (value.doubleValue() < searchValue.doubleValue()) {
 						return true;
 					}
 					break;
 				case NOT_EQUALS:
-					if (searchValue.equals(value)) {
+					if (!searchValue.equals(value)) {
 						return true;
 					}
 					break;

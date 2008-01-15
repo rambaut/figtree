@@ -1020,14 +1020,9 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 
 
 	public void doCopy() {
-		List<Tree> trees = treeViewer.getTrees();
-
-//	    Map<String, Object> settings = new TreeMap<String, Object>();
-//	    controlPalette.getSettings(settings);
-
 		StringWriter writer = new StringWriter();
 		try {
-			writeTreeFile(writer, TreeFileFormat.NEWICK, false);
+			writeTreeFile(writer, TreeFileFormat.NEXUS, false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -1128,28 +1123,39 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 
 		List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
 		if (findDialog.showDialog(definitions) != JOptionPane.CANCEL_OPTION) {
-			String target = findDialog.getSearchTarget();
+			FindDialog.Target target = findDialog.getSearchTarget();
+			String targetString = findDialog.getSearchTargetString();
+
 			if (findDialog.isNumericSearchType()) {
 				TreeViewer.NumberSearchType searchType = findDialog.getNumberSearchType();
 				Number searchValue = findDialog.getSearchValue();
-				if (target.equals(FindDialog.TAXON_LABEL)) {
-					treeViewer.selectTaxa("!name", searchType, searchValue);
-				} else if (target.equals(FindDialog.ANY_ANNOTATION)) {
-					treeViewer.selectNodes(null, searchType, searchValue);
+				if (target == FindDialog.Target.TAXON_LABEL) {
+					throw new IllegalArgumentException("Can't do numeric search on taxon labels");
+				} else if (target == FindDialog.Target.BRANCH_LENGTH) {
+					treeViewer.selectNodes("!length", searchType, searchValue);
+				} else if (target == FindDialog.Target.NODE_AGE) {
+					treeViewer.selectNodes("!height", searchType, searchValue);
+				} else if (target == FindDialog.Target.ANY_ANNOTATION) {
+					throw new IllegalArgumentException("Can't do numeric search on all annotations");
 				} else {
-					treeViewer.selectNodes(target, searchType, searchValue);
+					treeViewer.selectNodes(targetString, searchType, searchValue);
 				}
 
 			} else {
 				TreeViewer.TextSearchType searchType = findDialog.getTextSearchType();
 				String searchText = findDialog.getSearchText();
 				boolean caseSensitive = findDialog.isCaseSensitive();
-				if (target.equals(FindDialog.TAXON_LABEL)) {
+
+				if (target == FindDialog.Target.TAXON_LABEL) {
 					treeViewer.selectTaxa("!name", searchType, searchText, caseSensitive);
-				} else if (target.equals(FindDialog.ANY_ANNOTATION)) {
+				} else if (target == FindDialog.Target.BRANCH_LENGTH) {
+					throw new IllegalArgumentException("Can't do text search on branch lengths");
+				} else if (target == FindDialog.Target.NODE_AGE) {
+					throw new IllegalArgumentException("Can't do text search on node ages");
+				} else if (target == FindDialog.Target.ANY_ANNOTATION) {
 					treeViewer.selectNodes(null, searchType, searchText, caseSensitive);
 				} else {
-					treeViewer.selectNodes(target, searchType, searchText, caseSensitive);
+					treeViewer.selectNodes(targetString, searchType, searchText, caseSensitive);
 				}
 			}
 		}
