@@ -23,11 +23,27 @@ import java.util.List;
  * @version			$Id: FindDialog.java,v 1.8 2006/11/21 11:11:23 rambaut Exp $
  */
 public class FindDialog {
-	public final static String TAXON_LABEL = "Taxon Label";
-	public final static String ANY_ANNOTATION = "Any Annotation";
+
+	public enum Target {
+		TAXON_LABEL("Taxon Label"),
+		BRANCH_LENGTH("Branch Length"),
+		NODE_AGE("Node Age"),
+		ANY_ANNOTATION("Any Annotation"),
+		ANNOTATION("Annotation");
+
+		Target(String name) {
+			this.name = name;
+		}
+
+		public String toString() {
+			return name;
+		}
+
+		private String name;
+	}
 
 	private JFrame frame;
-	private JComboBox targetCombo = new JComboBox(new String[] {TAXON_LABEL, ANY_ANNOTATION});
+	private JComboBox targetCombo = null;
 	private JComboBox textSearchCombo = new JComboBox(DefaultTreeViewer.TextSearchType.values());
 	private JComboBox numberSearchCombo = new JComboBox(DefaultTreeViewer.NumberSearchType.values());
 
@@ -39,6 +55,8 @@ public class FindDialog {
 
 	private JCheckBox caseSensitiveCheck = new JCheckBox("Case sensitive");
 	private JCheckBox findAllCheck = new JCheckBox("Find all");
+
+	private int selectedTargetIndex = 0;
 
 	public FindDialog(JFrame frame) {
 		this.frame = frame;
@@ -52,7 +70,11 @@ public class FindDialog {
 		searchText.setColumns(18);
 
 		final JPanel panel = new JPanel(new BorderLayout(6,6));
-		targetCombo = new JComboBox(new String[] {TAXON_LABEL, ANY_ANNOTATION});
+		targetCombo = new JComboBox();
+		targetCombo.addItem(Target.TAXON_LABEL);
+		targetCombo.addItem(Target.BRANCH_LENGTH);
+		targetCombo.addItem(Target.NODE_AGE);
+		targetCombo.addItem(Target.ANY_ANNOTATION);
 		for (AnnotationDefinition annotation : annotations) {
 			targetCombo.addItem(annotation);
 		}
@@ -79,7 +101,10 @@ public class FindDialog {
 		targetCombo.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Object item = targetCombo.getSelectedItem();
-				if (item instanceof AnnotationDefinition) {
+
+				if (item.equals(Target.BRANCH_LENGTH) || item.equals(Target.NODE_AGE)) {
+					type = AnnotationDefinition.Type.REAL;
+				} else if (item instanceof AnnotationDefinition) {
 					type = ((AnnotationDefinition) item).getType();
 				} else {
 					type = AnnotationDefinition.Type.STRING;
@@ -97,7 +122,7 @@ public class FindDialog {
 					case REAL:
 						panel.add(numberSearchCombo, BorderLayout.CENTER);
 						panel.add(doubleText, BorderLayout.EAST);
-						doubleText.setColumns(10); 
+						doubleText.setColumns(10);
 						caseSensitiveCheck.setEnabled(false);
 						break;
 					default:
@@ -108,6 +133,8 @@ public class FindDialog {
 				dialog.pack();
 			}
 		});
+
+		targetCombo.setSelectedIndex(selectedTargetIndex);
 
 		dialog.setVisible(true);
 
@@ -124,7 +151,18 @@ public class FindDialog {
 		return result;
 	}
 
-	public String getSearchTarget() {
+	public Target getSearchTarget() {
+		// store this for next time the dialog is shown...
+		selectedTargetIndex = targetCombo.getSelectedIndex();
+
+		Object item = targetCombo.getSelectedItem();
+		if (item instanceof Target) {
+			return (Target)item;
+		}
+		return Target.ANNOTATION;
+	}
+
+	public String getSearchTargetString() {
 		return targetCombo.getSelectedItem().toString();
 	}
 

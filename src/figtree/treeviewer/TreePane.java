@@ -912,6 +912,10 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 	public void paint(Graphics graphics) {
 		if (tree == null) return;
 
+		graphics.setColor(Color.white);
+		Rectangle r = graphics.getClipBounds();
+		graphics.fillRect(r.x,  r.y, r.width, r.height);
+
 		final Graphics2D g2 = (Graphics2D) graphics;
 		if (!calibrated) {
 			calibrate(g2, getWidth(), getHeight());
