@@ -27,6 +27,7 @@ import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.util.*;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * @author Andrew Rambaut
@@ -322,8 +323,12 @@ public class DefaultTreeViewer extends TreeViewer {
 					}
 					break;
 				case REG_EX:
-					if (target.matches(query)) {
-						return true;
+					try {
+						if (target.matches(query)) {
+							return true;
+						}
+					} catch (PatternSyntaxException pse) {
+						// ignore
 					}
 					break;
 			}
@@ -339,7 +344,7 @@ public class DefaultTreeViewer extends TreeViewer {
 		for (Node node : tree.getExternalNodes()) {
 			Object value = null;
 			if (attributeName.equals("!length")) {
-				value = tree.getLength(node);
+					value = tree.getLength(node);
 			} else if (attributeName.equals("!height")) {
 				value = tree.getHeight(node);
 			} else {

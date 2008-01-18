@@ -18,9 +18,11 @@ import org.virion.jam.toolbar.*;
 import org.virion.jam.util.IconUtils;
 import figtree.application.menus.TreeMenuHandler;
 import figtree.treeviewer.*;
+import figtree.treeviewer.TreeSelectionListener;
 import figtree.treeviewer.annotations.*;
 
 import javax.swing.*;
+import javax.swing.event.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
@@ -316,8 +318,17 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		toolBar.addFlexibleSpace();
 
 		filterPopup = new JPopupMenu();
+
+		final ButtonGroup bg = new ButtonGroup();
+		boolean first = true;
 		for (TreeViewer.TextSearchType searchType : TreeViewer.TextSearchType.values()) {
-			filterPopup.add(searchType.toString());
+			final JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(searchType.toString());
+			if (first) {
+				menuItem.setSelected(true);
+				first = false;
+			}
+			filterPopup.add(menuItem);
+			bg.add(menuItem);
 		}
 		filterPanel = new SearchPanel("Filter", filterPopup, true);
 
@@ -332,10 +343,20 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 			 * @param searchString the user's search string
 			 */
 			public void searchStarted(String searchString) {
-				int index = filterPopup.getSelectionModel().getSelectedIndex();
-				if (index == -1) index = 0;
-				TreeViewer.TextSearchType searchType = TreeViewer.TextSearchType.values()[index];
-				treeViewer.selectTaxa("!name", searchType, searchString, false);
+				Enumeration e = bg.getElements();
+				String value = null;
+				while (e.hasMoreElements()) {
+					AbstractButton button = (AbstractButton)e.nextElement();
+					if (button.isSelected()) {
+						value = button.getText();
+					}
+				}
+
+				for (TreeViewer.TextSearchType searchType : TreeViewer.TextSearchType.values()) {
+					if (searchType.toString().equals(value)) {
+						treeViewer.selectTaxa("!name", searchType, searchString, false);
+					}
+				}
 			}
 
 			/**
