@@ -12,6 +12,7 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.ActionEvent;
 import java.util.*;
 import java.util.prefs.Preferences;
 
@@ -43,7 +44,7 @@ public class TreeAppearanceController extends AbstractController {
     private static Color DEFAULT_SELECTION_COLOUR = new Color(180, 213, 254);
     private static float DEFAULT_BRANCH_LINE_WIDTH = 1.0f;
 
-    public TreeAppearanceController(final TreeViewer treeViewer) {
+    public TreeAppearanceController(final TreeViewer treeViewer, final JFrame frame) {
         this.treeViewer = treeViewer;
 
         userBranchColourDecorator = new AttributableDecorator();
@@ -79,8 +80,17 @@ public class TreeAppearanceController extends AbstractController {
 	    branchColourAttributeCombo = new JComboBox(new String[] { "No attributes" });
 	    setupAttributes(treeViewer.getTrees());
 
-	    optionsPanel.addComponentWithLabel("Colour by:", branchColourAttributeCombo);
-	    optionsPanel.addSeparator();
+        JButton setupButton = new JButton(new AbstractAction("Setup") {
+            public void actionPerformed(ActionEvent e) {
+                if (colourScaleDialog == null) {
+                    colourScaleDialog = new ColourScaleDialog(frame);
+                }
+                int result = colourScaleDialog.showDialog();
+            }
+        });
+        optionsPanel.addComponentWithLabel("Colour by:", branchColourAttributeCombo);
+        optionsPanel.addComponent(setupButton);
+        optionsPanel.addSeparator();
 	    optionsPanel.addComponentWithLabel("Width by:", branchWidthAttributeCombo);
 
 
@@ -135,7 +145,7 @@ public class TreeAppearanceController extends AbstractController {
 			        treeViewer.setBranchColouringDecorator(null, null);
 
 		            compoundDecorator.addDecorator(new ContinuousGradientColorDecorator(
-		                    new ContinousScale(attribute, nodes, false, false),
+		                    new ContinousScale(attribute, nodes, true, false),
 		                    new Color(192, 16, 0), new Color(0, 16, 192))
 			        );
 
@@ -305,4 +315,6 @@ public class TreeAppearanceController extends AbstractController {
 	private final JComboBox branchWidthAttributeCombo;
 
     private final TreeViewer treeViewer;
+
+    private ColourScaleDialog colourScaleDialog = null;
 }
