@@ -59,10 +59,12 @@ public class NodeBarController extends AbstractController {
             }
 
             public void painterSettingsChanged() {
+                Object item = displayAttributeCombo.getSelectedItem();
                 displayAttributeCombo.removeAllItems();
                 for (String name : nodeBarPainter.getAttributeNames()) {
                     displayAttributeCombo.addItem(name);
                 }
+                displayAttributeCombo.setSelectedItem(item);
 
                 optionsPanel.repaint();
             }
