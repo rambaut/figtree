@@ -12,7 +12,6 @@ import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.prefs.Preferences;
 
 import figtree.treeviewer.ControllerPanel;
@@ -61,6 +60,7 @@ public class LabelPainterController extends AbstractController {
 	    optionsPanel = new ControllerPanel(2, 2);
 
         titleCheckBox = new JCheckBox(getTitle());
+
         titleCheckBox.setSelected(labelPainter.isVisible());
 
         String[] attributes = labelPainter.getAttributes();
@@ -90,20 +90,23 @@ public class LabelPainterController extends AbstractController {
         NumberFormat format = labelPainter.getNumberFormat();
         int digits = format.getMaximumFractionDigits();
 
-        numericalFormatCombo = new JComboBox(new String[] { "Decimal", "Scientific"});
+        numericalFormatCombo = new JComboBox(new String[] { "Decimal", "Scientific", "Percent", "Roman"});
         numericalFormatCombo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
                 String formatType = (String)numericalFormatCombo.getSelectedItem();
                 final int digits = (Integer)digitsSpinner.getValue();
+                NumberFormat format = null;
                 if (formatType.equals("Decimal")) {
-                    NumberFormat format = new DecimalFormat(DECIMAL_NUMBER_FORMATTING);
-                    format.setMaximumFractionDigits(digits);
-                    labelPainter.setNumberFormat(format);
+                    format = new DecimalFormat(DECIMAL_NUMBER_FORMATTING);
                 } else if (formatType.equals("Scientific")) {
-                    NumberFormat format = new DecimalFormat(SCIENTIFIC_NUMBER_FORMATTING);
-                    format.setMaximumFractionDigits(digits);
-                    labelPainter.setNumberFormat(format);
+                    format = new DecimalFormat(SCIENTIFIC_NUMBER_FORMATTING);
+                }  else if (formatType.equals("Percent")) {
+                    format = new PercentFormat();
+                } else if (formatType.equals("Roman")) {
+                    format = new Roman();
                 }
+                format.setMaximumFractionDigits(digits);
+                labelPainter.setNumberFormat(format);
             }
         });
 
@@ -128,10 +131,12 @@ public class LabelPainterController extends AbstractController {
             }
 
             public void painterSettingsChanged() {
+                Object item = displayAttributeCombo.getSelectedItem();
                 displayAttributeCombo.removeAllItems();
                 for (String name : labelPainter.getAttributes()) {
                     displayAttributeCombo.addItem(name);
                 }
+                displayAttributeCombo.setSelectedItem(item);
 
                 optionsPanel.repaint();
             }

@@ -91,12 +91,17 @@ public class NodeShapeController extends AbstractController {
             }
 
             public void painterSettingsChanged() {
+                Object item1 = displayLowerAttributeCombo.getSelectedItem();
+                Object item2 = displayUpperAttributeCombo.getSelectedItem();
                 displayLowerAttributeCombo.removeAllItems();
                 displayUpperAttributeCombo.removeAllItems();
                 for (String name : nodeShapePainter.getAttributeNames()) {
                     displayLowerAttributeCombo.addItem(name);
                     displayUpperAttributeCombo.addItem(name);
                 }
+
+                displayLowerAttributeCombo.setSelectedItem(item1);
+                displayUpperAttributeCombo.setSelectedItem(item2);
 
                 optionsPanel.repaint();
             }
