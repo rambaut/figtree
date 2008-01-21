@@ -68,7 +68,7 @@ public class FigTreeApplication extends MultiDocApplication {
 
 			ExtendedTreeViewer treeViewer = new ExtendedTreeViewer();
 			ControlPalette controlPalette = new BasicControlPalette(200, BasicControlPalette.DisplayMode.ONLY_ONE_OPEN);
-			FigTreePanel figTreePanel = new FigTreePanel(treeViewer, controlPalette);
+			FigTreePanel figTreePanel = new FigTreePanel(null, treeViewer, controlPalette);
 
 			// First of all, fully populate the settings map so that
 			// all the settings have defaults

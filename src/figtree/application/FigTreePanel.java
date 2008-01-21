@@ -17,7 +17,7 @@ import java.awt.*;
  */
 public class FigTreePanel extends JPanel {
 
-	public FigTreePanel(final ExtendedTreeViewer treeViewer, ControlPalette controlPalette) {
+	public FigTreePanel(JFrame frame, final ExtendedTreeViewer treeViewer, ControlPalette controlPalette) {
 
 		this.treeViewer = treeViewer;
 		this.controlPalette = controlPalette;
@@ -31,7 +31,7 @@ public class FigTreePanel extends JPanel {
 
 		controlPalette.addController(new MultipleTreesController(treeViewer));
 
-		controlPalette.addController(new TreeAppearanceController(treeViewer));
+		controlPalette.addController(new TreeAppearanceController(treeViewer, frame));
 
 		controlPalette.addController(new TreesController(treeViewer));
 

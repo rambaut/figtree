@@ -27,7 +27,7 @@ import figtree.treeviewer.painters.BasicLabelPainter;
  */
 public class TreeViewerPanel extends JPanel {
 
-    public TreeViewerPanel(TreeViewer treeViewer, ControlPalette controlPalette) {
+    public TreeViewerPanel(JFrame frame, TreeViewer treeViewer, ControlPalette controlPalette) {
 
         this.treeViewer = treeViewer;
         this.controlPalette = controlPalette;
@@ -38,7 +38,7 @@ public class TreeViewerPanel extends JPanel {
 
         controlPalette.addController(new TreeViewerController(treeViewer));
 
-        controlPalette.addController(new TreeAppearanceController(treeViewer));
+        controlPalette.addController(new TreeAppearanceController(treeViewer, frame));
 
         controlPalette.addController(new TreesController(treeViewer));
 
@@ -94,7 +94,7 @@ public class TreeViewerPanel extends JPanel {
         TreeViewer treeViewer = new DefaultTreeViewer();
         ControlPalette controlPalette = new BasicControlPalette(200, BasicControlPalette.DisplayMode.ONLY_ONE_OPEN);
 
-        frame.getContentPane().add(new TreeViewerPanel(treeViewer, controlPalette), BorderLayout.CENTER);
+        frame.getContentPane().add(new TreeViewerPanel(frame, treeViewer, controlPalette), BorderLayout.CENTER);
 
         try {
             File inputFile = null;

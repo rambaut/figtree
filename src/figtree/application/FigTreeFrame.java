@@ -62,7 +62,7 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		treeViewer = new ExtendedTreeViewer();
 		controlPalette = new BasicControlPalette(200, BasicControlPalette.DisplayMode.ONLY_ONE_OPEN);
 
-		figTreePanel = new FigTreePanel(treeViewer, controlPalette);
+		figTreePanel = new FigTreePanel(this, treeViewer, controlPalette);
 	}
 
 	public void initializeComponents() {
