@@ -25,19 +25,21 @@ public class TreeMenuFactory implements MenuFactory {
 
         if (frame instanceof TreeMenuHandler) {
 	        item = new JMenuItem(((TreeMenuHandler)frame).getNextTreeAction());
-	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT_PARENTHESIS, MenuBarFactory.MENU_MASK));
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, MenuBarFactory.MENU_MASK));
 	        menu.add(item);
 
 	        item = new JMenuItem(((TreeMenuHandler)frame).getPreviousTreeAction());
-	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT_PARENTHESIS, MenuBarFactory.MENU_MASK));
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, MenuBarFactory.MENU_MASK));
 	        menu.add(item);
 
 	        menu.addSeparator();
 
             item = new JMenuItem(((TreeMenuHandler)frame).getCartoonAction());
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, MenuBarFactory.MENU_MASK));
             menu.add(item);
 
 	        item = new JMenuItem(((TreeMenuHandler)frame).getCollapseAction());
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, MenuBarFactory.MENU_MASK));
 	        menu.add(item);
 
 	        item = new JMenuItem(((TreeMenuHandler)frame).getClearCollapsedAction());
@@ -46,7 +48,12 @@ public class TreeMenuFactory implements MenuFactory {
 	        menu.addSeparator();
 
             item = new JMenuItem(((TreeMenuHandler)frame).getRerootAction());
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, MenuBarFactory.MENU_MASK));
             menu.add(item);
+
+	        item = new JMenuItem(((TreeMenuHandler)frame).getMidpointRootAction());
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, MenuBarFactory.MENU_MASK));
+	        menu.add(item);
 
 	        item = new JMenuItem(((TreeMenuHandler)frame).getClearRootingAction());
 	        menu.add(item);
@@ -54,6 +61,15 @@ public class TreeMenuFactory implements MenuFactory {
 	        menu.addSeparator();
 
 	        item = new JMenuItem(((TreeMenuHandler)frame).getRotateAction());
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, MenuBarFactory.MENU_MASK));
+	        menu.add(item);
+
+	        item = new JMenuItem(((TreeMenuHandler)frame).getIncreasingNodeOrderAction());
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, MenuBarFactory.MENU_MASK));
+	        menu.add(item);
+
+	        item = new JMenuItem(((TreeMenuHandler)frame).getDecreasingNodeOrderAction());
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, MenuBarFactory.MENU_MASK));
 	        menu.add(item);
 
 		    item = new JMenuItem(((TreeMenuHandler)frame).getClearRotationsAction());
@@ -65,6 +81,7 @@ public class TreeMenuFactory implements MenuFactory {
             menu.add(item);
 
 	        item = new JMenuItem(((TreeMenuHandler)frame).getAnnotateAction());
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_QUOTE, MenuBarFactory.MENU_MASK));
 	        menu.add(item);
 
 	        item = new JMenuItem(((TreeMenuHandler)frame).getAnnotateNodesFromTipsAction());
@@ -79,6 +96,7 @@ public class TreeMenuFactory implements MenuFactory {
 	        menu.addSeparator();
 
 	        item = new JMenuItem(((TreeMenuHandler)frame).getColourAction());
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, MenuBarFactory.MENU_MASK));
 	        menu.add(item);
 
 		    item = new JMenuItem(((TreeMenuHandler)frame).getClearColouringAction());
@@ -87,12 +105,12 @@ public class TreeMenuFactory implements MenuFactory {
         } else if (Utils.isMacOSX()) {
 	        // make a false menu (only required for Mac OS X)
 	        item = new JMenuItem(TreeMenuHandler.NEXT_TREE);
-	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT_PARENTHESIS, MenuBarFactory.MENU_MASK));
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, MenuBarFactory.MENU_MASK));
 	        item.setEnabled(false);
 	        menu.add(item);
 
 	        item = new JMenuItem(TreeMenuHandler.PREVIOUS_TREE);
-	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT_PARENTHESIS, MenuBarFactory.MENU_MASK));
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, MenuBarFactory.MENU_MASK));
 	        item.setEnabled(false);
 	        menu.add(item);
 
@@ -100,10 +118,12 @@ public class TreeMenuFactory implements MenuFactory {
 
             item = new JMenuItem(TreeMenuHandler.CARTOON_NODE);
             item.setEnabled(false);
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, MenuBarFactory.MENU_MASK));
             menu.add(item);
 
 	        item = new JMenuItem(TreeMenuHandler.COLLAPSE_NODE);
 	        item.setEnabled(false);
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, MenuBarFactory.MENU_MASK));
 	        menu.add(item);
 
 	        item = new JMenuItem(TreeMenuHandler.CLEAR_COLLAPSED);
@@ -114,7 +134,13 @@ public class TreeMenuFactory implements MenuFactory {
 
             item = new JMenuItem(TreeMenuHandler.ROOT_ON_BRANCH);
             item.setEnabled(false);
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, MenuBarFactory.MENU_MASK));
             menu.add(item);
+
+	        item = new JMenuItem(TreeMenuHandler.MIDPOINT_ROOT);
+	        item.setEnabled(false);
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, MenuBarFactory.MENU_MASK));
+	        menu.add(item);
 
 	        item = new JMenuItem(TreeMenuHandler.CLEAR_ROOTING);
 	        item.setEnabled(false);
@@ -124,6 +150,17 @@ public class TreeMenuFactory implements MenuFactory {
 
 	        item = new JMenuItem(TreeMenuHandler.ROTATE_NODE);
 	        item.setEnabled(false);
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, MenuBarFactory.MENU_MASK));
+	        menu.add(item);
+
+	        item = new JMenuItem(TreeMenuHandler.INCREASING_NODE_ORDER);
+	        item.setEnabled(false);
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, MenuBarFactory.MENU_MASK));
+	        menu.add(item);
+
+	        item = new JMenuItem(TreeMenuHandler.DECREASING_NODE_ORDER);
+	        item.setEnabled(false);
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, MenuBarFactory.MENU_MASK));
 	        menu.add(item);
 
 		    item = new JMenuItem(TreeMenuHandler.CLEAR_ROTATIONS);
@@ -134,6 +171,7 @@ public class TreeMenuFactory implements MenuFactory {
 
             item = new JMenuItem(TreeMenuHandler.DEFINE_ANNOTATIONS);
             item.setEnabled(false);
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_QUOTE, MenuBarFactory.MENU_MASK));
             menu.add(item);
 
 	        item = new JMenuItem(TreeMenuHandler.ANNOTATE);
@@ -156,6 +194,7 @@ public class TreeMenuFactory implements MenuFactory {
 
             item = new JMenuItem(TreeMenuHandler.COLOUR);
             item.setEnabled(false);
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, MenuBarFactory.MENU_MASK));
             menu.add(item);
 
 	        item = new JMenuItem(TreeMenuHandler.CLEAR_COLOURING);

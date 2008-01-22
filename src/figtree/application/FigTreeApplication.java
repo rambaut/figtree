@@ -163,6 +163,7 @@ public class FigTreeApplication extends MultiDocApplication {
 			}
 
 			System.setProperty("apple.laf.useScreenMenuBar","true");
+			System.setProperty("apple.awt.draggableWindowBackground","true");			
 			System.setProperty("apple.awt.showGrowBox","true");
 			System.setProperty("apple.awt.graphics.UseQuartz","true");
 			UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));

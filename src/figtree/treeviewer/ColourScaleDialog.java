@@ -9,18 +9,13 @@
 package figtree.treeviewer;
 
 import org.virion.jam.components.RealNumberField;
-import org.virion.jam.components.WholeNumberField;
+import org.virion.jam.components.ColorWellButton;
 import org.virion.jam.panels.OptionsPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.awt.*;
-import java.util.List;
-
-import jebl.util.Attributable;
-import figtree.treeviewer.annotations.AnnotationDefinition;
 
 /**
  * DemographicDialog.java
@@ -33,121 +28,114 @@ import figtree.treeviewer.annotations.AnnotationDefinition;
  */
 public class ColourScaleDialog {
 
-    private JFrame frame;
-    private OptionsPanel options;
-    private JCheckBox autoScaleCheck;
-    private JLabel fromLabel;
-    private RealNumberField fromNumberField;
-    private JLabel toLabel;
-    private RealNumberField toNumberField;
+	private JFrame frame;
+	private OptionsPanel options;
+	private JCheckBox autoScaleCheck;
+	private JLabel fromLabel;
+	private RealNumberField fromNumberField;
+	private JLabel toLabel;
+	private RealNumberField toNumberField;
 
-    private JColorChooser fromColorChooser;
-    private JColorChooser toColorChooser;
+	private ColorWellButton fromColourButton;
+	private ColorWellButton toColourButton;
 
-    public ColourScaleDialog(JFrame frame) {
-        this.frame = frame;
+	public ColourScaleDialog(final JFrame frame, boolean autoRange, double fromValue, double toValue,
+	                         final Color fromColour, final Color toColour) {
+		this.frame = frame;
 
-    }
+		autoScaleCheck = new JCheckBox("Auto-scale range");
+		autoScaleCheck.setSelected(autoRange);
 
-    public int showDialog() {
+		fromLabel = new JLabel("Range from:");
+		fromNumberField = new RealNumberField();
+		fromNumberField.setColumns(10);
+		fromNumberField.setValue(fromValue);
 
-        options = new OptionsPanel(6, 6);
+		toLabel = new JLabel("to:");
+		toNumberField = new RealNumberField();
+		toNumberField.setColumns(10);
+		toNumberField.setValue(toValue);
 
-        autoScaleCheck = new JCheckBox("Auto-scale range");
-        autoScaleCheck.setSelected(true);
+		fromLabel.setEnabled(false);
+		fromNumberField.setEnabled(false);
+		toLabel.setEnabled(false);
+		toNumberField.setEnabled(false);
 
-        fromLabel = new JLabel("Range from:");
-        fromNumberField = new RealNumberField();
-        fromNumberField.setColumns(10);
+		fromColourButton = new ColorWellButton(fromColour, "Choose Start Colour");
+		toColourButton = new ColorWellButton(toColour, "Choose End Colour");
 
-        toLabel = new JLabel("to:");
-        toNumberField = new RealNumberField();
-        toNumberField.setColumns(10);
+		autoScaleCheck.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				boolean enabled = !autoScaleCheck.isSelected();
+				fromLabel.setEnabled(enabled);
+				fromNumberField.setEnabled(enabled);
+				toLabel.setEnabled(enabled);
+				toNumberField.setEnabled(enabled);
+			}});
+	}
 
-        fromColorChooser = new JColorChooser();
-        toColorChooser = new JColorChooser();
+	public int showDialog() {
 
-        fromLabel.setEnabled(false);
-        fromNumberField.setEnabled(false);
-        toLabel.setEnabled(false);
-        toNumberField.setEnabled(false);
+		options = new OptionsPanel(6, 6);
 
-        setupOptionsPanel();
+		options.addComponent(autoScaleCheck);
 
-        JOptionPane optionPane = new JOptionPane(options,
-                JOptionPane.QUESTION_MESSAGE,
-                JOptionPane.OK_CANCEL_OPTION,
-                null,
-                null,
-                null);
-        optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
+		JPanel panel = new JPanel();
+		panel.setLayout(new FlowLayout());
+		panel.add(fromLabel);
+		panel.add(fromNumberField);
+		panel.add(toLabel);
+		panel.add(toNumberField);
+		options.addComponent(panel);
 
-        final JDialog dialog = optionPane.createDialog(frame, "Setup colour range");
-        dialog.pack();
+		JPanel panel1 = new JPanel();
+		panel1.setLayout(new FlowLayout());
+		panel1.add(new JLabel("Colour gradient from:"));
+		panel1.add(fromColourButton);
+		panel1.add(new JLabel("to:"));
+		panel1.add(toColourButton);
+		options.addComponent(panel1);
 
-        autoScaleCheck.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                boolean enabled = !autoScaleCheck.isSelected();
-                fromLabel.setEnabled(enabled);
-                fromNumberField.setEnabled(enabled);
-                toLabel.setEnabled(enabled);
-                toNumberField.setEnabled(enabled);
-            }});
+		JOptionPane optionPane = new JOptionPane(options,
+				JOptionPane.QUESTION_MESSAGE,
+				JOptionPane.OK_CANCEL_OPTION,
+				null,
+				null,
+				null);
+		optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        dialog.setVisible(true);
+		final JDialog dialog = optionPane.createDialog(frame, "Setup colour range");
+		dialog.pack();
 
-        int result = JOptionPane.CANCEL_OPTION;
-        Integer value = (Integer)optionPane.getValue();
-        if (value != null && value.intValue() != -1) {
-            result = value.intValue();
-        }
+		dialog.setVisible(true);
 
-        return result;
-    }
+		int result = JOptionPane.CANCEL_OPTION;
+		Integer value = (Integer)optionPane.getValue();
+		if (value != null && value.intValue() != -1) {
+			result = value.intValue();
+		}
 
-    private void setupOptionsPanel() {
-        options.removeAll();
+		return result;
+	}
 
-        options.addComponent(autoScaleCheck);
+	public boolean getAutoRange() {
+		return autoScaleCheck.isSelected();
+	}
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout());
-        panel.add(fromLabel);
-        panel.add(fromNumberField);
-        panel.add(toLabel);
-        panel.add(toNumberField);
-        options.addComponent(panel);
+	public Number getFromValue() {
+		return fromNumberField.getValue();
+	}
 
-        JPanel panel1 = new JPanel();
-        panel1.setLayout(new FlowLayout());
-        panel1.add(new JLabel("Colour from:"));
-        panel1.add(fromColorChooser);
-        panel1.add(new JLabel("to:"));
-        panel1.add(toColorChooser);
-        options.addComponent(panel1);
+	public Number getToValue() {
+		return toNumberField.getValue();
+	}
 
+	public Color getFromColour() {
+		return fromColourButton.getSelectedColor();
+	}
 
-    }
-
-    public boolean getAutoRange() {
-        return autoScaleCheck.isSelected();
-    }
-
-    public double getFromValue() {
-        return fromNumberField.getValue();
-    }
-
-    public double getToValue() {
-        return toNumberField.getValue();
-    }
-
-    public Color getFromColor() {
-        return fromColorChooser.getColor();
-    }
-
-    public Color getToColor() {
-        return toColorChooser.getColor();
-    }
-
+	public Color getToColour() {
+		return toColourButton.getSelectedColor();
+	}
 
 }

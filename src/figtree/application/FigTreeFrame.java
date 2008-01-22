@@ -9,6 +9,7 @@ import jebl.evolution.graphs.Node;
 import jebl.evolution.io.*;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.Tree;
+import jebl.evolution.trees.SortedRootedTree;
 import jebl.util.Attributable;
 import org.virion.jam.controlpalettes.BasicControlPalette;
 import org.virion.jam.controlpalettes.ControlPalette;
@@ -97,60 +98,54 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 //		Icon previousButtonInactiveIcon = IconUtils.getIcon(this.getClass(), "images/previousButtonInactive.png");
 //		Icon previousButtonPressedIcon = IconUtils.getIcon(this.getClass(), "images/previousButtonPressed.png");
 
-		cartoonAction = new ToolbarAction("Cartoon", CARTOON_NODE, cartoonNodeToolIcon) {
+		final ToolbarAction cartoonToolbarAction = new ToolbarAction("Cartoon", CARTOON_NODE, cartoonNodeToolIcon) {
 			public void actionPerformed(ActionEvent e){
-				cartoonSelected(cartoonToolButton.isSelected());
+				cartoonAction.actionPerformed(e);
 			}
 		};
 
-		cartoonToolButton = new ToolbarToggleButton(cartoonAction, true);
+		ToolbarButton cartoonToolButton = new ToolbarButton(cartoonToolbarAction, true);
 		toolBar.addComponent(cartoonToolButton);
-		cartoonToolButton.setEnabled(false);
 
-		collapseAction = new ToolbarAction("Collapse", COLLAPSE_NODE, collapseNodeToolIcon) {
+		final ToolbarAction collapseToolbarAction = new ToolbarAction("Collapse", COLLAPSE_NODE, collapseNodeToolIcon) {
 			public void actionPerformed(ActionEvent e){
-				collapseSelected(collapseToolButton.isSelected());
+				collapseAction.actionPerformed(e);
 			}
 		};
-		collapseToolButton = new ToolbarToggleButton(collapseAction, true);
+		ToolbarButton collapseToolButton = new ToolbarButton(collapseToolbarAction, true);
 		toolBar.addComponent(collapseToolButton);
-		collapseToolButton.setEnabled(false);
 
-		rerootAction = new ToolbarAction("Reroot", ROOT_ON_BRANCH, rerootToolIcon) {
+		final ToolbarAction rerootToolbarAction = new ToolbarAction("Reroot", ROOT_ON_BRANCH, rerootToolIcon) {
 			public void actionPerformed(ActionEvent e){
-				rerootTree(rerootToolButton.isSelected());
+				rerootAction.actionPerformed(e);
 			}
 		};
-		rerootToolButton = new ToolbarToggleButton(rerootAction, true);
+		ToolbarButton rerootToolButton = new ToolbarButton(rerootToolbarAction, true);
 		toolBar.addComponent(rerootToolButton);
-		rerootToolButton.setEnabled(false);
 
-		rotateAction = new ToolbarAction("Rotate", ROTATE_NODE, rotateToolIcon) {
+		final ToolbarAction rotateToolbarAction = new ToolbarAction("Rotate", ROTATE_NODE, rotateToolIcon) {
 			public void actionPerformed(ActionEvent e){
-				rotateTree(rotateToolButton.isSelected());
+				rotateAction.actionPerformed(e);
 			}
 		};
-		rotateToolButton = new ToolbarToggleButton(rotateAction, true);
+		ToolbarButton rotateToolButton = new ToolbarButton(rotateToolbarAction, true);
 		toolBar.addComponent(rotateToolButton);
-		rotateToolButton.setEnabled(false);
 
-		annotateAction =  new ToolbarAction("Annotate", ANNOTATE, annotationToolIcon) {
+		final ToolbarAction annotateToolbarAction =  new ToolbarAction("Annotate", ANNOTATE, annotationToolIcon) {
 			public void actionPerformed(ActionEvent e){
-				annotateSelected(annotationToolButton.isSelected());
+				annotateAction.actionPerformed(e);
 			}
 		};
-		annotationToolButton = new ToolbarToggleButton(annotateAction, true);
+		ToolbarButton annotationToolButton = new ToolbarButton(annotateToolbarAction, true);
 		toolBar.addComponent(annotationToolButton);
-		annotationToolButton.setEnabled(false);
 
-		colourAction = new ToolbarAction("Colour", COLOUR, colourToolIcon) {
+		final ToolbarAction colourToolbarAction = new ToolbarAction("Colour", COLOUR, colourToolIcon) {
 			public void actionPerformed(ActionEvent e){
-				colourSelected(colourToolButton.isSelected());
+				colourAction.actionPerformed(e);
 			}
 		};
-		colourToolButton = new ToolbarToggleButton(colourAction, true);
+		ToolbarButton colourToolButton = new ToolbarButton(colourToolbarAction, true);
 		toolBar.addComponent(colourToolButton);
-		colourToolButton.setEnabled(false);
 
 		ButtonGroup group = new ButtonGroup();
 		group.add(cartoonToolButton);
@@ -162,12 +157,12 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 
 		toolBar.addSeparator();
 
-		findAction = new ToolbarAction("Find", "Find Taxa...", findToolIcon) {
+		final ToolbarAction findToolbarAction = new ToolbarAction("Find", "Find Taxa...", findToolIcon) {
 			public void actionPerformed(ActionEvent e){
-				doFind();
+				findAction.actionPerformed(e);
 			}
 		};
-		JButton findToolButton = new ToolbarButton(findAction);
+		JButton findToolButton = new ToolbarButton(findToolbarAction);
 		toolBar.addComponent(findToolButton);
 		findToolButton.setEnabled(true);
 
@@ -241,36 +236,6 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		box1.add(toggle3);
 		toolBar.addComponent(new GenericToolbarItem("Selection Mode", "What aspect of the tree is selected when it is clicked", box1));
 
-		toolBar.addSeparator();
-
-//        Box box2 = Box.createHorizontalBox();
-//        final JToggleButton toggle4 = new JToggleButton("Select");
-//        final JToggleButton toggle5 = new JToggleButton("Scroll");
-//        toggle4.putClientProperty( "Quaqua.Button.style", "toggleWest");
-//        toggle5.putClientProperty( "Quaqua.Button.style", "toggleEast");
-//        ButtonGroup buttonGroup2 = new ButtonGroup();
-//        buttonGroup2.add(toggle4);
-//        buttonGroup2.add(toggle5);
-//        toggle4.setSelected(true);
-//        toggle4.addItemListener(new ItemListener() {
-//            public void itemStateChanged(ItemEvent e) {
-//                if (e.getStateChange() == ItemEvent.SELECTED) {
-//                    treeViewer.setDragMode(TreePaneSelector.DragMode.SELECT);
-//                }
-//            }
-//        });
-//        toggle5.addItemListener(new ItemListener() {
-//            public void itemStateChanged(ItemEvent e) {
-//                if (e.getStateChange() == ItemEvent.SELECTED) {
-//                    treeViewer.setDragMode(TreePaneSelector.DragMode.SCROLL);
-//                }
-//            }
-//        });
-//        box2.add(Box.createVerticalStrut(annotationToolIcon.getIconHeight()));
-//        box2.add(toggle4);
-//        box2.add(toggle5);
-//        toolBar.addComponent(new GenericToolbarItem("Drag mode", "Mode for when the mouse is clicked and dragged", box2));
-
 		toolBar.addFlexibleSpace();
 
 		final ToolbarAction prevTreeToolbarAction =
@@ -304,16 +269,23 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		box2.add(nextTreeToolButton);
 		toolBar.addComponent(new GenericToolbarItem("Prev/Next", "Navigate through the trees", box2));
 
-		treeViewer.addTreeViewerListener(new TreeViewerListener() {
+		TreeViewerListener l = new TreeViewerListener() {
 			public void treeChanged() {
-				nextTreeToolbarAction.setEnabled(treeViewer.getCurrentTreeIndex() < treeViewer.getTreeCount() - 1);
-				prevTreeToolbarAction.setEnabled(treeViewer.getCurrentTreeIndex() > 0);
+				boolean nextTreeEnabled = treeViewer.getCurrentTreeIndex() < treeViewer.getTreeCount() - 1;
+				nextTreeAction.setEnabled(nextTreeEnabled);
+				nextTreeToolbarAction.setEnabled(nextTreeEnabled);
+
+				boolean prevTreeEnabled = treeViewer.getCurrentTreeIndex() > 0;
+				previousTreeAction.setEnabled(prevTreeEnabled);
+				prevTreeToolbarAction.setEnabled(prevTreeEnabled);
 			}
 
 			public void treeSettingsChanged() {
 				// nothing to do
 			}
-		});
+		};
+		treeViewer.addTreeViewerListener(l);
+		l.treeChanged();
 
 		toolBar.addFlexibleSpace();
 
@@ -393,22 +365,30 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 
 		getContentPane().add(statusBar, BorderLayout.SOUTH);
 
-		treeViewer.addTreeSelectionListener(new TreeSelectionListener() {
+		TreeSelectionListener l2 = new TreeSelectionListener() {
 			public void selectionChanged() {
 				boolean hasSelection = treeViewer.hasSelection();
+				cartoonToolbarAction.setEnabled(hasSelection);
 				cartoonAction.setEnabled(hasSelection);
+				collapseToolbarAction.setEnabled(hasSelection);
 				collapseAction.setEnabled(hasSelection);
 				clearCollapsedAction.setEnabled(hasSelection);
+				rerootToolbarAction.setEnabled(hasSelection);
 				rerootAction.setEnabled(hasSelection);
 				clearRootingAction.setEnabled(hasSelection);
+				rotateToolbarAction.setEnabled(hasSelection);
 				rotateAction.setEnabled(hasSelection);
 				clearRotationsAction.setEnabled(hasSelection);
+				annotateToolbarAction.setEnabled(hasSelection);
 				annotateAction.setEnabled(hasSelection);
 				clearAnnotationsAction.setEnabled(hasSelection);
+				colourToolbarAction.setEnabled(hasSelection);
 				colourAction.setEnabled(hasSelection);
 				clearColouringAction.setEnabled(hasSelection);
 			}
-		});
+		};
+		treeViewer.addTreeSelectionListener(l2);
+		l2.selectionChanged();
 
 		getCutAction().setEnabled(false);
 		getCopyAction().setEnabled(true);
@@ -475,44 +455,15 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		}
 	}
 
-	private void cartoonSelected(boolean selected) {
-		if (selected) {
-			collapseToolButton.setSelected(false);
-			rerootToolButton.setSelected(false);
-			rotateToolButton.setSelected(false);
-			annotationToolButton.setSelected(false);
-			colourToolButton.setSelected(false);
-			treeViewer.setToolMode(TreePaneSelector.ToolMode.CARTOONING);
-		} else {
-			treeViewer.setToolMode(TreePaneSelector.ToolMode.SELECT);
+	private void cartoonSelected() {
 			treeViewer.cartoonSelectedNodes();
-		}
 	}
 
-	private void collapseSelected(boolean selected) {
-		if (selected) {
-			cartoonToolButton.setSelected(false);
-			rerootToolButton.setSelected(false);
-			rotateToolButton.setSelected(false);
-			annotationToolButton.setSelected(false);
-			colourToolButton.setSelected(false);
-			treeViewer.setToolMode(TreePaneSelector.ToolMode.COLLAPSING);
-		} else {
-			treeViewer.setToolMode(TreePaneSelector.ToolMode.SELECT);
+	private void collapseSelected() {
 			treeViewer.collapseSelectedNodes();
-		}
 	}
 
-	private void rerootTree(boolean selected) {
-		if (selected) {
-			cartoonToolButton.setSelected(false);
-			collapseToolButton.setSelected(false);
-			rotateToolButton.setSelected(false);
-			annotationToolButton.setSelected(false);
-			colourToolButton.setSelected(false);
-			treeViewer.setToolMode(TreePaneSelector.ToolMode.ROOTING);
-		} else {
-			treeViewer.setToolMode(TreePaneSelector.ToolMode.SELECT);
+	private void rerootTree() {
 			Set<Node> nodes = treeViewer.getSelectedNodes();
 
 			if (nodes.size() != 1 ) {
@@ -523,31 +474,13 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 				return;
 			}
 			treeViewer.rerootOnSelectedBranch();
-		}
 	}
 
-	private void rotateTree(boolean selected) {
-		if (selected) {
-			cartoonToolButton.setSelected(false);
-			collapseToolButton.setSelected(false);
-			rerootToolButton.setSelected(false);
-			annotationToolButton.setSelected(false);
-			colourToolButton.setSelected(false);
-			treeViewer.setToolMode(TreePaneSelector.ToolMode.ROTATING);
-		} else {
-			treeViewer.setToolMode(TreePaneSelector.ToolMode.SELECT);
+	private void rotateTree() {
 			treeViewer.rotateSelectedNode();
-		}
 	}
 
-	private void annotateSelected(boolean selected) {
-		if (selected) {
-			cartoonToolButton.setSelected(false);
-			collapseToolButton.setSelected(false);
-			rerootToolButton.setSelected(false);
-			rotateToolButton.setSelected(false);
-			colourToolButton.setSelected(false);
-		} else {
+	private void annotateSelected() {
 			treeViewer.setToolMode(TreePaneSelector.ToolMode.SELECT);
 
 			List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
@@ -584,19 +517,11 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 				treeViewer.annotateSelected(name, value);
 				setDirty();
 			}
-		}
 	}
 
 	private static Color lastColor = Color.GRAY;
 
-	private void colourSelected(boolean selected) {
-		if (selected) {
-			cartoonToolButton.setSelected(false);
-			collapseToolButton.setSelected(false);
-			rerootToolButton.setSelected(false);
-			rotateToolButton.setSelected(false);
-			annotationToolButton.setSelected(false);
-		} else {
+	private void colourSelected() {
 			treeViewer.setToolMode(TreePaneSelector.ToolMode.SELECT);
 
 			Color color = JColorChooser.showDialog(this, "Select Colour", lastColor);
@@ -605,7 +530,6 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 				setDirty();
 				lastColor = color;
 			}
-		}
 	}
 
 	public boolean readFromFile(File file) throws IOException {
@@ -1197,35 +1121,47 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		return previousTreeAction;
 	}
 
-	public ToolbarAction getCartoonAction() {
+	public Action getCartoonAction() {
 		return cartoonAction;
 	}
 
-	public ToolbarAction getCollapseAction() {
+	public Action getCollapseAction() {
 		return collapseAction;
 	}
 
-	public AbstractAction getClearCollapsedAction() {
+	public Action getClearCollapsedAction() {
 		return clearCollapsedAction;
 	}
 
-	public ToolbarAction getRerootAction() {
+	public Action getMidpointRootAction() {
+		return midpointRootAction;
+	}
+
+	public Action getRerootAction() {
 		return rerootAction;
 	}
 
-	public AbstractAction getClearRootingAction() {
+	public Action getClearRootingAction() {
 		return clearRootingAction;
 	}
 
-	public ToolbarAction getRotateAction() {
+	public Action getIncreasingNodeOrderAction() {
+		return increasingNodeOrderAction;
+	}
+
+	public Action getDecreasingNodeOrderAction() {
+		return decreasingNodeOrderAction;
+	}
+
+	public Action getRotateAction() {
 		return rotateAction;
 	}
 
-	public AbstractAction getClearRotationsAction() {
+	public Action getClearRotationsAction() {
 		return clearRotationsAction;
 	}
 
-	public ToolbarAction getAnnotateAction() {
+	public Action getAnnotateAction() {
 		return annotateAction;
 	}
 
@@ -1245,15 +1181,15 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		return defineAnnotationsAction;
 	}
 
-	public ToolbarAction getColourAction() {
+	public Action getColourAction() {
 		return colourAction;
 	}
 
-	public AbstractAction getClearColouringAction() {
+	public Action getClearColouringAction() {
 		return clearColouringAction;
 	}
 
-	public ToolbarAction getFindAction() {
+	public Action getFindAction() {
 		return findAction;
 	}
 
@@ -1289,29 +1225,65 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 				}
 			};
 
-	private ToolbarAction cartoonAction;
-	private ToolbarAction collapseAction;
+	private AbstractAction cartoonAction = new AbstractAction(CARTOON_NODE) {
+		public void actionPerformed(ActionEvent e){
+			cartoonSelected();
+		}
+	};
+	private AbstractAction collapseAction = new AbstractAction(COLLAPSE_NODE) {
+		public void actionPerformed(ActionEvent e){
+			collapseSelected();
+		}
+	};
 	private AbstractAction clearCollapsedAction = new AbstractAction(CLEAR_COLLAPSED) {
 		public void actionPerformed(ActionEvent e){
 			treeViewer.clearCollapsedNodes();
 		}
 	};
 
-	private ToolbarAction rerootAction;
+	private AbstractAction rerootAction = new AbstractAction(ROOT_ON_BRANCH) {
+		public void actionPerformed(ActionEvent e){
+			rerootTree();
+		}
+	};
+	private AbstractAction midpointRootAction = new AbstractAction(MIDPOINT_ROOT) {
+		public void actionPerformed(ActionEvent e){
+			figTreePanel.toggleMidpointRoot();
+		}
+	};
 	private AbstractAction clearRootingAction = new AbstractAction(CLEAR_ROOTING) {
 		public void actionPerformed(ActionEvent e){
 			treeViewer.clearRooting();
 		}
 	};
 
-	private ToolbarAction rotateAction;
+
+	private AbstractAction rotateAction = new AbstractAction(ROTATE_NODE) {
+		public void actionPerformed(ActionEvent e){
+			rotateTree();
+		}
+	};
 	private AbstractAction clearRotationsAction = new AbstractAction(CLEAR_ROTATIONS) {
 		public void actionPerformed(ActionEvent e){
 			treeViewer.clearRotations();
 		}
 	};
+	private AbstractAction increasingNodeOrderAction = new AbstractAction(INCREASING_NODE_ORDER) {
+		public void actionPerformed(ActionEvent e){
+			figTreePanel.toggleIncreasingNodeOrder();
+		}
+	};
+	private AbstractAction decreasingNodeOrderAction = new AbstractAction(DECREASING_NODE_ORDER) {
+		public void actionPerformed(ActionEvent e){
+			figTreePanel.toggleDecreasingNodeOrder();
+		}
+	};
 
-	private ToolbarAction annotateAction;
+	private AbstractAction annotateAction = new AbstractAction(ANNOTATE) {
+		public void actionPerformed(ActionEvent ae) {
+			annotateSelected();
+		}
+	};
 
 	private AbstractAction annotateNodesFromTipsAction = new AbstractAction(ANNOTATE_NODES_FROM_TIPS) {
 		public void actionPerformed(ActionEvent ae) {
@@ -1337,14 +1309,23 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		}
 	};
 
-	private ToolbarAction colourAction;
+	private AbstractAction colourAction = new AbstractAction(COLOUR) {
+		public void actionPerformed(ActionEvent ae) {
+			colourSelected();
+		}
+	};
+
 	private AbstractAction clearColouringAction = new AbstractAction(CLEAR_COLOURING) {
 		public void actionPerformed(ActionEvent ae) {
 			treeViewer.clearColouring();
 		}
 	};
 
-	private ToolbarAction findAction;
+	private AbstractAction findAction = new AbstractAction("Find...") {
+		public void actionPerformed(ActionEvent ae) {
+			doFind();
+		}
+	};
 
 	private FindDialog findDialog = null;
 	private AnnotationDefinitionsDialog annotationDefinitionsDialog = null;

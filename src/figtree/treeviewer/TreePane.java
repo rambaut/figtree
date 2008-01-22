@@ -150,6 +150,15 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		}
 	}
 
+	public void midpointRoot() {
+		rootingOn = true;
+		rootingType = RootingType.MID_POINT;
+
+		setupTree();
+
+		fireSettingsChanged();
+	}
+
 	public void setRootLocation(Node node, double length) {
 		rootingNode = node;
 		rootingLength = length;

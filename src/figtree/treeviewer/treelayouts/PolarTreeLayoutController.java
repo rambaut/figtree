@@ -110,7 +110,7 @@ public class PolarTreeLayoutController extends AbstractController {
                 treeLayout.setTipLabelPosition(alignTipLabelsCheck.isSelected() ? PolarTreeLayout.TipLabelPosition.RADIAL : PolarTreeLayout.TipLabelPosition.FLUSH);
             }
         });
-        optionsPanel.addComponent(alignTipLabelsCheck);
+        optionsPanel.addSpanningComponent(alignTipLabelsCheck);
     }
 
     public JComponent getTitleComponent() {

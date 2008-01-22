@@ -68,7 +68,7 @@ public class TreeColouringController extends AbstractController {
 					} else {
 
 						Decorator decorator = new ContinuousColorDecorator(
-								new ContinousScale(attribute, nodes, true, false),
+								new ContinousScale(attribute, nodes),
 								new Color(192, 16, 0), new Color(0, 16, 192));
 
 						treeViewer.setBranchColouringDecorator(null, null);

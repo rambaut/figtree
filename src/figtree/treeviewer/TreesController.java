@@ -19,7 +19,6 @@ import java.util.prefs.Preferences;
  * @version $Id: TreesController.java 780 2007-09-09 09:46:01Z rambaut $
  */
 public class TreesController extends AbstractController {
-
 	private static final String CONTROLLER_TITLE = "Trees";
 
     private static Preferences PREFS = Preferences.userNodeForPackage(TreesController.class);
@@ -175,6 +174,33 @@ public class TreesController extends AbstractController {
         treeViewer.setOrderBranchesOn(orderCheck.isSelected());
         treeViewer.setBranchOrdering((SortedRootedTree.BranchOrdering) orderCombo.getSelectedItem());
     }
+
+	public void toggleMidpointRoot() {
+		if (!rootingCheck.isSelected() || rootingCombo.getSelectedItem() != TreePane.RootingType.MID_POINT) {
+			rootingCheck.setSelected(true);
+			rootingCombo.setSelectedItem(TreePane.RootingType.MID_POINT);
+		} else {
+			rootingCombo.setSelectedItem(TreePane.RootingType.USER_ROOTING);
+		}
+	}
+
+	public void toggleIncreasingNodeOrder() {
+		if (!orderCheck.isSelected() || orderCombo.getSelectedItem() != SortedRootedTree.BranchOrdering.INCREASING_NODE_DENSITY) {
+			orderCheck.setSelected(true);
+			orderCombo.setSelectedItem(SortedRootedTree.BranchOrdering.INCREASING_NODE_DENSITY);
+		} else {
+			orderCheck.setSelected(false);
+		}
+	}
+
+	public void toggleDecreasingNodeOrder() {
+		if (!orderCheck.isSelected() || orderCombo.getSelectedItem() != SortedRootedTree.BranchOrdering.DECREASING_NODE_DENSITY) {
+			orderCheck.setSelected(true);
+			orderCombo.setSelectedItem(SortedRootedTree.BranchOrdering.DECREASING_NODE_DENSITY);
+		} else {
+			orderCheck.setSelected(false);
+		}
+	}
 
     public void setSettings(Map<String,Object> settings) {
         transformCheck.setSelected((Boolean) settings.get(CONTROLLER_KEY + "." + TRANSFORM_KEY));
