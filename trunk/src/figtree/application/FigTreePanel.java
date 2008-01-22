@@ -26,14 +26,15 @@ public class FigTreePanel extends JPanel {
         controlPalette.getPanel().setBackground(new Color(231, 237, 246));
         controlPalette.getPanel().setOpaque(true);
 
-		TreeViewerController treeViewerController = new TreeViewerController(treeViewer);
+		treeViewerController = new TreeViewerController(treeViewer);
         controlPalette.addController(treeViewerController);
 
 		controlPalette.addController(new MultipleTreesController(treeViewer));
 
 		controlPalette.addController(new TreeAppearanceController(treeViewer, frame));
 
-		controlPalette.addController(new TreesController(treeViewer));
+		treesController = new TreesController(treeViewer);
+		controlPalette.addController(treesController);
 
 		controlPalette.addController(new TimeScaleController(treeViewer));
 
@@ -88,7 +89,7 @@ public class FigTreePanel extends JPanel {
 
         treeViewer.addAnnotationsListener(new AnnotationsListener() {
             public void annotationsChanged() {
-	            
+
                 tipLabelPainter.setupAttributes(treeViewer.getTrees());
                 nodeLabelPainter.setupAttributes(treeViewer.getTrees());
                 nodeBarPainter.setupAttributes(treeViewer.getTrees());
@@ -105,7 +106,21 @@ public class FigTreePanel extends JPanel {
 		return controlPalette;
 	}
 
+	public void toggleMidpointRoot() {
+		treesController.toggleMidpointRoot();
+	}
+
+	public void toggleIncreasingNodeOrder() {
+		treesController.toggleIncreasingNodeOrder();
+	}
+
+	public void toggleDecreasingNodeOrder() {
+		treesController.toggleDecreasingNodeOrder();
+	}
+
 	private final TreeViewer treeViewer;
+	private final TreeViewerController treeViewerController;
+	private final TreesController treesController;
 	private final ControlPalette controlPalette;
 
 }

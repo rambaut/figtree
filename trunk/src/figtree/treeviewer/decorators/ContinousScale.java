@@ -12,11 +12,26 @@ import java.util.TreeSet;
 public class ContinousScale {
 
 	public ContinousScale(String attributeName,
+	                      Set<? extends Attributable> items) {
+		this(attributeName, items, false, 0.0, 0.0, false);
+	}
+
+	public ContinousScale(String attributeName,
+	                      Set<? extends Attributable> items,
+	                      double lowerRange, double upperRange) {
+		this(attributeName, items, true, lowerRange, upperRange, false);
+	}
+
+	public ContinousScale(String attributeName,
 	                      Set<? extends Attributable> items,
 	                      boolean normalize,
+	                      double lowerRange,
+	                      double upperRange,
 	                      boolean logarithm) {
 		this.attributeName = attributeName;
 		this.normalize = normalize;
+		this.lowerRange = lowerRange;
+		this.upperRange = upperRange;
 		this.logarithm = logarithm;
 
 		// First collect the set of all attribute values
@@ -97,15 +112,14 @@ public class ContinousScale {
 			double max = 1.0;
 
 			if (normalize) {
-				min = minValue;
+				min = lowerRange;
+				max = upperRange;
+			}
+			if (maxValue > max) {
 				max = maxValue;
-			} else {
-				if (maxValue > 1.0) {
-					max = maxValue;
-				}
-				if (minValue < 0.0) {
-					min = minValue;
-				}
+			}
+			if (minValue < min) {
+				min = minValue;
 			}
 			return ((number - min)/(max - min));
 		}
@@ -116,6 +130,9 @@ public class ContinousScale {
 	private final String attributeName;
 	private final boolean normalize;
 	private final boolean logarithm;
+
+	private final double lowerRange;
+	private final double upperRange;
 
 	private double minValue = Double.MAX_VALUE;
 	private double maxValue = Double.MIN_VALUE;

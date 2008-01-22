@@ -14,9 +14,12 @@ public interface TreeMenuHandler {
 	public static final String COLLAPSE_NODE = "Draw Subtree as Collapsed";
 	public static final String CLEAR_COLLAPSED = "Clear Collapsed/Cartoon";
 
+	public static final String MIDPOINT_ROOT = "Midpoint Root";
 	public static final String ROOT_ON_BRANCH = "Root on Branch...";
 	public static final String CLEAR_ROTATIONS = "Clear Rotations...";
 
+	public static final String INCREASING_NODE_ORDER = "Increasing Node Order";
+	public static final String DECREASING_NODE_ORDER = "Decreasing Node Order";
 	public static final String ROTATE_NODE = "Rotate Node...";
 	public static final String CLEAR_ROOTING = "Clear Rooting...";
 
@@ -35,9 +38,12 @@ public interface TreeMenuHandler {
 	Action getCollapseAction();
 	Action getClearCollapsedAction();
 
+	Action getMidpointRootAction();
 	Action getRerootAction();
 	Action getClearRootingAction();
 
+	Action getIncreasingNodeOrderAction();
+	Action getDecreasingNodeOrderAction();
 	Action getRotateAction();
 	Action getClearRotationsAction();
 
