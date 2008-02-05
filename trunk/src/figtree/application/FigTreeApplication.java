@@ -10,12 +10,8 @@
 
 package figtree.application;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.*;
 import figtree.application.preferences.*;
 import figtree.treeviewer.ExtendedTreeViewer;
-import figtree.treeviewer.TreeViewer;
 import jebl.evolution.io.ImportException;
 import jebl.evolution.io.NewickImporter;
 import jebl.evolution.trees.Tree;
@@ -51,85 +47,85 @@ public class FigTreeApplication extends MultiDocApplication {
 
 	static public void createPDF(String treeFileName, String pdfFileName) {
 
-		try {
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(treeFileName));
-			String line = bufferedReader.readLine();
-			while (line != null && line.length() == 0) {
-				line = bufferedReader.readLine();
-			}
-
-			bufferedReader.close();
-
-			boolean isNexus = (line != null && line.toUpperCase().contains("#NEXUS"));
-
-			Reader reader = new FileReader(treeFileName);
-
-			Map<String, Object> settings = new HashMap<String, Object>();
-
-			ExtendedTreeViewer treeViewer = new ExtendedTreeViewer();
-			ControlPalette controlPalette = new BasicControlPalette(200, BasicControlPalette.DisplayMode.ONLY_ONE_OPEN);
-			FigTreePanel figTreePanel = new FigTreePanel(null, treeViewer, controlPalette);
-
-			// First of all, fully populate the settings map so that
-			// all the settings have defaults
-			controlPalette.getSettings(settings);
-
-			List<Tree> trees = new ArrayList<Tree>();
-
-			if (isNexus) {
-				FigTreeNexusImporter importer = new FigTreeNexusImporter(reader);
-				trees.add(importer.importNextTree());
-
-				// Try to find a figtree block and if found, parse the settings
-				while (true) {
-					try {
-						importer.findNextBlock();
-						if (importer.getNextBlockName().equalsIgnoreCase("FIGTREE")) {
-							importer.parseFigTreeBlock(settings);
-						}
-					} catch (EOFException ex) {
-						break;
-					}
-				}
-			} else {
-				NewickImporter importer = new NewickImporter(reader, true);
-				trees.add(importer.importNextTree());
-			}
-
-			if (trees.size() == 0) {
-				throw new ImportException("This file contained no trees.");
-			}
-
-			treeViewer.setTrees(trees);
-
-			controlPalette.setSettings(settings);
-
-			//Rectangle2D bounds = treeViewer.getContentPane().getBounds();
-			Rectangle2D bounds = new Rectangle2D.Double(0.0, 0.0, 800, 800);
-			treeViewer.getContentPane().setBounds(bounds.getBounds());
-			Document document = new Document(new com.lowagie.text.Rectangle((float)bounds.getWidth(), (float)bounds.getHeight()));
-
-			// step 2
-			PdfWriter writer;
-			writer = PdfWriter.getInstance(document, new FileOutputStream(pdfFileName));
-			// step 3
-			document.open();
-			// step 4
-			PdfContentByte cb = writer.getDirectContent();
-			PdfTemplate tp = cb.createTemplate((float)bounds.getWidth(), (float)bounds.getHeight());
-			Graphics2D g2d = tp.createGraphics((float)bounds.getWidth(), (float)bounds.getHeight(), new DefaultFontMapper());
-			treeViewer.getContentPane().print(g2d);
-			g2d.dispose();
-			cb.addTemplate(tp, 0, 0);
-			document.close();
-
-		} catch(ImportException ie) {
-			throw new RuntimeException("Error writing PDF file: " + ie);
-		} catch(DocumentException de) {
-			throw new RuntimeException("Error writing PDF file: " + de);
-		} catch(IOException ioe) {
-			throw new RuntimeException("Error writing PDF file: " + ioe);
-		}
+//		try {
+//			BufferedReader bufferedReader = new BufferedReader(new FileReader(treeFileName));
+//			String line = bufferedReader.readLine();
+//			while (line != null && line.length() == 0) {
+//				line = bufferedReader.readLine();
+//			}
+//
+//			bufferedReader.close();
+//
+//			boolean isNexus = (line != null && line.toUpperCase().contains("#NEXUS"));
+//
+//			Reader reader = new FileReader(treeFileName);
+//
+//			Map<String, Object> settings = new HashMap<String, Object>();
+//
+//			ExtendedTreeViewer treeViewer = new ExtendedTreeViewer();
+//			ControlPalette controlPalette = new BasicControlPalette(200, BasicControlPalette.DisplayMode.ONLY_ONE_OPEN);
+//			FigTreePanel figTreePanel = new FigTreePanel(null, treeViewer, controlPalette);
+//
+//			// First of all, fully populate the settings map so that
+//			// all the settings have defaults
+//			controlPalette.getSettings(settings);
+//
+//			List<Tree> trees = new ArrayList<Tree>();
+//
+//			if (isNexus) {
+//				FigTreeNexusImporter importer = new FigTreeNexusImporter(reader);
+//				trees.add(importer.importNextTree());
+//
+//				// Try to find a figtree block and if found, parse the settings
+//				while (true) {
+//					try {
+//						importer.findNextBlock();
+//						if (importer.getNextBlockName().equalsIgnoreCase("FIGTREE")) {
+//							importer.parseFigTreeBlock(settings);
+//						}
+//					} catch (EOFException ex) {
+//						break;
+//					}
+//				}
+//			} else {
+//				NewickImporter importer = new NewickImporter(reader, true);
+//				trees.add(importer.importNextTree());
+//			}
+//
+//			if (trees.size() == 0) {
+//				throw new ImportException("This file contained no trees.");
+//			}
+//
+//			treeViewer.setTrees(trees);
+//
+//			controlPalette.setSettings(settings);
+//
+//			//Rectangle2D bounds = treeViewer.getContentPane().getBounds();
+//			Rectangle2D bounds = new Rectangle2D.Double(0.0, 0.0, 800, 800);
+//			treeViewer.getContentPane().setBounds(bounds.getBounds());
+//			Document document = new Document(new com.lowagie.text.Rectangle((float)bounds.getWidth(), (float)bounds.getHeight()));
+//
+//			// step 2
+//			PdfWriter writer;
+//			writer = PdfWriter.getInstance(document, new FileOutputStream(pdfFileName));
+//			// step 3
+//			document.open();
+//			// step 4
+//			PdfContentByte cb = writer.getDirectContent();
+//			PdfTemplate tp = cb.createTemplate((float)bounds.getWidth(), (float)bounds.getHeight());
+//			Graphics2D g2d = tp.createGraphics((float)bounds.getWidth(), (float)bounds.getHeight(), new DefaultFontMapper());
+//			treeViewer.getContentPane().print(g2d);
+//			g2d.dispose();
+//			cb.addTemplate(tp, 0, 0);
+//			document.close();
+//
+//		} catch(ImportException ie) {
+//			throw new RuntimeException("Error writing PDF file: " + ie);
+//		} catch(DocumentException de) {
+//			throw new RuntimeException("Error writing PDF file: " + de);
+//		} catch(IOException ioe) {
+//			throw new RuntimeException("Error writing PDF file: " + ioe);
+//		}
 
 	}
 
@@ -147,28 +143,30 @@ public class FigTreeApplication extends MultiDocApplication {
 		if (Utils.isMacOSX()) {
 			if (Utils.getMacOSXVersion().startsWith("10.5")) {
 				System.setProperty("apple.awt.brushMetalLook","true");
-			} else {
+			}
+
+			System.setProperty("apple.laf.useScreenMenuBar","true");
+			System.setProperty("apple.awt.draggableWindowBackground","true");
+			System.setProperty("apple.awt.showGrowBox","true");
+			System.setProperty("apple.awt.graphics.UseQuartz","true");
+
+//			if (!Utils.getMacOSXVersion().startsWith("10.5")) {
 				// set the Quaqua Look and Feel in the UIManager
 				try {
 					//System.setProperty("Quaqua.Debug.showClipBounds","true");
 					//System.setProperty("Quaqua.Debug.showVisualBounds","true");
 					UIManager.setLookAndFeel("ch.randelshofer.quaqua.QuaquaLookAndFeel");
 					// set UI manager properties here that affect Quaqua
-					UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
-					UIManager.put("SmallSystemFont", new Font("Lucida Grande", Font.PLAIN, 11));
 
 					lafLoaded = true;
 				} catch (Exception e) {
 				}
 			}
 
-			System.setProperty("apple.laf.useScreenMenuBar","true");
-			System.setProperty("apple.awt.draggableWindowBackground","true");			
-			System.setProperty("apple.awt.showGrowBox","true");
-			System.setProperty("apple.awt.graphics.UseQuartz","true");
 			UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
 			UIManager.put("SmallSystemFont", new Font("Lucida Grande", Font.PLAIN, 11));
-		}
+
+//		}
 
 		if (!lafLoaded) {
 			try {
