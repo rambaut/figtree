@@ -20,7 +20,7 @@ public class ControllerPanel extends OptionsPanel {
 	}
 
 	protected void adjustComponent(JComponent comp) {
-		comp.putClientProperty("Quaqua.Component.visualMargin", new Insets(0,0,0,0));
+		//comp.putClientProperty("Quaqua.Component.visualMargin", new Insets(0,0,0,0));
         Font font = UIManager.getFont("SmallSystemFont");
         if (font != null) {
             comp.setFont(font);
