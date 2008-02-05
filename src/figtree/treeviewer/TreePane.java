@@ -923,7 +923,9 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
 		graphics.setColor(Color.white);
 		Rectangle r = graphics.getClipBounds();
-		graphics.fillRect(r.x,  r.y, r.width, r.height);
+		if (r != null) {
+			graphics.fillRect(r.x,  r.y, r.width, r.height);
+		}
 
 		final Graphics2D g2 = (Graphics2D) graphics;
 		if (!calibrated) {

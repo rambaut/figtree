@@ -1,15 +1,11 @@
 package figtree.application;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.*;
 import jebl.evolution.alignments.Alignment;
 import jebl.evolution.alignments.BasicAlignment;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.io.*;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.Tree;
-import jebl.evolution.trees.SortedRootedTree;
 import jebl.util.Attributable;
 import org.virion.jam.controlpalettes.BasicControlPalette;
 import org.virion.jam.controlpalettes.ControlPalette;
@@ -17,17 +13,16 @@ import org.virion.jam.framework.DocumentFrame;
 import org.virion.jam.panels.*;
 import org.virion.jam.toolbar.*;
 import org.virion.jam.util.IconUtils;
+import org.freehep.util.export.ExportDialog;
 import figtree.application.menus.TreeMenuHandler;
 import figtree.treeviewer.*;
 import figtree.treeviewer.TreeSelectionListener;
 import figtree.treeviewer.annotations.*;
 
 import javax.swing.*;
-import javax.swing.event.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
-import java.awt.geom.Rectangle2D;
 import java.io.*;
 import java.text.NumberFormat;
 import java.util.*;
@@ -42,13 +37,6 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 
 	private SearchPanel filterPanel;
 	private JPopupMenu filterPopup;
-
-	private ToolbarToggleButton cartoonToolButton;
-	private ToolbarToggleButton collapseToolButton;
-	private ToolbarToggleButton rerootToolButton;
-	private ToolbarToggleButton rotateToolButton;
-	private ToolbarToggleButton annotationToolButton;
-	private ToolbarToggleButton colourToolButton;
 
 	public FigTreeFrame(String title) {
 		super();
@@ -456,80 +444,80 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 	}
 
 	private void cartoonSelected() {
-			treeViewer.cartoonSelectedNodes();
+		treeViewer.cartoonSelectedNodes();
 	}
 
 	private void collapseSelected() {
-			treeViewer.collapseSelectedNodes();
+		treeViewer.collapseSelectedNodes();
 	}
 
 	private void rerootTree() {
-			Set<Node> nodes = treeViewer.getSelectedNodes();
+		Set<Node> nodes = treeViewer.getSelectedNodes();
 
-			if (nodes.size() != 1 ) {
-				JOptionPane.showMessageDialog(this,
-						"Exactly one branch must be selected to re-root the tree." ,
-						"Annotating Tree",
-						JOptionPane.WARNING_MESSAGE);
-				return;
-			}
-			treeViewer.rerootOnSelectedBranch();
+		if (nodes.size() != 1 ) {
+			JOptionPane.showMessageDialog(this,
+					"Exactly one branch must be selected to re-root the tree." ,
+					"Annotating Tree",
+					JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		treeViewer.rerootOnSelectedBranch();
 	}
 
 	private void rotateTree() {
-			treeViewer.rotateSelectedNode();
+		treeViewer.rotateSelectedNode();
 	}
 
 	private void annotateSelected() {
-			treeViewer.setToolMode(TreePaneSelector.ToolMode.SELECT);
+		treeViewer.setToolMode(TreePaneSelector.ToolMode.SELECT);
 
-			List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
-			if (definitions.size() == 0) {
+		List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
+		if (definitions.size() == 0) {
+			return;
+		}
+
+		if (annotationDialog == null) {
+			annotationDialog = new AnnotationDialog(this);
+		}
+
+		Set<Node> nodes = treeViewer.getSelectedNodes();
+		Set<Node> tips = treeViewer.getSelectedTips();
+
+		Attributable item = null;
+		if (nodes.size() + tips.size() == 1 ) {
+			if (nodes.size() == 1) {
+				item = nodes.iterator().next();
+			}else if (tips.size() == 1) {
+				item = tips.iterator().next();
+			}
+		} else {
+			if (JOptionPane.showConfirmDialog(this,
+					"More than one node selected for annotation. This operation\r" +
+							"may overwrite existing annotations. Do you wish to continue?" ,
+					"Annotating Tree",
+					JOptionPane.WARNING_MESSAGE) == JOptionPane.CANCEL_OPTION) {
 				return;
 			}
-
-			if (annotationDialog == null) {
-				annotationDialog = new AnnotationDialog(this);
-			}
-
-			Set<Node> nodes = treeViewer.getSelectedNodes();
-			Set<Node> tips = treeViewer.getSelectedTips();
-
-			Attributable item = null;
-			if (nodes.size() + tips.size() == 1 ) {
-				if (nodes.size() == 1) {
-					item = nodes.iterator().next();
-				}else if (tips.size() == 1) {
-					item = tips.iterator().next();
-				}
-			} else {
-				if (JOptionPane.showConfirmDialog(this,
-						"More than one node selected for annotation. This operation\r" +
-								"may overwrite existing annotations. Do you wish to continue?" ,
-						"Annotating Tree",
-						JOptionPane.WARNING_MESSAGE) == JOptionPane.CANCEL_OPTION) {
-					return;
-				}
-			}
-			if (annotationDialog.showDialog(definitions, item) != JOptionPane.CANCEL_OPTION) {
-				String name = annotationDialog.getDefinition().getName();
-				Object value = annotationDialog.getValue();
-				treeViewer.annotateSelected(name, value);
-				setDirty();
-			}
+		}
+		if (annotationDialog.showDialog(definitions, item) != JOptionPane.CANCEL_OPTION) {
+			String name = annotationDialog.getDefinition().getName();
+			Object value = annotationDialog.getValue();
+			treeViewer.annotateSelected(name, value);
+			setDirty();
+		}
 	}
 
 	private static Color lastColor = Color.GRAY;
 
 	private void colourSelected() {
-			treeViewer.setToolMode(TreePaneSelector.ToolMode.SELECT);
+		treeViewer.setToolMode(TreePaneSelector.ToolMode.SELECT);
 
-			Color color = JColorChooser.showDialog(this, "Select Colour", lastColor);
-			if (color != null) {
-				treeViewer.annotateSelected("!color", color);
-				setDirty();
-				lastColor = color;
-			}
+		Color color = JColorChooser.showDialog(this, "Select Colour", lastColor);
+		if (color != null) {
+			treeViewer.annotateSelected("!color", color);
+			setDirty();
+			lastColor = color;
+		}
 	}
 
 	public boolean readFromFile(File file) throws IOException {
@@ -601,6 +589,9 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 			if (trees.size() == 0) {
 				throw new ImportException("This file contained no trees.");
 			}
+
+			checkLabelAttribute(trees);
+
 			treeViewer.setTrees(trees);
 			controlPalette.setSettings(settings);
 		} catch (ImportException ie) {
@@ -619,6 +610,50 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		}
 
 		return true;
+	}
+
+	private void checkLabelAttribute(List<Tree> trees) {
+
+		boolean hasLabel = false;
+
+		for (Tree tree : trees) {
+			for (Node node : tree.getNodes()) {
+				if (node.getAttribute("label") != null) {
+					hasLabel = true;
+				}
+			}
+		}
+
+		if (hasLabel) {
+			String labelName = null;
+
+			do {
+				labelName = JOptionPane.showInputDialog(
+								"The node/branches of the tree are labelled\n" +
+								"(i.e., with bootstrap values or posterior probabilities).\n\n" +
+								"Please select a name for these values.", "label");
+				if (labelName == null) {
+					labelName = "label";
+				}
+				labelName = labelName.trim();
+
+				if (labelName.length() == 0) {
+					Toolkit.getDefaultToolkit().beep();
+				}
+			} while (labelName == null || labelName.length() == 0);
+
+			if (!labelName.equals("label")) {
+				for (Tree tree : trees) {
+					for (Node node : tree.getNodes()) {
+						Object value = node.getAttribute("label");
+						if (value != null) {
+							node.removeAttribute("label");
+							node.setAttribute(labelName, value);
+						}
+					}
+				}
+			}
+		}
 	}
 
 
@@ -846,7 +881,7 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 				String[] valueArray = new String[valueSet.size()];
 				valueSet.toArray(valueArray);
 				ad = new AnnotationDefinition(labels[i], AnnotationDefinition.Type.STRING);
-				//ad.setOptions(valueArray);
+//ad.setOptions(valueArray);
 			}
 
 			annotations.put(ad, values);
@@ -924,43 +959,47 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 
 	}
 
-	public final void doExportPDF() {
-		FileDialog dialog = new FileDialog(this,
-				"Export PDF Image...",
-				FileDialog.SAVE);
+	public final void doExportGraphic() {
+		ExportDialog export = new ExportDialog();
+		export.showExportDialog( this, "Export view as ...", treeViewer.getContentPane(), "export" );
 
-		dialog.setVisible(true);
-		if (dialog.getFile() != null) {
-			File file = new File(dialog.getDirectory(), dialog.getFile());
 
-			Rectangle2D bounds = treeViewer.getContentPane().getBounds();
-			Document document = new Document(new com.lowagie.text.Rectangle((float)bounds.getWidth(), (float)bounds.getHeight()));
-			try {
-				// step 2
-				PdfWriter writer;
-				writer = PdfWriter.getInstance(document, new FileOutputStream(file));
-				// step 3
-				document.open();
-				// step 4
-				PdfContentByte cb = writer.getDirectContent();
-				PdfTemplate tp = cb.createTemplate((float)bounds.getWidth(), (float)bounds.getHeight());
-				Graphics2D g2d = tp.createGraphics((float)bounds.getWidth(), (float)bounds.getHeight(), new DefaultFontMapper());
-				treeViewer.getContentPane().print(g2d);
-				g2d.dispose();
-				cb.addTemplate(tp, 0, 0);
-			}
-			catch(DocumentException de) {
-				JOptionPane.showMessageDialog(this, "Error writing PDF file: " + de,
-						"Export PDF Error",
-						JOptionPane.ERROR_MESSAGE);
-			}
-			catch (FileNotFoundException e) {
-				JOptionPane.showMessageDialog(this, "Error writing PDF file: " + e,
-						"Export PDF Error",
-						JOptionPane.ERROR_MESSAGE);
-			}
-			document.close();
-		}
+//		FileDialog dialog = new FileDialog(this,
+//				"Export PDF Image...",
+//				FileDialog.SAVE);
+//
+//		dialog.setVisible(true);
+//		if (dialog.getFile() != null) {
+//			File file = new File(dialog.getDirectory(), dialog.getFile());
+//
+//			Rectangle2D bounds = treeViewer.getContentPane().getBounds();
+//			Document document = new Document(new com.lowagie.text.Rectangle((float)bounds.getWidth(), (float)bounds.getHeight()));
+//			try {
+//				// step 2
+//				PdfWriter writer;
+//				writer = PdfWriter.getInstance(document, new FileOutputStream(file));
+//				// step 3
+//				document.open();
+//				// step 4
+//				PdfContentByte cb = writer.getDirectContent();
+//				PdfTemplate tp = cb.createTemplate((float)bounds.getWidth(), (float)bounds.getHeight());
+//				Graphics2D g2d = tp.createGraphics((float)bounds.getWidth(), (float)bounds.getHeight(), new DefaultFontMapper());
+//				treeViewer.getContentPane().print(g2d);
+//				g2d.dispose();
+//				cb.addTemplate(tp, 0, 0);
+//			}
+//			catch(DocumentException de) {
+//				JOptionPane.showMessageDialog(this, "Error writing PDF file: " + de,
+//						"Export PDF Error",
+//						JOptionPane.ERROR_MESSAGE);
+//			}
+//			catch (FileNotFoundException e) {
+//				JOptionPane.showMessageDialog(this, "Error writing PDF file: " + e,
+//						"Export PDF Error",
+//						JOptionPane.ERROR_MESSAGE);
+//			}
+//			document.close();
+//		}
 	}
 
 
@@ -1007,7 +1046,7 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 				}
 				treeViewer.addTrees(trees);
 
-				// Show the first of the new trees
+// Show the first of the new trees
 				treeViewer.showNextTree();
 				setDirty();
 
@@ -1205,9 +1244,9 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		}
 	};
 
-	private AbstractAction exportAction = new AbstractAction("Export PDF...") {
+	private AbstractAction exportAction = new AbstractAction("Export Graphic...") {
 		public void actionPerformed(ActionEvent ae) {
-			doExportPDF();
+			doExportGraphic();
 		}
 	};
 
