@@ -47,62 +47,62 @@ public class FigTreeApplication extends MultiDocApplication {
 
 	static public void createPDF(String treeFileName, String pdfFileName) {
 
-//		try {
-//			BufferedReader bufferedReader = new BufferedReader(new FileReader(treeFileName));
-//			String line = bufferedReader.readLine();
-//			while (line != null && line.length() == 0) {
-//				line = bufferedReader.readLine();
-//			}
-//
-//			bufferedReader.close();
-//
-//			boolean isNexus = (line != null && line.toUpperCase().contains("#NEXUS"));
-//
-//			Reader reader = new FileReader(treeFileName);
-//
-//			Map<String, Object> settings = new HashMap<String, Object>();
-//
-//			ExtendedTreeViewer treeViewer = new ExtendedTreeViewer();
-//			ControlPalette controlPalette = new BasicControlPalette(200, BasicControlPalette.DisplayMode.ONLY_ONE_OPEN);
-//			FigTreePanel figTreePanel = new FigTreePanel(null, treeViewer, controlPalette);
-//
-//			// First of all, fully populate the settings map so that
-//			// all the settings have defaults
-//			controlPalette.getSettings(settings);
-//
-//			List<Tree> trees = new ArrayList<Tree>();
-//
-//			if (isNexus) {
-//				FigTreeNexusImporter importer = new FigTreeNexusImporter(reader);
-//				trees.add(importer.importNextTree());
-//
-//				// Try to find a figtree block and if found, parse the settings
-//				while (true) {
-//					try {
-//						importer.findNextBlock();
-//						if (importer.getNextBlockName().equalsIgnoreCase("FIGTREE")) {
-//							importer.parseFigTreeBlock(settings);
-//						}
-//					} catch (EOFException ex) {
-//						break;
-//					}
-//				}
-//			} else {
-//				NewickImporter importer = new NewickImporter(reader, true);
-//				trees.add(importer.importNextTree());
-//			}
-//
-//			if (trees.size() == 0) {
-//				throw new ImportException("This file contained no trees.");
-//			}
-//
-//			treeViewer.setTrees(trees);
-//
-//			controlPalette.setSettings(settings);
-//
-//			//Rectangle2D bounds = treeViewer.getContentPane().getBounds();
-//			Rectangle2D bounds = new Rectangle2D.Double(0.0, 0.0, 800, 800);
-//			treeViewer.getContentPane().setBounds(bounds.getBounds());
+		try {
+			BufferedReader bufferedReader = new BufferedReader(new FileReader(treeFileName));
+			String line = bufferedReader.readLine();
+			while (line != null && line.length() == 0) {
+				line = bufferedReader.readLine();
+			}
+
+			bufferedReader.close();
+
+			boolean isNexus = (line != null && line.toUpperCase().contains("#NEXUS"));
+
+			Reader reader = new FileReader(treeFileName);
+
+			Map<String, Object> settings = new HashMap<String, Object>();
+
+			ExtendedTreeViewer treeViewer = new ExtendedTreeViewer();
+			ControlPalette controlPalette = new BasicControlPalette(200, BasicControlPalette.DisplayMode.ONLY_ONE_OPEN);
+			FigTreePanel figTreePanel = new FigTreePanel(null, treeViewer, controlPalette);
+
+			// First of all, fully populate the settings map so that
+			// all the settings have defaults
+			controlPalette.getSettings(settings);
+
+			List<Tree> trees = new ArrayList<Tree>();
+
+			if (isNexus) {
+				FigTreeNexusImporter importer = new FigTreeNexusImporter(reader);
+				trees.add(importer.importNextTree());
+
+				// Try to find a figtree block and if found, parse the settings
+				while (true) {
+					try {
+						importer.findNextBlock();
+						if (importer.getNextBlockName().equalsIgnoreCase("FIGTREE")) {
+							importer.parseFigTreeBlock(settings);
+						}
+					} catch (EOFException ex) {
+						break;
+					}
+				}
+			} else {
+				NewickImporter importer = new NewickImporter(reader, true);
+				trees.add(importer.importNextTree());
+			}
+
+			if (trees.size() == 0) {
+				throw new ImportException("This file contained no trees.");
+			}
+
+			treeViewer.setTrees(trees);
+
+			controlPalette.setSettings(settings);
+
+			//Rectangle2D bounds = treeViewer.getContentPane().getBounds();
+			Rectangle2D bounds = new Rectangle2D.Double(0.0, 0.0, 800, 800);
+			treeViewer.getContentPane().setBounds(bounds.getBounds());
 //			Document document = new Document(new com.lowagie.text.Rectangle((float)bounds.getWidth(), (float)bounds.getHeight()));
 //
 //			// step 2
@@ -118,14 +118,14 @@ public class FigTreeApplication extends MultiDocApplication {
 //			g2d.dispose();
 //			cb.addTemplate(tp, 0, 0);
 //			document.close();
-//
-//		} catch(ImportException ie) {
-//			throw new RuntimeException("Error writing PDF file: " + ie);
+
+		} catch(ImportException ie) {
+			throw new RuntimeException("Error writing PDF file: " + ie);
 //		} catch(DocumentException de) {
 //			throw new RuntimeException("Error writing PDF file: " + de);
-//		} catch(IOException ioe) {
-//			throw new RuntimeException("Error writing PDF file: " + ioe);
-//		}
+		} catch(IOException ioe) {
+			throw new RuntimeException("Error writing PDF file: " + ioe);
+		}
 
 	}
 
@@ -176,7 +176,7 @@ public class FigTreeApplication extends MultiDocApplication {
 			}
 		}
 
-		java.net.URL url = FigTreeApplication.class.getResource("images/figtree.png");
+		java.net.URL url = FigTreeApplication.class.getResource("images/figtreeLogo.png");
 		Icon icon = null;
 
 		if (url != null) {
@@ -184,13 +184,17 @@ public class FigTreeApplication extends MultiDocApplication {
 		}
 
 		final String nameString = "FigTree";
-		final String versionString = "1.1.1";
+		final String versionString = "1.1.2";
 		String aboutString = "<html><center>Tree Figure Drawing Tool<br>Version " + versionString + "<br>2006-2008, Andrew Rambaut<br>" +
 				"Institute of Evolutionary Biology, University of Edinburgh.<br><br>" +
 				"<a href=\"http://tree.bio.ed.ac.uk/\">http://tree.bio.ed.ac.uk/</a><br><br>" +
 				"Uses the Java Evolutionary Biology Library (JEBL)<br>" +
 				"<a href=\"http://sourceforge.net/projects/jebl/\">http://jebl.sourceforge.net/</a><br><br>" +
-				"Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, <br>Tulio de Oliveira & Beth Shapiro</center></html>";
+                "Uses the VectorGraphics package of the FreeHEP Java Library<br>" +
+                "<a href=\"http://java.freehep.org/vectorgraphics/\">http://java.freehep.org/vectorgraphics/</a><br><br>" +
+                "Uses the Quaqua Look And Feel<br>" +
+                "<a href=\"http://www.randelshofer.ch/\">http://www.randelshofer.ch/</a><br><br>" + 
+                "Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, <br>Tulio de Oliveira & Beth Shapiro</center></html>";
 
 		String websiteURLString = "http://tree.bio.ed.ac.uk/software/figtree/";
 		String helpURLString = "http://tree.bio.ed.ac.uk/software/figtree/";
