@@ -50,7 +50,6 @@
 		<mkdir dir="${dist}"/>
 
 		<jar jarfile="${dist}/freehep.jar">
-			<zipgroupfileset dir="${lib}" includes="freehep-export-2.1.1.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-graphics2d-2.1.1.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-2.1.1.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-emf-2.1.1.jar"/>

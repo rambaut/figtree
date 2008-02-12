@@ -154,16 +154,14 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		toolBar.addComponent(findToolButton);
 		findToolButton.setEnabled(true);
 
-//        final ToolbarAction infoToolbarAction = new ToolbarAction("Get Info", "Get Info...", infoToolIcon) {
-//            public void actionPerformed(ActionEvent e){
-//                treeViewer.showInfomation();
-//            }
-//        };
-//        JButton infoToolButton = new ToolbarButton(infoToolbarAction);
-//        infoToolButton.putClientProperty("Quaqua.Button.style", "toolBarRollover");
-//        toolBar.addComponent(infoToolButton);
-//        infoToolButton.setEnabled(false);
-//
+        final ToolbarAction infoToolbarAction = new ToolbarAction("Get Info", "Get Info...", infoToolIcon) {
+            public void actionPerformed(ActionEvent e){
+                getInfoAction.actionPerformed(e);
+            }
+        };
+        JButton infoToolButton = new ToolbarButton(infoToolbarAction);
+        toolBar.addComponent(infoToolButton);
+
 //        JButton settingsToolButton = new ToolbarButton(
 //                new ToolbarAction("Statistics", "Statistics...", statisticsToolIcon) {
 //                    public void actionPerformed(ActionEvent e){
@@ -1167,6 +1165,16 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 	public final void doFindAgain() {
 	}
 
+    public final void doGetInfo() {
+        JPanel panel = new JPanel() {
+            public Dimension getPreferredSize() {
+                return new Dimension(super.getPreferredSize().width, 80);
+            }
+        };
+        panel.setOpaque(false);
+        figTreePanel.showUtilityPanel(panel);
+    }
+
 	public JComponent getExportableComponent() {
 		return treeViewer.getContentPane();
 	}
@@ -1384,6 +1392,12 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 			doFind();
 		}
 	};
+
+    private AbstractAction getInfoAction = new AbstractAction("Get Info...") {
+        public void actionPerformed(ActionEvent ae) {
+            doGetInfo();
+        }
+    };
 
 	private FindDialog findDialog = null;
 	private AnnotationDefinitionsDialog annotationDefinitionsDialog = null;
