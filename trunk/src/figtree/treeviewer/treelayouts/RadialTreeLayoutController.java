@@ -7,9 +7,8 @@ import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import java.util.Map;
-import java.util.HashMap;
 
-import figtree.treeviewer.ControllerPanel;
+import figtree.treeviewer.ControllerOptionsPanel;
 
 /**
  * @author Andrew Rambaut
@@ -26,8 +25,8 @@ public class RadialTreeLayoutController extends AbstractController {
 
 		titleLabel = new JLabel("Radial Layout");
 
-		optionsPanel = new ControllerPanel(2, 2);
-		
+		optionsPanel = new ControllerOptionsPanel(2, 2);
+
 //		final int sliderMax = 100;
 //		final JSlider spreadSlider = new JSlider(SwingConstants.HORIZONTAL, 0, sliderMax, 0);
 //		spreadSlider.setValue((int)(treeLayout.getSpread() * sliderMax / 2.0));

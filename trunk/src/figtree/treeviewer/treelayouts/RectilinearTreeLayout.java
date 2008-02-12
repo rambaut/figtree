@@ -193,7 +193,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 						}
 						if (colouring != null) {
 							// If there is a colouring, then we break the path up into
-							// segments. This should allow use to iterate along the segments
+							// segments. This should allow us to iterate along the segments
 							// and colour them as we draw them.
 
 
@@ -211,9 +211,9 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 							branchPath.lineTo(x0, y1);
 							branchPath.lineTo(x0, y0);
 						} else {
-							branchPath.moveTo(x0, y0);
+							branchPath.moveTo(x1, y1);
 							branchPath.lineTo(x0, y1);
-							branchPath.lineTo(x1, y1);
+							branchPath.lineTo(x0, y0);
 						}
 					} else if (curvature == 1.0) {
 						// The extreme is to use a triangular look
@@ -226,10 +226,10 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 						float x2 = x1 - ((x1 - x0) * (float) (1.0 - curvature));
 						float y2 = y0 + ((y1 - y0) * (float) (1.0 - curvature));
 
-						branchPath.moveTo(x0, y0);
-						branchPath.lineTo(x0, y2);
-						branchPath.quadTo(x0, y1, x2, y1);
-						branchPath.lineTo(x1, y1);
+						branchPath.moveTo(x1, y1);
+						branchPath.lineTo(x2, y1);
+						branchPath.quadTo(x0, y1, x0, y2);
+						branchPath.lineTo(x0, y0);
 					}
 
 

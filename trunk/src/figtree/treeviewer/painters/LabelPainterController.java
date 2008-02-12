@@ -14,7 +14,7 @@ import java.text.NumberFormat;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import figtree.treeviewer.ControllerPanel;
+import figtree.treeviewer.ControllerOptionsPanel;
 
 /**
  * @author Andrew Rambaut
@@ -57,7 +57,7 @@ public class LabelPainterController extends AbstractController {
         labelPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
         labelPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
 
-	    optionsPanel = new ControllerPanel(2, 2);
+	    optionsPanel = new ControllerOptionsPanel(2, 2);
 
         titleCheckBox = new JCheckBox(getTitle());
 

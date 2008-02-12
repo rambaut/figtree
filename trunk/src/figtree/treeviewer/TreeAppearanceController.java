@@ -64,7 +64,7 @@ public class TreeAppearanceController extends AbstractController {
 
 		titleLabel = new JLabel(CONTROLLER_TITLE);
 
-		optionsPanel = new ControllerPanel(2, 2);
+		optionsPanel = new ControllerOptionsPanel(2, 2);
 
 		branchLineWidthSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.01, 48.0, 1.0));
 
@@ -83,23 +83,26 @@ public class TreeAppearanceController extends AbstractController {
 		colourAutoRange = true;
 		colourFromValue = 0.0;
 		colourToValue = 1.0;
-		fromColour = new Color(192, 16, 0);
-		toColour = new Color(0, 16, 192);
+		fromColour = new Color(0, 16, 192);
+		toColour = new Color(192, 16, 0);
+		useGradient = false;
 
 		JButton setupColourButton = new JButton(new AbstractAction("Setup") {
 			public void actionPerformed(ActionEvent e) {
 				if (colourScaleDialog == null) {
 					colourScaleDialog = new ColourScaleDialog(frame, colourAutoRange,
 							colourFromValue, colourToValue,
-							fromColour, toColour);
+							fromColour, toColour,
+							useGradient);
 				}
 				int result = colourScaleDialog.showDialog();
-				if (result != JOptionPane.CANCEL_OPTION) {
+				if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
 					colourAutoRange = colourScaleDialog.getAutoRange();
 					colourFromValue = colourScaleDialog.getFromValue().doubleValue();
 					colourToValue = colourScaleDialog.getToValue().doubleValue();
 					fromColour = colourScaleDialog.getFromColour();
 					toColour = colourScaleDialog.getToColour();
+					useGradient = colourScaleDialog.getUseGradient();
 					setupBranchDecorators();
 				}
 			}
@@ -192,9 +195,19 @@ public class TreeAppearanceController extends AbstractController {
 					} else {
 						scale = new ContinousScale(attribute, nodes, colourFromValue, colourToValue);
 					}
-					compoundDecorator.addDecorator(new ContinuousColorDecorator(
-							scale, fromColour, toColour)
-					);
+
+					if (useGradient) {
+						// At present using a gradient precludes the use of the compoundDecorator
+						// and thus the branch width..
+						treeViewer.setBranchDecorator(new ContinuousGradientColorDecorator(
+								scale, fromColour, toColour)
+						);
+						return;
+					} else {
+						compoundDecorator.addDecorator(new ContinuousColorDecorator(
+								scale, fromColour, toColour)
+						);
+					}
 
 				}
 			}
@@ -219,41 +232,6 @@ public class TreeAppearanceController extends AbstractController {
 		}
 
 		treeViewer.setBranchDecorator(compoundDecorator);
-
-		// To apply a gradient decorator - not fully integrated with compound decorator
-
-//		Set<Node> nodes = new HashSet<Node>();
-//		for (Tree tree : treeViewer.getTrees()) {
-//		    for (Node node : tree.getNodes()) {
-//		        nodes.add(node);
-//		    }
-//		}
-//
-//		if (branchColourAttributeCombo.getSelectedIndex() == 0) {
-//		    treeViewer.setBranchColouringDecorator(null, null);
-//			treeViewer.setBranchDecorator(userBranchColourDecorator);
-//		} else {
-//		    String attribute = (String) branchColourAttributeCombo.getSelectedItem();
-//		    if (attribute != null && attribute.length() > 0) {
-//		        if (attribute.endsWith("*")) {
-//		            Decorator decorator = new DiscreteColorDecorator();
-//
-//		            treeViewer.setBranchColouringDecorator(attribute.substring(0, attribute.length() - 2), decorator);
-//		        } else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
-//			        treeViewer.setBranchColouringDecorator(null, null);
-//			        treeViewer.setBranchDecorator(new DiscreteColorDecorator(attribute, nodes));
-//		        } else {
-//			        treeViewer.setBranchColouringDecorator(null, null);
-//
-//		            treeViewer.setBranchDecorator(new ContinuousGradientColorDecorator(
-//		                    new ContinousScale(attribute, nodes, false, false),
-//		                    new Color(192, 16, 0), new Color(0, 16, 192))
-//			        );
-//
-//		        }
-//		    }
-//		}
-
 	}
 
 	private void setupAttributes(Collection<? extends Tree> trees) {
@@ -376,6 +354,7 @@ public class TreeAppearanceController extends AbstractController {
 	private double colourToValue = 1.0;
 	private Color fromColour;
 	private Color toColour;
+	private boolean useGradient = false;
 
 	private boolean widthAutoRange = true;
 	private double widthFromValue = 0.0;

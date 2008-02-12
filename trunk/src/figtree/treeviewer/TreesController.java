@@ -11,7 +11,6 @@ import javax.swing.event.ChangeListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.prefs.Preferences;
 
 /**
@@ -39,7 +38,7 @@ public class TreesController extends AbstractController {
 
         titleLabel = new JLabel(CONTROLLER_TITLE);
 
-	    optionsPanel = new ControllerPanel(2, 6);
+	    optionsPanel = new ControllerOptionsPanel(2, 6);
 
         rootingCheck = new JCheckBox("Root tree");
         rootingCheck.setOpaque(false);

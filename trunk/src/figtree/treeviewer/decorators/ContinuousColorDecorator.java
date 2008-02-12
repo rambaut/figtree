@@ -74,10 +74,10 @@ public class ContinuousColorDecorator implements Decorator {
 			float q = 1.0F - p;
 
 			return new Color(
-					color1[0] * p + color2[0] * q,
-					color1[1] * p + color2[1] * q,
-					color1[2] * p + color2[2] * q,
-					color1[3] * p + color2[3] * q);
+					color2[0] * p + color1[0] * q,
+					color2[1] * p + color1[1] * q,
+					color2[2] * p + color1[2] * q,
+					color2[3] * p + color1[3] * q);
 		} else {
 			return null;
 		}

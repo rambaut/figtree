@@ -7,9 +7,8 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.util.Map;
-import java.util.HashMap;
 
-import figtree.treeviewer.ControllerPanel;
+import figtree.treeviewer.ControllerOptionsPanel;
 
 /**
  * @author Andrew Rambaut
@@ -30,7 +29,7 @@ public class PolarTreeLayoutController extends AbstractController {
 
         titleLabel = new JLabel("Polar Layout");
 
-	    optionsPanel = new ControllerPanel(2, 2);
+	    optionsPanel = new ControllerOptionsPanel(2, 2);
 
         rootAngleSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 360000, 0);
         rootAngleSlider.setOpaque(false);

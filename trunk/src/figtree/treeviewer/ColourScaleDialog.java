@@ -31,6 +31,7 @@ public class ColourScaleDialog {
 	private JFrame frame;
 	private OptionsPanel options;
 	private JCheckBox autoScaleCheck;
+	private JCheckBox useGradientCheck;
 	private JLabel fromLabel;
 	private RealNumberField fromNumberField;
 	private JLabel toLabel;
@@ -40,7 +41,7 @@ public class ColourScaleDialog {
 	private ColorWellButton toColourButton;
 
 	public ColourScaleDialog(final JFrame frame, boolean autoRange, double fromValue, double toValue,
-	                         final Color fromColour, final Color toColour) {
+	                         final Color fromColour, final Color toColour, boolean useGradient) {
 		this.frame = frame;
 
 		autoScaleCheck = new JCheckBox("Auto-scale range");
@@ -63,6 +64,9 @@ public class ColourScaleDialog {
 
 		fromColourButton = new ColorWellButton(fromColour, "Choose Start Colour");
 		toColourButton = new ColorWellButton(toColour, "Choose End Colour");
+
+		useGradientCheck = new JCheckBox("Use a gradient along branches");
+		useGradientCheck.setSelected(useGradient);
 
 		autoScaleCheck.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
@@ -95,6 +99,8 @@ public class ColourScaleDialog {
 		panel1.add(new JLabel("to:"));
 		panel1.add(toColourButton);
 		options.addComponent(panel1);
+
+		options.addComponent(useGradientCheck);
 
 		JOptionPane optionPane = new JOptionPane(options,
 				JOptionPane.QUESTION_MESSAGE,
@@ -136,6 +142,10 @@ public class ColourScaleDialog {
 
 	public Color getToColour() {
 		return toColourButton.getSelectedColor();
+	}
+
+	public boolean getUseGradient() {
+		return useGradientCheck.isSelected();
 	}
 
 }

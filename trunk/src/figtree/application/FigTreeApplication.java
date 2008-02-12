@@ -12,20 +12,23 @@ package figtree.application;
 
 import figtree.application.preferences.*;
 import figtree.treeviewer.ExtendedTreeViewer;
-import jebl.evolution.io.ImportException;
-import jebl.evolution.io.NewickImporter;
-import jebl.evolution.trees.Tree;
-import org.virion.jam.controlpalettes.BasicControlPalette;
-import org.virion.jam.controlpalettes.ControlPalette;
 import org.virion.jam.framework.*;
 import org.virion.jam.mac.Utils;
+import org.virion.jam.controlpalettes.BasicControlPalette;
+import org.virion.jam.controlpalettes.ControlPalette;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.awt.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+
+import ch.randelshofer.quaqua.QuaquaLookAndFeel;
+import jebl.evolution.io.ImportException;
+import jebl.evolution.io.NewickImporter;
+import jebl.evolution.trees.Tree;
+
+import javax.swing.*;
 
 public class FigTreeApplication extends MultiDocApplication {
 
@@ -39,6 +42,16 @@ public class FigTreeApplication extends MultiDocApplication {
 		addPreferencesSection(new GeneralPreferencesSection());
 		addPreferencesSection(new AppearancePreferencesSection());
 		addPreferencesSection(new AdvancedPreferencesSection());
+	}
+
+	public DocumentFrame doOpenFile(File file) {
+		DocumentFrame documentFrame = getUpperDocumentFrame();
+		if (documentFrame != null && documentFrame.getFile() == null) {
+			documentFrame.openFile(file);
+			return documentFrame;
+		} else {
+			return super.doOpenFile(file);
+		}
 	}
 
 	public void doPaste() {
@@ -151,22 +164,27 @@ public class FigTreeApplication extends MultiDocApplication {
 			System.setProperty("apple.awt.graphics.UseQuartz","true");
 
 //			if (!Utils.getMacOSXVersion().startsWith("10.5")) {
-				// set the Quaqua Look and Feel in the UIManager
-				try {
-					//System.setProperty("Quaqua.Debug.showClipBounds","true");
-					//System.setProperty("Quaqua.Debug.showVisualBounds","true");
-					UIManager.setLookAndFeel("ch.randelshofer.quaqua.QuaquaLookAndFeel");
-					// set UI manager properties here that affect Quaqua
+			// set the Quaqua Look and Feel in the UIManager
+			try {
+				//System.setProperty("Quaqua.Debug.showClipBounds","true");
+				//System.setProperty("Quaqua.Debug.showVisualBounds","true");
+				LookAndFeel lafClass;
 
-					lafLoaded = true;
-				} catch (Exception e) {
+				if (Utils.getMacOSXVersion().startsWith("10.5")) {
+					lafClass = ch.randelshofer.quaqua.subset.Quaqua14ColorChooserLAF.class.newInstance();
+				} else {
+					lafClass = QuaquaLookAndFeel.class.newInstance();
 				}
+
+				UIManager.setLookAndFeel(lafClass);
+
+				lafLoaded = true;
+			} catch (Exception e) {
 			}
 
 			UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
 			UIManager.put("SmallSystemFont", new Font("Lucida Grande", Font.PLAIN, 11));
-
-//		}
+		}
 
 		if (!lafLoaded) {
 			try {
@@ -184,17 +202,13 @@ public class FigTreeApplication extends MultiDocApplication {
 		}
 
 		final String nameString = "FigTree";
-		final String versionString = "1.1.2";
+		final String versionString = "1.1.3";
 		String aboutString = "<html><center>Tree Figure Drawing Tool<br>Version " + versionString + "<br>2006-2008, Andrew Rambaut<br>" +
 				"Institute of Evolutionary Biology, University of Edinburgh.<br><br>" +
 				"<a href=\"http://tree.bio.ed.ac.uk/\">http://tree.bio.ed.ac.uk/</a><br><br>" +
 				"Uses the Java Evolutionary Biology Library (JEBL)<br>" +
 				"<a href=\"http://sourceforge.net/projects/jebl/\">http://jebl.sourceforge.net/</a><br><br>" +
-                "Uses the VectorGraphics package of the FreeHEP Java Library<br>" +
-                "<a href=\"http://java.freehep.org/vectorgraphics/\">http://java.freehep.org/vectorgraphics/</a><br><br>" +
-                "Uses the Quaqua Look And Feel<br>" +
-                "<a href=\"http://www.randelshofer.ch/\">http://www.randelshofer.ch/</a><br><br>" + 
-                "Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, <br>Tulio de Oliveira & Beth Shapiro</center></html>";
+				"Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, <br>Tulio de Oliveira & Beth Shapiro</center></html>";
 
 		String websiteURLString = "http://tree.bio.ed.ac.uk/software/figtree/";
 		String helpURLString = "http://tree.bio.ed.ac.uk/software/figtree/";
@@ -216,11 +230,15 @@ public class FigTreeApplication extends MultiDocApplication {
 			}
 		}
 
-		if (!org.virion.jam.mac.Utils.isMacOSX() && application.getUpperDocumentFrame() == null) {
-			// If we haven't opened any files by now, prompt for one...
-			application.doOpen();
-		}
+//		if (!org.virion.jam.mac.Utils.isMacOSX() && application.getUpperDocumentFrame() == null) {
+//			// If we haven't opened any files by now, prompt for one...
+//			application.doOpen();
+//		}
 
+		if (application.getUpperDocumentFrame() == null) {
+			// If we haven't opened any files by now, open a blank window...
+			application.doNew();
+		}
 	}
 
 }

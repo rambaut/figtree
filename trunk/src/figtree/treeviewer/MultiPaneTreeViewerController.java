@@ -10,7 +10,6 @@ import javax.swing.event.ChangeListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * @author Andrew Rambaut
@@ -22,8 +21,8 @@ public class MultiPaneTreeViewerController extends AbstractController {
 
 		titleLabel = new JLabel("Current Tree");
 
-		optionsPanel = new ControllerPanel(2, 2);
-		
+		optionsPanel = new ControllerOptionsPanel(2, 2);
+
 		final JLabel treeNameLabel = new JLabel("Tree 1");
 		final SpinnerNumberModel spinnerModel = new SpinnerNumberModel(1, 1, 1, 1);
 		JSpinner currentTreeSpinner = new JSpinner(spinnerModel);
