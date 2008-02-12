@@ -11,7 +11,6 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.prefs.Preferences;
 
 /**
@@ -60,7 +59,7 @@ public class TreeViewerController extends AbstractController {
 
 		titleLabel = new JLabel(CONTROLLER_TITLE);
 
-		optionsPanel = new ControllerPanel(2, 2);
+		optionsPanel = new ControllerOptionsPanel(2, 2);
 
 		rectilinearTreeLayout = new RectilinearTreeLayout();
 		rectilinearTreeLayoutController = new RectilinearTreeLayoutController(rectilinearTreeLayout);

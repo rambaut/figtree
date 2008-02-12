@@ -19,14 +19,21 @@ public class AnnotationDefinition {
 		private String name;
 	};
 
-    public AnnotationDefinition(String name, Type type) {
-        this.name = name;
-        this.type = type;
-    }
+	public AnnotationDefinition(String name, Type type) {
+		this.name = name;
+		this.code = null;
+		this.type = type;
+	}
 
-    public String toString() {
-        return name;
-    }
+	public AnnotationDefinition(String name, String code, Type type) {
+		this.name = name;
+		this.code = code;
+		this.type = type;
+	}
+
+	public String toString() {
+		return name;
+	}
 
 	public String getName() {
 		return name;
@@ -34,6 +41,17 @@ public class AnnotationDefinition {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getCode() {
+		if (code == null) {
+			return name;
+		}
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public Type getType() {
@@ -45,5 +63,7 @@ public class AnnotationDefinition {
 	}
 
 	private String name;
+	private String code;
+
 	private Type type;
 }

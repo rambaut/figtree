@@ -410,15 +410,18 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 			selectAnnotationDialog = new SelectAnnotationDialog(this);
 		}
 
-		if (selectAnnotationDialog.showDialog(annotationNames) != JOptionPane.CANCEL_OPTION) {
-			String annotationName = selectAnnotationDialog.getAnnotationName();
-			if (annotationName.equals("Colour")) {
-				annotationName = "!color";
-			}
-
-			treeViewer.annotateNodesFromTips(annotationName);
-			setDirty();
+		int result = selectAnnotationDialog.showDialog(annotationNames);
+		if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
+			return;
 		}
+
+		String annotationName = selectAnnotationDialog.getAnnotationName();
+		if (annotationName.equals("Colour")) {
+			annotationName = "!color";
+		}
+
+		treeViewer.annotateNodesFromTips(annotationName);
+		setDirty();
 	}
 
 	private void annotateTipsFromNodes() {
@@ -471,10 +474,9 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 	private void annotateSelected() {
 		treeViewer.setToolMode(TreePaneSelector.ToolMode.SELECT);
 
-		List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
-		if (definitions.size() == 0) {
-			return;
-		}
+		List<AnnotationDefinition> definitions = new ArrayList<AnnotationDefinition>();
+		definitions.add(new AnnotationDefinition("Name", "!name", AnnotationDefinition.Type.STRING));
+		definitions.addAll(treeViewer.getAnnotationDefinitions());
 
 		if (annotationDialog == null) {
 			annotationDialog = new AnnotationDialog(this);
@@ -491,18 +493,20 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 				item = tips.iterator().next();
 			}
 		} else {
-			if (JOptionPane.showConfirmDialog(this,
-					"More than one node selected for annotation. This operation\r" +
+			int result = JOptionPane.showConfirmDialog(this,
+					"More than one node selected for annotation. This operation\n" +
 							"may overwrite existing annotations. Do you wish to continue?" ,
 					"Annotating Tree",
-					JOptionPane.WARNING_MESSAGE) == JOptionPane.CANCEL_OPTION) {
+					JOptionPane.WARNING_MESSAGE);
+			if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
 				return;
 			}
 		}
 		if (annotationDialog.showDialog(definitions, item) != JOptionPane.CANCEL_OPTION) {
-			String name = annotationDialog.getDefinition().getName();
+			String code = annotationDialog.getDefinition().getCode();
 			Object value = annotationDialog.getValue();
-			treeViewer.annotateSelected(name, value);
+
+			treeViewer.annotateSelected(code, value);
 			setDirty();
 		}
 	}
@@ -521,26 +525,41 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 	}
 
 	public boolean readFromFile(File file) throws IOException {
-		BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-		String line = bufferedReader.readLine();
-		while (line != null && line.length() == 0) {
-			line = bufferedReader.readLine();
+		Reader reader = null;
+		try {
+			reader = new FileReader(file);
+
+			BufferedReader bufferedReader = new BufferedReader(reader);
+			String line = bufferedReader.readLine();
+			while (line != null && line.length() == 0) {
+				line = bufferedReader.readLine();
+			}
+
+			boolean isNexus = (line != null && line.toUpperCase().contains("#NEXUS"));
+
+			reader = new FileReader(file);
+
+//			ProgressMonitorInputStream in = new ProgressMonitorInputStream(
+//					this,
+//					"Reading " + file.getName(),
+//					new FileInputStream(file));
+//			in.getProgressMonitor().setMillisToDecideToPopup(1000);
+//			in.getProgressMonitor().setMillisToPopup(1000);
+//
+//	        reader = new InputStreamReader(in);
+
+			boolean success = readData(reader, isNexus);
+
+			reader.close();
+
+			return success;
+
+		} catch (IOException ioe) {
+			if (reader != null) {
+				reader.close();
+			}
+			throw ioe;
 		}
-
-		boolean isNexus = (line != null && line.toUpperCase().contains("#NEXUS"));
-
-		return readData(new FileReader(file), isNexus);
-
-		// This is for running the version for readData that uses a ProgressMonitor....
-//        ProgressMonitorInputStream in = new ProgressMonitorInputStream(
-//                this,
-//                "Reading " + file.getName(),
-//                new FileInputStream(file));
-//
-//        Reader reader = new InputStreamReader(in);
-//
-//        readData(reader, isNexus);
-//        return true;
 	}
 
 	public boolean readFromString(String string) throws IOException {
@@ -595,7 +614,7 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 			treeViewer.setTrees(trees);
 			controlPalette.setSettings(settings);
 		} catch (ImportException ie) {
-			JOptionPane.showMessageDialog(this, "Error reading tree file: " + ie,
+			JOptionPane.showMessageDialog(this, "Error reading tree file: \n" + ie.getMessage(),
 					"Import Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
@@ -629,7 +648,7 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 
 			do {
 				labelName = JOptionPane.showInputDialog(
-								"The node/branches of the tree are labelled\n" +
+						"The node/branches of the tree are labelled\n" +
 								"(i.e., with bootstrap values or posterior probabilities).\n\n" +
 								"Please select a name for these values.", "label");
 				if (labelName == null) {

@@ -9,7 +9,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
@@ -47,7 +46,7 @@ public class TimeScaleController extends AbstractController {
 		final double scaleFactor = PREFS.getDouble(CONTROLLER_KEY + "." + SCALE_FACTOR_KEY, DEFAULT_SCALE_FACTOR);
 		final double rootAge = PREFS.getDouble(CONTROLLER_KEY + "." + ROOT_AGE_KEY, DEFAULT_ROOT_AGE);
 
-		optionsPanel = new ControllerPanel(2, 2);
+		optionsPanel = new ControllerOptionsPanel(2, 2);
 
 		scaleFactorRadio = new JRadioButton("Scale by factor:");
 		scaleFactorRadio.setSelected(!scaleRoot);

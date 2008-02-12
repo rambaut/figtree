@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class BasicLabelPainter extends LabelPainter<Node> {
 
-	public static final String TAXON_NAMES = "Taxon names";
+	public static final String NAMES = "Names";
 	public static final String NODE_AGES = "Node ages";
 	public static final String NODE_HEIGHTS = "Node heights (raw)";
 	public static final String BRANCH_TIMES = "Branch times";
@@ -51,34 +51,10 @@ public class BasicLabelPainter extends LabelPainter<Node> {
 	public void setupAttributes(Collection<? extends Tree> trees) {
 
 		List<String> attributeNames = new ArrayList<String>();
-		switch( intent ) {
-			case TIP: {
-				attributeNames.add(TAXON_NAMES);
-				attributeNames.add(NODE_AGES);
-				attributeNames.add(NODE_HEIGHTS);
-				attributeNames.add(BRANCH_TIMES);
-				attributeNames.add(BRANCH_LENGTHS);
-				break;
-			}
-			case NODE: {
-				attributeNames.add(NODE_AGES);
-				attributeNames.add(NODE_HEIGHTS);
-				attributeNames.add(BRANCH_TIMES);
-				attributeNames.add(BRANCH_LENGTHS);
-				break;
-			}
-			case BRANCH: {
-				attributeNames.add(BRANCH_TIMES);
-				attributeNames.add(BRANCH_LENGTHS);
-				attributeNames.add(NODE_AGES);
-				attributeNames.add(NODE_HEIGHTS);
-				break;
-			}
-		}
 
+		Set<String> nodeAttributes = new TreeSet<String>();
 		if (trees != null) {
 			for (Tree tree : trees) {
-				Set<String> nodeAttributes = new TreeSet<String>();
 				if (intent == PainterIntent.TIP) {
 					for (Node node : tree.getExternalNodes()) {
 						nodeAttributes.addAll(node.getAttributeNames());
@@ -95,11 +71,43 @@ public class BasicLabelPainter extends LabelPainter<Node> {
 						nodeAttributes.addAll(node.getAttributeNames());
 					}
 				}
-				for (String attributeName : nodeAttributes) {
-					if (!attributeName.startsWith("!")) {
-						attributeNames.add(attributeName);
-					}
+			}
+		}
+
+		switch( intent ) {
+			case TIP: {
+				attributeNames.add(NAMES);
+				attributeNames.add(NODE_AGES);
+				attributeNames.add(NODE_HEIGHTS);
+				attributeNames.add(BRANCH_TIMES);
+				attributeNames.add(BRANCH_LENGTHS);
+				break;
+			}
+			case NODE: {
+				if (nodeAttributes.contains("!name")) {
+					attributeNames.add(NAMES);
 				}
+				attributeNames.add(NODE_AGES);
+				attributeNames.add(NODE_HEIGHTS);
+				attributeNames.add(BRANCH_TIMES);
+				attributeNames.add(BRANCH_LENGTHS);
+				break;
+			}
+			case BRANCH: {
+				if (nodeAttributes.contains("!name")) {
+					attributeNames.add(NAMES);
+				}
+				attributeNames.add(BRANCH_TIMES);
+				attributeNames.add(BRANCH_LENGTHS);
+				attributeNames.add(NODE_AGES);
+				attributeNames.add(NODE_HEIGHTS);
+				break;
+			}
+		}
+
+		for (String attributeName : nodeAttributes) {
+			if (!attributeName.startsWith("!")) {
+				attributeNames.add(attributeName);
 			}
 		}
 
@@ -134,19 +142,32 @@ public class BasicLabelPainter extends LabelPainter<Node> {
 	}
 
 	protected String getLabel(Tree tree, Node node) {
-		if (displayAttribute.equalsIgnoreCase(TAXON_NAMES)) {
-			Taxon taxon = tree.getTaxon(node);
-			if (taxon != null) {
-				if (textDecorator != null) {
-					textDecorator.setItem(taxon);
+		if (displayAttribute.equalsIgnoreCase(NAMES)) {
+			if (intent == PainterIntent.TIP) {
+				Taxon taxon = tree.getTaxon(node);
+				if (taxon != null) {
+					if (textDecorator != null) {
+						textDecorator.setItem(taxon);
+					}
+					String name = (String)taxon.getAttribute("!name");
+					if (name != null) {
+						return name;
+					}
+					return taxon.getName();
+				} else {
+					String name = (String)node.getAttribute("!name");
+					if (name != null) {
+						return name;
+					}
+					return null;
 				}
-				return taxon.getName();
+
 			} else {
-				String name = (String)node.getAttribute("name");
+				String name = (String)node.getAttribute("!name");
 				if (name != null) {
 					return name;
 				}
-				return "unlabelled";
+				return null;
 			}
 		}
 
@@ -177,7 +198,7 @@ public class BasicLabelPainter extends LabelPainter<Node> {
 			Taxon taxon = tree.getTaxon(node);
 			if (taxon != null) {
 				value = taxon.getAttribute(displayAttribute);
-			}				
+			}
 		}
 
 		return formatValue(value);

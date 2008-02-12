@@ -135,8 +135,9 @@ public class RadialTreeLayout extends AbstractTreeLayout {
 		                nodePoint.getX(), nodePoint.getY(), childLength, cache);
 
 	            Line2D branchLine = new Line2D.Double(
-				            nodePoint.getX(), nodePoint.getY(),
-				            childPoint.getX(), childPoint.getY());
+				            childPoint.getX(), childPoint.getY(),
+			                nodePoint.getX(), nodePoint.getY()
+				            );
 
 	            Object[] colouring = null;
 	            if (branchColouringAttribute != null) {

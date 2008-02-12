@@ -11,10 +11,9 @@ import java.awt.*;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.prefs.Preferences;
 
-import figtree.treeviewer.ControllerPanel;
+import figtree.treeviewer.ControllerOptionsPanel;
 
 /**
  * @author Andrew Rambaut
@@ -61,7 +60,7 @@ public class ScaleBarPainterController extends AbstractController {
         scaleBarPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
         scaleBarPainter.setScaleBarStroke(new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
-	    optionsPanel = new ControllerPanel(2, 2);
+	    optionsPanel = new ControllerOptionsPanel(2, 2);
 
         titleCheckBox = new JCheckBox(getTitle());
 

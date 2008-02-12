@@ -10,10 +10,9 @@ import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.awt.*;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.prefs.Preferences;
 
-import figtree.treeviewer.ControllerPanel;
+import figtree.treeviewer.ControllerOptionsPanel;
 
 /**
  * @author Andrew Rambaut
@@ -35,7 +34,7 @@ public class NodeBarController extends AbstractController {
 
         final float defaultBarWidth = PREFS.getFloat(BAR_WIDTH_KEY, DEFAULT_BAR_WIDTH);
 
-	    optionsPanel = new ControllerPanel(2, 2);
+	    optionsPanel = new ControllerOptionsPanel(2, 2);
 
         titleCheckBox = new JCheckBox(getTitle());
 

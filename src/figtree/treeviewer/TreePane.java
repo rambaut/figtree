@@ -1131,7 +1131,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 							iter.next();
 						} while (!iter.isDone());
 						Point2D point2 = new Point2D.Double(coords[0], coords[1]);
-						paint = ((ContinuousGradientColorDecorator)branchDecorator).getPaint(paint, point2, point1);
+						paint = ((ContinuousGradientColorDecorator)branchDecorator).getPaint(paint, point1, point2);
 					} else {
 						branchDecorator.setItem(node);
 						paint = branchDecorator.getPaint(paint);

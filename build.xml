@@ -37,7 +37,7 @@
 	<target name="compile" depends="init,copyLibs">
 		<!-- Compile the java code from ${src} into ${build} -->
 		<javac source="1.5" srcdir="${src}" destdir="${build}"
-		       classpath="${lib}/jebl.jar:${lib}/quaqua.jar:${lib}/freehep-export-2.1.1.jar:">
+		       classpath="${lib}/jebl.jar:${lib}/freehep-export-2.1.1.jar:">
 			<include name="figtree/**"/>
 		</javac>
 		<copy todir="${build}" verbose="true">
@@ -45,34 +45,39 @@
 		</copy>
 	</target>
 
+	<target name="freehep" depends="compile" description="generate the distribution">
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}"/>
+
+		<jar jarfile="${dist}/freehep.jar">
+			<zipgroupfileset dir="${lib}" includes="freehep-export-2.1.1.jar"/>
+			<zipgroupfileset dir="${lib}" includes="freehep-graphics2d-2.1.1.jar"/>
+			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-2.1.1.jar"/>
+			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-emf-2.1.1.jar"/>
+			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-ps-2.1.1.jar"/>
+			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-svg-2.1.1.jar"/>
+			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-swf-2.1.1.jar"/>
+            <zipgroupfileset dir="${lib}" includes="freehep-graphicsio-pdf-2.1.1.jar"/>
+			<zipgroupfileset dir="${lib}" includes="freehep-io-2.0.2.jar"/>
+			<zipgroupfileset dir="${lib}" includes="freehep-swing-2.0.3.jar"/>
+			<zipgroupfileset dir="${lib}" includes="freehep-util-2.0.2.jar"/>
+			<zipgroupfileset dir="${lib}" includes="freehep-xml-2.1.1.jar"/>
+            <metainf dir="${lib}/META-INF" includes="services/org.freehep.util.export.ExportFileType"/>
+		</jar>
+
+	</target>
 	<target name="dist" depends="compile" description="generate the distribution">
 		<!-- Create the distribution directory -->
 		<mkdir dir="${dist}"/>
 
 		<jar jarfile="${dist}/figtree.jar">
+			<zipgroupfileset dir="${lib}" includes="jebl.jar"/>
+			<zipgroupfileset dir="${lib}" includes="freehep.jar"/>
 			<fileset dir="${build}" includes="**/*.class,**/*.properties,**/*.png,**/*.gif"/>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Main-Class" value="figtree.application.FigTreeApplication"/>
 			</manifest>
-			<zipgroupfileset dir="${lib}" includes="jebl.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-export-2.1.1.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-export-2.1.1.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-graphics2d-2.1.1.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-2.1.1.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-emf-2.1.1.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-java-2.1.1.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-pdf-2.1.1.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-ps-2.1.1.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-svg-2.1.1.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-swf-2.1.1.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-tests-2.1.1.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-io-2.0.2.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-swing-2.0.3.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-util-2.0.2.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep-xml-2.1.1.jar"/>
-			<zipgroupfileset dir="${lib}" includes="quaqua-colorchooser-only.jar"/>
-			<zipgroupfileset dir="${lib}" includes="quaqua-filechooser-only.jar"/>
 		</jar>
 
 	</target>

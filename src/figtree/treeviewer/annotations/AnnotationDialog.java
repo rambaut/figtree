@@ -88,7 +88,7 @@ public class AnnotationDialog {
 
 	    Object value = null;
 	    if (item != null) {
-		    value = item.getAttribute(definition.getName());
+		    value = item.getAttribute(definition.getCode());
 	    }
 
 	    component2 = null;
@@ -160,7 +160,11 @@ public class AnnotationDialog {
 		    case REAL:
 			    return ((RealNumberField)component).getValue();
 		    case STRING:
-			    return ((JTextField)component).getText();
+			    String value = ((JTextField)component).getText().trim();
+			    if (value.length() == 0) {
+				    return null;
+			    }
+			    return value;
 		    case RANGE:
 			    double lower = ((RealNumberField)component).getValue();
 			    double upper = ((RealNumberField)component2).getValue();
