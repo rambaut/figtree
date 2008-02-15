@@ -1166,11 +1166,8 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 	}
 
     public final void doGetInfo() {
-        JPanel panel = new JPanel() {
-            public Dimension getPreferredSize() {
-                return new Dimension(super.getPreferredSize().width, 80);
-            }
-        };
+        List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
+        JPanel panel = new FindPanel(definitions);
         panel.setOpaque(false);
         figTreePanel.showUtilityPanel(panel);
     }
