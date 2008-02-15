@@ -168,11 +168,13 @@ public class FigTreePanel extends JPanel {
                 Dimension size = topPanel.getSize();
                 size.height += delta;
                 topPanel.setPreferredSize(size);
-                topPanel.revalidate();
-                revalidate();
-                repaint();
-//            size = topPanel.getSize();
-//            topPanel.paintImmediately(0, 0, size.width, size.height);
+//                topPanel.revalidate();
+//                revalidate();
+//                repaint();
+                size = topPanel.getSize();
+                topPanel.validate();
+                validate();
+                topPanel.paintImmediately(0, 0, size.width, size.height);
             } else {
                 stopAnimation();
             }
@@ -201,7 +203,7 @@ public class FigTreePanel extends JPanel {
 
     private Timer timer = null;
     private boolean opening;
-    private int animationSpeed = 10;
+    private int animationSpeed = 1000;
     private int target;
 
     private static BufferedImage backgroundImage = null;
