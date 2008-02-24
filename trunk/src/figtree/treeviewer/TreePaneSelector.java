@@ -93,6 +93,10 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
     }
 
     public void mouseClicked(MouseEvent mouseEvent) {
+	    if (treePane.getTree() == null) {
+		    return;
+	    }
+	    
         if (toolMode == ToolMode.ROOTING) {
             Node node = treePane.getNodeAt((Graphics2D) treePane.getGraphics(), mouseEvent.getPoint());
             if (node != null) {

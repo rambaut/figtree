@@ -226,6 +226,10 @@ public class DefaultTreeViewer extends TreeViewer {
 	}
 
 	public void selectTaxa(String attributeName, TextSearchType searchType, String searchString, boolean caseSensitive) {
+		if (treePane.getTree() == null) {
+			return;
+		}
+
 		treePane.clearSelection();
 
 		String query = searchString;

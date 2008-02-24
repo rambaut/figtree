@@ -154,13 +154,13 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		toolBar.addComponent(findToolButton);
 		findToolButton.setEnabled(true);
 
-        final ToolbarAction infoToolbarAction = new ToolbarAction("Get Info", "Get Info...", infoToolIcon) {
-            public void actionPerformed(ActionEvent e){
-                getInfoAction.actionPerformed(e);
-            }
-        };
-        JButton infoToolButton = new ToolbarButton(infoToolbarAction);
-        toolBar.addComponent(infoToolButton);
+		final ToolbarAction infoToolbarAction = new ToolbarAction("Get Info", "Get Info...", infoToolIcon) {
+			public void actionPerformed(ActionEvent e){
+				getInfoAction.actionPerformed(e);
+			}
+		};
+		JButton infoToolButton = new ToolbarButton(infoToolbarAction);
+		toolBar.addComponent(infoToolButton);
 
 //        JButton settingsToolButton = new ToolbarButton(
 //                new ToolbarAction("Statistics", "Statistics...", statisticsToolIcon) {
@@ -383,6 +383,14 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		getFindAction().setEnabled(true);
 
 		getZoomWindowAction().setEnabled(false);
+
+		addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					findPanel.doFind();
+				}
+			}
+		});
 
 	}
 
@@ -1118,59 +1126,65 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 	}
 
 	public final void doFind() {
-		if (findDialog == null) {
-			findDialog = new FindDialog(this);
+		if (findPanel == null) {
+			findPanel = new FindPanel(findAllAction, null);
+			findPanel.setOpaque(false);
 		}
 
 		List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
-		if (findDialog.showDialog(definitions) != JOptionPane.CANCEL_OPTION) {
-			FindDialog.Target target = findDialog.getSearchTarget();
-			String targetString = findDialog.getSearchTargetString();
+		findPanel.setup(definitions);
+		figTreePanel.showUtilityPanel(findPanel);
+	}
 
-			if (findDialog.isNumericSearchType()) {
-				TreeViewer.NumberSearchType searchType = findDialog.getNumberSearchType();
-				Number searchValue = findDialog.getSearchValue();
-				if (target == FindDialog.Target.TAXON_LABEL) {
-					throw new IllegalArgumentException("Can't do numeric search on taxon labels");
-				} else if (target == FindDialog.Target.BRANCH_LENGTH) {
-					treeViewer.selectNodes("!length", searchType, searchValue);
-				} else if (target == FindDialog.Target.NODE_AGE) {
-					treeViewer.selectNodes("!height", searchType, searchValue);
-				} else if (target == FindDialog.Target.ANY_ANNOTATION) {
-					throw new IllegalArgumentException("Can't do numeric search on all annotations");
-				} else {
-					treeViewer.selectNodes(targetString, searchType, searchValue);
-				}
+	public final void doFindAll() {
 
+		FindPanel.Target target = findPanel.getSearchTarget();
+		String targetString = findPanel.getSearchTargetString();
+
+		if (findPanel.isNumericSearchType()) {
+			TreeViewer.NumberSearchType searchType = findPanel.getNumberSearchType();
+			Number searchValue = findPanel.getSearchValue();
+			if (target == FindPanel.Target.TAXON_LABEL) {
+				throw new IllegalArgumentException("Can't do numeric search on taxon labels");
+			} else if (target == FindPanel.Target.BRANCH_LENGTH) {
+				treeViewer.selectNodes("!length", searchType, searchValue);
+			} else if (target == FindPanel.Target.NODE_AGE) {
+				treeViewer.selectNodes("!height", searchType, searchValue);
+			} else if (target == FindPanel.Target.ANY_ANNOTATION) {
+				throw new IllegalArgumentException("Can't do numeric search on all annotations");
 			} else {
-				TreeViewer.TextSearchType searchType = findDialog.getTextSearchType();
-				String searchText = findDialog.getSearchText();
-				boolean caseSensitive = findDialog.isCaseSensitive();
+				treeViewer.selectNodes(targetString, searchType, searchValue);
+			}
 
-				if (target == FindDialog.Target.TAXON_LABEL) {
-					treeViewer.selectTaxa("!name", searchType, searchText, caseSensitive);
-				} else if (target == FindDialog.Target.BRANCH_LENGTH) {
-					throw new IllegalArgumentException("Can't do text search on branch lengths");
-				} else if (target == FindDialog.Target.NODE_AGE) {
-					throw new IllegalArgumentException("Can't do text search on node ages");
-				} else if (target == FindDialog.Target.ANY_ANNOTATION) {
-					treeViewer.selectNodes(null, searchType, searchText, caseSensitive);
-				} else {
-					treeViewer.selectNodes(targetString, searchType, searchText, caseSensitive);
-				}
+		} else {
+			TreeViewer.TextSearchType searchType = findPanel.getTextSearchType();
+			String searchText = findPanel.getSearchText();
+			boolean caseSensitive = findPanel.isCaseSensitive();
+
+			if (target == FindPanel.Target.TAXON_LABEL) {
+				treeViewer.selectTaxa("!name", searchType, searchText, caseSensitive);
+			} else if (target == FindPanel.Target.BRANCH_LENGTH) {
+				throw new IllegalArgumentException("Can't do text search on branch lengths");
+			} else if (target == FindPanel.Target.NODE_AGE) {
+				throw new IllegalArgumentException("Can't do text search on node ages");
+			} else if (target == FindPanel.Target.ANY_ANNOTATION) {
+				treeViewer.selectNodes(null, searchType, searchText, caseSensitive);
+			} else {
+				treeViewer.selectNodes(targetString, searchType, searchText, caseSensitive);
 			}
 		}
 	}
 
-	public final void doFindAgain() {
+	public final void doFindNext() {
+
 	}
 
-    public final void doGetInfo() {
-        List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
-        JPanel panel = new FindPanel(definitions);
-        panel.setOpaque(false);
-        figTreePanel.showUtilityPanel(panel);
-    }
+	public final void doGetInfo() {
+//        List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
+//        JPanel panel = new FindPanel(definitions);
+//        panel.setOpaque(false);
+//        figTreePanel.showUtilityPanel(panel);
+	}
 
 	public JComponent getExportableComponent() {
 		return treeViewer.getContentPane();
@@ -1390,13 +1404,26 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		}
 	};
 
-    private AbstractAction getInfoAction = new AbstractAction("Get Info...") {
-        public void actionPerformed(ActionEvent ae) {
-            doGetInfo();
-        }
-    };
+	private AbstractAction findAllAction = new AbstractAction("Find All") {
+		public void actionPerformed(ActionEvent ae) {
+			doFindAll();
+		}
+	};
+
+//	private AbstractAction findNextAction = new AbstractAction("Find Next") {
+//		public void actionPerformed(ActionEvent ae) {
+//			doFindNext();
+//		}
+//	};
+
+	private AbstractAction getInfoAction = new AbstractAction("Get Info...") {
+		public void actionPerformed(ActionEvent ae) {
+			doGetInfo();
+		}
+	};
 
 	private FindDialog findDialog = null;
+	private FindPanel findPanel = null;
 	private AnnotationDefinitionsDialog annotationDefinitionsDialog = null;
 	private AnnotationDialog annotationDialog = null;
 	private SelectAnnotationDialog selectAnnotationDialog = null;

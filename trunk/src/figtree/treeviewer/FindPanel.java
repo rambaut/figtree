@@ -12,8 +12,7 @@ import figtree.treeviewer.annotations.AnnotationDefinition;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
+import java.awt.event.*;
 import java.util.List;
 
 /**
@@ -57,36 +56,51 @@ public class FindPanel extends JPanel {
 
 	private int selectedTargetIndex = 0;
 
-	public FindPanel(List<AnnotationDefinition> annotations) {
-
-        setLayout(new BorderLayout(0,0));
-
-        OptionsPanel options = new OptionsPanel(12, 12);
+	public FindPanel(Action findAllAction, Action findNextAction) {
+		setLayout(new BorderLayout(0,0));
 
 		searchText.setColumns(18);
 
-		final JPanel panel = new JPanel(new BorderLayout(6,6));
-        panel.setOpaque(false);
+		final JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
+		panel.setOpaque(false);
 		targetCombo = new JComboBox();
 		targetCombo.addItem(Target.TAXON_LABEL);
 		targetCombo.addItem(Target.BRANCH_LENGTH);
 		targetCombo.addItem(Target.NODE_AGE);
 		targetCombo.addItem(Target.ANY_ANNOTATION);
-		for (AnnotationDefinition annotation : annotations) {
-			targetCombo.addItem(annotation);
+
+		adjustComponent(targetCombo);
+		adjustComponent(textSearchCombo);
+		adjustComponent(caseSensitiveCheck);
+		panel.add(targetCombo);
+		panel.add(textSearchCombo);
+		panel.add(searchText);
+		panel.add(caseSensitiveCheck);
+
+		if (findNextAction != null) {
+			JButton nextButton = new JButton(findNextAction);
+			adjustComponent(nextButton);
+			panel.add(nextButton);
 		}
-		panel.add(targetCombo, BorderLayout.WEST);
-		panel.add(textSearchCombo, BorderLayout.CENTER);
-		panel.add(searchText, BorderLayout.EAST);
-		options.addComponent(panel);
+		findAllButton = new JButton(findAllAction);
+		adjustComponent(findAllButton);
+		panel.add(findAllButton);
 
-		options.addComponent(caseSensitiveCheck);
+		getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "doFind");
+		getActionMap().put("doFind", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				findAllButton.doClick();
+			}
+		});
 
-		// options.addComponent(findAllCheck);
+		final JPanel panel2 = new JPanel(new BorderLayout());
+		panel2.setOpaque(false);
+		panel2.add(panel, BorderLayout.NORTH);
 
-        add(options, BorderLayout.CENTER);
+		add(panel2, BorderLayout.CENTER);
 
-        targetCombo.addItemListener(new ItemListener() {
+		targetCombo.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Object item = targetCombo.getSelectedItem();
 
@@ -122,6 +136,35 @@ public class FindPanel extends JPanel {
 		});
 
 		targetCombo.setSelectedIndex(selectedTargetIndex);
+	}
+
+	public void setup(List<AnnotationDefinition> annotations) {
+		Object item = targetCombo.getSelectedItem();
+
+		for (AnnotationDefinition annotation : annotations) {
+			targetCombo.addItem(annotation);
+		}
+
+		targetCombo.setSelectedItem(item);
+	}
+
+	public void doFind() {
+		findAllButton.doClick();
+	}
+	
+	protected void adjustComponent(JComponent comp) {
+		// comp.putClientProperty("Quaqua.Component.visualMargin", new Insets(0,0,0,0));
+		Font font = UIManager.getFont("SmallSystemFont");
+		if (font != null) {
+			comp.setFont(font);
+		}
+		comp.putClientProperty("JComponent.sizeVariant", "small");
+		if (comp instanceof JButton) {
+			comp.putClientProperty("JButton.buttonType", "roundRect");
+		}
+		if (comp instanceof JComboBox) {
+			comp.putClientProperty("JComboBox.isSquare", Boolean.TRUE);
+		}
 	}
 
 	public Target getSearchTarget() {
@@ -168,4 +211,5 @@ public class FindPanel extends JPanel {
 		return null;
 	}
 
+	final JButton findAllButton;
 }
