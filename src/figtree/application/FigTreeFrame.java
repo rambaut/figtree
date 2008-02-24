@@ -154,13 +154,13 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		toolBar.addComponent(findToolButton);
 		findToolButton.setEnabled(true);
 
-		final ToolbarAction infoToolbarAction = new ToolbarAction("Get Info", "Get Info...", infoToolIcon) {
-			public void actionPerformed(ActionEvent e){
-				getInfoAction.actionPerformed(e);
-			}
-		};
-		JButton infoToolButton = new ToolbarButton(infoToolbarAction);
-		toolBar.addComponent(infoToolButton);
+//		final ToolbarAction infoToolbarAction = new ToolbarAction("Get Info", "Get Info...", infoToolIcon) {
+//			public void actionPerformed(ActionEvent e){
+//				getInfoAction.actionPerformed(e);
+//			}
+//		};
+//		JButton infoToolButton = new ToolbarButton(infoToolbarAction);
+//		toolBar.addComponent(infoToolButton);
 
 //        JButton settingsToolButton = new ToolbarButton(
 //                new ToolbarAction("Statistics", "Statistics...", statisticsToolIcon) {
@@ -383,14 +383,6 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		getFindAction().setEnabled(true);
 
 		getZoomWindowAction().setEnabled(false);
-
-		addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					findPanel.doFind();
-				}
-			}
-		});
 
 	}
 
@@ -1131,9 +1123,13 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 			findPanel.setOpaque(false);
 		}
 
+		if (figTreePanel.getUtilityPanel() != findPanel) {
 		List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
 		findPanel.setup(definitions);
 		figTreePanel.showUtilityPanel(findPanel);
+		} else {
+			figTreePanel.hideUtilityPanel();
+		}
 	}
 
 	public final void doFindAll() {
@@ -1404,7 +1400,7 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		}
 	};
 
-	private AbstractAction findAllAction = new AbstractAction("Find All") {
+	private AbstractAction findAllAction = new AbstractAction("Find") {
 		public void actionPerformed(ActionEvent ae) {
 			doFindAll();
 		}

@@ -52,7 +52,6 @@ public class FindPanel extends JPanel {
 	private WholeNumberField integerText = new WholeNumberField();
 
 	private JCheckBox caseSensitiveCheck = new JCheckBox("Case sensitive");
-	private JCheckBox findAllCheck = new JCheckBox("Find all");
 
 	private int selectedTargetIndex = 0;
 
@@ -72,11 +71,14 @@ public class FindPanel extends JPanel {
 
 		adjustComponent(targetCombo);
 		adjustComponent(textSearchCombo);
+		adjustComponent(numberSearchCombo);
 		adjustComponent(caseSensitiveCheck);
 		panel.add(targetCombo);
 		panel.add(textSearchCombo);
 		panel.add(searchText);
 		panel.add(caseSensitiveCheck);
+
+		add(panel, BorderLayout.CENTER);
 
 		if (findNextAction != null) {
 			JButton nextButton = new JButton(findNextAction);
@@ -85,7 +87,6 @@ public class FindPanel extends JPanel {
 		}
 		findAllButton = new JButton(findAllAction);
 		adjustComponent(findAllButton);
-		panel.add(findAllButton);
 
 		getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "doFind");
 		getActionMap().put("doFind", new AbstractAction() {
@@ -94,11 +95,12 @@ public class FindPanel extends JPanel {
 			}
 		});
 
-		final JPanel panel2 = new JPanel(new BorderLayout());
+		final JPanel panel2 = new JPanel();
+		panel2.setLayout(new BoxLayout(panel2, BoxLayout.LINE_AXIS));
 		panel2.setOpaque(false);
-		panel2.add(panel, BorderLayout.NORTH);
+		panel2.add(findAllButton);
 
-		add(panel2, BorderLayout.CENTER);
+		add(panel2, BorderLayout.EAST);
 
 		targetCombo.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
@@ -113,25 +115,30 @@ public class FindPanel extends JPanel {
 				}
 
 				panel.removeAll();
-				panel.add(targetCombo, BorderLayout.WEST);
+				panel.add(targetCombo);
 				switch (type) {
 					case INTEGER:
-						panel.add(numberSearchCombo, BorderLayout.CENTER);
-						panel.add(integerText, BorderLayout.EAST);
+						panel.add(numberSearchCombo);
+						panel.add(integerText);
 						integerText.setColumns(10);
+						panel.add(caseSensitiveCheck);
 						caseSensitiveCheck.setEnabled(false);
 						break;
 					case REAL:
-						panel.add(numberSearchCombo, BorderLayout.CENTER);
-						panel.add(doubleText, BorderLayout.EAST);
+						panel.add(numberSearchCombo);
+						panel.add(doubleText);
 						doubleText.setColumns(10);
+						panel.add(caseSensitiveCheck);
 						caseSensitiveCheck.setEnabled(false);
 						break;
 					default:
-						panel.add(textSearchCombo, BorderLayout.CENTER);
-						panel.add(searchText, BorderLayout.EAST);
+						panel.add(textSearchCombo);
+						panel.add(searchText);
+						panel.add(caseSensitiveCheck);
 						caseSensitiveCheck.setEnabled(true);
 				}
+				revalidate();
+				repaint();
 			}
 		});
 
@@ -161,9 +168,14 @@ public class FindPanel extends JPanel {
 		comp.putClientProperty("JComponent.sizeVariant", "small");
 		if (comp instanceof JButton) {
 			comp.putClientProperty("JButton.buttonType", "roundRect");
+			comp.setFocusable(false);
 		}
 		if (comp instanceof JComboBox) {
 			comp.putClientProperty("JComboBox.isSquare", Boolean.TRUE);
+			comp.setFocusable(false);
+		}
+		if (comp instanceof JCheckBox) {
+			comp.setFocusable(false);
 		}
 	}
 

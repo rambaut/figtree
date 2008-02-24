@@ -44,17 +44,10 @@ public class SlideOpenPanel extends JPanel {
 		add(topPanel, BorderLayout.NORTH);
 		add(mainPanel, BorderLayout.CENTER);
 
-	}
-
-	public void showUtilityPanel(JPanel utilityPanel) {
-
-		if (utilityPanel == null) {
-			return;
-		}
-
-		final JButton doneButton = new JButton(closeIcon);
+		doneButton = new JButton(closeIcon);
+		Dimension d = doneButton.getPreferredSize();
+		doneButton.setPreferredSize(new Dimension(26, 26));
 		adjustComponent(doneButton);
-		doneButton.setIconTextGap(0);
 
 		doneButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -67,6 +60,15 @@ public class SlideOpenPanel extends JPanel {
 				doneButton.doClick();
 			}
 		});
+	}
+
+	public void showUtilityPanel(JPanel utilityPanel) {
+
+		if (utilityPanel == null) {
+			return;
+		}
+
+		this.utilityPanel = utilityPanel;
 
 		topPanel.removeAll();
 		topPanel.add(utilityPanel, BorderLayout.CENTER);
@@ -74,7 +76,7 @@ public class SlideOpenPanel extends JPanel {
 
 		Dimension size = topPanel.getPreferredSize();
 
-		target = utilityPanel.getPreferredSize().height + 8;
+		target = utilityPanel.getPreferredSize().height + 9;
 		size.height = 0;
 
 		topPanel.setPreferredSize(size);
@@ -86,8 +88,13 @@ public class SlideOpenPanel extends JPanel {
 	public void hideUtilityPanel() {
 		target = 0;
 		hiding = true;
+		utilityPanel = null;
 		startAnimation();
 	}
+
+	public JPanel getUtilityPanel() {
+		return utilityPanel;
+	}	
 
 	protected void adjustComponent(JComponent comp) {
 		// comp.putClientProperty("Quaqua.Component.visualMargin", new Insets(0,0,0,0));
@@ -98,9 +105,14 @@ public class SlideOpenPanel extends JPanel {
 		comp.putClientProperty("JComponent.sizeVariant", "small");
 		if (comp instanceof JButton) {
 			comp.putClientProperty("JButton.buttonType", "roundRect");
+			comp.setFocusable(false);
 		}
 		if (comp instanceof JComboBox) {
 			comp.putClientProperty("JComboBox.isSquare", Boolean.TRUE);
+			comp.setFocusable(false);
+		}
+		if (comp instanceof JCheckBox) {
+			comp.setFocusable(false);
 		}
 	}
 
@@ -140,6 +152,9 @@ public class SlideOpenPanel extends JPanel {
 
 
 	private final JPanel topPanel;
+	private final JButton doneButton;
+
+	private JPanel utilityPanel = null;
 
 	private Timer timer = null;
 	private int animationSpeed = 10;
