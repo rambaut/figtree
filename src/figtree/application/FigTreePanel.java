@@ -2,16 +2,12 @@ package figtree.application;
 
 import figtree.treeviewer.decorators.AttributableDecorator;
 import org.virion.jam.controlpalettes.ControlPalette;
-import org.virion.jam.util.IconUtils;
+import org.virion.jam.disclosure.SlideOpenPanel;
 import figtree.treeviewer.*;
 import figtree.treeviewer.painters.*;
 
 import javax.swing.*;
-import javax.swing.Timer;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 /**
  * This is a panel that has a TreeViewer and a BasicControlPalette with
