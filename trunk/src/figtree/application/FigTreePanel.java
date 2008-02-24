@@ -119,6 +119,14 @@ public class FigTreePanel extends JPanel {
 		slideOpenPanel.showUtilityPanel(utilityPanel);
     }
 
+	public void hideUtilityPanel() {
+		slideOpenPanel.hideUtilityPanel();
+	}
+
+
+	public JPanel getUtilityPanel() {
+		return slideOpenPanel.getUtilityPanel();
+	}
 
     public void toggleMidpointRoot() {
         treesController.toggleMidpointRoot();

@@ -149,6 +149,10 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
     }
 
     public void mouseReleased(MouseEvent mouseEvent) {
+	    if (treePane.getTree() == null) {
+		    return;
+	    }
+
         if (dragMode == DragMode.SELECT) {
             if (treePane.getDragRectangle() != null) {
                 Set<Node> selectedNodes = treePane.getNodesAt((Graphics2D) treePane.getGraphics(), treePane.getDragRectangle().getBounds());
