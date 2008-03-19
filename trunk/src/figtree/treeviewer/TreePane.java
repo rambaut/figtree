@@ -89,6 +89,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 			tree = new TransformedRootedTree(tree, branchTransform);
 		}
 
+		recalculateCollapsedNodes();
+		
 		calibrated = false;
 		invalidate();
 		repaint();
@@ -584,6 +586,36 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 			} else {
 				for (Node child : tree.getChildren(node)) {
 					collapseSelectedNodes(child);
+				}
+			}
+		}
+	}
+
+	public void recalculateCollapsedNodes() {
+		recalculateCollapsedNodes(tree.getRootNode());
+	}
+
+	private void recalculateCollapsedNodes(Node node) {
+
+		if (!tree.isExternal(node)) {
+			if (selectedNodes.contains(node)) {
+				if (node.getAttribute(CARTOON_ATTRIBUTE_NAME) != null) {
+					int tipCount = RootedTreeUtils.getTipCount(tree, node);
+					double height = RootedTreeUtils.getMinTipHeight(tree, node);
+					Object[] values = new Object[] { tipCount, height };
+					node.setAttribute(CARTOON_ATTRIBUTE_NAME, values);
+				}
+				if (node.getAttribute(COLLAPSE_ATTRIBUTE_NAME) != null) {
+					String tipName = "collapsed";
+					double height = RootedTreeUtils.getMinTipHeight(tree, node);
+					Object[] values = new Object[] { tipName, height };
+					node.setAttribute(COLLAPSE_ATTRIBUTE_NAME, values);
+				}
+				calibrated = false;
+				repaint();
+			} else {
+				for (Node child : tree.getChildren(node)) {
+					cartoonSelectedNodes(child);
 				}
 			}
 		}
