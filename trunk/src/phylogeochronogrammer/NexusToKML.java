@@ -22,6 +22,7 @@ public class NexusToKML {
 
         String inputTreeFile = args[0];
         RootedTree tree = null;
+        
         try {
             TreeImporter importer = new NexusImporter(new FileReader(inputTreeFile));
             tree = (RootedTree)importer.importNextTree();
