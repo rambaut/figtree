@@ -34,22 +34,10 @@
 		<copy file="../JEBL/dist/jebl.jar" tofile="${lib}/jebl.jar"/>
 	</target>
 
-	<target name="compile" depends="init,copyLibs">
-		<!-- Compile the java code from ${src} into ${build} -->
-		<javac source="1.5" srcdir="${src}" destdir="${build}"
-		       classpath="${lib}/jebl.jar:${lib}/freehep-export-2.1.1.jar:">
-			<include name="figtree/**"/>
-		</javac>
-		<copy todir="${build}" verbose="true">
-			<fileset dir="${src}" includes="figtree/**/*.png,figtree/**/*.gif"/>
-		</copy>
-	</target>
+	<target name="freehep" depends="init" description="generate the distribution">
 
-	<target name="freehep" depends="compile" description="generate the distribution">
-		<!-- Create the distribution directory -->
-		<mkdir dir="${dist}"/>
-
-		<jar jarfile="${dist}/freehep.jar">
+		<jar jarfile="${lib}/freehep.jar">
+			<zipgroupfileset dir="${lib}" includes="freehep-export-2.1.1.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-graphics2d-2.1.1.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-2.1.1.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-emf-2.1.1.jar"/>
@@ -65,6 +53,18 @@
 		</jar>
 
 	</target>
+
+	<target name="compile" depends="init,copyLibs,freehep">
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac source="1.5" srcdir="${src}" destdir="${build}"
+		       classpath="${lib}/jebl.jar:${lib}/freehep.jar:${lib}/quaqua.jar">
+			<include name="figtree/**"/>
+		</javac>
+		<copy todir="${build}" verbose="true">
+			<fileset dir="${src}" includes="figtree/**/*.png,figtree/**/*.gif"/>
+		</copy>
+	</target>
+
 	<target name="dist" depends="compile" description="generate the distribution">
 		<!-- Create the distribution directory -->
 		<mkdir dir="${dist}"/>
