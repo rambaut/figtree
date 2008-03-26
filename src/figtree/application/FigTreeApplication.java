@@ -13,13 +13,18 @@ package figtree.application;
 import figtree.application.preferences.*;
 import figtree.treeviewer.ExtendedTreeViewer;
 import org.virion.jam.framework.*;
-import org.virion.jam.mac.Utils;
 import org.virion.jam.controlpalettes.BasicControlPalette;
 import org.virion.jam.controlpalettes.ControlPalette;
-import org.virion.jam.util.IconUtils;
 import org.virion.jam.app.Arguments;
+import org.virion.jam.mac.Utils;
+import org.freehep.graphics2d.VectorGraphics;
+import org.freehep.graphicsio.ps.PSGraphics2D;
+import org.freehep.graphicsio.pdf.PDFGraphics2D;
+import org.freehep.graphicsio.emf.EMFGraphics2D;
+import org.freehep.graphicsio.svg.SVGGraphics2D;
+import org.freehep.graphicsio.gif.GIFGraphics2D;
+import org.freehep.graphicsio.swf.SWFGraphics2D;
 
-import java.awt.geom.Rectangle2D;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
@@ -60,7 +65,7 @@ public class FigTreeApplication extends MultiDocApplication {
 
     }
 
-    static public void createGraphic(String graphicFormat, String treeFileName, String graphicFileName) {
+    static public void createGraphic(String graphicFormat, int width, int height, String treeFileName, String graphicFileName) {
 
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(treeFileName));
@@ -115,31 +120,49 @@ public class FigTreeApplication extends MultiDocApplication {
 
             controlPalette.setSettings(settings);
 
-            //Rectangle2D bounds = treeViewer.getContentPane().getBounds();
-            Rectangle2D bounds = new Rectangle2D.Double(0.0, 0.0, 800, 800);
-            treeViewer.getContentPane().setBounds(bounds.getBounds());
-//			Document document = new Document(new com.lowagie.text.Rectangle((float)bounds.getWidth(), (float)bounds.getHeight()));
-//
-//			// step 2
-//			PdfWriter writer;
-//			writer = PdfWriter.getInstance(document, new FileOutputStream(pdfFileName));
-//			// step 3
-//			document.open();
-//			// step 4
-//			PdfContentByte cb = writer.getDirectContent();
-//			PdfTemplate tp = cb.createTemplate((float)bounds.getWidth(), (float)bounds.getHeight());
-//			Graphics2D g2d = tp.createGraphics((float)bounds.getWidth(), (float)bounds.getHeight(), new DefaultFontMapper());
-//			treeViewer.getContentPane().print(g2d);
-//			g2d.dispose();
-//			cb.addTemplate(tp, 0, 0);
-//			document.close();
+	        treeViewer.getContentPane().setSize(width, height);
+
+	        File file = new File(graphicFileName);
+
+	        Properties p = new Properties();
+	        p.setProperty("PageSize","A5");
+	        VectorGraphics g;
+
+	        if (graphicFormat.equals("PDF")) {
+		        System.out.println("Creating PDF graphic: " + graphicFileName);
+		        g = new PDFGraphics2D(file, new Dimension(width, height));
+	        } else if (graphicFormat.equals("PS")) {
+		        System.out.println("Creating PS graphic: " + graphicFileName);
+		        g = new PSGraphics2D(file, new Dimension(width, height));
+	        } else if (graphicFormat.equals("EMF")) {
+		        System.out.println("Creating EMF graphic: " + graphicFileName);
+		        g = new EMFGraphics2D(file, new Dimension(width, height));
+	        } else if (graphicFormat.equals("SVG")) {
+		        System.out.println("Creating SVG graphic: " + graphicFileName);
+		        g = new SVGGraphics2D(file, new Dimension(width, height));
+	        } else if (graphicFormat.equals("SWF")) {
+		        System.out.println("Creating SWF graphic: " + graphicFileName);
+		        g = new SWFGraphics2D(file, new Dimension(width, height));
+	        } else if (graphicFormat.equals("GIF")) {
+		        System.out.println("Creating GIF graphic: " + graphicFileName);
+		        g = new GIFGraphics2D(file, new Dimension(width, height));
+//	        } else if (graphicFormat.equals("PNG")) {
+//		        g = new PNGGraphics2D(file, new Dimension(width, height));
+//	        } else if (graphicFormat.equals("JPEG")) {
+//		        g = new JPEGGraphics2D(file, new Dimension(width, height));
+	        } else {
+				throw new RuntimeException("Unknown graphic format");
+	        }
+
+	        g.setProperties(p);
+	        g.startExport();
+			treeViewer.getContentPane().print(g);
+	        g.endExport();
 
         } catch(ImportException ie) {
-            throw new RuntimeException("Error writing PDF file: " + ie);
-//		} catch(DocumentException de) {
-//			throw new RuntimeException("Error writing PDF file: " + de);
+            throw new RuntimeException("Error writing graphic file: " + ie);
         } catch(IOException ioe) {
-            throw new RuntimeException("Error writing PDF file: " + ioe);
+            throw new RuntimeException("Error writing graphic file: " + ioe);
         }
 
     }
@@ -166,6 +189,7 @@ public class FigTreeApplication extends MultiDocApplication {
         centreLine("http://jebl.sourceforge.net/", 60);
         centreLine("Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, ", 60);
         centreLine("Tulio de Oliveira & Beth Shapiro", 60);
+	    System.out.println();
     }
 
     public static void printUsage(Arguments arguments) {
@@ -174,6 +198,7 @@ public class FigTreeApplication extends MultiDocApplication {
         System.out.println();
         System.out.println("  Example: figtree test.tree");
         System.out.println("  Example: figtree -graphic PDF test.tree test.pdf");
+	    System.out.println("  Example: figtree -graphic PNG -width 320 -height 320 test.tree test.png");
         System.out.println();
     }
 
@@ -183,8 +208,13 @@ public class FigTreeApplication extends MultiDocApplication {
         Arguments arguments = new Arguments(
                 new Arguments.Option[] {
                         new Arguments.StringOption("graphic", new String[] {
-                                "PDF", "SVG", "WMF", "PNG", "GIF", "JPEG"
+                                "PDF", "SVG", "SWF", "PS", "EMF",
+		                        // "PNG",
+		                        "GIF",
+		                        // "JPEG"
                         }, false, "produce a graphic with the given format"),
+		                new Arguments.IntegerOption("width", "the width of the graphic in pixels"),
+		                new Arguments.IntegerOption("height", "the height of the graphic in pixels"),
                         new Arguments.Option("help", "option to print this message")
                 });
 
@@ -206,12 +236,24 @@ public class FigTreeApplication extends MultiDocApplication {
         }
 
         if (arguments.hasOption("graphic")) {
+
+	        int width = 800;
+	        int height = 600;
+
+	        if (arguments.hasOption("width")) {
+		        width = arguments.getIntegerOption("width");
+	        }
+
+	        if (arguments.hasOption("height")) {
+		        height = arguments.getIntegerOption("height");
+	        }
+
             // command line version...
             String graphicFormat = arguments.getStringOption("graphic");
             String[] args2 = arguments.getLeftoverArguments();
 
             printTitle();
-            createGraphic(graphicFormat, args2[0], args2[1]);
+            createGraphic(graphicFormat, width, height, args2[0], args2[1]);
             System.exit(0);
         }
 
@@ -227,7 +269,6 @@ public class FigTreeApplication extends MultiDocApplication {
             System.setProperty("apple.awt.showGrowBox","true");
             System.setProperty("apple.awt.graphics.UseQuartz","true");
 
-//			if (!Utils.getMacOSXVersion().startsWith("10.5")) {
             // set the Quaqua Look and Feel in the UIManager
             try {
                 //System.setProperty("Quaqua.Debug.showClipBounds","true");
