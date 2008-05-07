@@ -40,6 +40,10 @@ public class RadialTreeLayout extends AbstractTreeLayout {
 		// do nothing
 	}
 
+    public boolean isShowingColouring() {
+        return false;
+    }
+
 	public boolean maintainAspectRatio() {
         return true;
     }

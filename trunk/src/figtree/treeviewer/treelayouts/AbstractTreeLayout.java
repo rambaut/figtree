@@ -42,10 +42,6 @@ public abstract class AbstractTreeLayout implements TreeLayout {
         fireTreeLayoutChanged();
     }
 
-    public boolean isShowingColouring() {
-        return branchColouringAttribute != null;
-    }
-
     public String getCartoonAttributeName() {
         return cartoonAttributeName;
     }
