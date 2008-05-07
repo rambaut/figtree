@@ -107,6 +107,10 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 		fireTreeLayoutChanged();
 	}
 
+    public boolean isShowingColouring() {
+        return (branchColouringAttribute != null && curvature == 0.0);
+    }
+
 	public void layout(RootedTree tree, TreeLayoutCache cache) {
 
 		cache.clear();
@@ -203,8 +207,10 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 							// to help this, we are going to draw the branch backwards
 							branchPath.moveTo(x1, y1);
 							for (int i = 0; i < colouring.length - 1; i+=2) {
-								float height = ((Number)colouring[i+1]).floatValue();
-								float p = (height - childHeight) / (nodeHeight - childHeight);
+//								float height = ((Number)colouring[i+1]).floatValue();
+//								float p = (height - childHeight) / (nodeHeight - childHeight);
+                                float interval = ((Number)colouring[i+1]).floatValue();
+                                float p = interval / (nodeHeight - childHeight);
 								float x = x1 - ((x1 - x0) * p);
 								branchPath.lineTo(x, y1);
 							}

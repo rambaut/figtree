@@ -120,6 +120,10 @@ public class PolarTreeLayout extends AbstractTreeLayout {
         fireTreeLayoutChanged();
     }
 
+    public boolean isShowingColouring() {
+        return false;
+    }
+
 	public void layout(RootedTree tree, TreeLayoutCache cache) {
 
 	    cache.clear();
