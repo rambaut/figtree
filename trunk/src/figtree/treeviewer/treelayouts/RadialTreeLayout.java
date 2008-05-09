@@ -41,7 +41,7 @@ public class RadialTreeLayout extends AbstractTreeLayout {
 	}
 
     public boolean isShowingColouring() {
-        return false;
+	    return (branchColouringAttribute != null);
     }
 
 	public boolean maintainAspectRatio() {
@@ -164,9 +164,12 @@ public class RadialTreeLayout extends AbstractTreeLayout {
 
 		            // to help this, we are going to draw the branch backwards
 		            branchPath.moveTo(x1, y1);
+		            float interval = 0.0F;
 		            for (int j = 0; j < colouring.length - 1; j+=2) {
-			            float height = ((Number)colouring[j+1]).floatValue();
-			            float p = (height - childHeight) / (nodeHeight - childHeight);
+//			            float height = ((Number)colouring[j+1]).floatValue();
+//			            float p = (height - childHeight) / (nodeHeight - childHeight);
+			            interval += ((Number)colouring[j+1]).floatValue();
+			            float p = interval / (nodeHeight - childHeight);
 			            float x = x1 + ((x0 - x1) * p);
 			            float y = y1 + ((y0 - y1) * p);
 			            branchPath.lineTo(x, y);
