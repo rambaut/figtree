@@ -90,7 +90,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		}
 
 		recalculateCollapsedNodes();
-		
+
 		calibrated = false;
 		invalidate();
 		repaint();
@@ -1138,14 +1138,12 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 				branchColouringDecorator.setItem(colour);
 				g2.setPaint(branchColouringDecorator.getPaint(Color.BLACK));
 
+				// Append the rest of the PathIterator to this new path...
 				GeneralPath path = new GeneralPath();
 				path.moveTo(coords1[0], coords1[1]);
-				iter.next();
-				while (!iter.isDone()) {
-					iter.currentSegment(coords1);
-					path.lineTo(coords1[0], coords1[1]);
-					iter.next();
-				}
+				path.append(iter, true);
+
+				// and draw it...
 				g2.draw(path);
 
 			} else {
