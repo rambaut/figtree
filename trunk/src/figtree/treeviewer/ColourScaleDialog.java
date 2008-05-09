@@ -44,7 +44,7 @@ public class ColourScaleDialog {
 	                         final Color fromColour, final Color toColour, boolean useGradient) {
 		this.frame = frame;
 
-		autoScaleCheck = new JCheckBox("Auto-scale range");
+		autoScaleCheck = new JCheckBox("Auto-scale range between min and max values");
 		autoScaleCheck.setSelected(autoRange);
 
 		fromLabel = new JLabel("Range from:");

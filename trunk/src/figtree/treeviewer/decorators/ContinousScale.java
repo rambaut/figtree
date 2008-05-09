@@ -91,6 +91,7 @@ public class ContinousScale {
 			minValue = Math.log(minValue);
 			maxValue = Math.log(maxValue);
 		}
+
 	}
 
 	public double getValue(Attributable item) {
@@ -111,16 +112,20 @@ public class ContinousScale {
 			double min = 0.0;
 			double max = 1.0;
 
-			if (normalize) {
+			if (!normalize) {
+				min = minValue;
+				max = maxValue;
+			} else {
 				min = lowerRange;
 				max = upperRange;
+				if (maxValue > max) {
+					max = maxValue;
+				}
+				if (minValue < min) {
+					min = minValue;
+				}
 			}
-			if (maxValue > max) {
-				max = maxValue;
-			}
-			if (minValue < min) {
-				min = minValue;
-			}
+
 			return ((number - min)/(max - min));
 		}
 
