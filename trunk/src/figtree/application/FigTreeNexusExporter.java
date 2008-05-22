@@ -14,8 +14,8 @@ import java.awt.*;
  */
 public class FigTreeNexusExporter extends NexusExporter {
 
-	public FigTreeNexusExporter(Writer writer) {
-		super(writer);
+	public FigTreeNexusExporter(Writer writer, boolean writeMetaComments) {
+		super(writer, writeMetaComments);
 	}
 
 	/**
