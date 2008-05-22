@@ -176,7 +176,7 @@ public class FigTreeApplication extends MultiDocApplication {
 
     public static void printTitle() {
         System.out.println();
-        centreLine("FigTree v1.1.3, 2006-2008", 60);
+        centreLine("FigTree v1.2, 2006-2008", 60);
         centreLine("Tree Figure Drawing Tool", 60);
         centreLine("Andrew Rambaut", 60);
         System.out.println();
@@ -307,7 +307,7 @@ public class FigTreeApplication extends MultiDocApplication {
         }
 
         final String nameString = "FigTree";
-        final String versionString = "1.1.3";
+        final String versionString = "1.2";
         String aboutString = "<html><center>Tree Figure Drawing Tool<br>Version " + versionString + "<br>2006-2008, Andrew Rambaut<br>" +
                 "Institute of Evolutionary Biology, University of Edinburgh.<br><br>" +
                 "<a href=\"http://tree.bio.ed.ac.uk/\">http://tree.bio.ed.ac.uk/</a><br><br>" +

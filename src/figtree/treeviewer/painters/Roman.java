@@ -31,7 +31,7 @@ public class Roman extends NumberFormat
 
     public StringBuffer format(double n, StringBuffer a, FieldPosition p)
     {
-        return format((long)(n * 100), a, p);
+        return format((long)n, a, p);
     }
 
 

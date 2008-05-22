@@ -15,6 +15,7 @@ import org.virion.jam.toolbar.*;
 import org.virion.jam.util.IconUtils;
 import org.freehep.util.export.ExportDialog;
 import figtree.application.menus.TreeMenuHandler;
+import figtree.application.menus.FigTreeFileMenuHandler;
 import figtree.treeviewer.*;
 import figtree.treeviewer.TreeSelectionListener;
 import figtree.treeviewer.annotations.*;
@@ -28,7 +29,7 @@ import java.text.NumberFormat;
 import java.util.*;
 import java.util.List;
 
-public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
+public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandler, TreeMenuHandler {
 	private final ExtendedTreeViewer treeViewer;
 	private final ControlPalette controlPalette;
 	private final FigTreePanel figTreePanel;
@@ -46,7 +47,7 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 
 		setImportAction(importAction);
 		//       setImportAction(importCharactersAction);
-		setExportAction(exportAction);
+		setExportAction(exportTreesAction);
 
 		treeViewer = new ExtendedTreeViewer();
 		controlPalette = new BasicControlPalette(200, BasicControlPalette.DisplayMode.ONLY_ONE_OPEN);
@@ -778,7 +779,7 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		controlPalette.getSettings(settings);
 
 		FileWriter writer = new FileWriter(file);
-		FigTreeNexusExporter exporter = new FigTreeNexusExporter(writer);
+		FigTreeNexusExporter exporter = new FigTreeNexusExporter(writer, true);
 		exporter.exportTrees(treeViewer.getTrees());
 		exporter.writeFigTreeBlock(settings);
 
@@ -953,77 +954,50 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 
 	public final void doExport() {
 
-		FileDialog dialog = new FileDialog(this,
-				"Export Tree File...",
-				FileDialog.SAVE);
-
-		dialog.setVisible(true);
-		if (dialog.getFile() != null) {
-			File file = new File(dialog.getDirectory(), dialog.getFile());
-
-			FileWriter writer = null;
-			try {
-				writer = new FileWriter(file);
-				writeTreeFile(writer, TreeFileFormat.NEWICK, false);
-				writer.close();
-			} catch (IOException ioe) {
-				JOptionPane.showMessageDialog(this, "Error writing tree file: " + ioe,
-						"Export Error",
-						JOptionPane.ERROR_MESSAGE);
-			}
-
+		if (exportTreeDialog == null) {
+			exportTreeDialog = new ExportTreeDialog(this);
 		}
 
+		if (exportTreeDialog.showDialog() == JOptionPane.OK_OPTION) {
+
+			FileDialog dialog = new FileDialog(this,
+					"Export Tree File...",
+					FileDialog.SAVE);
+
+			dialog.setVisible(true);
+			if (dialog.getFile() != null) {
+				File file = new File(dialog.getDirectory(), dialog.getFile());
+
+				FileWriter writer = null;
+				try {
+					writer = new FileWriter(file);
+					writeTreeFile(writer,
+							exportTreeDialog.getFormat(),
+							exportTreeDialog.allTrees(),
+							exportTreeDialog.asDisplayed(),
+							exportTreeDialog.includeFigTreeBlock(),
+							exportTreeDialog.includeAnnotations());
+					writer.close();
+				} catch (IOException ioe) {
+					JOptionPane.showMessageDialog(this, "Error writing tree file: " + ioe,
+							"Export Error",
+							JOptionPane.ERROR_MESSAGE);
+				}
+
+			}
+		}
 	}
 
 	public final void doExportGraphic() {
 		ExportDialog export = new ExportDialog();
 		export.showExportDialog( this, "Export view as ...", treeViewer.getContentPane(), "export" );
-
-
-//		FileDialog dialog = new FileDialog(this,
-//				"Export PDF Image...",
-//				FileDialog.SAVE);
-//
-//		dialog.setVisible(true);
-//		if (dialog.getFile() != null) {
-//			File file = new File(dialog.getDirectory(), dialog.getFile());
-//
-//			Rectangle2D bounds = treeViewer.getContentPane().getBounds();
-//			Document document = new Document(new com.lowagie.text.Rectangle((float)bounds.getWidth(), (float)bounds.getHeight()));
-//			try {
-//				// step 2
-//				PdfWriter writer;
-//				writer = PdfWriter.getInstance(document, new FileOutputStream(file));
-//				// step 3
-//				document.open();
-//				// step 4
-//				PdfContentByte cb = writer.getDirectContent();
-//				PdfTemplate tp = cb.createTemplate((float)bounds.getWidth(), (float)bounds.getHeight());
-//				Graphics2D g2d = tp.createGraphics((float)bounds.getWidth(), (float)bounds.getHeight(), new DefaultFontMapper());
-//				treeViewer.getContentPane().print(g2d);
-//				g2d.dispose();
-//				cb.addTemplate(tp, 0, 0);
-//			}
-//			catch(DocumentException de) {
-//				JOptionPane.showMessageDialog(this, "Error writing PDF file: " + de,
-//						"Export PDF Error",
-//						JOptionPane.ERROR_MESSAGE);
-//			}
-//			catch (FileNotFoundException e) {
-//				JOptionPane.showMessageDialog(this, "Error writing PDF file: " + e,
-//						"Export PDF Error",
-//						JOptionPane.ERROR_MESSAGE);
-//			}
-//			document.close();
-//		}
 	}
 
 
 	public void doCopy() {
 		StringWriter writer = new StringWriter();
 		try {
-			writeTreeFile(writer, TreeFileFormat.NEXUS, false);
+			writeTreeFile(writer, ExportTreeDialog.Format.NEXUS, true, false, false, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -1087,15 +1061,14 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		treeViewer.selectAll();
 	}
 
-	enum TreeFileFormat {
-		NEXUS,
-		NEWICK
-	};
-
-	protected void writeTreeFile(Writer writer, TreeFileFormat format, boolean treeDrawBlock) throws IOException {
+	protected void writeTreeFile(Writer writer, ExportTreeDialog.Format format,
+	                             boolean writeAllTrees,
+	                             boolean writeAsDisplayed,
+	                             boolean writeFigTreeBlock,
+	                             boolean writeAnnotations) throws IOException {
 
 		Map<String, Object> settings = null;
-		if (treeDrawBlock) {
+		if (writeFigTreeBlock) {
 			settings = new TreeMap<String, Object>();
 			controlPalette.getSettings(settings);
 		}
@@ -1103,11 +1076,19 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		switch (format) {
 			case NEWICK:
 				NewickExporter newickExporter = new NewickExporter(writer);
-				newickExporter.exportTrees(treeViewer.getTrees());
+				if (writeAllTrees) {
+					newickExporter.exportTrees(treeViewer.getTrees());
+				} else {
+					newickExporter.exportTree(treeViewer.getCurrentTree());
+				}
 				break;
 			case NEXUS:
-				FigTreeNexusExporter nexusExporter = new FigTreeNexusExporter(writer);
-				nexusExporter.exportTrees(treeViewer.getTrees());
+				FigTreeNexusExporter nexusExporter = new FigTreeNexusExporter(writer, writeAnnotations);
+				if (writeAllTrees) {
+					nexusExporter.exportTrees(treeViewer.getTrees());
+				} else {
+					nexusExporter.exportTree(treeViewer.getCurrentTree());
+				}
 				if (settings != null) {
 					nexusExporter.writeFigTreeBlock(settings);
 				}
@@ -1124,9 +1105,9 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		}
 
 		if (figTreePanel.getUtilityPanel() != findPanel) {
-		List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
-		findPanel.setup(definitions);
-		figTreePanel.showUtilityPanel(findPanel);
+			List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
+			findPanel.setup(definitions);
+			figTreePanel.showUtilityPanel(findPanel);
 		} else {
 			figTreePanel.hideUtilityPanel();
 		}
@@ -1184,6 +1165,14 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 
 	public JComponent getExportableComponent() {
 		return treeViewer.getContentPane();
+	}
+
+	public Action getExportTreesAction() {
+		return exportTreesAction;
+	}
+
+	public Action getExportGraphicAction() {
+		return exportGraphicAction;
 	}
 
 	public Action getNextTreeAction() {
@@ -1278,7 +1267,13 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		}
 	};
 
-	private AbstractAction exportAction = new AbstractAction("Export Graphic...") {
+	private AbstractAction exportTreesAction = new AbstractAction("Export Trees...") {
+		public void actionPerformed(ActionEvent ae) {
+			doExport();
+		}
+	};
+
+	private AbstractAction exportGraphicAction = new AbstractAction("Export Graphic...") {
 		public void actionPerformed(ActionEvent ae) {
 			doExportGraphic();
 		}
@@ -1418,7 +1413,7 @@ public class FigTreeFrame extends DocumentFrame implements TreeMenuHandler {
 		}
 	};
 
-	private FindDialog findDialog = null;
+	private ExportTreeDialog exportTreeDialog = null;
 	private FindPanel findPanel = null;
 	private AnnotationDefinitionsDialog annotationDefinitionsDialog = null;
 	private AnnotationDialog annotationDialog = null;
