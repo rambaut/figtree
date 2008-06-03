@@ -26,8 +26,27 @@ public class DiscreteColorDecorator implements Decorator {
 			new Color(146,35,142),
 			new Color(255,90,34),
 			new Color(239,255,34),
-			Color.DARK_GRAY
-	};
+			Color.DARK_GRAY,
+
+            new Color(160,146,241),
+            new Color(243,146,158),
+            new Color(255,215,145),
+            new Color(171,255,145),
+            new Color(146,199,202),
+            new Color(201,146,199),
+            new Color(255,173,145),
+            new Color(248,255,145),
+            Color.LIGHT_GRAY,
+
+            new Color(32,18,113),
+            new Color(115,18,30),
+            new Color(128,87,17),
+            new Color(43,128,17),
+            new Color(18,71,74),
+            new Color(73,18,71),
+            new Color(128,45,17),
+            new Color(120,128,17)
+    };
 
 	public DiscreteColorDecorator() {
 		this(DEFAULT_PAINTS);
