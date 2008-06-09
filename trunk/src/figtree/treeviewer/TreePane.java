@@ -7,7 +7,6 @@ import figtree.treeviewer.decorators.Decorator;
 import figtree.treeviewer.decorators.ContinuousGradientColorDecorator;
 import figtree.treeviewer.painters.*;
 import figtree.treeviewer.treelayouts.*;
-import figtree.treeviewer.annotations.AnnotationDefinition;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,6 +41,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
 	public final String CARTOON_ATTRIBUTE_NAME = "!cartoon";
 	public final String COLLAPSE_ATTRIBUTE_NAME = "!collapse";
+	public final String HILIGHT_ATTRIBUTE_NAME = "!hilight";
 
 	public TreePane() {
 	}
@@ -110,6 +110,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
 		treeLayout.setCartoonAttributeName(CARTOON_ATTRIBUTE_NAME);
 		treeLayout.setCollapsedAttributeName(COLLAPSE_ATTRIBUTE_NAME);
+		treeLayout.setHilightAttributeName(HILIGHT_ATTRIBUTE_NAME);
 		treeLayout.setBranchColouringAttributeName(branchColouringAttribute);
 
 		treeLayout.addTreeLayoutListener(new TreeLayoutListener() {
@@ -339,8 +340,12 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		return selectionPaint;
 	}
 
-	public void setSelectionPaint(Paint selectionPaint) {
-		this.selectionPaint = selectionPaint;
+	public void setSelectionColor(Color selectionColor) {
+		this.selectionPaint = new Color(
+				selectionColor.getRed(),
+				selectionColor.getGreen(),
+				selectionColor.getBlue(),
+				128);
 	}
 
 	public boolean isTransformBranchesOn() {
@@ -443,6 +448,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 			selectedNodes.add(selectedNode);
 		}
 		fireSelectionChanged();
+		clearSelectionPaths();
 		repaint();
 	}
 
@@ -451,6 +457,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 			this.selectedTips.add(selectedTip);
 		}
 		fireSelectionChanged();
+		clearSelectionPaths();
 		repaint();
 	}
 
@@ -459,6 +466,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 			addSelectedChildClades(selectedNode);
 		}
 		fireSelectionChanged();
+		clearSelectionPaths();
 		repaint();
 	}
 
@@ -474,6 +482,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 			addSelectedChildTips(selectedNode);
 		}
 		fireSelectionChanged();
+		clearSelectionPaths();
 		repaint();
 	}
 
@@ -493,6 +502,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 			addSelectedClade(node);
 		}
 		fireSelectionChanged();
+		clearSelectionPaths();
 		repaint();
 	}
 
@@ -502,6 +512,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		}
 		selectedNodes.clear();
 		fireSelectionChanged();
+		clearSelectionPaths();
 		repaint();
 	}
 
@@ -513,18 +524,21 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
 		selectedTips.clear();
 		fireSelectionChanged();
+		clearSelectionPaths();
 		repaint();
 	}
 
 	public void selectAllTaxa() {
 		selectedTips.addAll(tree.getExternalNodes());
 		fireSelectionChanged();
+		clearSelectionPaths();
 		repaint();
 	}
 
 	public void selectAllNodes() {
 		selectedNodes.addAll(tree.getNodes());
 		fireSelectionChanged();
+		clearSelectionPaths();
 		repaint();
 	}
 
@@ -532,6 +546,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		selectedNodes.clear();
 		selectedTips.clear();
 		fireSelectionChanged();
+		clearSelectionPaths();
 		repaint();
 	}
 
@@ -591,6 +606,32 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		}
 	}
 
+	public void hilightSelectedNodes(Color color) {
+		hilightSelectedNodes(tree.getRootNode(), color);
+	}
+
+	private void hilightSelectedNodes(Node node, Color color) {
+
+		if (!tree.isExternal(node)) {
+			if (selectedNodes.contains(node)) {
+				if (node.getAttribute(HILIGHT_ATTRIBUTE_NAME) != null) {
+					node.removeAttribute(HILIGHT_ATTRIBUTE_NAME);
+				} else {
+					int tipCount = RootedTreeUtils.getTipCount(tree, node);
+					double height = RootedTreeUtils.getMinTipHeight(tree, node);
+					Object[] values = new Object[] { tipCount, height, color };
+					node.setAttribute(HILIGHT_ATTRIBUTE_NAME, values);
+				}
+				calibrated = false;
+				repaint();
+			} else {
+				for (Node child : tree.getChildren(node)) {
+					hilightSelectedNodes(child, color);
+				}
+			}
+		}
+	}
+
 	public void recalculateCollapsedNodes() {
 		recalculateCollapsedNodes(tree.getRootNode());
 	}
@@ -610,6 +651,13 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 					double height = RootedTreeUtils.getMinTipHeight(tree, node);
 					Object[] values = new Object[] { tipName, height };
 					node.setAttribute(COLLAPSE_ATTRIBUTE_NAME, values);
+				}
+				Object[] oldValues = (Object[])node.getAttribute(HILIGHT_ATTRIBUTE_NAME);
+				if (oldValues != null) {
+					int tipCount = RootedTreeUtils.getTipCount(tree, node);
+					double height = RootedTreeUtils.getMinTipHeight(tree, node);
+					Object[] values = new Object[] { tipCount, height, oldValues[2] };
+					node.setAttribute(HILIGHT_ATTRIBUTE_NAME, values);
 				}
 				calibrated = false;
 				repaint();
@@ -640,6 +688,27 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 			} else {
 				for (Node child : tree.getChildren(node)) {
 					clearSelectedCollapsedNodes(child);
+				}
+			}
+		}
+	}
+
+	public void clearHilightedNodes() {
+		clearSelectedHilightedNodes(tree.getRootNode());
+	}
+
+	private void clearSelectedHilightedNodes(Node node) {
+
+		if (!tree.isExternal(node)) {
+			if (selectedNodes.contains(node)) {
+				if (node.getAttribute(HILIGHT_ATTRIBUTE_NAME) != null) {
+					node.removeAttribute(HILIGHT_ATTRIBUTE_NAME);
+				}
+				calibrated = false;
+				repaint();
+			} else {
+				for (Node child : tree.getChildren(node)) {
+					clearSelectedHilightedNodes(child);
 				}
 			}
 		}
@@ -964,6 +1033,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 			calibrate(g2, getWidth(), getHeight());
 		}
 
+		drawTree(g2, getWidth(), getHeight());
+
 		Paint oldPaint = g2.getPaint();
 		Stroke oldStroke = g2.getStroke();
 
@@ -980,41 +1051,54 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 //
 //		}
 
-		for (Node selectedNode : selectedNodes) {
-			Shape branchPath = treeLayoutCache.getBranchPath(selectedNode);
-			if (branchPath != null) {
-				Shape transPath = transform.createTransformedShape(branchPath);
-				g2.setPaint(selectionPaint);
-				g2.setStroke(selectionStroke);
-				g2.draw(transPath);
-			}
-			Shape collapsedShape = treeLayoutCache.getCollapsedShape(selectedNode);
-			if (collapsedShape != null) {
-				Shape transPath = transform.createTransformedShape(collapsedShape);
-				g2.setPaint(selectionPaint);
-				g2.setStroke(selectionStroke);
-				g2.draw(transPath);
+		if (branchSelection == null) {
+			branchSelection = new GeneralPath();
+			for (Node selectedNode : selectedNodes) {
+				Shape branchPath = treeLayoutCache.getBranchPath(selectedNode);
+				if (branchPath != null) {
+					Shape transPath = transform.createTransformedShape(branchPath);
+					branchSelection.append(transPath, false);
+
+				}
+				Shape collapsedShape = treeLayoutCache.getCollapsedShape(selectedNode);
+				if (collapsedShape != null) {
+					Shape transPath = transform.createTransformedShape(collapsedShape);
+					branchSelection.append(transPath, false);
+				}
 			}
 		}
 
-		for (Node selectedTip : selectedTips) {
-			g2.setPaint(selectionPaint);
-			Shape labelBounds = tipLabelBounds.get(selectedTip);
-			if (labelBounds != null) {
-				g2.fill(labelBounds);
+		if (labelSelection == null) {
+			labelSelection = new GeneralPath();
+			for (Node selectedTip : selectedTips) {
+				Shape labelBounds = tipLabelBounds.get(selectedTip);
+				if (labelBounds != null) {
+					labelSelection.append(labelBounds, false);
+				}
 			}
 		}
+
+		g2.setPaint(selectionPaint);
+		g2.setStroke(selectionStroke);
+		g2.draw(branchSelection);
+		g2.fill(labelSelection);
 
 		g2.setPaint(oldPaint);
 		g2.setStroke(oldStroke);
-
-		drawTree(g2, getWidth(), getHeight());
 
 		if (dragRectangle != null) {
 			g2.setPaint(new Color(128, 128, 128, 128));
 			g2.fill(dragRectangle);
 		}
 	}
+
+	private void clearSelectionPaths() {
+		branchSelection = null;
+		labelSelection = null;
+	}
+
+	private GeneralPath branchSelection = null;
+	private GeneralPath labelSelection = null;
 
 	public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
 
@@ -1057,6 +1141,29 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 			if (scalePainter.isVisible()) {
 				Rectangle2D scaleBounds = this.scaleBounds.get(scalePainter);
 				scalePainter.paint(g2, this, Painter.Justification.CENTER, scaleBounds);
+			}
+		}
+
+		// Paint hilighted nodes
+		for (Node node : treeLayoutCache.getHilightNodesList() ) {
+			Object[] values = (Object[])node.getAttribute(HILIGHT_ATTRIBUTE_NAME);
+
+			Shape hilightShape = treeLayoutCache.getHilightShape(node);
+
+			Shape transShape = transform.createTransformedShape(hilightShape);
+			Paint paint = ((Color)values[2]).darker();
+			Paint fillPaint = (Color)values[2];
+			Stroke stroke = new BasicStroke(0.5F);
+
+			if (fillPaint != null) {
+				g2.setPaint(fillPaint);
+				g2.fill(transShape);
+			}
+
+			if (paint != null) {
+				g2.setPaint(paint);
+				g2.setStroke(stroke);
+				g2.draw(transShape);
 			}
 		}
 
@@ -1629,6 +1736,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		}
 
 		calloutPaths.clear();
+		clearSelectionPaths();
 
 		calibrated = true;
 	}

@@ -404,9 +404,9 @@ public class MultiPaneTreeViewer extends TreeViewer {
 		fireTreeSettingsChanged();
 	}
 
-	public void setSelectionPaint(Paint selectionPane) {
+	public void setSelectionColor(Color selectionColor) {
 		for (TreePane treePane : treePanes) {
-			treePane.setSelectionPaint(selectionPane);
+			treePane.setSelectionColor(selectionColor);
 		}
 		fireTreeSettingsChanged();
 	}

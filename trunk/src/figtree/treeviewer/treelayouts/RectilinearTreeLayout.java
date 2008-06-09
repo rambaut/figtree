@@ -127,7 +127,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 		maxXPosition = 0.0;
 		getMaxXPosition(tree, root, getRootLength());
 
-		Point2D rootPoint = constructNode(tree, root, getRootLength(), cache);
+		Point2D rootPoint = constructNode(tree, root, 0.0, getRootLength(), cache);
 
 		// construct a root branch line
 		double ty = transformY(rootPoint.getY());
@@ -138,7 +138,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 
 	}
 
-	private Point2D constructNode(RootedTree tree, Node node, double xPosition, TreeLayoutCache cache) {
+	private Point2D constructNode(RootedTree tree, Node node, double xParent, double xPosition, TreeLayoutCache cache) {
 
 		Point2D nodePoint;
 
@@ -149,6 +149,11 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 			} else if (cartoonAttributeName != null && node.getAttribute(cartoonAttributeName) != null) {
 				nodePoint = constructCartoonNode(tree, node, xPosition, cache);
 			} else {
+
+				if (hilightAttributeName != null && node.getAttribute(hilightAttributeName) != null) {
+					constructHilight(tree, node, xParent, xPosition, cache);
+				}
+
 				double yPos = 0.0;
 
 				List<Node> children = tree.getChildren(node);
@@ -166,7 +171,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 					}
 					Node child = children.get(index);
 					double length = tree.getLength(child);
-					Point2D childPoint = constructNode(tree, child, xPosition + length, cache);
+					Point2D childPoint = constructNode(tree, child, xPosition, xPosition + length, cache);
 					yPos += childPoint.getY();
 				}
 
@@ -464,6 +469,32 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 		cache.tipLabelPaths.put(node, tipLabelPath);
 
 		return nodePoint;
+	}
+
+	private void constructHilight(RootedTree tree, Node node, double xParent, double xPosition, TreeLayoutCache cache) {
+
+		Object[] values = (Object[])node.getAttribute(hilightAttributeName);
+		int tipCount = (Integer)values[0];
+		double tipHeight = (Double)values[1];
+		double height = tree.getHeight(node);
+
+		GeneralPath hilightShape = new GeneralPath();
+
+		float x0 = (float)((xPosition + xParent) / 2.0);
+		float x1 = (float)(xPosition + height /*- tipHeight*/);
+		double tmp = yPosition - (yIncrement / 2);
+		float y0 = (float)transformY(tmp);
+		float y1 = (float)transformY(tmp + (yIncrement * tipCount));
+
+		hilightShape.moveTo(x0, y0);
+		hilightShape.lineTo(x1, y0);
+		hilightShape.lineTo(x1, y1);
+		hilightShape.lineTo(x0, y1);
+		hilightShape.closePath();
+
+		// add the collapsedShape to the map of branch paths
+		cache.hilightNodes.add(node);
+		cache.hilightShapes.put(node, hilightShape);
 	}
 
 

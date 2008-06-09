@@ -437,6 +437,16 @@ public class DefaultTreeViewer extends TreeViewer {
 		fireTreeSettingsChanged();
 	}
 
+	public void hilightSelectedNodes(Color color) {
+		treePane.hilightSelectedNodes(color);
+		fireTreeSettingsChanged();
+	}
+
+	public void clearHilighting() {
+		treePane.clearHilightedNodes();
+		fireTreeSettingsChanged();
+	}
+
 	public void rerootOnSelectedBranch() {
 		treePane.rerootOnSelectedBranch();
 		fireTreeSettingsChanged();
@@ -562,8 +572,8 @@ public class DefaultTreeViewer extends TreeViewer {
 		treePane.setBranchColouringDecorator(branchColouringAttribute, branchColouringDecorator);
 	}
 
-	public void setSelectionPaint(Paint selectionPane) {
-		treePane.setSelectionPaint(selectionPane);
+	public void setSelectionColor(Color selectionColor) {
+		treePane.setSelectionColor(selectionColor);
 	}
 
 	public Paint getSelectionPaint() {
