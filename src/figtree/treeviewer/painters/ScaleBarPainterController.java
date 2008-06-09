@@ -189,6 +189,7 @@ public class ScaleBarPainterController extends AbstractController {
     }
 
     public void setSettings(Map<String,Object> settings) {
+	    titleCheckBox.setSelected((Boolean)settings.get(SCALE_BAR_KEY + "." + IS_SHOWN));
         autoScaleCheck.setSelected((Boolean)settings.get(SCALE_BAR_KEY + "." + AUTOMATIC_SCALE_KEY));
         scaleRangeText.setValue((Double)settings.get(SCALE_BAR_KEY + "." + SCALE_RANGE_KEY));
         fontSizeSpinner.setValue((Double)settings.get(SCALE_BAR_KEY + "." + FONT_SIZE_KEY));
@@ -197,6 +198,7 @@ public class ScaleBarPainterController extends AbstractController {
     }
 
     public void getSettings(Map<String, Object> settings) {
+	    settings.put(SCALE_BAR_KEY + "." + IS_SHOWN, titleCheckBox.isSelected());
         settings.put(SCALE_BAR_KEY + "." + AUTOMATIC_SCALE_KEY, autoScaleCheck.isSelected());
         settings.put(SCALE_BAR_KEY + "." + SCALE_RANGE_KEY, scaleRangeText.getValue());
         settings.put(SCALE_BAR_KEY + "." + FONT_SIZE_KEY, fontSizeSpinner.getValue());

@@ -98,7 +98,7 @@ public abstract class TreeViewer extends JPanel implements Printable {
 
     public abstract void setBranchColouringDecorator(String branchColouringAttribute, Decorator branchColouringDecorator);
 
-    public abstract void setSelectionPaint(Paint selectionPane);
+    public abstract void setSelectionColor(Color selectionColor);
 
     public abstract Paint getSelectionPaint();
 

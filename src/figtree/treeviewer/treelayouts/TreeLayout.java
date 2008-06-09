@@ -52,7 +52,7 @@ public interface TreeLayout {
      */
     boolean isShowingRootBranch();
 
-	double getRootLength(); 
+	double getRootLength();
 
 	void setRootLength(double rootLength);
 
@@ -105,4 +105,8 @@ public interface TreeLayout {
 	String getCollapsedAttributeName();
 
     void setCollapsedAttributeName(String collapsedAttributeName);
+
+	String getHilightAttributeName();
+
+    void setHilightAttributeName(String hilightAttributeName);
 }

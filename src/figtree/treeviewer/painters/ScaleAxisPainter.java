@@ -2,6 +2,7 @@ package figtree.treeviewer.painters;
 
 import figtree.treeviewer.ScaleAxis;
 import figtree.treeviewer.TreePane;
+import figtree.treeviewer.treelayouts.RectilinearTreeLayout;
 import jebl.evolution.trees.Tree;
 import org.virion.jam.controlpalettes.ControlPalette;
 
@@ -67,6 +68,12 @@ public class ScaleAxisPainter extends LabelPainter<TreePane> implements ScalePai
 		preferredWidth = treePane.getTreeBounds().getWidth();
 		preferredHeight = labelHeight + topMargin + bottomMargin + scaleBarStroke.getLineWidth() + majorTickSize;
 
+	    if (!(treePane.getTreeLayout() instanceof RectilinearTreeLayout)) {
+		    // if the tree layout is not rectilinear, we are not going to display
+		    // an axis at the moment so make the height 0.
+		    preferredHeight = 0.0;
+	    }
+
 		tickLabelOffset = (float) (fm.getAscent() + topMargin + bottomMargin + majorTickSize) + scaleBarStroke.getLineWidth();
 
 		g2.setFont(oldFont);
@@ -82,6 +89,13 @@ public class ScaleAxisPainter extends LabelPainter<TreePane> implements ScalePai
 		if (TreePane.DEBUG_OUTLINE) {
 			g2.setPaint(Color.red);
 			g2.draw(bounds);
+		}
+
+		if (!(treePane.getTreeLayout() instanceof RectilinearTreeLayout)) {
+			// Unless the layout is the rectilinear one, the axis won't make sense...
+
+			// Add polar axis at some point.
+			return;
 		}
 
 		if (getBackground() != null) {

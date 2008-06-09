@@ -2,6 +2,7 @@ package figtree.treeviewer.painters;
 
 import figtree.treeviewer.ScaleAxis;
 import figtree.treeviewer.TreePane;
+import figtree.treeviewer.treelayouts.RectilinearTreeLayout;
 import jebl.evolution.trees.Tree;
 import org.virion.jam.controlpalettes.ControlPalette;
 
@@ -32,12 +33,20 @@ public class ScaleGridPainter extends LabelPainter<TreePane> implements ScalePai
 	}
 
 	public void paint(Graphics2D g2, TreePane treePane, Justification justification, Rectangle2D bounds) {
+
 		Paint oldPaint = g2.getPaint();
 		Stroke oldStroke = g2.getStroke();
 
 		if (TreePane.DEBUG_OUTLINE) {
 			g2.setPaint(Color.red);
 			g2.draw(bounds);
+		}
+
+		if (!(treePane.getTreeLayout() instanceof RectilinearTreeLayout)) {
+			// Unless the layout is the rectilinear one, the grid won't make sense...
+
+			// Add polar axis at some point.
+			return;
 		}
 
 		if (getBackground() != null) {
@@ -63,9 +72,6 @@ public class ScaleGridPainter extends LabelPainter<TreePane> implements ScalePai
 		ScaleAxis axis = treePane.getScaleAxis();
 
 		g2.setPaint(getForeground());
-
-		double minX = treePane.scaleOnAxis(axis.getMinAxis());
-		double maxX = treePane.scaleOnAxis(axis.getMaxAxis());
 
 		int n1 = axis.getMajorTickCount();
 		int n2, i, j;

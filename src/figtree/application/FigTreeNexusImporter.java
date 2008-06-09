@@ -48,7 +48,7 @@ public class FigTreeNexusImporter extends NexusImporter {
 					settings.put(key, parseValue(value));
 				}
 			} else {
-				throw new ImportException("Unknown command, " + command + ", in TreeDraw block");
+				throw new ImportException("Unknown command, " + command + ", in FIGTREE block");
 			}
 
 			command = helper.readToken(";");

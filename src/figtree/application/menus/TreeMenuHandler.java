@@ -26,6 +26,9 @@ public interface TreeMenuHandler {
 	public static final String COLOUR = "Colour...";
 	public static final String CLEAR_COLOURING = "Clear Colouring...";
 
+	public static final String HILIGHT = "Hilight...";
+	public static final String CLEAR_HILIGHTING = "Clear Hilighting...";
+
     public static final String DEFINE_ANNOTATIONS = "Define Annotations...";
 	public static final String ANNOTATE = "Annotate...";
 	public static final String ANNOTATE_NODES_FROM_TIPS = "Annotate Nodes from Tips...";
@@ -49,6 +52,9 @@ public interface TreeMenuHandler {
 
 	Action getColourAction();
 	Action getClearColouringAction();
+
+	Action getHilightAction();
+	Action getClearHilightingAction();
 
 	Action getDefineAnnotationsAction();
 	Action getAnnotateAction();

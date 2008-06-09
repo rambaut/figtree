@@ -186,12 +186,14 @@ public class LabelPainterController extends AbstractController {
     }
 
     public void setSettings(Map<String,Object> settings) {
+	    titleCheckBox.setSelected((Boolean)settings.get(key+"."+IS_SHOWN));
         displayAttributeCombo.setSelectedItem(settings.get(key+"."+DISPLAY_ATTRIBUTE_KEY));
         fontSizeSpinner.setValue((Double)settings.get(key+"."+FONT_SIZE_KEY));
         digitsSpinner.setValue((Integer)settings.get(key+"."+SIGNIFICANT_DIGITS_KEY));
     }
 
     public void getSettings(Map<String, Object> settings) {
+	    settings.put(key+"."+IS_SHOWN, titleCheckBox.isSelected());
         settings.put(key+"."+DISPLAY_ATTRIBUTE_KEY, displayAttributeCombo.getSelectedItem().toString());
         settings.put(key+"."+FONT_SIZE_KEY, fontSizeSpinner.getValue());
         settings.put(key+"."+SIGNIFICANT_DIGITS_KEY, digitsSpinner.getValue());

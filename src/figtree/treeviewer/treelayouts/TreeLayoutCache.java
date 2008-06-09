@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.*;
+import java.util.List;
 
 /**
  * @author Andrew Rambaut
@@ -31,6 +32,18 @@ public class TreeLayoutCache {
     public Map<Node, Shape> getCollapsedShapeMap() {
         return collapsedShapes;
     }
+
+	public List<Node> getHilightNodesList() {
+	    return hilightNodes;
+	}
+
+	public Shape getHilightShape(Node node) {
+	    return hilightShapes.get(node);
+	}
+
+	public Map<Node, Shape> getHilightShapeMap() {
+	    return hilightShapes;
+	}
 
     public Line2D getTipLabelPath(Node node) {
         return tipLabelPaths.get(node);
@@ -76,6 +89,8 @@ public class TreeLayoutCache {
 		nodePoints.clear();
         branchPaths.clear();
         collapsedShapes.clear();
+		hilightNodes.clear();
+		hilightShapes.clear();
         tipLabelPaths.clear();
 		branchLabelPaths.clear();
         nodeLabelPaths.clear();
@@ -86,6 +101,8 @@ public class TreeLayoutCache {
 	protected Map<Node, Point2D> nodePoints = new HashMap<Node, Point2D>();
     protected Map<Node, Shape> branchPaths = new HashMap<Node, Shape>();
     protected Map<Node, Shape> collapsedShapes = new HashMap<Node, Shape>();
+	protected List<Node> hilightNodes = new ArrayList<Node>();
+	protected Map<Node, Shape> hilightShapes = new HashMap<Node, Shape>();
     protected Map<Node, Line2D> tipLabelPaths = new HashMap<Node, Line2D>();
     protected Map<Node, Line2D> branchLabelPaths = new HashMap<Node, Line2D>();
     protected Map<Node, Line2D> nodeLabelPaths = new HashMap<Node, Line2D>();

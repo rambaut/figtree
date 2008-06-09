@@ -453,6 +453,15 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 		treeViewer.collapseSelectedNodes();
 	}
 
+	private void hilightSelected() {
+		Color color = JColorChooser.showDialog(this, "Select Colour", lastColor);
+		if (color != null) {
+			treeViewer.hilightSelectedNodes(color);
+			setDirty();
+			lastColor = color;
+		}
+	}
+
 	private void rerootTree() {
 		Set<Node> nodes = treeViewer.getSelectedNodes();
 
@@ -1251,6 +1260,14 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 		return clearColouringAction;
 	}
 
+	public Action getHilightAction() {
+		return hilightAction;
+	}
+
+	public Action getClearHilightingAction() {
+		return clearHilightingAction;
+	}
+
 	public Action getFindAction() {
 		return findAction;
 	}
@@ -1386,6 +1403,18 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 	private AbstractAction clearColouringAction = new AbstractAction(CLEAR_COLOURING) {
 		public void actionPerformed(ActionEvent ae) {
 			treeViewer.clearColouring();
+		}
+	};
+
+	private AbstractAction hilightAction = new AbstractAction(HILIGHT) {
+		public void actionPerformed(ActionEvent ae) {
+			hilightSelected();
+		}
+	};
+
+	private AbstractAction clearHilightingAction = new AbstractAction(CLEAR_HILIGHTING) {
+		public void actionPerformed(ActionEvent ae) {
+			treeViewer.clearHilighting();
 		}
 	};
 

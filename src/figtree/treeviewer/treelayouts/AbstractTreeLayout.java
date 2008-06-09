@@ -69,10 +69,21 @@ public abstract class AbstractTreeLayout implements TreeLayout {
 		fireTreeLayoutChanged();
 	}
 
+	public String getHilightAttributeName() {
+		return hilightAttributeName;
+	}
+
+	public void setHilightAttributeName(String hilightAttributeName) {
+		this.hilightAttributeName = hilightAttributeName;
+		fireTreeLayoutChanged();
+	}
+
     private Set<TreeLayoutListener> listeners = new HashSet<TreeLayoutListener>();
     protected String branchColouringAttribute = null;
     protected String cartoonAttributeName = null;
     protected boolean showingCartoonTipLabels = true;
 
 	protected String collapsedAttributeName = null;
+
+	protected String hilightAttributeName = null;
 }

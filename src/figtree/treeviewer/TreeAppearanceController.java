@@ -41,7 +41,7 @@ public class TreeAppearanceController extends AbstractController {
 	// The defaults if there is nothing in the preferences
 	private static Color DEFAULT_FOREGROUND_COLOUR = Color.BLACK;
 	private static Color DEFAULT_BACKGROUND_COLOUR = Color.WHITE;
-	private static Color DEFAULT_SELECTION_COLOUR = new Color(180, 213, 254);
+	private static Color DEFAULT_SELECTION_COLOUR = new Color(45, 54, 128);
 	private static float DEFAULT_BRANCH_LINE_WIDTH = 1.0f;
 
 	public TreeAppearanceController(final TreeViewer treeViewer, final JFrame frame) {
@@ -59,7 +59,7 @@ public class TreeAppearanceController extends AbstractController {
 
 		treeViewer.setForeground(new Color(foregroundRGB));
 		treeViewer.setBackground(new Color(backgroundRGB));
-		treeViewer.setSelectionPaint(new Color(selectionRGB));
+		treeViewer.setSelectionColor(new Color(selectionRGB));
 		treeViewer.setBranchStroke(new BasicStroke(branchLineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
 		titleLabel = new JLabel(CONTROLLER_TITLE);
@@ -318,7 +318,7 @@ public class TreeAppearanceController extends AbstractController {
 		// These settings don't have controls yet but they will!
 		treeViewer.setForeground((Color)settings.get(CONTROLLER_KEY + "." + FOREGROUND_COLOUR_KEY));
 		treeViewer.setBackground((Color)settings.get(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY));
-		treeViewer.setSelectionPaint((Color)settings.get(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY));
+		treeViewer.setSelectionColor((Color)settings.get(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY));
 
 		branchColourAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BRANCH_COLOR_ATTRIBUTE_KEY));
 		branchLineWidthSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY));

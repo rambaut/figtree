@@ -102,6 +102,13 @@ public class TreeMenuFactory implements MenuFactory {
 		    item = new JMenuItem(((TreeMenuHandler)frame).getClearColouringAction());
 		    menu.add(item);
 
+	        item = new JMenuItem(((TreeMenuHandler)frame).getHilightAction());
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, MenuBarFactory.MENU_MASK));
+	        menu.add(item);
+
+		    item = new JMenuItem(((TreeMenuHandler)frame).getClearHilightingAction());
+		    menu.add(item);
+
         } else if (Utils.isMacOSX()) {
 	        // make a false menu (only required for Mac OS X)
 	        item = new JMenuItem(TreeMenuHandler.NEXT_TREE);
@@ -200,6 +207,16 @@ public class TreeMenuFactory implements MenuFactory {
 	        item = new JMenuItem(TreeMenuHandler.CLEAR_COLOURING);
 	        item.setEnabled(false);
 	        menu.add(item);
+
+	        item = new JMenuItem(TreeMenuHandler.HILIGHT);
+	        item.setEnabled(false);
+	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, MenuBarFactory.MENU_MASK));
+	        menu.add(item);
+
+	        item = new JMenuItem(TreeMenuHandler.CLEAR_HILIGHTING);
+	        item.setEnabled(false);
+		    menu.add(item);
+
         }
 
     }
