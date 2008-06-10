@@ -69,6 +69,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 		Icon rotateToolIcon = IconUtils.getIcon(this.getClass(), "images/rotateTool.png");
 		Icon cartoonNodeToolIcon = IconUtils.getIcon(this.getClass(), "images/cartoonNodeTool.png");
 		Icon collapseNodeToolIcon = IconUtils.getIcon(this.getClass(), "images/collapseNodeTool.png");
+		Icon hilightToolIcon = IconUtils.getIcon(this.getClass(), "images/hilightTool.png");
 		Icon annotationToolIcon = IconUtils.getIcon(this.getClass(), "images/annotationTool.png");
 		Icon findToolIcon = IconUtils.getIcon(this.getClass(), "images/findTool.png");
 		Icon infoToolIcon = IconUtils.getIcon(this.getClass(), "images/infoTool.png");
@@ -79,14 +80,6 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 		Icon nextIcon = IconUtils.getIcon(this.getClass(), "images/next.png");
 		Icon prevIcon = IconUtils.getIcon(this.getClass(), "images/prev.png");
 
-//		Icon nextButtonIcon = IconUtils.getIcon(this.getClass(), "images/nextButton.png");
-//		Icon nextButtonInactiveIcon = IconUtils.getIcon(this.getClass(), "images/nextButtonInactive.png");
-//		Icon nextButtonPressedIcon = IconUtils.getIcon(this.getClass(), "images/nextButtonPressed.png");
-//
-//		Icon previousButtonIcon = IconUtils.getIcon(this.getClass(), "images/previousButton.png");
-//		Icon previousButtonInactiveIcon = IconUtils.getIcon(this.getClass(), "images/previousButtonInactive.png");
-//		Icon previousButtonPressedIcon = IconUtils.getIcon(this.getClass(), "images/previousButtonPressed.png");
-
 		final ToolbarAction cartoonToolbarAction = new ToolbarAction("Cartoon", CARTOON_NODE, cartoonNodeToolIcon) {
 			public void actionPerformed(ActionEvent e){
 				cartoonAction.actionPerformed(e);
@@ -94,6 +87,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 		};
 
 		ToolbarButton cartoonToolButton = new ToolbarButton(cartoonToolbarAction, true);
+		cartoonToolButton.setFocusable(false);
 		toolBar.addComponent(cartoonToolButton);
 
 		final ToolbarAction collapseToolbarAction = new ToolbarAction("Collapse", COLLAPSE_NODE, collapseNodeToolIcon) {
@@ -102,6 +96,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 			}
 		};
 		ToolbarButton collapseToolButton = new ToolbarButton(collapseToolbarAction, true);
+		collapseToolButton.setFocusable(false);
 		toolBar.addComponent(collapseToolButton);
 
 		final ToolbarAction rerootToolbarAction = new ToolbarAction("Reroot", ROOT_ON_BRANCH, rerootToolIcon) {
@@ -110,6 +105,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 			}
 		};
 		ToolbarButton rerootToolButton = new ToolbarButton(rerootToolbarAction, true);
+		rerootToolButton.setFocusable(false);
 		toolBar.addComponent(rerootToolButton);
 
 		final ToolbarAction rotateToolbarAction = new ToolbarAction("Rotate", ROTATE_NODE, rotateToolIcon) {
@@ -118,6 +114,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 			}
 		};
 		ToolbarButton rotateToolButton = new ToolbarButton(rotateToolbarAction, true);
+		rotateToolButton.setFocusable(false);
 		toolBar.addComponent(rotateToolButton);
 
 		final ToolbarAction annotateToolbarAction =  new ToolbarAction("Annotate", ANNOTATE, annotationToolIcon) {
@@ -126,6 +123,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 			}
 		};
 		ToolbarButton annotationToolButton = new ToolbarButton(annotateToolbarAction, true);
+		annotationToolButton.setFocusable(false);
 		toolBar.addComponent(annotationToolButton);
 
 		final ToolbarAction colourToolbarAction = new ToolbarAction("Colour", COLOUR, colourToolIcon) {
@@ -134,15 +132,17 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 			}
 		};
 		ToolbarButton colourToolButton = new ToolbarButton(colourToolbarAction, true);
+		colourToolButton.setFocusable(false);
 		toolBar.addComponent(colourToolButton);
 
-		ButtonGroup group = new ButtonGroup();
-		group.add(cartoonToolButton);
-		group.add(collapseToolButton);
-		group.add(rerootToolButton);
-		group.add(rotateToolButton);
-		group.add(annotationToolButton);
-		group.add(colourToolButton);
+		final ToolbarAction hilightToolbarAction = new ToolbarAction("Hilight", HILIGHT, hilightToolIcon) {
+			public void actionPerformed(ActionEvent e){
+				hilightAction.actionPerformed(e);
+			}
+		};
+		ToolbarButton hilightToolButton = new ToolbarButton(hilightToolbarAction, true);
+		hilightToolButton.setFocusable(false);
+		toolBar.addComponent(hilightToolButton);
 
 		toolBar.addSeparator();
 
@@ -152,6 +152,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 			}
 		};
 		JButton findToolButton = new ToolbarButton(findToolbarAction);
+		findToolButton.setFocusable(false);
 		toolBar.addComponent(findToolButton);
 		findToolButton.setEnabled(true);
 
@@ -177,16 +178,19 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
 		Box box1 = Box.createHorizontalBox();
 		final JToggleButton toggle1 = new JToggleButton("Node");
+		toggle1.setFocusable(false);
 		toggle1.putClientProperty("JButton.buttonType", "segmentedTextured");
 		toggle1.putClientProperty("JButton.segmentPosition", "first");
 		toggle1.putClientProperty( "Quaqua.Button.style", "toggleWest");
 
 		final JToggleButton toggle2 = new JToggleButton("Clade");
+		toggle2.setFocusable(false);
 		toggle2.putClientProperty("JButton.buttonType", "segmentedTextured");
 		toggle2.putClientProperty("JButton.segmentPosition", "middle");
 		toggle2.putClientProperty( "Quaqua.Button.style", "toggleCenter");
 
 		final JToggleButton toggle3 = new JToggleButton("Taxa");
+		toggle3.setFocusable(false);
 		toggle3.putClientProperty("JButton.buttonType", "segmentedTextured");
 		toggle3.putClientProperty("JButton.segmentPosition", "last");
 		toggle3.putClientProperty( "Quaqua.Button.style", "toggleEast");
@@ -232,6 +236,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 					}
 				};
 		JButton prevTreeToolButton = new ToolbarButton(prevTreeToolbarAction, true);
+		prevTreeToolButton.setFocusable(false);
 		prevTreeToolButton.putClientProperty("JButton.buttonType", "segmentedTextured");
 		prevTreeToolButton.putClientProperty("JButton.segmentPosition", "first");
 		prevTreeToolButton.putClientProperty( "Quaqua.Button.style", "toggleWest");
@@ -243,6 +248,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 					}
 				};
 		JButton nextTreeToolButton = new ToolbarButton(nextTreeToolbarAction, true);
+		nextTreeToolButton.setFocusable(false);
 		nextTreeToolButton.putClientProperty("JButton.buttonType", "segmentedTextured");
 		nextTreeToolButton.putClientProperty("JButton.segmentPosition", "last");
 		nextTreeToolButton.putClientProperty( "Quaqua.Button.style", "toggleEast");
@@ -290,7 +296,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 			bg.add(menuItem);
 		}
 		filterPanel = new SearchPanel("Filter", filterPopup, true);
-
+		filterPanel.setFocusable(false);
 		filterPanel.addSearchPanelListener(new SearchPanelListener() {
 
 			/**
@@ -360,6 +366,9 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 				collapseToolbarAction.setEnabled(hasSelection);
 				collapseAction.setEnabled(hasSelection);
 				clearCollapsedAction.setEnabled(hasSelection);
+				hilightToolbarAction.setEnabled(hasSelection);
+				hilightAction.setEnabled(hasSelection);
+				clearHilightingAction.setEnabled(hasSelection);
 				rerootToolbarAction.setEnabled(hasSelection);
 				rerootAction.setEnabled(hasSelection);
 				clearRootingAction.setEnabled(hasSelection);

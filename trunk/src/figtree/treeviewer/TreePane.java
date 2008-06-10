@@ -614,14 +614,11 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
 		if (!tree.isExternal(node)) {
 			if (selectedNodes.contains(node)) {
-				if (node.getAttribute(HILIGHT_ATTRIBUTE_NAME) != null) {
-					node.removeAttribute(HILIGHT_ATTRIBUTE_NAME);
-				} else {
-					int tipCount = RootedTreeUtils.getTipCount(tree, node);
-					double height = RootedTreeUtils.getMinTipHeight(tree, node);
-					Object[] values = new Object[] { tipCount, height, color };
-					node.setAttribute(HILIGHT_ATTRIBUTE_NAME, values);
-				}
+				int tipCount = RootedTreeUtils.getTipCount(tree, node);
+				double height = RootedTreeUtils.getMinTipHeight(tree, node);
+				Object[] values = new Object[] { tipCount, height, color };
+				node.setAttribute(HILIGHT_ATTRIBUTE_NAME, values);
+
 				calibrated = false;
 				repaint();
 			} else {
