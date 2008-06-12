@@ -497,7 +497,6 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 		cache.hilightShapes.put(node, hilightShape);
 	}
 
-
 	private void getMaxXPosition(RootedTree tree, Node node, double xPosition) {
 
 		if (!tree.isExternal(node)) {
