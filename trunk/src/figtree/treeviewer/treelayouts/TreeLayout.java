@@ -64,7 +64,8 @@ public interface TreeLayout {
 
 	void setFishEye(double fishEye);
 
-	void setPointOfInterest(double pointOfInterest);
+	void setPointOfInterest(double x, double y);
+    
     /**
      * Return whether the two axis scales should be maintained
      * relative to each other

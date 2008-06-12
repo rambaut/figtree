@@ -149,7 +149,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 			xPos = (xPos < 0.0 ? 0.0 : xPos > 1.0 ? 1.0 : xPos);
 			double yPos = (point.getY() - treeBounds.getY()) / treeBounds.getHeight();
 			yPos = (yPos < 0.0 ? 0.0 : yPos > 1.0 ? 1.0 : yPos);
-			treeLayout.setPointOfInterest(yPos);
+			treeLayout.setPointOfInterest(xPos, yPos);
 		}
 	}
 

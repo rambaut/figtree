@@ -36,7 +36,7 @@ public class RadialTreeLayout extends AbstractTreeLayout {
 		// do nothing
 	}
 
-	public void setPointOfInterest(double pointOfInterest) {
+	public void setPointOfInterest(double x, double y) {
 		// do nothing
 	}
 
@@ -96,6 +96,11 @@ public class RadialTreeLayout extends AbstractTreeLayout {
         // System.out.println("Node: " + Utils.DEBUGsubTreeRep(tree, node) + " at " + nodePoint);
 
         if (!tree.isExternal(node)) {
+
+// Not too clear how to do hilighting for radial trees so leave it out...             
+//            if (hilightAttributeName != null && node.getAttribute(hilightAttributeName) != null) {
+//                constructHilight(tree, node, angleStart, angleFinish, xPosition, yPosition, length, cache);
+//            }
 
             List<Node> children = tree.getChildren(node);
             int[] leafCounts = new int[children.size()];
@@ -211,6 +216,39 @@ public class RadialTreeLayout extends AbstractTreeLayout {
         cache.nodePoints.put(node, nodePoint);
 
         return nodePoint;
+    }
+
+    private void constructHilight(RootedTree tree, Node node, double angleStart, double angleFinish, double xPosition,
+                                  double yPosition, double length, TreeLayoutCache cache) {
+
+        Object[] values = (Object[])node.getAttribute(hilightAttributeName);
+        int tipCount = (Integer)values[0];
+        double tipHeight = (Double)values[1];
+        double height = tree.getHeight(node);
+
+        GeneralPath hilightShape = new GeneralPath();
+
+        final double branchAngle = (angleStart + angleFinish) / 2.0;
+
+        float x0 = (float)(xPosition + (0.5 * length * Math.cos(branchAngle)));
+        float y0 = (float)(yPosition + (0.5 * length * Math.sin(branchAngle)));
+
+        float x1 = (float)(x0 + (tipHeight * Math.cos(angleStart)));
+        float y1 = (float)(y0 + (tipHeight * Math.sin(angleStart)));
+
+        float x2 = (float)(x0 + (tipHeight * Math.cos(angleFinish)));
+        float y2 = (float)(y0 + (tipHeight * Math.sin(angleFinish)));
+
+        hilightShape.moveTo(x0, y0);
+        hilightShape.lineTo(x1, y1);
+        hilightShape.lineTo(x2, y2);
+        hilightShape.lineTo(x0, y0);
+
+        hilightShape.closePath();
+
+        // add the collapsedShape to the map of branch paths
+        cache.hilightNodes.add(node);
+        cache.hilightShapes.put(node, hilightShape);
     }
 
 }

@@ -102,8 +102,8 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 		fireTreeLayoutChanged();
 	}
 
-	public void setPointOfInterest(double pointOfInterest) {
-		this.pointOfInterest = pointOfInterest;
+	public void setPointOfInterest(double x, double y) {
+		this.pointOfInterest = x;
 		fireTreeLayoutChanged();
 	}
 

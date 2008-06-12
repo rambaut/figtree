@@ -17,6 +17,10 @@ public class PolarTreeLayout extends AbstractTreeLayout {
 	private double rootLengthProportion = 0.01;
 	private double angularRange = 360.0;
 
+    private double fishEye = 0.0;
+    private double pointOfInterest = 0.5;
+    private int tipCount = 0;
+
 	private double totalRootLength = 0.0;
 
 	private boolean showingRootBranch = true;
@@ -48,11 +52,13 @@ public class PolarTreeLayout extends AbstractTreeLayout {
     }
 
 	public void setFishEye(double fishEye) {
-		// do nothing
+        this.fishEye = fishEye;
+        fireTreeLayoutChanged();
 	}
 
-	public void setPointOfInterest(double pointOfInterest) {
-		// do nothing
+	public void setPointOfInterest(double x, double y) {
+        this.pointOfInterest = getPolarAngle(x, y);
+        fireTreeLayoutChanged();
 	}
 
     public double getHeightOfPoint(Point2D point) {
@@ -97,11 +103,13 @@ public class PolarTreeLayout extends AbstractTreeLayout {
 
     public void setRootAngle(double rootAngle) {
         this.rootAngle = rootAngle;
+        constant = rootAngle - ((360.0 - angularRange) * 0.5);
         fireTreeLayoutChanged();
     }
 
     public void setAngularRange(double angularRange) {
         this.angularRange = angularRange;
+        constant = rootAngle - ((360.0 - angularRange) * 0.5);
         fireTreeLayoutChanged();
     }
 
@@ -128,6 +136,7 @@ public class PolarTreeLayout extends AbstractTreeLayout {
 
 	    cache.clear();
 
+
 		Node root = tree.getRootNode();
 		double totalRootLength = (rootLengthProportion * tree.getHeight(root)) * 10.0;
 
@@ -135,7 +144,9 @@ public class PolarTreeLayout extends AbstractTreeLayout {
         getMaxXPosition(tree, root, totalRootLength);
 
         yPosition = 0.0;
-        yIncrement = 1.0 / tree.getExternalNodes().size();
+
+        tipCount = tree.getExternalNodes().size();
+        yIncrement = 1.0 / tipCount;
 
         final Point2D rootPoint = constructNode(tree, root, 0.0, totalRootLength, cache);
 
@@ -532,7 +543,7 @@ public class PolarTreeLayout extends AbstractTreeLayout {
 		hilightShape.lineTo((float)p2.getX(), (float)p2.getY());
 
 		Arc2D arc = new Arc2D.Double();
-		arc.setArcByCenter(0.0, 0.0, x1, finish, start - finish, Arc2D.OPEN);
+		arc.setArcByCenter(0.0, 0.0, x1, start, finish - start, Arc2D.OPEN);
 		hilightShape.append(arc, true);
 
 		hilightShape.lineTo((float)p3.getX(), (float)p3.getY());
@@ -579,19 +590,50 @@ public class PolarTreeLayout extends AbstractTreeLayout {
     /**
      * Polar transform
      *
-     * @param x
-     * @param y
-     * @return the point in polar space
+     * @param h the hypotenuse
+     * @param a the angle
+     * @return the point in euclidean space
      */
-    private Point2D transform(double x, double y) {
-        double r = - Math.toRadians(getAngle(y));
-        double tx = x * Math.cos(r);
-        double ty = x * Math.sin(r);
-        return new Point2D.Double(tx, ty);
+    private Point2D transform(double h, double a) {
+        double r = - Math.toRadians(getAngle(a));
+        return new Point2D.Double(h * Math.cos(r), h * Math.sin(r));
     }
 
-    private double getAngle(double y) {
-        return rootAngle - ((360.0 - angularRange) * 0.5) - (y * angularRange);
+    private double constant;
+
+    /**
+     * Polar angle for an x, y coordinate
+     *
+     * @param x
+     * @param y
+     * @return the angle
+     */
+    private double getPolarAngle(double x, double y) {
+        double r = Math.toDegrees(Math.atan(y/x));
+        return (constant - r) / angularRange;
     }
+
+    /**
+     * The angle in degrees given by a 0, 1 proportion of the circle
+     * @param y
+     * @return
+     */
+    private double getAngle(double y) {
+        if (fishEye == 0.0) {
+            return constant - (y * angularRange);
+        }
+
+        double scale = 1.0 / (fishEye * tipCount);
+        double dist = pointOfInterest - y;
+        double min =  1.0 - (pointOfInterest / (scale + pointOfInterest));
+        double max =  1.0 - ((pointOfInterest - 1.0) / (scale - (pointOfInterest - 1.0)));
+
+        double c =  1.0 - (dist < 0 ? (dist / (scale - dist)) : (dist / (scale + dist)));
+
+        double tY = (c - min) / (max - min);
+
+        return rootAngle - ((360.0 - angularRange) * 0.5) - (tY * angularRange);
+    }
+
 
 }

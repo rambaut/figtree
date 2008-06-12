@@ -275,8 +275,8 @@ public class TreeViewerController extends AbstractController {
 			case POLAR:
 				treeViewer.setTreeLayout(polarTreeLayout);
 				setExpansion();
-				fishEyeLabel.setEnabled(false);
-				fishEyeSlider.setEnabled(false);
+				fishEyeLabel.setEnabled(true);
+				fishEyeSlider.setEnabled(true);
 				layoutPanel.removeAll();
 				layoutPanel.add(polarTreeLayoutController.getPanel(), BorderLayout.CENTER);
 				fireControllerChanged();
