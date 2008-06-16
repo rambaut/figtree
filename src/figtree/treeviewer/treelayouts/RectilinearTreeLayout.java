@@ -144,15 +144,15 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 
 		if (!tree.isExternal(node)) {
 
+            if (hilightAttributeName != null && node.getAttribute(hilightAttributeName) != null) {
+                constructHilight(tree, node, xParent, xPosition, cache);
+            }
+
 			if (collapsedAttributeName != null && node.getAttribute(collapsedAttributeName) != null) {
 				nodePoint = constructCollapsedNode(tree, node, xPosition, cache);
 			} else if (cartoonAttributeName != null && node.getAttribute(cartoonAttributeName) != null) {
 				nodePoint = constructCartoonNode(tree, node, xPosition, cache);
 			} else {
-
-				if (hilightAttributeName != null && node.getAttribute(hilightAttributeName) != null) {
-					constructHilight(tree, node, xParent, xPosition, cache);
-				}
 
 				double yPos = 0.0;
 

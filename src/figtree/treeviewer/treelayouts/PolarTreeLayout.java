@@ -167,16 +167,16 @@ public class PolarTreeLayout extends AbstractTreeLayout {
 
         if (!tree.isExternal(node)) {
 
+            if (hilightAttributeName != null && node.getAttribute(hilightAttributeName) != null) {
+                constructHilight(tree, node, xParent, xPosition, cache);
+            }
+
 	        if (collapsedAttributeName != null && node.getAttribute(collapsedAttributeName) != null) {
 		        nodePoint = constructCollapsedNode(tree, node, xPosition, cache);
 	        } else if (cartoonAttributeName != null && node.getAttribute(cartoonAttributeName) != null) {
 		        nodePoint = constructCartoonNode(tree, node, xPosition, cache);
 	        } else {
                 double yPos = 0.0;
-
-		        if (hilightAttributeName != null && node.getAttribute(hilightAttributeName) != null) {
-			        constructHilight(tree, node, xParent, xPosition, cache);
-		        }
 
                 List<Node> children = tree.getChildren(node);
                 Point2D[] childPoints = new Point2D[children.size()];
