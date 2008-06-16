@@ -58,6 +58,7 @@ public class PolarTreeLayout extends AbstractTreeLayout {
 
 	public void setPointOfInterest(double x, double y) {
         this.pointOfInterest = getPolarAngle(x, y);
+        System.out.println(pointOfInterest);
         fireTreeLayoutChanged();
 	}
 
