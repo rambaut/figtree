@@ -69,7 +69,8 @@ public class AttributableDecorator implements Decorator {
             Color color = getColorAttribute(item.getAttribute(paintAttributeName));
             if (color != null) {
                 paint = color;
-                fillPaint = new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 2);
+                fillPaint = color.brighter();
+//                fillPaint = new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 2);
             } else {
                 paint = null;
                 fillPaint = null;
