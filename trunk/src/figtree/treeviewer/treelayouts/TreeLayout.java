@@ -65,7 +65,7 @@ public interface TreeLayout {
 	void setFishEye(double fishEye);
 
 	void setPointOfInterest(double x, double y);
-    
+
     /**
      * Return whether the two axis scales should be maintained
      * relative to each other
@@ -83,7 +83,7 @@ public interface TreeLayout {
      * @param height
      * @return the line
      */
-    Shape getHeightLine(double height);
+    Shape getAxisLine(double height);
 
     /**
      * Return a shape that defines a particular height interval. Some layouts

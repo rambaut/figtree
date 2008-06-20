@@ -66,8 +66,8 @@ public class PolarTreeLayout extends AbstractTreeLayout {
         throw new UnsupportedOperationException("Method getHeightOfPoint() is not supported in this TreeLayout");
     }
 
-    public Shape getHeightLine(double height) {
-        return new Ellipse2D.Double(0.0, 0.0, height * 2.0, height * 2.0);
+    public Shape getAxisLine(double height) {
+        return new Ellipse2D.Double(-height, -height, height * 2.0, height * 2.0);
     }
 
     public Shape getHeightArea(double height1, double height2) {

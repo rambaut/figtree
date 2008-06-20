@@ -243,6 +243,16 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		}
 	}
 
+	public Shape getAxisLine(double value) {
+		double height = timeScale.getHeight(value, tree);
+		Shape line = treeLayout.getAxisLine(height);
+		if (line != null) {
+			return transform.createTransformedShape(line);
+		}
+		return null;
+	 }
+
+
 	public ScaleAxis getScaleAxis() {
 		return scaleAxis;
 	}

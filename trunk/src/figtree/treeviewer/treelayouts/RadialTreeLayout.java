@@ -52,7 +52,7 @@ public class RadialTreeLayout extends AbstractTreeLayout {
         throw new UnsupportedOperationException("Method getHeightOfPoint() is not supported in this TreeLayout");
     }
 
-    public Line2D getHeightLine(double height) {
+    public Line2D getAxisLine(double height) {
         throw new UnsupportedOperationException("Method getHeightLine() is not supported in this TreeLayout");
     }
 
@@ -97,7 +97,7 @@ public class RadialTreeLayout extends AbstractTreeLayout {
 
         if (!tree.isExternal(node)) {
 
-// Not too clear how to do hilighting for radial trees so leave it out...             
+// Not too clear how to do hilighting for radial trees so leave it out...
 //            if (hilightAttributeName != null && node.getAttribute(hilightAttributeName) != null) {
 //                constructHilight(tree, node, angleStart, angleFinish, xPosition, yPosition, length, cache);
 //            }

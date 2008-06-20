@@ -3,6 +3,7 @@ package figtree.treeviewer.painters;
 import figtree.treeviewer.ScaleAxis;
 import figtree.treeviewer.TreePane;
 import figtree.treeviewer.treelayouts.RectilinearTreeLayout;
+import figtree.treeviewer.treelayouts.RadialTreeLayout;
 import jebl.evolution.trees.Tree;
 import org.virion.jam.controlpalettes.ControlPalette;
 
@@ -91,10 +92,8 @@ public class ScaleAxisPainter extends LabelPainter<TreePane> implements ScalePai
 			g2.draw(bounds);
 		}
 
-		if (!(treePane.getTreeLayout() instanceof RectilinearTreeLayout)) {
-			// Unless the layout is the rectilinear one, the axis won't make sense...
-
-			// Add polar axis at some point.
+		if (treePane.getTreeLayout() instanceof RadialTreeLayout) {
+			// Unless the layout is the rectilinear or polar one, the grid won't make sense...
 			return;
 		}
 
