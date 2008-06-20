@@ -3,7 +3,9 @@ package figtree.treeviewer.painters;
 import figtree.treeviewer.ScaleAxis;
 import figtree.treeviewer.TreePane;
 import figtree.treeviewer.treelayouts.RectilinearTreeLayout;
+import figtree.treeviewer.treelayouts.RadialTreeLayout;
 import jebl.evolution.trees.Tree;
+import jebl.gui.trees.treeviewer.treelayouts.PolarTreeLayout;
 import org.virion.jam.controlpalettes.ControlPalette;
 
 import java.awt.*;
@@ -42,10 +44,8 @@ public class ScaleGridPainter extends LabelPainter<TreePane> implements ScalePai
 			g2.draw(bounds);
 		}
 
-		if (!(treePane.getTreeLayout() instanceof RectilinearTreeLayout)) {
-			// Unless the layout is the rectilinear one, the grid won't make sense...
-
-			// Add polar axis at some point.
+		if (treePane.getTreeLayout() instanceof RadialTreeLayout) {
+			// Unless the layout is the rectilinear or polar one, the grid won't make sense...
 			return;
 		}
 
@@ -112,24 +112,15 @@ public class ScaleGridPainter extends LabelPainter<TreePane> implements ScalePai
 		}
 	}
 
-	protected void paintMajorLine(Graphics2D g2, Rectangle2D axisBounds, ScaleAxis axis, double value)
-	{
+	protected void paintMajorLine(Graphics2D g2, Rectangle2D axisBounds, ScaleAxis axis, double value) {
         g2.setStroke(getMajorStroke());
-
-		double pos = treePane.scaleOnAxis(value);
-
-		Line2D line = new Line2D.Double(pos, axisBounds.getMinY(), pos, axisBounds.getMaxY());
+		Shape line = treePane.getAxisLine(value);
 		g2.draw(line);
 	}
 
-	protected void paintMinorLine(Graphics2D g2, Rectangle2D axisBounds, double value)
-	{
-
+	protected void paintMinorLine(Graphics2D g2, Rectangle2D axisBounds, double value) {
         g2.setStroke(getMinorStroke());
-
-		double pos = treePane.scaleOnAxis(value);
-
-		Line2D line = new Line2D.Double(pos, axisBounds.getMinY(), pos, axisBounds.getMaxY());
+		Shape line = treePane.getAxisLine(value);
 		g2.draw(line);
 	}
 

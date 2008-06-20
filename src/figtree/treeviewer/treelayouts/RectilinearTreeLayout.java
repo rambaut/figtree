@@ -56,7 +56,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 		return point.getX();
 	}
 
-	public Shape getHeightLine(double height) {
+	public Shape getAxisLine(double height) {
 		double x = height;
 		double y1 = 0.0;
 		double y2 = 1.0;
