@@ -147,9 +147,11 @@ public class ExtendedTreeViewer extends DefaultTreeViewer implements StatusProvi
 
 		Tree tree = treePane.getTree();
 		for (Node node : tree.getExternalNodes()) {
-			Taxon taxon = tree.getTaxon(node);
-			Object state = taxon.getAttribute(annotationName);
-			taxon.setAttribute(annotationName, state);
+			Object state = node.getAttribute(annotationName);
+			if (state != null) {
+				Taxon taxon = tree.getTaxon(node);
+				taxon.setAttribute(annotationName, state);
+			}
 		}
 
 		fireAnnotationsChanged();
