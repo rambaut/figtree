@@ -1402,7 +1402,17 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 			}
 		}
 
-		// bounds on nodeShapes
+        for (Shape hilightShape : treeLayoutCache.getHilightShapeMap().values()) {
+            // Add the bounds of the branch path to the overall bounds
+            final Rectangle2D branchBounds = hilightShape.getBounds2D();
+            if (treeBounds == null) {
+                treeBounds = branchBounds;
+            } else {
+                treeBounds.add(branchBounds);
+            }
+        }
+
+    	// bounds on nodeShapes
 		if (!isTransformBranchesOn() && nodeBarPainter != null && nodeBarPainter.isVisible()) {
 			nodeBars.clear();
 			// Iterate though the nodes
