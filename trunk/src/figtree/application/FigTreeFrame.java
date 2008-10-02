@@ -825,7 +825,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 						"Unable to open file",
 						JOptionPane.ERROR_MESSAGE);
 			} catch (IOException ioe) {
-				JOptionPane.showMessageDialog(this, "Unable to read file: " + ioe,
+				JOptionPane.showMessageDialog(this, "Unable to read file: " + ioe.getMessage(),
 						"Unable to read file",
 						JOptionPane.ERROR_MESSAGE);
 			}
@@ -944,7 +944,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 						"Unable to open file",
 						JOptionPane.ERROR_MESSAGE);
 			} catch (IOException ioe) {
-				JOptionPane.showMessageDialog(this, "Unable to read file: " + ioe,
+				JOptionPane.showMessageDialog(this, "Unable to read file: " + ioe.getMessage(),
 						"Unable to read file",
 						JOptionPane.ERROR_MESSAGE);
 			}
@@ -961,7 +961,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
 			treeViewer.setCharacters(alignment);
 		} catch (ImportException ie) {
-			JOptionPane.showMessageDialog(this, "Error reading characters file: " + ie,
+			JOptionPane.showMessageDialog(this, "Error reading characters file: " + ie.getMessage(),
 					"Import Error",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
@@ -997,7 +997,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 							exportTreeDialog.includeAnnotations());
 					writer.close();
 				} catch (IOException ioe) {
-					JOptionPane.showMessageDialog(this, "Error writing tree file: " + ioe,
+					JOptionPane.showMessageDialog(this, "Error writing tree file: " + ioe.getMessage(),
 							"Export Error",
 							JOptionPane.ERROR_MESSAGE);
 				}
@@ -1060,11 +1060,11 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 				setDirty();
 
 			} catch (ImportException ie) {
-				JOptionPane.showMessageDialog(this, "Error reading trees on clipboard: " + ie,
+				JOptionPane.showMessageDialog(this, "Error reading trees on clipboard: " + ie.getMessage(),
 						"Import Error",
 						JOptionPane.ERROR_MESSAGE);
 			} catch (IOException ioe) {
-				JOptionPane.showMessageDialog(this, "Error reading trees on clipboard: " + ioe,
+				JOptionPane.showMessageDialog(this, "Error reading trees on clipboard: " + ioe.getMessage(),
 						"Import Error",
 						JOptionPane.ERROR_MESSAGE);
 			} catch (UnsupportedFlavorException e) {
