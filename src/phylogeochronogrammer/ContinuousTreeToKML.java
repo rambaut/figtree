@@ -3,7 +3,6 @@ package phylogeochronogrammer;
 import jebl.evolution.io.NexusImporter;
 import jebl.evolution.io.TreeImporter;
 import jebl.evolution.io.ImportException;
-import jebl.evolution.trees.Tree;
 import jebl.evolution.trees.RootedTree;
 
 import java.io.*;
@@ -16,7 +15,7 @@ import java.io.*;
  * To change this template use File | Settings | File Templates.
  */
 
-public class NexusToKML {
+public class ContinuousTreeToKML {
     public static void main(String[] args) {
 
 
@@ -46,7 +45,12 @@ public class NexusToKML {
             date = Double.parseDouble(args[2]);
         }
 
-        KMLexporter exporter = new KMLexporter(tree, args[0], height, date);
+        String coordinateName = "location";
+        if (args.length > 3) {
+            coordinateName = args[3];
+        }
+
+        ContinuousKML exporter = new ContinuousKML(tree, args[0], height, date, coordinateName);
 
         try {
             BufferedWriter out1 = new BufferedWriter(new FileWriter(args[0]+".kml"));
