@@ -10,12 +10,13 @@ import jebl.evolution.graphs.Node;
  * Time: 7:33:37 PM
  * To change this template use File | Settings | File Templates.
  */
-public class KMLexporter {
+public class ContinuousKML {
 
     //input related variables
     RootedTree treeToExport;
-    String latitudeName = "size1";
-    String longitudeName = "size2";
+    String traitName;
+    String latitudeName;
+    String longitudeName;
     String documentName;
 
     // variables shared by rectangle, triangle and surfacetree
@@ -27,10 +28,10 @@ public class KMLexporter {
     double fraction = 0.05; // additional fraction of the total plotHeight for the root branch
 
     // rectangle tree variables
-    boolean iniVisi_RT = true; // initial visibility of rectangle tree
+    boolean iniVisi_RT = false; // initial visibility of rectangle tree
     boolean usePosterior_RT = true; // use posterior probabilities for branch width
     double branchWidth_RT = 5.0; // branch width if posterior probabilities are not used
-    boolean useRates_RT = true; // use rates to color branch
+    boolean useRates_RT = false; // use rates to color branch
     String startBranchColor_RT = "B36600"; //blue
     String endBranchColor_RT = "0000FF"; //red
     String branchColor_RT = "ffffff"; // branch color if color range based on rates is not used
@@ -56,11 +57,11 @@ public class KMLexporter {
     String endBranchColor_ST = "00F1D6"; //yellow
     String branchColor_ST = "ffffff"; // branch color if rates are not used
     double opacity_ST = 1.0;
-    boolean arcBranches = true; // branches are arcs with heights proportional to the time length of the branches
-    double altitudeFactor = 5000; // this is the factor with which to multiply the time of the branch to get the altitude for that branch in the surface Tree
+    boolean arcBranches = false; // branches are arcs with heights proportional to the time length of the branches
+    double altitudeFactor = 10000; // this is the factor with which to multiply the time of the branch to get the altitude for that branch in the surface Tree
 
     // taxa variables
-    boolean iniVisi_taxa = true;
+    boolean iniVisi_taxa = false;
 
     // spade variables
     boolean iniVisi_spades = false;
@@ -70,16 +71,36 @@ public class KMLexporter {
     String spadeColor = "ffffff"; // branch color if rates are not used
     double opacity_spades = 1.0;
 
+    // contour variables
+    boolean iniVisi_contours = false;
+    boolean useHeights_contours = true; // use heights (time) to color branches
+    String startContourColor = "00FF00"; //green, startpoint is the youngest node
+    String endContourColor = "00F1D6"; //yellow
+    String contourColor = "ffffff"; // branch color if rates are not used
+    double opacity_contours = 1.0;
+
     // ground spade variables
     boolean iniVisi_groundSpades = true;
     boolean useHeights_groundSpades = true; // use heights (time) to color branches
     String startgroundSpadeColor = "00FF00"; //green, startpoint is the youngest node
     String endgroundSpadeColor = "00F1D6"; //yellow
     String groundSpadeColor = "ffffff"; // branch color if rates are not used
-    double opacity_groundSpades = 0.2;
+    double opacity_groundSpades = 0.4;
+
+    // ground contour variables
+    boolean contoursAndNotSpades = false;
+    boolean iniVisi_groundContours = true;
+    boolean useHeights_groundContours = true; // use heights (time) to color branches
+    String startgroundContoursColor = "00FF00"; //green, startpoint is the youngest node
+    String endgroundContoursColor = "00F1D6"; //yellow
+    String groundContoursColor = "ffffff"; // branch color if rates are not used
+    double opacity_groundContours = 0.4;
 
     // diamond variables
     boolean iniVisi_diamonds = false;
+
+    //projections variables
+    boolean iniVisi_projections = false;
 
     // additional variables
     double[] rateMinMaxMedian; // used to calibrate the color range for the branches
@@ -91,20 +112,32 @@ public class KMLexporter {
     StringBuffer triangleTreeBuffer = new StringBuffer();
     StringBuffer spadeBuffer = new StringBuffer();
     StringBuffer groundSpadeBuffer = new StringBuffer();
+    StringBuffer contourBuffer = new StringBuffer();
+    StringBuffer groundContourBuffer = new StringBuffer();
     StringBuffer diamondBuffer = new StringBuffer();
     StringBuffer taxaBuffer = new StringBuffer();
     StringBuffer surfaceTreeBuffer = new StringBuffer();
     StringBuffer projectionsBuffer = new StringBuffer();
     StringBuffer styleBuffer = new StringBuffer();
 
-    public KMLexporter(){
+    public ContinuousKML(){
     }
 
-    public KMLexporter(RootedTree tree, String name, double height, double date){
+    public ContinuousKML(RootedTree tree, String name, double height, double date, String coordinateName){
         treeToExport = tree;
         plotHeight = height;
         documentName = name;
         mostRecentDate = date;
+        latitudeName = coordinateName+"1";
+        longitudeName = coordinateName+"2";
+        traitName = coordinateName;
+
+        Node rootNode = treeToExport.getRootNode();
+
+        if ((Object)rootNode.getAttribute(traitName+"_95%HPD_modality") != null) {
+            contoursAndNotSpades = true;
+        }
+
     }
 
     public void writeTreeToKML() {
@@ -126,6 +159,7 @@ public class KMLexporter {
         int visibility_taxa;
         if (iniVisi_taxa) { visibility_taxa = 1; } else { visibility_taxa = 0; }
 
+
         //
 
         int nodeNumber = 0;
@@ -138,8 +172,8 @@ public class KMLexporter {
             if (!treeToExport.isRoot(node)) {
 
                 Node parentNode = treeToExport.getParent(node);
-                Double parentLongitude = (Double)parentNode.getAttribute("size2");
-                Double parentLatitude = (Double)parentNode.getAttribute("size1");
+                Double parentLongitude = (Double)parentNode.getAttribute(longitudeName);
+                Double parentLatitude = (Double)parentNode.getAttribute(latitudeName);
                 double parentAltitude = (treeToExport.getHeight(parentNode)*scaleFactor);
 
                 rectangleTreeBuffer.append("\t\t<Placemark>\r");
@@ -332,10 +366,14 @@ public class KMLexporter {
 
                 }  else {
 
-                    appendSpade(spadeBuffer, treeToExport, node, nodeNumber, plotHeight, mostRecentDate, latitudeName, longitudeName, false, iniVisi_spades);
-                    appendSpade(groundSpadeBuffer, treeToExport, node, nodeNumber, plotHeight, mostRecentDate, latitudeName, longitudeName, true, iniVisi_groundSpades);
-                    appendDiamond(diamondBuffer, treeToExport, node, nodeNumber, plotHeight, latitudeName, longitudeName, iniVisi_diamonds);
-
+                    if (contoursAndNotSpades) {
+                        appendContour(contourBuffer, treeToExport, node, nodeNumber, plotHeight, mostRecentDate, traitName, latitudeName, longitudeName, false, iniVisi_contours);
+                        appendContour(groundContourBuffer, treeToExport, node, nodeNumber, plotHeight, mostRecentDate, traitName, latitudeName, longitudeName, true, iniVisi_groundContours);
+                    } else {
+                        appendSpade(spadeBuffer, treeToExport, node, nodeNumber, plotHeight, mostRecentDate, latitudeName, longitudeName, false, iniVisi_spades);
+                        appendSpade(groundSpadeBuffer, treeToExport, node, nodeNumber, plotHeight, mostRecentDate, latitudeName, longitudeName, true, iniVisi_groundSpades);
+                        appendDiamond(diamondBuffer, treeToExport, node, nodeNumber, plotHeight, latitudeName, longitudeName, iniVisi_diamonds);
+                    }
 
                     Double posterior = (Double)node.getAttribute("posterior");
 
@@ -469,9 +507,14 @@ public class KMLexporter {
                 rectangleTreeBuffer.append("\t\t</Placemark>\r");
                 triangleTreeBuffer.append("\t\t</Placemark>\r");
 
-                appendSpade(spadeBuffer, treeToExport, node, nodeNumber, plotHeight, mostRecentDate, latitudeName, longitudeName, false, iniVisi_spades);
-                appendSpade(groundSpadeBuffer, treeToExport, node, nodeNumber, plotHeight, mostRecentDate, latitudeName, longitudeName, true, iniVisi_groundSpades);
-                appendDiamond(diamondBuffer, treeToExport, node, nodeNumber, plotHeight, latitudeName, longitudeName, iniVisi_diamonds);
+                if (contoursAndNotSpades) {
+                    appendContour(contourBuffer, treeToExport, node, nodeNumber, plotHeight, mostRecentDate, traitName, latitudeName, longitudeName, false, iniVisi_contours);
+                    appendContour(groundContourBuffer, treeToExport, node, nodeNumber, plotHeight, mostRecentDate, traitName, latitudeName, longitudeName, true, iniVisi_groundContours);
+                } else {
+                    appendSpade(spadeBuffer, treeToExport, node, nodeNumber, plotHeight, mostRecentDate, latitudeName, longitudeName, false, iniVisi_spades);
+                    appendSpade(groundSpadeBuffer, treeToExport, node, nodeNumber, plotHeight, mostRecentDate, latitudeName, longitudeName, true, iniVisi_groundSpades);
+                    appendDiamond(diamondBuffer, treeToExport, node, nodeNumber, plotHeight, latitudeName, longitudeName, iniVisi_diamonds);
+                }
 
                 // style for the rectangle root branch
                 styleBuffer.append("\t<Style id=\"rectangleTreeBranch"+ nodeNumber +"_style\">\r");
@@ -589,9 +632,13 @@ public class KMLexporter {
         buffer.append(surfaceTreeBuffer);
         buffer.append("\t</Folder>\r");
 
+        int visibility_projections;
+        if (iniVisi_projections) { visibility_projections = 1; } else { visibility_projections = 0; }
+
         buffer.append("\t<Placemark>\r");
         buffer.append("\t\t<name>projections</name>\r");
         buffer.append("\t\t<description>projections from tips to surface</description>\r");
+        buffer.append("\t\t<visibility>"+visibility_projections+"</visibility>\r");
         buffer.append("\t\t<MultiGeometry>\r");
         buffer.append(projectionsBuffer);
         buffer.append("\t\t</MultiGeometry>\r");
@@ -608,23 +655,42 @@ public class KMLexporter {
         buffer.append("\t<name>polygon HPDs</name>\r");
         buffer.append("\t<description>various polygons to represent credible intervals</description>\r");
 
-        buffer.append("\t\t<Folder>\r");
-        buffer.append("\t\t\t<name>spade HPDs</name>\r");
-        buffer.append("\t\t\t<description>longitude and latitude HPDs for internal nodes</description>\r");
-        buffer.append(spadeBuffer);
-        buffer.append("\t\t</Folder>\r");
+        if (contoursAndNotSpades) {
 
-        buffer.append("\t\t<Folder>\r");
-        buffer.append("\t\t\t<name>ground spade HPDs</name>\r");
-        buffer.append("\t\t\t<description>longitude and latitude and altitude HPDs for internal nodes projected on the surface</description>\r");
-        buffer.append(groundSpadeBuffer);
-        buffer.append("\t\t</Folder>\r");
+            buffer.append("\t\t<Folder>\r");
+            buffer.append("\t\t\t<name>contours HPDs</name>\r");
+            buffer.append("\t\t\t<description>contour HPDs for internal nodes</description>\r");
+            buffer.append(contourBuffer);
+            buffer.append("\t\t</Folder>\r");
 
-        buffer.append("\t\t<Folder>\r");
-        buffer.append("\t\t\t<name>diamond HPDs</name>\r");
-        buffer.append("\t\t\t<description>longitude and latitude and altitude HPDs for internal nodes</description>\r");
-        buffer.append(diamondBuffer);
-        buffer.append("\t\t</Folder>\r");
+            buffer.append("\t\t<Folder>\r");
+            buffer.append("\t\t\t<name>surface contour HPDs</name>\r");
+            buffer.append("\t\t\t<description>contour HPDs for internal nodes projected on the surface</description>\r");
+            buffer.append(groundContourBuffer);
+            buffer.append("\t\t</Folder>\r");
+
+        } else {
+
+            buffer.append("\t\t<Folder>\r");
+            buffer.append("\t\t\t<name>spade HPDs</name>\r");
+            buffer.append("\t\t\t<description>longitude and latitude HPDs for internal nodes</description>\r");
+            buffer.append(spadeBuffer);
+            buffer.append("\t\t</Folder>\r");
+
+            buffer.append("\t\t<Folder>\r");
+            buffer.append("\t\t\t<name>surface spade HPDs</name>\r");
+            buffer.append("\t\t\t<description>longitude and latitude HPDs for internal nodes projected on the surface</description>\r");
+            buffer.append(groundSpadeBuffer);
+            buffer.append("\t\t</Folder>\r");
+
+
+            buffer.append("\t\t<Folder>\r");
+            buffer.append("\t\t\t<name>diamond HPDs</name>\r");
+            buffer.append("\t\t\t<description>longitude and latitude and altitude HPDs for internal nodes</description>\r");
+            buffer.append(diamondBuffer);
+            buffer.append("\t\t</Folder>\r");
+            
+        }
 
         buffer.append("\t\t</Folder>\r");
 
@@ -691,6 +757,65 @@ public class KMLexporter {
         buffer.append("\t\t</Polygon>\r");
         buffer.append("\t\t</Placemark>\r");
 
+    }
+
+    private static void appendContour(StringBuffer buffer, RootedTree tree, Node node, int nodeNumber, double plotHeight, double mostRecentDate, String latLongName, String latitudeName, String longitudeName, boolean groundContour, boolean initialVisibility) {
+
+        int visibility;
+        if (initialVisibility) {visibility = 1; } else { visibility = 0; }
+
+        double scaleFactor = plotHeight/tree.getHeight(tree.getRootNode());
+        double altitude = (tree.getHeight(node)*scaleFactor);
+        String altitudeMode;
+        if (groundContour) {
+            altitude = 0;
+            altitudeMode = "clampToGround";
+        } else {
+            altitudeMode = "relativeToGround";
+        }
+
+        int modality = ((Integer)node.getAttribute(latLongName+"_95%HPD_modality")).intValue();
+
+        for (int x = 0; x < modality; x++) {
+            Object[] longitudeHPDs = (Object[])node.getAttribute(longitudeName+"_95%HPD_"+(x + 1));
+            Object[] latitudeHPDs = (Object[])node.getAttribute(latitudeName+"_95%HPD_"+(x + 1));
+
+            buffer.append("\t\t<Placemark>\r");
+
+            buffer.append("\t\t\t<visibility>"+visibility+"</visibility>\r");
+
+            buffer.append("\t\t<TimeSpan>\r");
+            double date = mostRecentDate - tree.getHeight(node);
+            String[] yearMonthDay = convertToYearMonthDay(date);
+            buffer.append("\t\t\t<begin>"+yearMonthDay[0]+"-"+yearMonthDay[1]+"-"+yearMonthDay[2]+"</begin>\r");
+            buffer.append("\t\t</TimeSpan>\r");
+
+            if (groundContour) {
+                buffer.append("\t\t<styleUrl>#groundSpade"+nodeNumber+"_style</styleUrl>\r");
+            }   else {
+                buffer.append("\t\t<styleUrl>#spade"+nodeNumber+"_style</styleUrl>\r");
+            }
+            buffer.append("\t\t<Polygon>\r");
+            buffer.append("\t\t\t<altitudeMode>"+altitudeMode+"</altitudeMode>\r");
+            if (groundContour) {
+                buffer.append("\t\t\t<tessellate>1</tessellate>\r");
+            }
+            buffer.append("\t\t\t<outerBoundaryIs>\r");
+            buffer.append("\t\t\t\t<LinearRing>\r");
+            buffer.append("\t\t\t\t\t<coordinates>\r");
+
+            for (int y = 0; y < longitudeHPDs.length; y++) {
+
+                buffer.append("\t\t\t\t\t"+longitudeHPDs[y]+","+latitudeHPDs[y]+","+altitude+"\r");
+
+            }
+
+            buffer.append("\t\t\t\t\t</coordinates>\r");
+            buffer.append("\t\t\t\t</LinearRing>\r");
+            buffer.append("\t\t\t</outerBoundaryIs>\r");
+            buffer.append("\t\t</Polygon>\r");
+            buffer.append("\t\t</Placemark>\r");
+        }
     }
 
     private static void appendDiamond(StringBuffer buffer, RootedTree tree, Node node, int nodeNumber, double plotHeight, String latitudeName, String longitudeName, boolean initialVisibility) {
@@ -1023,7 +1148,7 @@ public class KMLexporter {
 
     }
 
-    private static String getKMLColor(double value, double[] minMaxMedian, String startColor, String endColor) {
+    public static String getKMLColor(double value, double[] minMaxMedian, String startColor, String endColor) {
 
         startColor = startColor.toLowerCase();
         String startBlue = startColor.substring(0,2);
