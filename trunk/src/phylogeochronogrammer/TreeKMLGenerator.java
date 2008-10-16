@@ -39,7 +39,7 @@ public class TreeKMLGenerator {
         rateMinMaxMedian = getRateMinMaxMedian(tree);
  
         Element root = new Element("kml");
-        root.setAttribute("xmlns", "http://earth.google.com/kml/2.2");
+        root.setNamespace(Namespace.getNamespace("http://earth.google.com/kml/2.2"));
 
         Element doc = new Element("Document");
         doc.addContent(generate("name", documentName));
@@ -60,8 +60,8 @@ public class TreeKMLGenerator {
         for (Node node : tree.getNodes()) {
             nodeNumber++;
 
-            Double latitude = (Double)node.getAttribute(settings.getLatitudeName());
-            Double longitude = (Double)node.getAttribute(settings.getLongitudeName());
+            double latitude = getDoubleNodeAttribute(node, settings.getLatitudeName());
+            double longitude = getDoubleNodeAttribute(node, settings.getLongitudeName());
             double altitude = (tree.getHeight(node)*scaleFactor);
 
 
@@ -101,8 +101,8 @@ public class TreeKMLGenerator {
         int nodeNumber = 0;
         for (Node node : tree.getNodes()) {
             nodeNumber++;
-            Double latitude = (Double)node.getAttribute(settings.getLatitudeName());
-            Double longitude = (Double)node.getAttribute(settings.getLongitudeName());
+            double latitude = getDoubleNodeAttribute(node, settings.getLatitudeName());
+            double longitude = getDoubleNodeAttribute(node, settings.getLongitudeName());
             double altitude = (tree.getHeight(node)*scaleFactor);
 
             if (!tree.isRoot(node)) {
@@ -110,8 +110,8 @@ public class TreeKMLGenerator {
                 // Create each branch of the tree..
 
                 Node parentNode = tree.getParent(node);
-                Double parentLongitude = (Double)parentNode.getAttribute(settings.getLongitudeName());
-                Double parentLatitude = (Double)parentNode.getAttribute(settings.getLatitudeName());
+                double parentLatitude = getDoubleNodeAttribute(parentNode, settings.getLatitudeName());
+                double parentLongitude = getDoubleNodeAttribute(parentNode, settings.getLongitudeName());
                 double parentAltitude = (tree.getHeight(parentNode)*scaleFactor);
 
                 BranchDecoration branches = treeSettings.getBranchDecoration();
@@ -145,7 +145,7 @@ public class TreeKMLGenerator {
                     Element lineStyle = new Element("LineStyle");
                     double width = branches.getBranchWidth();
                     if (branches.getWidthProperty() != null) {
-                        double property = (Double)node.getAttribute(branches.getWidthProperty());
+                        double property = getDoubleNodeAttribute(node, branches.getWidthProperty());
                         width += property * branches.getBranchWidthScale();
                     }
 
@@ -156,7 +156,7 @@ public class TreeKMLGenerator {
                         if (branches.getColorProperty().equalsIgnoreCase("height")) {
                             property = tree.getHeight(node) / heightMinAndMax[1];
                         } else {
-                            property = (Double)node.getAttribute(branches.getColorProperty());
+                            property = getDoubleNodeAttribute(node, branches.getColorProperty());
                         }
                         color = getKMLColor((float)property, branches.getStartColor(), branches.getEndColor());
                     }
@@ -222,7 +222,7 @@ public class TreeKMLGenerator {
                         Element lineStyle = new Element("LineStyle");
                         double width = branches.getBranchWidth();
                         if (branches.getWidthProperty() != null) {
-                            double property = (Double)node.getAttribute(branches.getWidthProperty());
+                            double property = getDoubleNodeAttribute(node, branches.getWidthProperty());
                             width += property * branches.getBranchWidthScale();
                         }
 
@@ -234,7 +234,7 @@ public class TreeKMLGenerator {
                                 property = tree.getHeight(node) + (division + 1) *
                                         ((tree.getHeight(parentNode) - tree.getHeight(node)) / settings.getTimeDivisionCount());
                             } else {
-                                property = (Double)node.getAttribute(branches.getColorProperty());
+                                property = getDoubleNodeAttribute(node, branches.getColorProperty());
                             }
                             color = getKMLColor((float)property, branches.getStartColor(), branches.getEndColor());
                         }
@@ -270,11 +270,11 @@ public class TreeKMLGenerator {
             altitudeMode = "relativeToGround";
         }
 
-        int modality = ((Integer)node.getAttribute(latLongName+"_95%HPD_modality")).intValue();
+        int modality = getIntegerNodeAttribute(node, latLongName+"_95%HPD_modality");
 
         for (int x = 0; x < modality; x++) {
-            Object[] longitudeHPDs = (Object[])node.getAttribute(longitudeName+"_95%HPD_"+(x + 1));
-            Object[] latitudeHPDs = (Object[])node.getAttribute(latitudeName+"_95%HPD_"+(x + 1));
+            Object[] longitudeHPDs = getArrayNodeAttribute(node, longitudeName+"_95%HPD_"+(x + 1));
+            Object[] latitudeHPDs = getArrayNodeAttribute(node, latitudeName+"_95%HPD_"+(x + 1));
 
             Element placeMark = new Element("Placemark");
             placeMark.addContent(generate("visibility", surface.isVisible()));
@@ -474,6 +474,28 @@ public class TreeKMLGenerator {
 
     }
 
+
+    private int getIntegerNodeAttribute(Node node, String attributeName) {
+        if (node.getAttribute(attributeName) == null) {
+            throw new RuntimeException("Attribute, " + attributeName + ", missing from node");
+        }
+        return (Integer)node.getAttribute(attributeName);
+    }
+
+    private double getDoubleNodeAttribute(Node node, String attributeName) {
+        if (node.getAttribute(attributeName) == null) {
+            throw new RuntimeException("Attribute, " + attributeName + ", missing from node");
+        }
+        return (Double)node.getAttribute(attributeName);
+    }
+
+
+    private Object[] getArrayNodeAttribute(Node node, String attributeName) {
+        if (node.getAttribute(attributeName) == null) {
+            throw new RuntimeException("Attribute, " + attributeName + ", missing from node");
+        }
+        return (Object[])node.getAttribute(attributeName);
+    }
     /**
      * converts a Java color into a 4 channel hex color string.
      * @param color
