@@ -65,6 +65,14 @@ public class Settings {
         this.groundContours = groundContours;
     }
 
+    public SurfaceDecoration getProjections() {
+        return projections;
+    }
+
+    public void setProjections(SurfaceDecoration projections) {
+        this.projections = projections;
+    }
+
     private String traitName = "location";
     private String latitudeName = "location1";
     private String longitudeName = "location2";
@@ -74,6 +82,7 @@ public class Settings {
     private TreeSettings altitudeTreeSettings = new TreeSettings("altitudeTree", "", TreeType.RECTANGLE_TREE);
     private TreeSettings groundTreeSettings = new TreeSettings("groundTree", "", TreeType.ARC_TREE);
     private SurfaceDecoration groundContours = new SurfaceDecoration();
+    private SurfaceDecoration projections = new SurfaceDecoration();
 
-    private int timeDivisionCount;
+    private int timeDivisionCount = 50;
 }

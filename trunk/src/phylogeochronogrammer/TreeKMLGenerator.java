@@ -81,9 +81,31 @@ public class TreeKMLGenerator {
         }
         doc.addContent(styles);
         doc.addContent(trees);
-        doc.addContent(projections);
-        doc.addContent(labels);
-        doc.addContent(contours);
+
+        Element placeMark = new Element("PlaceMark");
+        placeMark.addContent(generate("name", "Projections"));
+        placeMark.addContent(generate("description", "projections from tips to surface"));
+//        placeMark.addContent(generate("visibility", settings.getProjections().isVisible()));
+//        placeMark.addContent(projections);
+        placeMark.addContent(new Element("MultiGeometry").addContent(projections));
+        doc.addContent(placeMark);
+
+        placeMark = new Element("Folder");
+        placeMark.addContent(generate("name", "Taxon Labels"));
+        placeMark.addContent(generate("description", "Taxon labels"));
+//        placeMark.addContent(generate("visibility", settings.getProjections().isVisible()));
+        placeMark.addContent(labels);
+//        placeMark.addContent(new Element("MultiGeometry").addContent(labels));
+        doc.addContent(placeMark);
+
+        placeMark = new Element("Folder");
+        placeMark.addContent(generate("name", "Surface Contours"));
+        placeMark.addContent(generate("description", "Surface contours"));
+        //placeMark.addContent(generate("visibility", settings.getProjections().isVisible()));
+        placeMark.addContent(contours);
+//        placeMark.addContent(new Element("MultiGeometry").addContent(contours));
+
+        doc.addContent(placeMark);
 
         root.addContent(doc);
 
@@ -162,7 +184,7 @@ public class TreeKMLGenerator {
                     }
                     lineStyle.addContent(generate("width", "" + width));
                     lineStyle.addContent(generate("color", color));
-
+                    style.addContent(lineStyle);
                     styles.add(style);
                 } else if (treeSettings.getTreeType() == TreeType.SURFACE_TREE || treeSettings.getTreeType() == TreeType.ARC_TREE) {
                     //variables required for chopping up the branches of the surface Tree
@@ -215,14 +237,12 @@ public class TreeKMLGenerator {
 
                         folder.addContent(placeMark);
 
-                        element.addContent(folder);
-
                         Element style = new Element("Style");
                         style.setAttribute("id", "surfaceTreeBranch"+ nodeNumber +"_part"+(division + 1) + "_style");
                         Element lineStyle = new Element("LineStyle");
                         double width = branches.getBranchWidth();
                         if (branches.getWidthProperty() != null) {
-                            double property = getDoubleNodeAttribute(node, branches.getWidthProperty());
+                            double property = getDoubleNodeAttribute(node, branches.getWidthProperty(), 0.0);
                             width += property * branches.getBranchWidthScale();
                         }
 
@@ -240,9 +260,12 @@ public class TreeKMLGenerator {
                         }
                         lineStyle.addContent(generate("width", "" + width));
                         lineStyle.addContent(generate("color", color));
+                        style.addContent(lineStyle);
 
                         styles.add(style);
                     }
+
+                    element.addContent(folder);
 
                 }
             }
@@ -515,10 +538,14 @@ public class TreeKMLGenerator {
      * @return the color string
      */
     public static String getKMLColor(Color color) {
-        return Integer.toHexString(color.getAlpha()) +
-                Integer.toHexString(color.getRed()) +
-                Integer.toHexString(color.getGreen()) +
-                Integer.toHexString(color.getBlue());
+        String a = Integer.toHexString(color.getAlpha());
+        String b = Integer.toHexString(color.getBlue());
+        String g = Integer.toHexString(color.getGreen());
+        String r = Integer.toHexString(color.getRed());
+        return  (a.length() < 2 ? "0" : "") + a +
+                (b.length() < 2 ? "0" : "") + b +
+                (g.length() < 2 ? "0" : "") + g +
+                (r.length() < 2 ? "0" : "") + r;
     }
 
     public static String getKMLColor(float proportion, Color startColor, Color endColor) {
