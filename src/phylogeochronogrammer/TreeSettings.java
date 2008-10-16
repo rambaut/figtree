@@ -8,24 +8,11 @@ import jebl.evolution.trees.RootedTree;
  * @version $Id$
  */
 public class TreeSettings {
-    public TreeSettings(TreeType treeType,
-                        double rootFraction,
-                        double arcAltitude,
-                        boolean taxaVisible,
-                        BranchDecoration branchDecoration,
-                        SurfaceDecoration locationContours,
-                        SurfaceDecoration groundContours,
-                        BranchDecoration projections) {
+    public TreeSettings(String name, String description, TreeType treeType) {
+        this.name = name;
+        this.description = description;
         this.treeType = treeType;
-        this.rootFraction = rootFraction;
-        this.arcAltitude = arcAltitude;
-        this.taxaVisible = taxaVisible;
-        this.branchDecoration = branchDecoration;
-        this.locationContours = locationContours;
-        this.groundContours = groundContours;
-        this.projections = projections;
     }
-
 
     public String getName() {
         return name;
@@ -118,10 +105,10 @@ public class TreeSettings {
 
     private boolean taxaVisible = false;
 
-    private BranchDecoration branchDecoration;
+    private BranchDecoration branchDecoration = new BranchDecoration();
 
-    private SurfaceDecoration locationContours;
-    private SurfaceDecoration groundContours;
+    private SurfaceDecoration locationContours = new SurfaceDecoration();
+    private SurfaceDecoration groundContours = new SurfaceDecoration();
 
-    private BranchDecoration projections;
+    private BranchDecoration projections = new BranchDecoration();
 }

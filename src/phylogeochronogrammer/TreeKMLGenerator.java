@@ -7,6 +7,7 @@ import jebl.evolution.io.NexusImporter;
 import jebl.evolution.io.ImportException;
 import org.jdom.*;
 import org.jdom.output.XMLOutputter;
+import org.jdom.output.Format;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class TreeKMLGenerator {
 
         heightMinAndMax = getHeightMinAndMax(tree);
         rateMinMaxMedian = getRateMinMaxMedian(tree);
- 
+
         Element root = new Element("kml");
         root.setNamespace(Namespace.getNamespace("http://earth.google.com/kml/2.2"));
 
@@ -50,9 +51,8 @@ public class TreeKMLGenerator {
         List<Element> labels = new ArrayList<Element>();
         List<Element> contours = new ArrayList<Element>();
 
-        for (TreeSettings treeSettings : settings.getTreeSettings()) {
-            trees.add(generateTree(tree, settings, treeSettings,  styles));
-        }
+        trees.add(generateTree(tree, settings, settings.getAltitudeTreeSettings(),  styles));
+        trees.add(generateTree(tree, settings, settings.getGroundTreeSettings(),  styles));
 
         double scaleFactor = settings.getPlotAltitude()/tree.getHeight(tree.getRootNode());
 
@@ -67,7 +67,7 @@ public class TreeKMLGenerator {
 
             if (tree.isExternal(node)) {
                 generateProjection(projections, altitude, latitude, longitude);
-                
+
                 generateTaxonLabel(labels, tree,
                         settings.getGroundContours(),
                         node, latitude, longitude);
@@ -145,7 +145,7 @@ public class TreeKMLGenerator {
                     Element lineStyle = new Element("LineStyle");
                     double width = branches.getBranchWidth();
                     if (branches.getWidthProperty() != null) {
-                        double property = getDoubleNodeAttribute(node, branches.getWidthProperty());
+                        double property = getDoubleNodeAttribute(node, branches.getWidthProperty(), 0.0);
                         width += property * branches.getBranchWidthScale();
                     }
 
@@ -482,6 +482,13 @@ public class TreeKMLGenerator {
         return (Integer)node.getAttribute(attributeName);
     }
 
+    private int getIntegerNodeAttribute(Node node, String attributeName, int defaultValue) {
+        if (node.getAttribute(attributeName) == null) {
+            return defaultValue;
+        }
+        return (Integer)node.getAttribute(attributeName);
+    }
+
     private double getDoubleNodeAttribute(Node node, String attributeName) {
         if (node.getAttribute(attributeName) == null) {
             throw new RuntimeException("Attribute, " + attributeName + ", missing from node");
@@ -489,6 +496,12 @@ public class TreeKMLGenerator {
         return (Double)node.getAttribute(attributeName);
     }
 
+    private double getDoubleNodeAttribute(Node node, String attributeName, double defaultValue) {
+        if (node.getAttribute(attributeName) == null) {
+            return defaultValue;
+        }
+        return (Double)node.getAttribute(attributeName);
+    }
 
     private Object[] getArrayNodeAttribute(Node node, String attributeName) {
         if (node.getAttribute(attributeName) == null) {
@@ -546,11 +559,11 @@ public class TreeKMLGenerator {
             Document doc = new Document(generator.generate(args[0], tree, settings));
 
             try {
-              XMLOutputter serializer = new XMLOutputter();
-              serializer.output(doc, out);
+                XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+                outputter.output(doc, out);
             }
             catch (IOException e) {
-              System.err.println(e);
+                System.err.println(e);
             }
             out.close();
         } catch (IOException e) {
