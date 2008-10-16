@@ -8,6 +8,9 @@ import java.awt.*;
  * @version $Id$
  */
 public class BranchDecoration {
+    public BranchDecoration() {
+    }
+
     public BranchDecoration(String widthProperty, String colorProperty, boolean visible, double branchWidth, double branchWidthScale, Color startColor, Color endColor, double opacity) {
         this.widthProperty = widthProperty;
         this.colorProperty = colorProperty;
@@ -83,14 +86,14 @@ public class BranchDecoration {
         this.opacity = opacity;
     }
 
-    private String widthProperty;
-    private String colorProperty;
+    private String widthProperty = "posterior";
+    private String colorProperty = "rate";
     
-    private boolean isVisible;
-    private double branchWidth;
-    private double branchWidthScale;
-    private Color startColor;
-    private Color endColor;
-    private double opacity;
+    private boolean isVisible = true;
+    private double branchWidth = 5.0;
+    private double branchWidthScale = 3.0;
+    private Color startColor = Color.red;
+    private Color endColor = Color.blue;
+    private double opacity = 0.75;
 
 }

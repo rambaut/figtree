@@ -8,6 +8,9 @@ import java.awt.*;
  * @version $Id$
  */
 public class SurfaceDecoration {
+    public SurfaceDecoration() {
+    }
+
     public SurfaceDecoration(String colorProperty, boolean visible, Color startColor, Color endColor, double opacity) {
         this.colorProperty = colorProperty;
         isVisible = visible;
@@ -56,10 +59,10 @@ public class SurfaceDecoration {
         this.opacity = opacity;
     }
 
-    private String colorProperty;
-    private boolean isVisible;
-    private Color startColor;
-    private Color endColor;
-    private double opacity;
+    private String colorProperty = "";
+    private boolean isVisible = true;
+    private Color startColor = Color.green;
+    private Color endColor = Color.yellow;
+    private double opacity = 0.5;
 
 }

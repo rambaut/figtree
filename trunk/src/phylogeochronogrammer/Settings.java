@@ -41,12 +41,12 @@ public class Settings {
         this.plotAltitude = plotAltitude;
     }
 
-    public List<TreeSettings> getTreeSettings() {
-        return treeSettings;
+    public TreeSettings getAltitudeTreeSettings() {
+        return altitudeTreeSettings;
     }
 
-    public void addTreeSettings(TreeSettings treeSettings) {
-        this.treeSettings.add(treeSettings);
+    public TreeSettings getGroundTreeSettings() {
+        return groundTreeSettings;
     }
 
     public int getTimeDivisionCount() {
@@ -65,14 +65,15 @@ public class Settings {
         this.groundContours = groundContours;
     }
 
-    private String traitName;
-    private String latitudeName;
-    private String longitudeName;
+    private String traitName = "location";
+    private String latitudeName = "location1";
+    private String longitudeName = "location2";
 
     private double plotAltitude = 500000;
 
-    private List<TreeSettings> treeSettings = new ArrayList<TreeSettings>();
-    private SurfaceDecoration groundContours;
+    private TreeSettings altitudeTreeSettings = new TreeSettings("altitudeTree", "", TreeType.RECTANGLE_TREE);
+    private TreeSettings groundTreeSettings = new TreeSettings("groundTree", "", TreeType.ARC_TREE);
+    private SurfaceDecoration groundContours = new SurfaceDecoration();
 
     private int timeDivisionCount;
 }
