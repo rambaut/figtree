@@ -90,7 +90,7 @@ public class BranchDecoration {
     private String colorProperty = "rate";
     
     private boolean isVisible = true;
-    private double branchWidth = 5.0;
+    private double branchWidth = 2.0;
     private double branchWidthScale = 3.0;
     private Color startColor = Color.red;
     private Color endColor = Color.blue;
