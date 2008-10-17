@@ -9,6 +9,18 @@ import java.util.ArrayList;
  * @version $Id$
  */
 public class Settings {
+    public Settings(AnalysisType analysisType) {
+        this.analysisType = analysisType;
+    }
+
+    public AnalysisType getAnalysisType() {
+        return analysisType;
+    }
+
+    public void setAnalysisType(AnalysisType analysisType) {
+        this.analysisType = analysisType;
+    }
+
     public String getTraitName() {
         return traitName;
     }
@@ -31,6 +43,14 @@ public class Settings {
 
     public void setLongitudeName(String longitudeName) {
         this.longitudeName = longitudeName;
+    }
+
+    public double getMostRecentDate() {
+        return mostRecentDate;
+    }
+
+    public void setMostRecentDate(double mostRecentDate) {
+        this.mostRecentDate = mostRecentDate;
     }
 
     public double getPlotAltitude() {
@@ -73,9 +93,13 @@ public class Settings {
         this.projections = projections;
     }
 
+    private AnalysisType analysisType;
+
     private String traitName = "location";
     private String latitudeName = "location1";
     private String longitudeName = "location2";
+
+    private double mostRecentDate;
 
     private double plotAltitude = 500000;
 
