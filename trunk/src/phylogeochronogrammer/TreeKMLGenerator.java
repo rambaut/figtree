@@ -9,8 +9,8 @@ import org.jdom.*;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 
+import java.util.*;
 import java.util.List;
-import java.util.ArrayList;
 import java.awt.*;
 import java.io.FileReader;
 import java.io.IOException;
@@ -33,8 +33,14 @@ public class TreeKMLGenerator {
     double maxBranchLength;
 
     private final RootedTree tree;
+    private final Map<String, Location> locationMap;
+
 
     public TreeKMLGenerator(RootedTree tree) {
+        this(tree, null);
+    }
+
+    public TreeKMLGenerator(RootedTree tree, List<Location> locationList) {
         this.tree = tree;
 
         double[] rates = new double[(tree.getNodes().size() - 1)];
@@ -57,6 +63,43 @@ public class TreeKMLGenerator {
         medianRate = DiscreteStatistics.quantile(0.5, rates);
 
         maxHeight = tree.getHeight(tree.getRootNode());
+
+
+        if (locationList != null) {
+            double minLat = Double.MAX_VALUE;
+            double maxLat = -Double.MAX_VALUE;
+            double minLong = Double.MAX_VALUE;
+            double maxLong = -Double.MAX_VALUE;
+
+            locationMap = new HashMap<String, Location>();
+
+            for (Location location : locationList) {
+                if (location.getLatitude() < minLat)  {
+                    minLat = location.getLatitude();
+                }
+                if (location.getLatitude() > maxLat)  {
+                    maxLat = location.getLatitude();
+                }
+
+                if (location.getLongitude() < minLong)  {
+                    minLong = location.getLongitude();
+                }
+                if (location.getLongitude() > maxLong)  {
+                    maxLong = location.getLongitude();
+                }
+                locationMap.put(location.getState(), location);
+            }
+
+//            radius = 100*Math.abs(maxLat-minLat)*Math.abs(maxLong-minLong);
+//            radius = 200000;
+
+//            if (mostRecentDate - treeToExport.getHeight(treeToExport.getRootNode()) < 0) {
+//                ancient = true;
+//            }
+
+        } else {
+            locationMap = null;
+        }
     }
 
     public Element generate(String documentName, Settings settings) {
@@ -70,12 +113,13 @@ public class TreeKMLGenerator {
         List<Element> styles = new ArrayList<Element>();
         List<Element> trees = new ArrayList<Element>();
         List<Element> projections = new ArrayList<Element>();
-        List<Element> labels = new ArrayList<Element>();
+        List<Element> taxonLabels = new ArrayList<Element>();
+        List<Element> locationLabels = new ArrayList<Element>();
         List<Element> contours = new ArrayList<Element>();
 
         if (settings.getAnalysisType() == AnalysisType.CONTINUOUS) {
             trees.add(generateTree(tree, settings, settings.getAltitudeTreeSettings(),  styles));
-            trees.add(generateTree(tree, settings, settings.getGroundTreeSettings(),  styles));
+            //trees.add(generateTree(tree, settings, settings.getGroundTreeSettings(),  styles));
 
             double scaleFactor = settings.getPlotAltitude()/tree.getHeight(tree.getRootNode());
 
@@ -91,9 +135,7 @@ public class TreeKMLGenerator {
                 if (tree.isExternal(node)) {
                     generateProjection(projections, altitude, latitude, longitude);
 
-                    generateTaxonLabel(labels, tree,
-                            settings.getGroundContours(),
-                            node, latitude, longitude);
+                    taxonLabels.add(generateTaxonLabel(tree, node, latitude, longitude));
                 } else {
                     generateContour(contours, styles, tree,
                             settings.getGroundContours(), node,  nodeNumber, 0.0, settings.getMostRecentDate(),
@@ -104,32 +146,43 @@ public class TreeKMLGenerator {
 
         } else if (settings.getAnalysisType() == AnalysisType.DISCRETE) {
 
+            for (Location location : locationMap.values()) {
+                locationLabels.add(generateLocation(location));
+            }
+
         } else {
             throw new IllegalArgumentException("Unknown AnalysisType");
         }
 
-        doc.addContent(styles);
+//        doc.addContent(styles);
         doc.addContent(trees);
 
-        if (projections.size() > 0) {
-            Element placeMark = generateContainer("PlaceMark", "Projections", "projections from tips to surface", true, null);
-            placeMark.addContent(new Element("MultiGeometry").addContent(projections));
-            doc.addContent(placeMark);
-        }
-
-        if (labels.size() > 0) {
-            Element folder = generateContainer("Folder", "Taxon Labels", "Taxon labels", true, null);
-            folder.addContent(labels);
-//        placeMark.addContent(new Element("MultiGeometry").addContent(labels));
-            doc.addContent(folder);
-        }
-
-        if (contours.size() > 0) {
-            Element folder = generateContainer("Folder", "Surface Contours", "Contours overlaid on the surface to represent location", true, null);
-            folder.addContent(contours);
-//        placeMark.addContent(new Element("MultiGeometry").addContent(contours));
-            doc.addContent(folder);
-        }
+//        if (projections.size() > 0) {
+//            Element placeMark = generateContainer("PlaceMark", "Projections", "projections from tips to surface", true, null);
+//            placeMark.addContent(new Element("MultiGeometry").addContent(projections));
+//            doc.addContent(placeMark);
+//        }
+//
+//        if (taxonLabels.size() > 0) {
+//            Element folder = generateContainer("Folder", "Taxon Labels", "Taxon labels", settings.getTaxonLabels().isVisible(), null);
+//            folder.addContent(taxonLabels);
+////        placeMark.addContent(new Element("MultiGeometry").addContent(labels));
+//            doc.addContent(folder);
+//        }
+//
+//        if (locationLabels.size() > 0) {
+//            Element folder = generateContainer("Folder", "Location Labels", "Location labels", settings.getLocationLabels().isVisible(), null);
+//            folder.addContent(locationLabels);
+////        placeMark.addContent(new Element("MultiGeometry").addContent(labels));
+//            doc.addContent(folder);
+//        }
+//
+//        if (contours.size() > 0) {
+//            Element folder = generateContainer("Folder", "Surface Contours", "Contours overlaid on the surface to represent location", true, null);
+//            folder.addContent(contours);
+////        placeMark.addContent(new Element("MultiGeometry").addContent(contours));
+//            doc.addContent(folder);
+//        }
 
         root.addContent(doc);
 
@@ -150,132 +203,249 @@ public class TreeKMLGenerator {
             double latitude = getDoubleNodeAttribute(node, settings.getLatitudeName());
             double longitude = getDoubleNodeAttribute(node, settings.getLongitudeName());
             double altitude = (tree.getHeight(node)*scaleFactor);
+            double date = settings.getMostRecentDate() - tree.getHeight(node);
 
             if (!tree.isRoot(node)) {
 
                 // Create each branch of the tree..
+                Element branch;
+
+                String nodeName = treeSettings.getName() + "_node" + nodeNumber;
 
                 Node parentNode = tree.getParent(node);
                 double parentLatitude = getDoubleNodeAttribute(parentNode, settings.getLatitudeName());
                 double parentLongitude = getDoubleNodeAttribute(parentNode, settings.getLongitudeName());
                 double parentAltitude = (tree.getHeight(parentNode)*scaleFactor);
+                double parentDate = settings.getMostRecentDate() - tree.getHeight(parentNode);
 
-                if (treeSettings.getTreeType() == TreeType.RECTANGLE_TREE || treeSettings.getTreeType() == TreeType.TRIANGLE_TREE) {
-                    String nodeName = treeSettings.getName() + "_node" + nodeNumber;
-                    String styleName = nodeName + "_style";
-                    Element placeMark = generateContainer("Placemark", nodeName, null, "#" + styleName);
+                if (treeSettings.getTreeType() == TreeType.RECTANGLE_TREE ||
+                        treeSettings.getTreeType() == TreeType.TRIANGLE_TREE) {
 
-                    Element lineString = new Element("LineString");
-                    lineString.addContent(generateElement("altitudeMode", "relativeToGround"));
+                    branch = generateBranch(treeSettings, tree, node, nodeName,
+                            parentLatitude, latitude,
+                            parentLongitude, longitude,
+                            parentAltitude, altitude,
+                            0.0, parentAltitude,
+                            date, date,
+                            0,
+                            styles);
+                } else if (treeSettings.getTreeType() == TreeType.ARC_TREE) {
 
-                    Element coordinates = new Element("coordinates");
-                    if (treeSettings.getTreeType() == TreeType.RECTANGLE_TREE) {
-                        coordinates.addContent(""+longitude+","+latitude+","+altitude+"\r");
-                        coordinates.addContent(""+longitude+","+latitude+","+parentAltitude+"\r");
-                        coordinates.addContent(""+parentLongitude+","+parentLatitude+","+parentAltitude+"\r");
-                    } else {
-
-                    }
-                    lineString.addContent(coordinates);
-
-                    placeMark.addContent(lineString);
-
-                    element.addContent(placeMark);
-
-                    double width = branches.getBranchWidth();
-                    if (branches.getWidthProperty() != null) {
-                        double property = getDoubleNodeAttribute(node, branches.getWidthProperty(), 0.0);
-                        width += property * branches.getBranchWidthScale();
-                    }
-
-                    String color = getKMLColor(branches.getStartColor());
-                    if (branches.getColorProperty() != null) {
-                        double property;
-                        if (branches.getColorProperty().equalsIgnoreCase("height")) {
-                            property = tree.getHeight(node) / maxHeight;
-                        } else {
-                            property = getDoubleNodeAttribute(node, branches.getColorProperty());
-                        }
-                        color = getKMLColor((float)property, branches.getStartColor(), branches.getEndColor());
-                    }
-
-                    styles.add(generateLineStyle(styleName, width, color));
-
-                } else if (treeSettings.getTreeType() == TreeType.SURFACE_TREE || treeSettings.getTreeType() == TreeType.ARC_TREE) {
-                    //variables required for chopping up the branches of the surface Tree
+                    branch = generateBranch(treeSettings, tree, node, nodeName,
+                            parentLatitude, latitude,
+                            parentLongitude, longitude,
+                            parentAltitude, altitude,
+                            0.0, parentAltitude,
+                            parentDate, date,
+                            50,
+                            styles);
+                } else if (treeSettings.getTreeType() == TreeType.SURFACE_TREE) {
                     double maxAltitude = settings.getPlotAltitude() * (tree.getHeight(parentNode) - tree.getHeight(node)) / maxBranchLength;
 
-                    double latDiff = parentLatitude - latitude;
-                    double latDelta = latDiff / settings.getTimeDivisionCount();
-                    double longDiff = parentLongitude - longitude;
-                    double longDelta = longDiff / settings.getTimeDivisionCount();
-
-                    String nodeName = treeSettings.getName() + "_node" + nodeNumber;
-                    Element folder = generateContainer("Folder", nodeName, null, null);
-                    for (int division = 0; division < settings.getTimeDivisionCount(); division++) {
-                        String partName = nodeName + "_part" + (division + 1);
-                        String styleName = partName + "_style";
-                        Element placeMark = generateContainer("Placemark", partName, null, "#" + styleName);
-
-                        Element timeSpan = new Element("TimeSpan");
-
-                        //convert height of the branch segment to a real date (based on th date for the most recent sample)
-                        double date = settings.getMostRecentDate() - (tree.getHeight(node) + (division + 1) *
-                                ((tree.getHeight(parentNode) - (tree.getHeight(node))) / settings.getTimeDivisionCount()));
-                        timeSpan.addContent(generateElement("begin", getKMLDate(date)));
-                        placeMark.addContent(timeSpan);
+                    branch = generateBranch(treeSettings, tree, node, nodeName,
+                            parentLatitude, latitude,
+                            parentLongitude, longitude,
+                            parentAltitude, altitude,
+                            0.5, maxAltitude,
+                            parentDate, date,
+                            50,
+                            styles);
 
 
-                        Element lineString = new Element("LineString");
-                        if (treeSettings.getTreeType() == TreeType.ARC_TREE) {
-                            lineString.addContent(generateElement("altitudeMode", "absolute"));
-                            lineString.addContent(generateElement("tessellate", true));
-                        } else {
-                            lineString.addContent(generateElement("altitudeMode", "clampToGround"));
-                        }
-
-                        Element coordinates = new Element("coordinates");
-                        double t = 2.0 / (double)settings.getTimeDivisionCount();
-                        coordinates.addContent("" +
-                                (longitude + division * longDelta) + "," +
-                                (latitude + division * latDelta) + "," +
-                                (maxAltitude * Math.sin(Math.acos(1.0 - division * t))) + "\r");
-                        coordinates.addContent("" +
-                                (longitude + (division + 1) * longDelta) + "," +
-                                (latitude + (division + 1) * latDelta) + "," +
-                                (maxAltitude * Math.sin(Math.acos(1.0 - ((division + 1) * t)))) + "\r");
-
-                        lineString.addContent(coordinates);
-
-                        placeMark.addContent(lineString);
-
-                        folder.addContent(placeMark);
-
-                        double width = branches.getBranchWidth();
-                        if (branches.getWidthProperty() != null) {
-                            double property = getDoubleNodeAttribute(node, branches.getWidthProperty(), 0.0);
-                            width += property * branches.getBranchWidthScale();
-                        }
-
-                        String color = getKMLColor(branches.getStartColor());
-                        if (branches.getColorProperty() != null) {
-                            double property;
-                            if (branches.getColorProperty().equalsIgnoreCase("height")) {
-                                property = tree.getHeight(node) + (division + 1) *
-                                        ((tree.getHeight(parentNode) - tree.getHeight(node)) / settings.getTimeDivisionCount());
-                            } else {
-                                property = getDoubleNodeAttribute(node, branches.getColorProperty());
-                            }
-                            color = getKMLColor((float)property, branches.getStartColor(), branches.getEndColor());
-                        }
-
-                        styles.add(generateLineStyle(styleName, width, color));
-                    }
-
-                    element.addContent(folder);
-
+                } else {
+                    throw new IllegalArgumentException("Unknown TreeType");
                 }
+                element.addContent(branch);
             }
+        }
+
+        return element;
+    }
+
+    /**
+     * Create a branch that goes from [startLatitude, startLongitude, startAltitude] to
+     * [finishLatitude, finishLongitude, finishAltitude], optionally arching through
+     * peakAltitude. If divisionCount > 0 then the branch is subdivided into segments,
+     * this is required if the branch is arcing or has a colour gradient.
+     * @param treeSettings the tree settings
+     * @param tree the tree
+     * @param node the node
+     * @param nodeName the node's name
+     * @param startLatitude the starting (parental) latitude
+     * @param finishLatitude the finishing (descendent) latitude
+     * @param startLongitude the starting (parental) longitude
+     * @param finishLongitude the finishing (descendent) longitude
+     * @param startAltitude the starting (parental) altitude
+     * @param finishAltitude the finishing (descendent) altitude
+     * @param peakPosition the position of the peak (0 = beginning, 0.5 = midpoint)
+     * @param peakAltitude the peak altitude
+     * @param startDate the starting date
+     * @param finishDate the finishing date
+     * @param divisionCount the number of divisions
+     * @param styles an array into which style elements are put
+     * @return the branch element
+     */
+    private Element generateBranch(TreeSettings treeSettings,
+                                   RootedTree tree, Node node,
+                                   String nodeName,
+                                   double startLatitude, double finishLatitude,
+                                   double startLongitude, double finishLongitude,
+                                   double startAltitude, double finishAltitude,
+                                   double peakPosition, double peakAltitude,
+                                   double startDate, double finishDate,
+                                   int divisionCount,
+                                   List<Element> styles) {
+
+        Element element;
+
+        BranchDecoration branches = treeSettings.getBranchDecoration();
+
+        if (divisionCount > 0) {
+            double latDiff = finishLatitude - startLatitude;
+            double latDelta = latDiff / divisionCount;
+
+            double longDiff = finishLongitude - startLongitude;
+            double longDelta = longDiff / divisionCount;
+
+            double altDiff = finishAltitude - startAltitude;
+            double altDelta = altDiff / divisionCount;
+
+            double dateDiff = finishDate - startDate;
+            double dateDelta = dateDiff / divisionCount;
+
+            double lastLatitude = startLatitude;
+            double latitude = startLatitude + latDelta;
+
+            double lastLongitude = startLongitude;
+            double longitude = startLongitude + longDelta;
+
+            // x goes 0 to 1, offset by peak Position
+            double x = -peakPosition;
+            double xDelta = 1.0 / divisionCount;
+            // assume a parabolic curve that peaks at peakAltitude
+            double a = peakAltitude - startAltitude;
+            if (peakPosition == 0.5) {
+                a *= 4;
+            }
+            double altitude = peakAltitude - (a * (x * x));
+            double lastAltitude = altitude;
+            x += xDelta;
+
+            double date = startDate;
+
+            element = generateContainer("Folder", nodeName, null, null);
+            for (int division = 1; division < divisionCount; division++) {
+                String partName = nodeName + "_part" + (division + 1);
+                String styleName = partName + "_style";
+                Element placeMark = generateContainer("Placemark", partName, null, "#" + styleName);
+
+                if (dateDiff > 0.0) {
+                    Element timeSpan = new Element("TimeSpan");
+
+                    //convert height of the branch segment to a real date (based on th date for the most recent sample)
+                    timeSpan.addContent(generateElement("begin", getKMLDate(date)));
+                    placeMark.addContent(timeSpan);
+                }
+
+                Element lineString = new Element("LineString");
+                Element coordinates = new Element("coordinates");
+                if (altDiff > 0.0 || peakAltitude > 0.0) {
+                    lineString.addContent(generateElement("altitudeMode", "absolute"));
+
+                    altitude = peakAltitude - (a * (x * x));
+
+                    coordinates.addContent("" +lastLongitude + "," +lastLatitude + "," + lastAltitude + "\r");
+                    coordinates.addContent("" +longitude + "," +latitude + "," + altitude + "\r");
+                } else {
+                    lineString.addContent(generateElement("altitudeMode", "clampToGround"));
+                    lineString.addContent(generateElement("tessellate", true));
+
+                    coordinates.addContent("" +lastLongitude + "," +lastLatitude + ",0\r");
+                    coordinates.addContent("" +longitude + "," +latitude + ",0\r");
+                }
+
+                lastLatitude = latitude;
+                latitude += latDelta;
+
+                lastLongitude = longitude;
+                longitude += longDelta;
+
+                lastAltitude = altitude;
+                x += xDelta;
+
+                lineString.addContent(coordinates);
+
+                placeMark.addContent(lineString);
+
+                element.addContent(placeMark);
+
+                // Create a style for this branch segment
+                double width = branches.getBranchWidth();
+                if (branches.getWidthProperty() != null) {
+                    double property = getDoubleNodeAttribute(node, branches.getWidthProperty(), 0.0);
+                    width += property * branches.getBranchWidthScale();
+                }
+
+                String color = getKMLColor(branches.getStartColor());
+                if (branches.getColorProperty() != null) {
+                    double property;
+                    if (branches.getColorProperty().equalsIgnoreCase("height")) {
+                        property = altitude + (division + 1) * (altDiff / divisionCount);
+                    } else {
+                        property = getDoubleNodeAttribute(node, branches.getColorProperty());
+                    }
+                    color = getKMLColor((float)property, branches.getStartColor(), branches.getEndColor());
+                }
+
+                styles.add(generateLineStyle(styleName, width, color));
+
+                latitude += latDelta;
+                longitude += longDelta;
+                altitude += altDelta;
+                date += dateDelta;
+
+            }
+
+        } else {
+            String styleName = nodeName + "_style";
+            element = generateContainer("Placemark", nodeName, null, "#" + styleName);
+
+            Element lineString = new Element("LineString");
+            lineString.addContent(generateElement("altitudeMode", "relativeToGround"));
+
+            Element coordinates = new Element("coordinates");
+            if (treeSettings.getTreeType() == TreeType.RECTANGLE_TREE) {
+                coordinates.addContent(""+finishLongitude+","+finishLatitude+","+finishAltitude+"\r");
+                coordinates.addContent(""+finishLongitude+","+finishLatitude+","+startAltitude+"\r");
+                coordinates.addContent(""+startLongitude+","+startLatitude+","+startAltitude+"\r");
+            } else { // TRIANGLE_TREE
+                coordinates.addContent(""+finishLongitude+","+finishLatitude+","+finishAltitude+"\r");
+                coordinates.addContent(""+startLongitude+","+startLatitude+","+startAltitude+"\r");
+
+            }
+            lineString.addContent(coordinates);
+
+            element.addContent(lineString);
+
+            double width = branches.getBranchWidth();
+            if (branches.getWidthProperty() != null) {
+                double property = getDoubleNodeAttribute(node, branches.getWidthProperty(), 0.0);
+                width += property * branches.getBranchWidthScale();
+            }
+
+            String color = getKMLColor(branches.getStartColor());
+            if (branches.getColorProperty() != null) {
+                double property;
+                if (branches.getColorProperty().equalsIgnoreCase("height")) {
+                    property = tree.getHeight(node) / maxHeight;
+                } else {
+                    property = getDoubleNodeAttribute(node, branches.getColorProperty());
+                }
+                color = getKMLColor((float)property, branches.getStartColor(), branches.getEndColor());
+            }
+
+            styles.add(generateLineStyle(styleName, width, color));
+
         }
 
         return element;
@@ -354,10 +524,9 @@ public class TreeKMLGenerator {
     }
 
 
-    private void generateTaxonLabel(List<Element> labels, RootedTree tree, SurfaceDecoration surface,
-                                    Node node, double latitude, double longitude) {
+    private Element generateTaxonLabel(RootedTree tree, Node node, double latitude, double longitude) {
 
-        Element placeMark = generateContainer("PlaceMark", tree.getTaxon(node).getName(), null, surface.isVisible(), null);
+        Element placeMark = generateContainer("PlaceMark", tree.getTaxon(node).getName(), null, null);
 
         Element point = new Element("Point");
         point.addContent(generateElement("altitudeMode", "relativeToGround"));
@@ -366,7 +535,22 @@ public class TreeKMLGenerator {
         point.addContent(coordinates);
         placeMark.addContent(point);
 
-        labels.add(placeMark);
+        return placeMark;
+    }
+
+
+    private Element generateLocation(Location location) {
+
+        Element placeMark = generateContainer("PlaceMark", location.getName(), null, null);
+
+        Element point = new Element("Point");
+        point.addContent(generateElement("altitudeMode", "relativeToGround"));
+        Element coordinates = new Element("coordinates");
+        coordinates.addContent("" + location.getLongitude() + "," + location.getLatitude() + ",0\r");
+        point.addContent(coordinates);
+        placeMark.addContent(point);
+
+        return placeMark;
     }
 
     private Element generateLineStyle(String styleName, double width, String color) {
@@ -591,8 +775,11 @@ public class TreeKMLGenerator {
 
         TreeKMLGenerator generator = new TreeKMLGenerator(tree);
         Settings settings = new Settings(AnalysisType.CONTINUOUS);
+        settings.getAltitudeTreeSettings().setTreeType(TreeType.TRIANGLE_TREE);
+        settings.setPlotAltitude(5000000);
         settings.setMostRecentDate(2006);
-        
+        settings.setTimeDivisionCount(20);
+
         try {
 
             BufferedWriter out = new BufferedWriter(new FileWriter(args[0]+".kml"));

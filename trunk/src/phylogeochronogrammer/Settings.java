@@ -61,12 +61,12 @@ public class Settings {
         this.plotAltitude = plotAltitude;
     }
 
-    public TreeSettings getAltitudeTreeSettings() {
-        return altitudeTreeSettings;
+    public double getColumnRadius() {
+        return columnRadius;
     }
 
-    public TreeSettings getGroundTreeSettings() {
-        return groundTreeSettings;
+    public void setColumnRadius(double columnRadius) {
+        this.columnRadius = columnRadius;
     }
 
     public int getTimeDivisionCount() {
@@ -77,20 +77,28 @@ public class Settings {
         this.timeDivisionCount = timeDivisionCount;
     }
 
-    public SurfaceDecoration getGroundContours() {
-        return groundContours;
+    public TreeSettings getAltitudeTreeSettings() {
+        return altitudeTreeSettings;
     }
 
-    public void setGroundContours(SurfaceDecoration groundContours) {
-        this.groundContours = groundContours;
+    public TreeSettings getGroundTreeSettings() {
+        return groundTreeSettings;
+    }
+
+    public SurfaceDecoration getGroundContours() {
+        return groundContours;
     }
 
     public SurfaceDecoration getProjections() {
         return projections;
     }
 
-    public void setProjections(SurfaceDecoration projections) {
-        this.projections = projections;
+    public SurfaceDecoration getTaxonLabels() {
+        return taxonLabels;
+    }
+
+    public SurfaceDecoration getLocationLabels() {
+        return locationLabels;
     }
 
     private AnalysisType analysisType;
@@ -102,11 +110,14 @@ public class Settings {
     private double mostRecentDate;
 
     private double plotAltitude = 500000;
+    private double columnRadius = 200000;           
 
-    private TreeSettings altitudeTreeSettings = new TreeSettings("altitudeTree", "", TreeType.RECTANGLE_TREE);
-    private TreeSettings groundTreeSettings = new TreeSettings("groundTree", "", TreeType.ARC_TREE);
-    private SurfaceDecoration groundContours = new SurfaceDecoration();
-    private SurfaceDecoration projections = new SurfaceDecoration();
+    private final TreeSettings altitudeTreeSettings = new TreeSettings("altitudeTree", "", TreeType.RECTANGLE_TREE);
+    private final TreeSettings groundTreeSettings = new TreeSettings("groundTree", "", TreeType.SURFACE_TREE);
+    private final SurfaceDecoration groundContours = new SurfaceDecoration();
+    private final SurfaceDecoration projections = new SurfaceDecoration();
+    private final SurfaceDecoration taxonLabels = new SurfaceDecoration();
+    private final SurfaceDecoration locationLabels = new SurfaceDecoration();
 
     private int timeDivisionCount = 50;
 }
