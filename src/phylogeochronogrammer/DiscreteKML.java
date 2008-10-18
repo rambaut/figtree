@@ -290,7 +290,7 @@ public class DiscreteKML {
                         branchesBuffer.append("\t\t</Placemark>\r");
 
                         styleBuffer.append("\t<Style id=\"branch"+ nodeNumber +"_part"+(a+1)+"_style\">\r");
-                        styleBuffer.append("\t\t<LineStyle>\r");
+                        styleBuffer.append("\t\t<BranchStyle>\r");
                         if (useStateProbability) {
                             double stateprobabilityDifference = (stateProbability - parentStateProbability)/divider;
                             styleBuffer.append("\t\t\t<width>"+(branchWidthConstant+(parentStateProbability+((a + 1)*stateprobabilityDifference))*branchWidthMultiplier)+"</width>\r");
@@ -307,7 +307,7 @@ public class DiscreteKML {
                         } else {
                             styleBuffer.append("\t\t\t<color>"+"FF"+branchColor+"</color>\r");
                         }
-                        styleBuffer.append("\t\t</LineStyle>\r");
+                        styleBuffer.append("\t\t</BranchStyle>\r");
                         styleBuffer.append("\t</Style>\r");
 
                     }
@@ -399,7 +399,7 @@ public class DiscreteKML {
         }
         writeCircle(rootLat, rootLong, 36, radius, rootState, rootHeight, (rootHeight-delta), circleBuffer);
         styleBuffer.append("\t<Style id=\"circle_"+rootHeight+"_style\">\r");
-        styleBuffer.append("\t\t<LineStyle>\r\t\t\t<width>0.1</width>\r\t\t</LineStyle>\r");
+        styleBuffer.append("\t\t<BranchStyle>\r\t\t\t<width>0.1</width>\r\t\t</BranchStyle>\r");
         styleBuffer.append("\t\t<PolyStyle>\r");
         styleBuffer.append("\t\t\t<color>"+"7F"+ ContinuousKML.getKMLColor(rootHeight,
                 heightMinAndMax, startBranchColor, endBranchColor)+"</color>\r");
@@ -417,7 +417,7 @@ public class DiscreteKML {
                 }
             }
             styleBuffer.append("\t<Style id=\"circle_"+numberOflineages[o][0]+"_style\">\r");
-            styleBuffer.append("\t\t<LineStyle>\r\t\t\t<width>0.1</width>\r\t\t</LineStyle>\r");
+            styleBuffer.append("\t\t<BranchStyle>\r\t\t\t<width>0.1</width>\r\t\t</BranchStyle>\r");
             styleBuffer.append("\t\t<PolyStyle>\r");
             styleBuffer.append("\t\t\t<color>"+"7F"+ ContinuousKML.getKMLColor(numberOflineages[o][0],
                     heightMinAndMax, startBranchColor, endBranchColor)+"</color>\r");

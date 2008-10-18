@@ -260,7 +260,7 @@ public class ContinuousKML {
                     surfaceTreeBuffer.append("\t\t</Placemark>\r");
 
                     styleBuffer.append("\t<Style id=\"surfaceTreeBranch"+ nodeNumber +"_part"+(a+1)+"_style\">\r");
-                    styleBuffer.append("\t\t<LineStyle>\r");
+                    styleBuffer.append("\t\t<BranchStyle>\r");
                     if (usePosterior_ST) {
                         if (treeToExport.isExternal(node)) {
                             styleBuffer.append("\t\t\t<width>"+(branchWidthConstant+branchWidthMultiplier)+"</width>\r");
@@ -278,7 +278,7 @@ public class ContinuousKML {
                     } else {
                         styleBuffer.append("\t\t\t<color>"+"FF"+branchColor_ST+"</color>\r");
                     }
-                    styleBuffer.append("\t\t</LineStyle>\r");
+                    styleBuffer.append("\t\t</BranchStyle>\r");
                     styleBuffer.append("\t</Style>\r");
 
                 }
@@ -314,7 +314,7 @@ public class ContinuousKML {
                     }
 
                     styleBuffer.append("\t<Style id=\"rectangleTreeBranch"+ nodeNumber +"_style\">\r");
-                    styleBuffer.append("\t\t<LineStyle>\r");
+                    styleBuffer.append("\t\t<BranchStyle>\r");
                     if (usePosterior_RT) {
                         styleBuffer.append("\t\t\t<width>"+(branchWidthConstant+branchWidthMultiplier)+"</width>\r");
                     } else {
@@ -327,11 +327,11 @@ public class ContinuousKML {
                     } else {
                         styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_RT)+branchColor_RT+"</color>\r");
                     }
-                    styleBuffer.append("\t\t</LineStyle>\r");
+                    styleBuffer.append("\t\t</BranchStyle>\r");
                     styleBuffer.append("\t</Style>\r");
 
                     styleBuffer.append("\t<Style id=\"triangleTreeBranch"+ nodeNumber +"_style\">\r");
-                    styleBuffer.append("\t\t<LineStyle>\r");
+                    styleBuffer.append("\t\t<BranchStyle>\r");
                     if (usePosterior_TT) {
                         styleBuffer.append("\t\t\t<width>"+(branchWidthConstant+branchWidthMultiplier)+"</width>\r");
                     } else {
@@ -344,12 +344,12 @@ public class ContinuousKML {
                     } else {
                         styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_TT)+branchColor_TT+"</color>\r");
                     }
-                    styleBuffer.append("\t\t</LineStyle>\r");
+                    styleBuffer.append("\t\t</BranchStyle>\r");
                     styleBuffer.append("\t</Style>\r");
 
                     // line style for surface external branches, based on posterior
                     styleBuffer.append("\t<Style id=\"surfaceTreeBranch"+ nodeNumber +"_style\">\r");
-                    styleBuffer.append("\t\t<LineStyle>\r");
+                    styleBuffer.append("\t\t<BranchStyle>\r");
                     if (usePosterior_ST) {
                         styleBuffer.append("\t\t\t<width>"+(branchWidthConstant+branchWidthMultiplier)+"</width>\r");
                     } else {
@@ -361,7 +361,7 @@ public class ContinuousKML {
                     } else {
                         styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_ST)+branchColor_ST+"</color>\r");
                     }
-                    styleBuffer.append("\t\t</LineStyle>\r");
+                    styleBuffer.append("\t\t</BranchStyle>\r");
                     styleBuffer.append("\t</Style>\r");
 
                 }  else {
@@ -379,7 +379,7 @@ public class ContinuousKML {
 
                     // line style for internal rectangleTree branches, based on posterior
                     styleBuffer.append("\t<Style id=\"rectangleTreeBranch"+ nodeNumber +"_style\">\r");
-                    styleBuffer.append("\t\t<LineStyle>\r");
+                    styleBuffer.append("\t\t<BranchStyle>\r");
                     if (usePosterior_RT) {
                         styleBuffer.append("\t\t\t<width>"+(branchWidthConstant+posterior*branchWidthMultiplier)+"</width>\r");
                     } else {
@@ -391,12 +391,12 @@ public class ContinuousKML {
                     } else {
                         styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_RT)+branchColor_RT+"</color>\r");
                     }
-                    styleBuffer.append("\t\t</LineStyle>\r");
+                    styleBuffer.append("\t\t</BranchStyle>\r");
                     styleBuffer.append("\t</Style>\r");
 
                     // line style for internal nodes, based on posterior
                     styleBuffer.append("\t<Style id=\"triangleTreeBranch"+ nodeNumber +"_style\">\r");
-                    styleBuffer.append("\t\t<LineStyle>\r");
+                    styleBuffer.append("\t\t<BranchStyle>\r");
                     if (usePosterior_TT) {
                         styleBuffer.append("\t\t\t<width>"+(branchWidthConstant+posterior*branchWidthMultiplier)+"</width>\r");
                     } else {
@@ -408,12 +408,12 @@ public class ContinuousKML {
                     } else {
                         styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_TT)+branchColor_TT+"</color>\r");
                     }
-                    styleBuffer.append("\t\t</LineStyle>\r");
+                    styleBuffer.append("\t\t</BranchStyle>\r");
                     styleBuffer.append("\t</Style>\r");
 
                     // line style for surface internal branches, based on posterior
                     styleBuffer.append("\t<Style id=\"surfaceTreeBranch"+ nodeNumber +"_style\">\r");
-                    styleBuffer.append("\t\t<LineStyle>\r");
+                    styleBuffer.append("\t\t<BranchStyle>\r");
                     if (usePosterior_ST) {
                         styleBuffer.append("\t\t\t<width>"+(branchWidthConstant+posterior*branchWidthMultiplier)+"</width>\r");
                     } else {
@@ -425,12 +425,12 @@ public class ContinuousKML {
                     } else {
                         styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_ST)+branchColor_ST+"</color>\r");
                     }
-                    styleBuffer.append("\t\t</LineStyle>\r");
+                    styleBuffer.append("\t\t</BranchStyle>\r");
                     styleBuffer.append("\t</Style>\r");
 
                     // spade style for internal nodes
                     styleBuffer.append("\t<Style id=\"spade"+ nodeNumber +"_style\">\r");
-                    styleBuffer.append("\t\t<LineStyle>\r");
+                    styleBuffer.append("\t\t<BranchStyle>\r");
                     styleBuffer.append("\t\t\t<width>1.5</width>\r");
                     if (useHeights_spades) {
                         styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_spades)+getKMLColor(treeToExport.getHeight(node),
@@ -438,7 +438,7 @@ public class ContinuousKML {
                     }  else {
                         styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_spades)+spadeColor+"</color>\r");
                     }
-                    styleBuffer.append("\t\t</LineStyle>\r");
+                    styleBuffer.append("\t\t</BranchStyle>\r");
                     styleBuffer.append("\t\t<PolyStyle>\r");
                     if (useHeights_spades) {
                         styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_spades)+getKMLColor(treeToExport.getHeight(node),
@@ -451,9 +451,9 @@ public class ContinuousKML {
 
                     // ground spade style for internal nodes
                     styleBuffer.append("\t<Style id=\"groundSpade"+ nodeNumber +"_style\">\r");
-                    styleBuffer.append("\t\t<LineStyle>\r");
+                    styleBuffer.append("\t\t<BranchStyle>\r");
                     styleBuffer.append("\t\t\t<width>0.5</width>\r");
-                    styleBuffer.append("\t\t</LineStyle>\r");
+                    styleBuffer.append("\t\t</BranchStyle>\r");
                     styleBuffer.append("\t\t<PolyStyle>\r");
                     if (useHeights_groundSpades) {
                         styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_groundSpades)+getKMLColor(treeToExport.getHeight(node),
@@ -518,7 +518,7 @@ public class ContinuousKML {
 
                 // style for the rectangle root branch
                 styleBuffer.append("\t<Style id=\"rectangleTreeBranch"+ nodeNumber +"_style\">\r");
-                styleBuffer.append("\t\t<LineStyle>\r");
+                styleBuffer.append("\t\t<BranchStyle>\r");
                 if (usePosterior_RT) {
                     styleBuffer.append("\t\t\t<width>"+(branchWidthConstant+branchWidthMultiplier)+"</width>\r");
                 } else {
@@ -531,12 +531,12 @@ public class ContinuousKML {
                 } else {
                     styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_RT)+branchColor_RT+"</color>\r");
                 }
-                styleBuffer.append("\t\t</LineStyle>\r");
+                styleBuffer.append("\t\t</BranchStyle>\r");
                 styleBuffer.append("\t</Style>\r");
 
                 // style for the triangle root branch
                 styleBuffer.append("\t<Style id=\"triangleTreeBranch"+ nodeNumber +"_style\">\r");
-                styleBuffer.append("\t\t<LineStyle>\r");
+                styleBuffer.append("\t\t<BranchStyle>\r");
                 if (usePosterior_RT) {
                     styleBuffer.append("\t\t\t<width>"+(branchWidthConstant+branchWidthMultiplier)+"</width>\r");
                 } else {
@@ -549,12 +549,12 @@ public class ContinuousKML {
                 } else {
                     styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_TT)+branchColor_TT+"</color>\r");
                 }
-                styleBuffer.append("\t\t</LineStyle>\r");
+                styleBuffer.append("\t\t</BranchStyle>\r");
                 styleBuffer.append("\t</Style>\r");
 
                 // style for the root spade based on height
                 styleBuffer.append("\t<Style id=\"spade"+ nodeNumber +"_style\">\r");
-                styleBuffer.append("\t\t<LineStyle>\r");
+                styleBuffer.append("\t\t<BranchStyle>\r");
                 styleBuffer.append("\t\t\t<width>1.5</width>\r");
                 if (useHeights_spades) {
                     styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_spades)+getKMLColor(treeToExport.getHeight(node),
@@ -562,7 +562,7 @@ public class ContinuousKML {
                 }  else {
                     styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_spades)+spadeColor+"</color>\r");
                 }
-                styleBuffer.append("\t\t</LineStyle>\r");
+                styleBuffer.append("\t\t</BranchStyle>\r");
                 styleBuffer.append("\t\t<PolyStyle>\r");
                 if (useHeights_spades) {
                     styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_spades)+getKMLColor(treeToExport.getHeight(node),
@@ -574,9 +574,9 @@ public class ContinuousKML {
                 styleBuffer.append("\t</Style>\r");
                 // ground spade style for root
                 styleBuffer.append("\t<Style id=\"groundSpade"+ nodeNumber +"_style\">\r");
-                styleBuffer.append("\t\t<LineStyle>\r");
+                styleBuffer.append("\t\t<BranchStyle>\r");
                 styleBuffer.append("\t\t\t<width>0.5</width>\r");
-                styleBuffer.append("\t\t</LineStyle>\r");
+                styleBuffer.append("\t\t</BranchStyle>\r");
                 styleBuffer.append("\t\t<PolyStyle>\r");
                 if (useHeights_groundSpades) {
                     styleBuffer.append("\t\t\t<color>"+getOpacity(opacity_groundSpades)+getKMLColor(treeToExport.getHeight(node),
@@ -604,9 +604,9 @@ public class ContinuousKML {
         buffer.append(styleBuffer);
 
         buffer.append("\t<Style id=\"diamondStyle\">\r");
-        buffer.append("\t\t<LineStyle>\r");
+        buffer.append("\t\t<BranchStyle>\r");
         buffer.append("\t\t\t<width>0.5</width>\r");
-        buffer.append("\t\t</LineStyle>\r");
+        buffer.append("\t\t</BranchStyle>\r");
         buffer.append("\t\t<PolyStyle>\r");
         buffer.append("\t\t\t<color>7d00ffff</color>\r");
         buffer.append("\t\t\t<fill>0</fill>\r");

@@ -1,14 +1,12 @@
 package phylogeochronogrammer;
 
-import jebl.evolution.trees.RootedTree;
-
 /**
  * @author Andrew Rambaut
  * @author Philippe Lemey
  * @version $Id$
  */
 public class TreeDefinition {
-    public TreeDefinition(TreeType treeType, String traitName, String latitudeName, String longitudeName, double plotAltitude, double rootFraction, double arcAltitude, boolean taxaVisible, BranchDecoration branchDecoration, SurfaceDecoration locationContours, SurfaceDecoration groundContours, BranchDecoration projections) {
+    public TreeDefinition(TreeType treeType, String traitName, String latitudeName, String longitudeName, double plotAltitude, double rootFraction, double arcAltitude, boolean taxaVisible, BranchStyle branchStyle, SurfaceDecoration locationContours, SurfaceDecoration groundContours, BranchStyle projections) {
         this.treeType = treeType;
         this.traitName = traitName;
         this.latitudeName = latitudeName;
@@ -17,7 +15,7 @@ public class TreeDefinition {
         this.rootFraction = rootFraction;
         this.arcAltitude = arcAltitude;
         this.taxaVisible = taxaVisible;
-        this.branchDecoration = branchDecoration;
+        this.branchStyle = branchStyle;
         this.locationContours = locationContours;
         this.groundContours = groundContours;
         this.projections = projections;
@@ -88,12 +86,12 @@ public class TreeDefinition {
         this.taxaVisible = taxaVisible;
     }
 
-    public BranchDecoration getBranchDecoration() {
-        return branchDecoration;
+    public BranchStyle getBranchDecoration() {
+        return branchStyle;
     }
 
-    public void setBranchDecoration(BranchDecoration branchDecoration) {
-        this.branchDecoration = branchDecoration;
+    public void setBranchDecoration(BranchStyle branchStyle) {
+        this.branchStyle = branchStyle;
     }
 
     public SurfaceDecoration getLocationContours() {
@@ -112,11 +110,11 @@ public class TreeDefinition {
         this.groundContours = groundContours;
     }
 
-    public BranchDecoration getProjections() {
+    public BranchStyle getProjections() {
         return projections;
     }
 
-    public void setProjections(BranchDecoration projections) {
+    public void setProjections(BranchStyle projections) {
         this.projections = projections;
     }
 
@@ -133,10 +131,10 @@ public class TreeDefinition {
 
     private boolean taxaVisible = false;
 
-    private BranchDecoration branchDecoration;
+    private BranchStyle branchStyle;
 
     private SurfaceDecoration locationContours;
     private SurfaceDecoration groundContours;
 
-    private BranchDecoration projections;
+    private BranchStyle projections;
 }
