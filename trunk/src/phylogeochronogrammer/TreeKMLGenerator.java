@@ -32,6 +32,8 @@ public class TreeKMLGenerator {
     double maxHeight;
     double maxBranchLength;
 
+    String altitudeMode = "relativeToGround";
+
     private final RootedTree tree;
     private final Map<String, Location> locationMap;
 
@@ -43,27 +45,34 @@ public class TreeKMLGenerator {
     public TreeKMLGenerator(RootedTree tree, List<Location> locationList) {
         this.tree = tree;
 
-        double[] rates = new double[(tree.getNodes().size() - 1)];
+//        double[] rates = new double[(tree.getNodes().size() - 1)];
+//
+//        maxBranchLength = 0.0;
+//        int counter = 0;
+//        for (Node node : tree.getNodes()) {
+//            if (!tree.isRoot(node)) {
+//                rates[counter] = (Double)node.getAttribute("rate");
+//                counter ++;
+//
+//                if (tree.getLength(node) > maxBranchLength) {
+//                    maxBranchLength = tree.getLength(node);
+//                }
+//            }
+//        }
+//
+//        minRate = DiscreteStatistics.min(rates);
+//        maxRate = DiscreteStatistics.max(rates);
+//        medianRate = DiscreteStatistics.quantile(0.5, rates);
 
+        maxHeight = tree.getHeight(tree.getRootNode());
         maxBranchLength = 0.0;
-        int counter = 0;
         for (Node node : tree.getNodes()) {
             if (!tree.isRoot(node)) {
-                rates[counter] = (Double)node.getAttribute("rate");
-                counter ++;
-
                 if (tree.getLength(node) > maxBranchLength) {
                     maxBranchLength = tree.getLength(node);
                 }
             }
         }
-
-        minRate = DiscreteStatistics.min(rates);
-        maxRate = DiscreteStatistics.max(rates);
-        medianRate = DiscreteStatistics.quantile(0.5, rates);
-
-        maxHeight = tree.getHeight(tree.getRootNode());
-
 
         if (locationList != null) {
             double minLat = Double.MAX_VALUE;
@@ -117,9 +126,12 @@ public class TreeKMLGenerator {
         List<Element> locationLabels = new ArrayList<Element>();
         List<Element> contours = new ArrayList<Element>();
 
+        styles.add(generateLineStyle("projections", 1.0, Color.lightGray));
+        styles.add(generatePolyStyle("contours", new Color(64, 255, 0, 128)));
+
         if (settings.getAnalysisType() == AnalysisType.CONTINUOUS) {
             trees.add(generateTree(tree, settings, settings.getAltitudeTreeSettings(),  styles));
-            //trees.add(generateTree(tree, settings, settings.getGroundTreeSettings(),  styles));
+            trees.add(generateTree(tree, settings, settings.getGroundTreeSettings(),  styles));
 
             double scaleFactor = settings.getPlotAltitude()/tree.getHeight(tree.getRootNode());
 
@@ -133,14 +145,14 @@ public class TreeKMLGenerator {
 
 
                 if (tree.isExternal(node)) {
-                    generateProjection(projections, altitude, latitude, longitude);
+                    projections.add(generateProjection(altitude, latitude, longitude));
 
                     taxonLabels.add(generateTaxonLabel(tree, node, latitude, longitude));
                 } else {
-                    generateContour(contours, styles, tree,
-                            settings.getGroundContours(), node,  nodeNumber, 0.0, settings.getMostRecentDate(),
+                    contours.add(generateContour(
+                            settings.getGroundContours(), tree, node,  nodeNumber, 0.0, settings.getMostRecentDate(),
                             settings.getTraitName(),  settings.getLatitudeName(), settings.getLongitudeName(),
-                            true);
+                            true, styles));
                 }
             }
 
@@ -154,35 +166,34 @@ public class TreeKMLGenerator {
             throw new IllegalArgumentException("Unknown AnalysisType");
         }
 
-//        doc.addContent(styles);
+        doc.addContent(styles);
         doc.addContent(trees);
 
-//        if (projections.size() > 0) {
-//            Element placeMark = generateContainer("PlaceMark", "Projections", "projections from tips to surface", true, null);
-//            placeMark.addContent(new Element("MultiGeometry").addContent(projections));
-//            doc.addContent(placeMark);
-//        }
-//
-//        if (taxonLabels.size() > 0) {
-//            Element folder = generateContainer("Folder", "Taxon Labels", "Taxon labels", settings.getTaxonLabels().isVisible(), null);
-//            folder.addContent(taxonLabels);
-////        placeMark.addContent(new Element("MultiGeometry").addContent(labels));
-//            doc.addContent(folder);
-//        }
-//
-//        if (locationLabels.size() > 0) {
-//            Element folder = generateContainer("Folder", "Location Labels", "Location labels", settings.getLocationLabels().isVisible(), null);
-//            folder.addContent(locationLabels);
-////        placeMark.addContent(new Element("MultiGeometry").addContent(labels));
-//            doc.addContent(folder);
-//        }
-//
-//        if (contours.size() > 0) {
-//            Element folder = generateContainer("Folder", "Surface Contours", "Contours overlaid on the surface to represent location", true, null);
-//            folder.addContent(contours);
-////        placeMark.addContent(new Element("MultiGeometry").addContent(contours));
-//            doc.addContent(folder);
-//        }
+        if (projections.size() > 0) {
+            Element placeMark = generateContainer("Placemark", "Projections", "projections from tips to surface", true, "projections");
+            placeMark.addContent(new Element("MultiGeometry").addContent(projections));
+            doc.addContent(placeMark);
+        }
+
+        if (taxonLabels.size() > 0) {
+            Element folder = generateContainer("Folder", "Taxon Labels", "Taxon labels", settings.getTaxonLabels().isVisible(), null);
+            folder.addContent(taxonLabels);
+//        placeMark.addContent(new Element("MultiGeometry").addContent(labels));
+            doc.addContent(folder);
+        }
+
+        if (locationLabels.size() > 0) {
+            Element folder = generateContainer("Folder", "Location Labels", "Location labels", settings.getLocationLabels().isVisible(), null);
+            folder.addContent(locationLabels);
+//        placeMark.addContent(new Element("MultiGeometry").addContent(labels));
+            doc.addContent(folder);
+        }
+
+        if (contours.size() > 0) {
+            Element folder = generateContainer("Folder", "Surface Contours", "Contours overlaid on the surface to represent location", true, null);
+            folder.addContent(contours);
+            doc.addContent(folder);
+        }
 
         root.addContent(doc);
 
@@ -191,9 +202,9 @@ public class TreeKMLGenerator {
 
     private Element generateTree(RootedTree tree, Settings settings, TreeSettings treeSettings, List<Element> styles) {
 
-        BranchDecoration branches = treeSettings.getBranchDecoration();
+        BranchStyle branchStyle = treeSettings.getBranchStyle();
 
-        Element element = generateContainer("Folder", treeSettings.getName(), treeSettings.getDescription(), branches.isVisible(), null);
+        Element element = generateContainer("Folder", treeSettings.getName(), treeSettings.getDescription(), true, null);
 
         double scaleFactor = settings.getPlotAltitude() / tree.getHeight(tree.getRootNode());
 
@@ -218,36 +229,83 @@ public class TreeKMLGenerator {
                 double parentAltitude = (tree.getHeight(parentNode)*scaleFactor);
                 double parentDate = settings.getMostRecentDate() - tree.getHeight(parentNode);
 
+                double width = branchStyle.getWidthBase();
+                if (branchStyle.getWidthProperty() != null) {
+                    double property = getDoubleNodeAttribute(node, branchStyle.getWidthProperty(), 0.0);
+                    width += ((property - branchStyle.getWidthPropertyMinimum()) /
+                            (branchStyle.getWidthPropertyMaximum() - branchStyle.getWidthPropertyMinimum())) * branchStyle.getWidthScale();
+                }
+
+                Color color = branchStyle.getColorStart();
+                if (branchStyle.getColorProperty() != null) {
+                    double property;
+                    if (branchStyle.getColorProperty().equalsIgnoreCase("height")) {
+                        property = tree.getHeight(node) / maxHeight;
+                    } else {
+                        property = getDoubleNodeAttribute(node, branchStyle.getColorProperty());
+                        property = ((property - branchStyle.getWidthPropertyMinimum()) /
+                                (branchStyle.getWidthPropertyMaximum() - branchStyle.getWidthPropertyMinimum())) * branchStyle.getWidthScale();
+                    }
+                    color = getBlendedColor((float)property, branchStyle.getColorStart(), branchStyle.getColorFinish());
+                }
+
+                LineStyle lineStyle = new LineStyle(width, color);
+
                 if (treeSettings.getTreeType() == TreeType.RECTANGLE_TREE ||
                         treeSettings.getTreeType() == TreeType.TRIANGLE_TREE) {
 
-                    branch = generateBranch(treeSettings, tree, node, nodeName,
+                    branch = generateBranch(treeSettings.getTreeType(), tree, node, nodeName,
                             parentLatitude, latitude,
                             parentLongitude, longitude,
                             parentAltitude, altitude,
                             0.0, parentAltitude,
                             date, date,
+                            lineStyle, null,
                             0,
                             styles);
                 } else if (treeSettings.getTreeType() == TreeType.ARC_TREE) {
 
-                    branch = generateBranch(treeSettings, tree, node, nodeName,
+                    LineStyle lineStyle2 = null;
+
+                    // If we are coloring by height and we are using subdivided branches (ARC_TREE) then we can give the
+                    // color range from the parent height to the node height.
+                    if (branchStyle.getColorProperty() != null && branchStyle.getColorProperty().equalsIgnoreCase("height")) {
+                        color = getBlendedColor((float)(tree.getHeight(parentNode) / maxHeight), branchStyle.getColorStart(), branchStyle.getColorFinish());
+                        lineStyle = new LineStyle(width, color);
+                        color = getBlendedColor((float)(tree.getHeight(node) / maxHeight), branchStyle.getColorStart(), branchStyle.getColorFinish());
+                        lineStyle2 = new LineStyle(width, color);
+                    }
+
+                    branch = generateBranch(treeSettings.getTreeType(), tree, node, nodeName,
                             parentLatitude, latitude,
                             parentLongitude, longitude,
                             parentAltitude, altitude,
                             0.0, parentAltitude,
                             parentDate, date,
+                            lineStyle, lineStyle2,
                             50,
                             styles);
                 } else if (treeSettings.getTreeType() == TreeType.SURFACE_TREE) {
                     double maxAltitude = settings.getPlotAltitude() * (tree.getHeight(parentNode) - tree.getHeight(node)) / maxBranchLength;
 
-                    branch = generateBranch(treeSettings, tree, node, nodeName,
+                    LineStyle lineStyle2 = null;
+
+                    // If we are coloring by height and we are using subdivided branches (ARC_TREE) then we can give the
+                    // color range from the parent height to the node height.
+                    if (branchStyle.getColorProperty() != null && branchStyle.getColorProperty().equalsIgnoreCase("height")) {
+                        color = getBlendedColor((float)(tree.getHeight(parentNode) / maxHeight), branchStyle.getColorStart(), branchStyle.getColorFinish());
+                        lineStyle = new LineStyle(width, color);
+                        color = getBlendedColor((float)(tree.getHeight(node) / maxHeight), branchStyle.getColorStart(), branchStyle.getColorFinish());
+                        lineStyle2 = new LineStyle(width, color);
+                    }
+
+                    branch = generateBranch(treeSettings.getTreeType(), tree, node, nodeName,
                             parentLatitude, latitude,
                             parentLongitude, longitude,
-                            parentAltitude, altitude,
+                            0.0, 0.0,
                             0.5, maxAltitude,
                             parentDate, date,
+                            lineStyle, lineStyle2,
                             50,
                             styles);
 
@@ -267,7 +325,7 @@ public class TreeKMLGenerator {
      * [finishLatitude, finishLongitude, finishAltitude], optionally arching through
      * peakAltitude. If divisionCount > 0 then the branch is subdivided into segments,
      * this is required if the branch is arcing or has a colour gradient.
-     * @param treeSettings the tree settings
+     * @param treeType the tree type
      * @param tree the tree
      * @param node the node
      * @param nodeName the node's name
@@ -285,20 +343,20 @@ public class TreeKMLGenerator {
      * @param styles an array into which style elements are put
      * @return the branch element
      */
-    private Element generateBranch(TreeSettings treeSettings,
-                                   RootedTree tree, Node node,
+    private Element generateBranch(TreeType treeType, RootedTree tree, Node node,
                                    String nodeName,
                                    double startLatitude, double finishLatitude,
                                    double startLongitude, double finishLongitude,
                                    double startAltitude, double finishAltitude,
                                    double peakPosition, double peakAltitude,
                                    double startDate, double finishDate,
+                                   LineStyle startStyle, LineStyle finishStyle,
                                    int divisionCount,
                                    List<Element> styles) {
 
         Element element;
 
-        BranchDecoration branches = treeSettings.getBranchDecoration();
+        boolean hasDivisionStyles = startStyle != null && finishStyle != null;
 
         if (divisionCount > 0) {
             double latDiff = finishLatitude - startLatitude;
@@ -323,7 +381,7 @@ public class TreeKMLGenerator {
             double x = -peakPosition;
             double xDelta = 1.0 / divisionCount;
             // assume a parabolic curve that peaks at peakAltitude
-            double a = peakAltitude - startAltitude;
+            double a = peakAltitude - finishAltitude;
             if (peakPosition == 0.5) {
                 a *= 4;
             }
@@ -333,11 +391,29 @@ public class TreeKMLGenerator {
 
             double date = startDate;
 
-            element = generateContainer("Folder", nodeName, null, null);
-            for (int division = 1; division < divisionCount; division++) {
+            String styleName = null;
+            if (!hasDivisionStyles && startStyle != null) {
+                styleName = nodeName + "_style";
+
+                styles.add(generateLineStyle(styleName, startStyle.getWidth(), startStyle.getColor()));
+            }
+
+            element = generateContainer("Folder", nodeName, null, (styleName != null ? "#" + styleName : null));
+
+            for (int division = 0; division < divisionCount; division++) {
                 String partName = nodeName + "_part" + (division + 1);
-                String styleName = partName + "_style";
-                Element placeMark = generateContainer("Placemark", partName, null, "#" + styleName);
+                styleName = null;
+                if (hasDivisionStyles) {
+                    styleName = partName + "_style";
+                }
+                Element placeMark = generateContainer("Placemark", partName, null, (styleName != null ? "#" + styleName : null));
+
+                if (hasDivisionStyles) {
+                    // Create a style for this branch segment
+                    double width = startStyle.getWidth();
+                    Color color = getBlendedColor(((float)division) / (divisionCount - 1), startStyle.getColor(), finishStyle.getColor());
+                    styles.add(generateLineStyle(styleName, width, color));
+                }
 
                 if (dateDiff > 0.0) {
                     Element timeSpan = new Element("TimeSpan");
@@ -350,7 +426,7 @@ public class TreeKMLGenerator {
                 Element lineString = new Element("LineString");
                 Element coordinates = new Element("coordinates");
                 if (altDiff > 0.0 || peakAltitude > 0.0) {
-                    lineString.addContent(generateElement("altitudeMode", "absolute"));
+                    lineString.addContent(generateElement("altitudeMode", altitudeMode));
 
                     altitude = peakAltitude - (a * (x * x));
 
@@ -360,8 +436,8 @@ public class TreeKMLGenerator {
                     lineString.addContent(generateElement("altitudeMode", "clampToGround"));
                     lineString.addContent(generateElement("tessellate", true));
 
-                    coordinates.addContent("" +lastLongitude + "," +lastLatitude + ",0\r");
-                    coordinates.addContent("" +longitude + "," +latitude + ",0\r");
+                    coordinates.addContent("" +lastLongitude + "," +lastLatitude + "\r");
+                    coordinates.addContent("" +longitude + "," +latitude + "\r");
                 }
 
                 lastLatitude = latitude;
@@ -373,48 +449,32 @@ public class TreeKMLGenerator {
                 lastAltitude = altitude;
                 x += xDelta;
 
+                date += dateDelta;
+
                 lineString.addContent(coordinates);
 
                 placeMark.addContent(lineString);
 
                 element.addContent(placeMark);
 
-                // Create a style for this branch segment
-                double width = branches.getBranchWidth();
-                if (branches.getWidthProperty() != null) {
-                    double property = getDoubleNodeAttribute(node, branches.getWidthProperty(), 0.0);
-                    width += property * branches.getBranchWidthScale();
-                }
-
-                String color = getKMLColor(branches.getStartColor());
-                if (branches.getColorProperty() != null) {
-                    double property;
-                    if (branches.getColorProperty().equalsIgnoreCase("height")) {
-                        property = altitude + (division + 1) * (altDiff / divisionCount);
-                    } else {
-                        property = getDoubleNodeAttribute(node, branches.getColorProperty());
-                    }
-                    color = getKMLColor((float)property, branches.getStartColor(), branches.getEndColor());
-                }
-
-                styles.add(generateLineStyle(styleName, width, color));
-
-                latitude += latDelta;
-                longitude += longDelta;
-                altitude += altDelta;
-                date += dateDelta;
-
             }
 
         } else {
-            String styleName = nodeName + "_style";
-            element = generateContainer("Placemark", nodeName, null, "#" + styleName);
+            String styleName = null;
+            if (startStyle != null) {
+                styleName = nodeName + "_style";
+
+                double width = startStyle.getWidth();
+                styles.add(generateLineStyle(styleName, width, startStyle.getColor()));
+            }
+
+            element = generateContainer("Placemark", nodeName, null, (styleName != null ? "#" + styleName : null));
 
             Element lineString = new Element("LineString");
-            lineString.addContent(generateElement("altitudeMode", "relativeToGround"));
+            lineString.addContent(generateElement("altitudeMode", altitudeMode));
 
             Element coordinates = new Element("coordinates");
-            if (treeSettings.getTreeType() == TreeType.RECTANGLE_TREE) {
+            if (treeType == TreeType.RECTANGLE_TREE) {
                 coordinates.addContent(""+finishLongitude+","+finishLatitude+","+finishAltitude+"\r");
                 coordinates.addContent(""+finishLongitude+","+finishLatitude+","+startAltitude+"\r");
                 coordinates.addContent(""+startLongitude+","+startLatitude+","+startAltitude+"\r");
@@ -427,111 +487,107 @@ public class TreeKMLGenerator {
 
             element.addContent(lineString);
 
-            double width = branches.getBranchWidth();
-            if (branches.getWidthProperty() != null) {
-                double property = getDoubleNodeAttribute(node, branches.getWidthProperty(), 0.0);
-                width += property * branches.getBranchWidthScale();
-            }
-
-            String color = getKMLColor(branches.getStartColor());
-            if (branches.getColorProperty() != null) {
-                double property;
-                if (branches.getColorProperty().equalsIgnoreCase("height")) {
-                    property = tree.getHeight(node) / maxHeight;
-                } else {
-                    property = getDoubleNodeAttribute(node, branches.getColorProperty());
-                }
-                color = getKMLColor((float)property, branches.getStartColor(), branches.getEndColor());
-            }
-
-            styles.add(generateLineStyle(styleName, width, color));
-
         }
 
         return element;
     }
 
-    private void generateContour(List<Element> contours, List<Element> styles, RootedTree tree, SurfaceDecoration surfaces,
-                                 Node node, int nodeNumber, double plotHeight, double mostRecentDate,
-                                 String latLongName, String latitudeName, String longitudeName,
-                                 boolean groundContour) {
+    private Element generateContour(SurfaceDecoration surfaces, RootedTree tree,
+                                    Node node, int nodeNumber, double plotHeight, double mostRecentDate,
+                                    String latLongName, String latitudeName, String longitudeName,
+                                    boolean clampToGround, List<Element> styles) {
 
+        String nodeName = "contour" + nodeNumber;
+        String styleName = "contours";
+        Element placemark = generateContainer("Placemark", nodeName, null, (styleName != null ? "#" + styleName : null));
 
-        double altitude;
-        String altitudeMode;
+        Element timeSpan = new Element("TimeSpan");
 
-        if (groundContour) {
-            altitude = 0;
-            altitudeMode = "clampToGround";
-        } else {
+        double date = mostRecentDate - tree.getHeight(node);
+
+        timeSpan.addContent(generateElement("begin", getKMLDate(date)));
+        placemark.addContent(timeSpan);
+
+        double altitude = 0;
+
+        if (!clampToGround) {
             double scaleFactor = plotHeight/tree.getHeight(tree.getRootNode());
             altitude = (tree.getHeight(node)*scaleFactor);
-            altitudeMode = "relativeToGround";
         }
 
         int modality = getIntegerNodeAttribute(node, latLongName+"_95%HPD_modality");
 
+        Element container = placemark;
+        if (modality > 1) {
+            container = new Element("MultiGeometry");
+            placemark.addContent(container);
+        }
+
         for (int x = 0; x < modality; x++) {
-            Object[] longitudeHPDs = getArrayNodeAttribute(node, longitudeName+"_95%HPD_"+(x + 1));
             Object[] latitudeHPDs = getArrayNodeAttribute(node, latitudeName+"_95%HPD_"+(x + 1));
+            Object[] longitudeHPDs = getArrayNodeAttribute(node, longitudeName+"_95%HPD_"+(x + 1));
 
-            Element placeMark = new Element("Placemark");
-//            placeMark.addContent(generateElement("visibility", surface.isVisible()));
-            Element timeSpan = new Element("TimeSpan");
+            container.addContent(generateContourPolygon(latitudeHPDs, longitudeHPDs, altitude, clampToGround));
+        }
 
-            double date = mostRecentDate - tree.getHeight(node);
+//        if (styleName != null) {
+//            styles.add(generatePolyStyle(styleName, surfaces.getStartColor()));
+//        }
 
-            timeSpan.addContent(generateElement("begin", getKMLDate(date)));
-            placeMark.addContent(timeSpan);
+        return placemark;
+    }
 
-            String styleName = "contour"+ nodeNumber + "_style";
-            placeMark.addContent(generateElement("styleUrl", "#" + styleName));
+    private Element generateContourPolygon(Object[] latitudeHPDs, Object[] longitudeHPDs, double altitude, boolean clampToGround) {
 
-            Element polygon = new Element("Polygon");
+        Element polygon = new Element("Polygon");
+        if (clampToGround) {
+            polygon.addContent(generateElement("altitudeMode", "clampToGround"));
+            polygon.addContent(generateElement("tessellate", true));
+        } else {
             polygon.addContent(generateElement("altitudeMode", altitudeMode));
-            if (groundContour) {
-                polygon.addContent(generateElement("tessellate", true));
+        }
+        Element outerBoundaryIs = new Element("outerBoundaryIs");
+        Element linearRing = new Element("LinearRing");
+        Element coordinates = new Element("coordinates");
+        if (clampToGround) {
+            for (int y = 0; y < longitudeHPDs.length; y++) {
+                coordinates.addContent(""+longitudeHPDs[y]+","+latitudeHPDs[y]+"\r");
             }
-            Element outerBoundaryIs = new Element("outerBoundaryIs");
-            Element linearRing = new Element("LinearRing");
-            Element coordinates = new Element("coordinates");
+        } else {
             for (int y = 0; y < longitudeHPDs.length; y++) {
                 coordinates.addContent(""+longitudeHPDs[y]+","+latitudeHPDs[y]+","+altitude+"\r");
             }
-            linearRing.addContent(coordinates);
-            outerBoundaryIs.addContent(linearRing);
-            polygon.addContent(outerBoundaryIs);
-
-            placeMark.addContent(polygon);
-
-            contours.add(placeMark);
-
-            styles.add(generatePolyStyle(styleName, getKMLColor(surfaces.getStartColor(), surfaces.getOpacity())));
         }
+        linearRing.addContent(coordinates);
+        outerBoundaryIs.addContent(linearRing);
+        polygon.addContent(outerBoundaryIs);
+
+        return polygon;
     }
 
 
-    private void generateProjection(List<Element> projections, double altitude, double latitude, double longitude) {
+
+    private Element generateProjection(double altitude, double latitude, double longitude) {
 
         Element lineString = new Element("LineString");
-        lineString.addContent(generateElement("altitudeMode", "relativeToGround"));
+        lineString.addContent(generateElement("altitudeMode", altitudeMode));
         Element coordinates = new Element("coordinates");
         coordinates.addContent(""+longitude+","+latitude+","+altitude+"\r");
         coordinates.addContent(""+longitude+","+latitude+",0\r");
         lineString.addContent(coordinates);
 
-        projections.add(lineString);
+        return lineString;
     }
 
 
     private Element generateTaxonLabel(RootedTree tree, Node node, double latitude, double longitude) {
 
-        Element placeMark = generateContainer("PlaceMark", tree.getTaxon(node).getName(), null, null);
+        Element placeMark = generateContainer("Placemark", tree.getTaxon(node).getName(), null, null);
 
         Element point = new Element("Point");
-        point.addContent(generateElement("altitudeMode", "relativeToGround"));
+        point.addContent(generateElement("altitudeMode", "clampToGround"));
         Element coordinates = new Element("coordinates");
-        coordinates.addContent(""+longitude+","+latitude+",0\r");
+        coordinates.addContent(""+longitude+","+latitude+"\r");
         point.addContent(coordinates);
         placeMark.addContent(point);
 
@@ -541,10 +597,10 @@ public class TreeKMLGenerator {
 
     private Element generateLocation(Location location) {
 
-        Element placeMark = generateContainer("PlaceMark", location.getName(), null, null);
+        Element placeMark = generateContainer("Placemark", location.getName(), null, null);
 
         Element point = new Element("Point");
-        point.addContent(generateElement("altitudeMode", "relativeToGround"));
+        point.addContent(generateElement("altitudeMode", "clampToGround"));
         Element coordinates = new Element("coordinates");
         coordinates.addContent("" + location.getLongitude() + "," + location.getLatitude() + ",0\r");
         point.addContent(coordinates);
@@ -553,41 +609,41 @@ public class TreeKMLGenerator {
         return placeMark;
     }
 
-    private Element generateLineStyle(String styleName, double width, String color) {
+    private Element generateLineStyle(String styleName, double width, Color color) {
         Element style = new Element("Style");
         style.setAttribute("id", styleName);
 
         Element lineStyle = new Element("LineStyle");
         lineStyle.addContent(generateElement("width", "" + width));
-        lineStyle.addContent(generateElement("color", color));
+        lineStyle.addContent(generateElement("color", getKMLColor(color)));
         style.addContent(lineStyle);
 
         return style;
     }
 
-    private Element generatePolyStyle(String styleName, String color) {
+    private Element generatePolyStyle(String styleName, Color color) {
         Element style = new Element("Style");
         style.setAttribute("id", styleName);
 
         Element polyStyle = new Element("PolyStyle");
-        polyStyle.addContent(generateElement("color", color));
+        polyStyle.addContent(generateElement("color", getKMLColor(color)));
         polyStyle.addContent(generateElement("outline", false));
         style.addContent(polyStyle);
 
         return style;
     }
 
-    private Element generatePolyStyle(String styleName, String color, double outlineWidth, String outlineColor) {
+    private Element generatePolyStyle(String styleName, Color color, double outlineWidth, Color outlineColor) {
         Element style = new Element("Style");
         style.setAttribute("id", styleName);
 
         Element lineStyle = new Element("LineStyle");
         lineStyle.addContent(generateElement("width", "" + outlineWidth));
-        lineStyle.addContent(generateElement("color", outlineColor));
+        lineStyle.addContent(generateElement("color", getKMLColor(outlineColor)));
         style.addContent(lineStyle);
 
         Element polyStyle = new Element("PolyStyle");
-        polyStyle.addContent(generateElement("color", color));
+        polyStyle.addContent(generateElement("color", getKMLColor(color)));
         polyStyle.addContent(generateElement("outline", true));
         style.addContent(polyStyle);
 
@@ -744,7 +800,7 @@ public class TreeKMLGenerator {
                 (r.length() < 2 ? "0" : "") + r;
     }
 
-    public static String getKMLColor(float proportion, Color startColor, Color endColor) {
+    public static Color getBlendedColor(float proportion, Color startColor, Color endColor) {
         float[] start = startColor.getRGBColorComponents(null);
         float[] end = endColor.getRGBColorComponents(null);
 
@@ -753,7 +809,7 @@ public class TreeKMLGenerator {
             color[i] = start[i] + ((end[i] - start[i]) * proportion);
         }
 
-        return getKMLColor(new Color(color[0], color[1], color[2]));
+        return new Color(color[0], color[1], color[2]);
     }
 
     public static void main(String[] args) {
@@ -775,10 +831,13 @@ public class TreeKMLGenerator {
 
         TreeKMLGenerator generator = new TreeKMLGenerator(tree);
         Settings settings = new Settings(AnalysisType.CONTINUOUS);
-        settings.getAltitudeTreeSettings().setTreeType(TreeType.TRIANGLE_TREE);
-        settings.setPlotAltitude(5000000);
+        settings.getAltitudeTreeSettings().setTreeType(TreeType.ARC_TREE);
+        settings.getAltitudeTreeSettings().getBranchStyle().setColorProperty("height");
+        settings.getGroundTreeSettings().setTreeType(TreeType.SURFACE_TREE);
+        settings.getGroundTreeSettings().getBranchStyle().setColorProperty("height");
+        settings.setPlotAltitude(250000);
         settings.setMostRecentDate(2006);
-        settings.setTimeDivisionCount(20);
+        settings.setTimeDivisionCount(50);
 
         try {
 

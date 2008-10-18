@@ -1,7 +1,5 @@
 package phylogeochronogrammer;
 
-import jebl.evolution.trees.RootedTree;
-
 /**
  * @author Andrew Rambaut
  * @author Philippe Lemey
@@ -62,36 +60,24 @@ public class TreeSettings {
         this.taxaVisible = taxaVisible;
     }
 
-    public BranchDecoration getBranchDecoration() {
-        return branchDecoration;
+    public BranchStyle getBranchStyle() {
+        return branchStyle;
     }
 
-    public void setBranchDecoration(BranchDecoration branchDecoration) {
-        this.branchDecoration = branchDecoration;
+    public SurfaceDecoration getLocationContourStyle() {
+        return locationContourStyle;
     }
 
-    public SurfaceDecoration getLocationContours() {
-        return locationContours;
+    public SurfaceDecoration getGroundContourStyle() {
+        return groundContourStyle;
     }
 
-    public void setLocationContours(SurfaceDecoration locationContours) {
-        this.locationContours = locationContours;
+    public void setGroundContourStyle(SurfaceDecoration groundContourStyle) {
+        this.groundContourStyle = groundContourStyle;
     }
 
-    public SurfaceDecoration getGroundContours() {
-        return groundContours;
-    }
-
-    public void setGroundContours(SurfaceDecoration groundContours) {
-        this.groundContours = groundContours;
-    }
-
-    public BranchDecoration getProjections() {
-        return projections;
-    }
-
-    public void setProjections(BranchDecoration projections) {
-        this.projections = projections;
+    public BranchStyle getProjectionStyle() {
+        return projectionStyle;
     }
 
     private String name;
@@ -105,10 +91,10 @@ public class TreeSettings {
 
     private boolean taxaVisible = false;
 
-    private BranchDecoration branchDecoration = new BranchDecoration();
+    private BranchStyle branchStyle = new BranchStyle();
 
-    private SurfaceDecoration locationContours = new SurfaceDecoration();
-    private SurfaceDecoration groundContours = new SurfaceDecoration();
+    private SurfaceDecoration locationContourStyle = new SurfaceDecoration();
+    private SurfaceDecoration groundContourStyle = new SurfaceDecoration();
 
-    private BranchDecoration projections = new BranchDecoration();
+    private BranchStyle projectionStyle = new BranchStyle();
 }
