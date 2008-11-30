@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.prefs.Preferences;
 
 import figtree.treeviewer.ControllerOptionsPanel;
+import figtree.treeviewer.TreeViewer;
 
 /**
  * @author Andrew Rambaut
@@ -21,38 +22,38 @@ import figtree.treeviewer.ControllerOptionsPanel;
  */
 public class ScaleBarPainterController extends AbstractController {
 
-    private static Preferences PREFS = Preferences.userNodeForPackage(ScaleBarPainterController.class);
+    public static Preferences PREFS = Preferences.userNodeForPackage(TreeViewer.class);
 
-    private static final String SCALE_BAR_KEY = "scaleBar";
+    public static final String CONTROLLER_KEY = "scaleBar";
 
-    private static final String FONT_NAME_KEY = "fontName";
-    private static final String FONT_SIZE_KEY = "fontSize";
-    private static final String FONT_STYLE_KEY = "fontStyle";
+    public static final String FONT_NAME_KEY = "fontName";
+    public static final String FONT_SIZE_KEY = "fontSize";
+    public static final String FONT_STYLE_KEY = "fontStyle";
 
-    private static final String NUMBER_FORMATTING_KEY = "numberFormatting";
+    public static final String NUMBER_FORMATTING_KEY = "numberFormatting";
 
 
-    private static final String AUTOMATIC_SCALE_KEY = "automaticScale";
-    private static final String SCALE_RANGE_KEY = "scaleRange";
-    private static final String LINE_WIDTH_KEY = "lineWidth";
+    public static final String AUTOMATIC_SCALE_KEY = "automaticScale";
+    public static final String SCALE_RANGE_KEY = "scaleRange";
+    public static final String LINE_WIDTH_KEY = "lineWidth";
 
-    private static final String SIGNIFICANT_DIGITS_KEY = "significantDigits";
+    public static final String SIGNIFICANT_DIGITS_KEY = "significantDigits";
 
     // The defaults if there is nothing in the preferences
-    private static String DEFAULT_FONT_NAME = "sansserif";
-    private static int DEFAULT_FONT_SIZE = 10;
-    private static int DEFAULT_FONT_STYLE = Font.PLAIN;
+    public static String DEFAULT_FONT_NAME = "sansserif";
+    public static int DEFAULT_FONT_SIZE = 10;
+    public static int DEFAULT_FONT_STYLE = Font.PLAIN;
 
-    private static String DEFAULT_NUMBER_FORMATTING = "#.####";
-    private static float DEFAULT_LINE_WIDTH = 1.0f;
+    public static String DEFAULT_NUMBER_FORMATTING = "#.####";
+    public static float DEFAULT_LINE_WIDTH = 1.0f;
 
     public ScaleBarPainterController(final ScaleBarPainter scaleBarPainter) {
         this.scaleBarPainter = scaleBarPainter;
 
-        final String defaultFontName = PREFS.get(FONT_NAME_KEY, DEFAULT_FONT_NAME);
-        final int defaultFontStyle = PREFS.getInt(FONT_SIZE_KEY, DEFAULT_FONT_STYLE);
-        final int defaultFontSize = PREFS.getInt(FONT_STYLE_KEY, DEFAULT_FONT_SIZE);
-        final String defaultNumberFormatting = PREFS.get(NUMBER_FORMATTING_KEY, DEFAULT_NUMBER_FORMATTING);
+        final String defaultFontName = PREFS.get(CONTROLLER_KEY + "." + FONT_NAME_KEY, DEFAULT_FONT_NAME);
+        final int defaultFontStyle = PREFS.getInt(CONTROLLER_KEY + "." + FONT_STYLE_KEY, DEFAULT_FONT_STYLE);
+        final int defaultFontSize = PREFS.getInt(CONTROLLER_KEY + "." + FONT_SIZE_KEY, DEFAULT_FONT_SIZE);
+        final String defaultNumberFormatting = PREFS.get(CONTROLLER_KEY + "." + NUMBER_FORMATTING_KEY, DEFAULT_NUMBER_FORMATTING);
 
         float lineWidth = PREFS.getFloat(LINE_WIDTH_KEY, DEFAULT_LINE_WIDTH);
 
@@ -189,21 +190,21 @@ public class ScaleBarPainterController extends AbstractController {
     }
 
     public void setSettings(Map<String,Object> settings) {
-	    titleCheckBox.setSelected((Boolean)settings.get(SCALE_BAR_KEY + "." + IS_SHOWN));
-        autoScaleCheck.setSelected((Boolean)settings.get(SCALE_BAR_KEY + "." + AUTOMATIC_SCALE_KEY));
-        scaleRangeText.setValue((Double)settings.get(SCALE_BAR_KEY + "." + SCALE_RANGE_KEY));
-        fontSizeSpinner.setValue((Double)settings.get(SCALE_BAR_KEY + "." + FONT_SIZE_KEY));
-        digitsSpinner.setValue((Integer)settings.get(SCALE_BAR_KEY + "." + SIGNIFICANT_DIGITS_KEY));
-        lineWeightSpinner.setValue((Double)settings.get(SCALE_BAR_KEY + "." + LINE_WIDTH_KEY));
+	    titleCheckBox.setSelected((Boolean)settings.get(CONTROLLER_KEY + "." + IS_SHOWN));
+        autoScaleCheck.setSelected((Boolean)settings.get(CONTROLLER_KEY + "." + AUTOMATIC_SCALE_KEY));
+        scaleRangeText.setValue((Double)settings.get(CONTROLLER_KEY + "." + SCALE_RANGE_KEY));
+        fontSizeSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + FONT_SIZE_KEY));
+        digitsSpinner.setValue((Integer)settings.get(CONTROLLER_KEY + "." + SIGNIFICANT_DIGITS_KEY));
+        lineWeightSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + LINE_WIDTH_KEY));
     }
 
     public void getSettings(Map<String, Object> settings) {
-	    settings.put(SCALE_BAR_KEY + "." + IS_SHOWN, titleCheckBox.isSelected());
-        settings.put(SCALE_BAR_KEY + "." + AUTOMATIC_SCALE_KEY, autoScaleCheck.isSelected());
-        settings.put(SCALE_BAR_KEY + "." + SCALE_RANGE_KEY, scaleRangeText.getValue());
-        settings.put(SCALE_BAR_KEY + "." + FONT_SIZE_KEY, fontSizeSpinner.getValue());
-        settings.put(SCALE_BAR_KEY + "." + SIGNIFICANT_DIGITS_KEY, digitsSpinner.getValue());
-        settings.put(SCALE_BAR_KEY + "." + LINE_WIDTH_KEY, lineWeightSpinner.getValue());
+	    settings.put(CONTROLLER_KEY + "." + IS_SHOWN, titleCheckBox.isSelected());
+        settings.put(CONTROLLER_KEY + "." + AUTOMATIC_SCALE_KEY, autoScaleCheck.isSelected());
+        settings.put(CONTROLLER_KEY + "." + SCALE_RANGE_KEY, scaleRangeText.getValue());
+        settings.put(CONTROLLER_KEY + "." + FONT_SIZE_KEY, fontSizeSpinner.getValue());
+        settings.put(CONTROLLER_KEY + "." + SIGNIFICANT_DIGITS_KEY, digitsSpinner.getValue());
+        settings.put(CONTROLLER_KEY + "." + LINE_WIDTH_KEY, lineWeightSpinner.getValue());
     }
 
     private final JCheckBox titleCheckBox;

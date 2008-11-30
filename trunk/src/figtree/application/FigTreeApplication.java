@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.List;
 
 import ch.randelshofer.quaqua.QuaquaLookAndFeel;
+import ch.randelshofer.quaqua.QuaquaManager;
 import jebl.evolution.io.ImportException;
 import jebl.evolution.io.NewickImporter;
 import jebl.evolution.trees.Tree;
@@ -46,9 +47,10 @@ public class FigTreeApplication extends MultiDocApplication {
                               String helpURLString) {
         super(menuBarFactory, nameString, aboutString, icon, websiteURLString, helpURLString);
 
-        addPreferencesSection(new GeneralPreferencesSection());
+//        addPreferencesSection(new GeneralPreferencesSection());
         addPreferencesSection(new AppearancePreferencesSection());
-        addPreferencesSection(new AdvancedPreferencesSection());
+        addPreferencesSection(new FontsPreferencesSection());
+//        addPreferencesSection(new AdvancedPreferencesSection());
     }
 
     public DocumentFrame doOpenFile(File file) {
@@ -271,17 +273,21 @@ public class FigTreeApplication extends MultiDocApplication {
 
             // set the Quaqua Look and Feel in the UIManager
             try {
-                //System.setProperty("Quaqua.Debug.showClipBounds","true");
-                //System.setProperty("Quaqua.Debug.showVisualBounds","true");
-                LookAndFeel lafClass;
+                // Only override the UI's necessary for ColorChooser and
+                // FileChooser:
+                Set includes = new HashSet();
+                includes.add("ColorChooser");
+                includes.add("FileChooser");
+                includes.add("Component");
+                includes.add("Browser");
+                includes.add("Tree");
+                includes.add("SplitPane");
+                includes.add("TitledBorder");
+                QuaquaManager.setIncludedUIs(includes);
 
-                if (Utils.getMacOSXVersion().startsWith("10.5")) {
-                    lafClass = ch.randelshofer.quaqua.subset.Quaqua14ColorChooserLAF.class.newInstance();
-                } else {
-                    lafClass = QuaquaLookAndFeel.class.newInstance();
-                }
-
-                UIManager.setLookAndFeel(lafClass);
+                UIManager.setLookAndFeel(
+                    "ch.randelshofer.quaqua.QuaquaLookAndFeel"
+                );
 
                 lafLoaded = true;
             } catch (Exception e) {
