@@ -1,7 +1,6 @@
 package figtree.treeviewer.painters;
 
-import figtree.treeviewer.ScaleAxis;
-import figtree.treeviewer.TreePane;
+import figtree.treeviewer.*;
 import jebl.evolution.trees.RootedTree;
 import jebl.evolution.trees.Tree;
 import org.virion.jam.controlpalettes.ControlPalette;
