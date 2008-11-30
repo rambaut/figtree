@@ -83,6 +83,8 @@ public class FontsPreferencesSection implements PreferencesSection {
         panel.setBorder(new TitledBorder("Scale Bar/Axis Labels"));
         optionsPanel.addSpanningComponent(panel);
 
+        optionsPanel.addFlexibleSpace();
+
         return optionsPanel;
     }
 

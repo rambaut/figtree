@@ -164,6 +164,7 @@ public class TreeViewerController extends AbstractController {
 		setExpansion();
 
 		optionsPanel.addSpanningComponent(layoutPanel);
+        optionsPanel.addFlexibleSpace();
 
 		rectangularTreeToggle.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent changeEvent) {
