@@ -1,6 +1,7 @@
 package figtree.treeviewer;
 
 import jebl.evolution.graphs.Node;
+import jebl.evolution.graphs.Graph;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.*;
 import figtree.treeviewer.decorators.Decorator;
@@ -68,16 +69,20 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 	private void setupTree() {
 		tree = originalTree;
 
-		if (rootingOn) {
+		if (isRootingOn) {
 			if (rootingType == RootingType.MID_POINT) {
-				tree = Utils.rootTreeAtCenter(tree);
+				tree = ReRootedTree.rootTreeAtCenter(tree);
 			} else if (rootingType == RootingType.USER_ROOTING && rootingNode != null) {
 				Node left = tree.getParent(rootingNode);
 				if (left != null) {
 					// rooting length should be [0, 1]
 					double length = tree.getLength(rootingNode) * rootingLength;
-					tree = new RootedFromUnrooted(tree, left, rootingNode, length);
-				}
+                    try {
+                        tree = new ReRootedTree(tree, left, rootingNode, length);
+                    } catch (Graph.NoEdgeException e) {
+                        e.printStackTrace();
+                    }
+                }
 			}
 		}
 
@@ -154,7 +159,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 	}
 
 	public void midpointRoot() {
-		rootingOn = true;
+		isRootingOn = true;
 		rootingType = RootingType.MID_POINT;
 
 		setupTree();
@@ -163,16 +168,22 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 	}
 
 	public void setRootLocation(Node node, double length) {
-		rootingNode = node;
+        if (isRootingOn()) {
+            rootingNode = ((ReRootedTree)tree).getSourceNode(node);
+        } else {
+            rootingNode = node;
+        }
 		rootingLength = length;
 
-		rootingOn = true;
+		isRootingOn = true;
 		rootingType = RootingType.USER_ROOTING;
 
 		setupTree();
 
 		fireSettingsChanged();
 	}
+
+
 
 	public void rotateNode(Node node) {
 		if (node != null) {
@@ -395,7 +406,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 	}
 
 	public boolean isRootingOn() {
-		return rootingOn;
+		return isRootingOn;
 	}
 
 	public RootingType getRootingType() {
@@ -403,7 +414,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 	}
 
 	public void setRootingOn(boolean rootingOn) {
-		this.rootingOn = rootingOn;
+		this.isRootingOn = rootingOn;
 		setupTree();
 	}
 
@@ -670,7 +681,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 				repaint();
 			} else {
 				for (Node child : tree.getChildren(node)) {
-					cartoonSelectedNodes(child);
+					recalculateCollapsedNodes(child);
 				}
 			}
 		}
@@ -1823,7 +1834,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 	private boolean transformBranchesOn = false;
 	private TransformedRootedTree.Transform branchTransform = TransformedRootedTree.Transform.CLADOGRAM;
 
-	private boolean rootingOn = false;
+	private boolean isRootingOn = false;
 	private RootingType rootingType = RootingType.USER_ROOTING;
 	private Node rootingNode = null;
 	private double rootingLength = 0.01;
