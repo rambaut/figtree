@@ -20,7 +20,7 @@ import java.util.prefs.Preferences;
 public class TreesController extends AbstractController {
 	private static final String CONTROLLER_TITLE = "Trees";
 
-    private static Preferences PREFS = Preferences.userNodeForPackage(TreesController.class);
+    private static Preferences PREFS = Preferences.userNodeForPackage(TreeViewer.class);
 
 	private static final String CONTROLLER_KEY = "trees";
 

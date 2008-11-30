@@ -20,7 +20,7 @@ public class TimeScaleController extends AbstractController {
 
 	private static final String CONTROLLER_TITLE = "Time Scale";
 
-	private static Preferences PREFS = Preferences.userNodeForPackage(TimeScaleController.class);
+	private static Preferences PREFS = Preferences.userNodeForPackage(TreeViewer.class);
 
 	private static final String CONTROLLER_KEY = "scale";
 

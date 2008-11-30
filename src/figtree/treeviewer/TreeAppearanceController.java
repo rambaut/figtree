@@ -26,23 +26,23 @@ public class TreeAppearanceController extends AbstractController {
 
 	private static final String CONTROLLER_TITLE = "Appearance";
 
-	private static Preferences PREFS = Preferences.userNodeForPackage(TreeAppearanceController.class);
+    public static Preferences PREFS = Preferences.userNodeForPackage(TreeViewer.class);
 
-	private static final String CONTROLLER_KEY = "appearance";
+	public static final String CONTROLLER_KEY = "appearance";
 
-	private static final String FOREGROUND_COLOUR_KEY = "foregroundColour";
-	private static final String BACKGROUND_COLOUR_KEY = "backgroundColour";
-	private static final String SELECTION_COLOUR_KEY = "selectionColour";
-	private static final String BRANCH_COLOR_ATTRIBUTE_KEY = "branchColorAttribute";
-	private static final String BRANCH_LINE_WIDTH_KEY = "branchLineWidth";
+	public static final String FOREGROUND_COLOUR_KEY = "foregroundColour";
+	public static final String BACKGROUND_COLOUR_KEY = "backgroundColour";
+	public static final String SELECTION_COLOUR_KEY = "selectionColour";
+	public static final String BRANCH_COLOR_ATTRIBUTE_KEY = "branchColorAttribute";
+	public static final String BRANCH_LINE_WIDTH_KEY = "branchLineWidth";
 
-	private static final String BRANCH_WIDTH_ATTRIBUTE_KEY = "branchWidthAttribute";
+	public static final String BRANCH_WIDTH_ATTRIBUTE_KEY = "branchWidthAttribute";
 
 	// The defaults if there is nothing in the preferences
-	private static Color DEFAULT_FOREGROUND_COLOUR = Color.BLACK;
-	private static Color DEFAULT_BACKGROUND_COLOUR = Color.WHITE;
-	private static Color DEFAULT_SELECTION_COLOUR = new Color(45, 54, 128);
-	private static float DEFAULT_BRANCH_LINE_WIDTH = 1.0f;
+	public static Color DEFAULT_FOREGROUND_COLOUR = Color.BLACK;
+	public static Color DEFAULT_BACKGROUND_COLOUR = Color.WHITE;
+	public static Color DEFAULT_SELECTION_COLOUR = new Color(45, 54, 128);
+	public static float DEFAULT_BRANCH_LINE_WIDTH = 1.0f;
 
 	public TreeAppearanceController(final TreeViewer treeViewer, final JFrame frame) {
 		this.treeViewer = treeViewer;

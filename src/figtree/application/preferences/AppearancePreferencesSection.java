@@ -3,7 +3,9 @@ package figtree.application.preferences;
 import org.virion.jam.panels.OptionsPanel;
 import org.virion.jam.preferences.PreferencesSection;
 import org.virion.jam.util.IconUtils;
+import org.virion.jam.components.ColorWellButton;
 import figtree.application.FigTreeApplication;
+import figtree.treeviewer.TreeAppearanceController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,75 +16,79 @@ import java.util.prefs.Preferences;
  * @version $Id: AppearancePreferencesSection.java,v 1.2 2007/08/18 09:52:24 rambaut Exp $
  */
 public class AppearancePreferencesSection implements PreferencesSection {
-	Icon coloursToolIcon = IconUtils.getIcon(FigTreeApplication.class, "images/coloursTool.png");
+    Icon coloursToolIcon = IconUtils.getIcon(FigTreeApplication.class, "images/coloursTool.png");
 
 
-	public String getTitle() {
-		return "Appearance";
-	}
+    public String getTitle() {
+        return "Appearance";
+    }
 
-	public Icon getIcon() {
-		return coloursToolIcon;
-	}
+    public Icon getIcon() {
+        return coloursToolIcon;
+    }
 
-	public JPanel getPanel() {
-		OptionsPanel optionsPanel = new OptionsPanel(12, 18);
+    public JPanel getPanel() {
+        OptionsPanel optionsPanel = new OptionsPanel(12, 18);
 
-		JButton foregroundButton = new JButton("Foreground");
-		optionsPanel.addComponentWithLabel("Foreground Colour:", foregroundButton);
-		JButton backgroundButton = new JButton("Background");
-		optionsPanel.addComponentWithLabel("Background Colour:", backgroundButton);
-		JButton selectionButton = new JButton("Selection");
-		optionsPanel.addComponentWithLabel("Selection Colour:", selectionButton);
+//        foregroundButton = new ColorWellButton(Color.white, "Choose Foreground Colour");
+//        optionsPanel.addComponentWithLabel("Foreground Colour:", foregroundButton);
+//
+//        backgroundButton = new ColorWellButton(Color.white, "Choose Background Colour");
+//        optionsPanel.addComponentWithLabel("Background Colour:", backgroundButton);
 
-		optionsPanel.addSeparator();
+        selectionButton = new ColorWellButton(Color.white, "Choose Selection Colour");
+        optionsPanel.addComponentWithLabel("Selection Colour:", selectionButton);
 
-		branchLineWidthSpinner = new JSpinner(
-				new SpinnerNumberModel(1.0, 0.01, 48.0, 1.0));
-		optionsPanel.addComponentWithLabel("Line Weight:", branchLineWidthSpinner);
-		return optionsPanel;
-	}
+        optionsPanel.addSeparator();
 
-	public void retrievePreferences() {
-		Preferences prefs = Preferences.userNodeForPackage(FigTreeApplication.class);
-		foregroundRGB = prefs.getInt(CONTROLLER_KEY + "." + FOREGROUND_COLOUR_KEY, DEFAULT_FOREGROUND_COLOUR.getRGB());
-		backgroundRGB = prefs.getInt(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY, DEFAULT_BACKGROUND_COLOUR.getRGB());
-		selectionRGB = prefs.getInt(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY, DEFAULT_SELECTION_COLOUR.getRGB());
-		branchLineWidth = prefs.getFloat(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY, DEFAULT_BRANCH_LINE_WIDTH);
+        branchLineWidthSpinner = new JSpinner(
+                new SpinnerNumberModel(1.0, 0.01, 48.0, 1.0));
+        optionsPanel.addComponentWithLabel("Line Weight:", branchLineWidthSpinner);
+        return optionsPanel;
+    }
 
-		branchLineWidthSpinner.setValue(branchLineWidth);
-	}
+    public void retrievePreferences() {
+        int foregroundRGB = TreeAppearanceController.PREFS.getInt(
+                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.FOREGROUND_COLOUR_KEY, 
+                TreeAppearanceController.DEFAULT_FOREGROUND_COLOUR.getRGB());
+        int backgroundRGB = TreeAppearanceController.PREFS.getInt(
+                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.BACKGROUND_COLOUR_KEY,
+                TreeAppearanceController.DEFAULT_BACKGROUND_COLOUR.getRGB());
+        int selectionRGB = TreeAppearanceController.PREFS.getInt(
+                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.SELECTION_COLOUR_KEY,
+                TreeAppearanceController.DEFAULT_SELECTION_COLOUR.getRGB());
+        float branchLineWidth = TreeAppearanceController.PREFS.getFloat(
+                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.BRANCH_LINE_WIDTH_KEY,
+                TreeAppearanceController.DEFAULT_BRANCH_LINE_WIDTH);
 
-	public void storePreferences() {
-		branchLineWidth = (Float)branchLineWidthSpinner.getValue();
+        foregroundButton.setSelectedColor(new Color(foregroundRGB));
+        backgroundButton.setSelectedColor(new Color(backgroundRGB));
+        selectionButton.setSelectedColor(new Color(selectionRGB));
+        branchLineWidthSpinner.setValue(branchLineWidth);
+    }
 
-		Preferences prefs = Preferences.userNodeForPackage(FigTreeApplication.class);
-		prefs.putInt(CONTROLLER_KEY + "." + FOREGROUND_COLOUR_KEY, foregroundRGB);
-		prefs.putInt(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY, backgroundRGB);
-		prefs.putInt(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY, selectionRGB);
-		prefs.putFloat(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY, branchLineWidth);
-	}
+    public void storePreferences() {
+        int foregroundRGB = foregroundButton.getSelectedColor().getRGB();
+        int backgroundRGB = backgroundButton.getSelectedColor().getRGB();
+        int selectionRGB = selectionButton.getSelectedColor().getRGB();
+        float branchLineWidth = ((Number)branchLineWidthSpinner.getValue()).floatValue();
 
-	JButton foregroundButton;
-	JButton backgroundButton;
-	JButton selectionButton;
-	JSpinner branchLineWidthSpinner;
+//        TreeAppearanceController.PREFS.putInt(
+//                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.FOREGROUND_COLOUR_KEY,
+//                foregroundRGB);
+//        TreeAppearanceController.PREFS.putInt(
+//                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.BACKGROUND_COLOUR_KEY,
+//                backgroundRGB);
+        TreeAppearanceController.PREFS.putInt(
+                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.SELECTION_COLOUR_KEY,
+                selectionRGB);
+        TreeAppearanceController.PREFS.putFloat(
+                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.BRANCH_LINE_WIDTH_KEY,
+                branchLineWidth);
+    }
 
-	int foregroundRGB;
-	int backgroundRGB;
-	int selectionRGB;
-	float branchLineWidth;
-
-	private final String CONTROLLER_KEY = "appearance";
-
-	private final String FOREGROUND_COLOUR_KEY = "foregroundColour";
-	private final String BACKGROUND_COLOUR_KEY = "backgroundColour";
-	private final String SELECTION_COLOUR_KEY = "selectionColour";
-	private final String BRANCH_LINE_WIDTH_KEY = "branchLineWidth";
-
-	// The defaults if there is nothing in the preferences
-	private Color DEFAULT_FOREGROUND_COLOUR = Color.BLACK;
-	private Color DEFAULT_BACKGROUND_COLOUR = Color.WHITE;
-	private Color DEFAULT_SELECTION_COLOUR = new Color(180, 213, 254);
-	private float DEFAULT_BRANCH_LINE_WIDTH = 1.0f;
+    ColorWellButton foregroundButton;
+    ColorWellButton backgroundButton;
+    ColorWellButton selectionButton;
+    JSpinner branchLineWidthSpinner;
 }

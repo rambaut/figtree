@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.prefs.Preferences;
 
 import figtree.treeviewer.ControllerOptionsPanel;
+import figtree.treeviewer.TreeViewer;
 
 /**
  * @author Andrew Rambaut
@@ -21,7 +22,7 @@ import figtree.treeviewer.ControllerOptionsPanel;
  */
 public class ScaleAxisPainterController extends AbstractController {
 
-	private static Preferences PREFS = Preferences.userNodeForPackage(ScaleBarPainterController.class);
+	private static Preferences PREFS = Preferences.userNodeForPackage(TreeViewer.class);
 
 	private static final String SCALE_AXIS_KEY = "scaleAxis";
 
