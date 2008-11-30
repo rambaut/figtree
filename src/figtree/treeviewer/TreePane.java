@@ -239,7 +239,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 	 * @return the tree scale
 	 */
 	public double getTreeScale() {
-		return treeScale;
+		return treeScale / timeScale.getScaleFactor(tree);
 	}
 
 	/**

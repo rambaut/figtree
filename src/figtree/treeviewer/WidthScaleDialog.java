@@ -1,11 +1,3 @@
-/*
- * DemographicDialog.java
- *
- * (c) 2002-2005 BEAST Development Core Team
- *
- * This package may be distributed under the
- * Lesser Gnu Public Licence (LGPL)
- */
 package figtree.treeviewer;
 
 import org.virion.jam.components.*;
@@ -22,13 +14,10 @@ import jebl.util.Attributable;
 import figtree.treeviewer.annotations.AnnotationDefinition;
 
 /**
- * DemographicDialog.java
+ * WidthScaleDialog.java
  *
- * Title:			Tracer
- * Description:		An application for analysing MCMC trace files.
  * @author			Andrew Rambaut
- * @author			Alexei Drummond
- * @version			$Id: AnnotationDialog.java,v 1.5 2007/09/04 23:54:44 rambaut Exp $
+ * @version			$Id$
  */
 public class WidthScaleDialog {
 
