@@ -36,9 +36,11 @@
 		<copy file="../JEBL/dist/jebl.jar" tofile="${lib}/jebl.jar"/>
 	</target>
 
+<!--
 	<target name="freehep" depends="init" description="generate the distribution">
 
 		<jar jarfile="${lib}/freehep.jar">
+            <metainf dir="${lib}/META-INF" includes="services/org.freehep.util.export.ExportFileType"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-export-2.1.1.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-graphics2d-2.1.1.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-2.1.1.jar"/>
@@ -51,12 +53,12 @@
 			<zipgroupfileset dir="${lib}" includes="freehep-swing-2.0.3.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-util-2.0.2.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-xml-2.1.1.jar"/>
-            <metainf dir="${lib}/META-INF" includes="services/org.freehep.util.export.ExportFileType"/>
 		</jar>
 
 	</target>
+-->
 
-	<target name="compile" depends="init,copyLibs,freehep">
+	<target name="compile" depends="init,copyLibs">
 		<!-- Compile the java code from ${src} into ${build} -->
 		<javac source="1.5" srcdir="${src}" destdir="${build}"
 		       classpath="${lib}/jebl.jar:${lib}/freehep.jar:${lib}/quaqua.jar">

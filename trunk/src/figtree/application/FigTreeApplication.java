@@ -30,7 +30,6 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
-import ch.randelshofer.quaqua.QuaquaLookAndFeel;
 import ch.randelshofer.quaqua.QuaquaManager;
 import jebl.evolution.io.ImportException;
 import jebl.evolution.io.NewickImporter;
