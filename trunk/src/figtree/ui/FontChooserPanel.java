@@ -23,10 +23,10 @@ public class FontChooserPanel extends JPanel {
     private JComboBox sizelist;
 
     /** The checkbox that indicates whether the font is bold. */
-    private JCheckBox bold;
+    private JCheckBox boldCheck;
 
     /** The checkbox that indicates whether or not the font is italic. */
-    private JCheckBox italic;
+    private JCheckBox italicCheck;
 
     /**
      * Standard constructor - builds a FontChooserPanel initialised with the specified font.
@@ -41,21 +41,26 @@ public class FontChooserPanel extends JPanel {
         setLayout(new BorderLayout());
 
         final JPanel leftPanel = new JPanel(new GridLayout(2, 1));
-        this.fontlist = new JComboBox(fonts);
-        this.sizelist = new JComboBox(SIZES);
-        leftPanel.add(this.fontlist);
+        fontlist = new JComboBox(fonts);
+        adjustComponent(fontlist);
+        sizelist = new JComboBox(SIZES);
+        adjustComponent(sizelist);
+        leftPanel.add(fontlist);
         final JPanel sizePanel = new JPanel(new BorderLayout(3, 0));
         final JLabel label = new JLabel("Size:");
+        adjustComponent(label);
         label.setHorizontalAlignment(JLabel.RIGHT);
         sizePanel.add(label, BorderLayout.CENTER);
-        sizePanel.add(this.sizelist, BorderLayout.EAST);
+        sizePanel.add(sizelist, BorderLayout.EAST);
         leftPanel.add(sizePanel);
 
         final JPanel rightPanel = new JPanel(new GridLayout(2, 1));
-        this.bold = new JCheckBox("Bold");
-        this.italic = new JCheckBox("Italic");
-        rightPanel.add(this.bold);
-        rightPanel.add(this.italic);
+        boldCheck = new JCheckBox("Bold");
+        adjustComponent(boldCheck);
+        italicCheck = new JCheckBox("Italic");
+        adjustComponent(italicCheck);
+        rightPanel.add(boldCheck);
+        rightPanel.add(italicCheck);
 
         add(leftPanel, BorderLayout.CENTER);
         add(rightPanel, BorderLayout.EAST);
@@ -87,13 +92,13 @@ public class FontChooserPanel extends JPanel {
      * @return the style.
      */
     public int getSelectedStyle() {
-        if (this.bold.isSelected() && this.italic.isSelected()) {
+        if (this.boldCheck.isSelected() && this.italicCheck.isSelected()) {
             return Font.BOLD + Font.ITALIC;
         }
-        if (this.bold.isSelected()) {
+        if (this.boldCheck.isSelected()) {
             return Font.BOLD;
         }
-        if (this.italic.isSelected()) {
+        if (this.italicCheck.isSelected()) {
             return Font.ITALIC;
         }
         else {
@@ -126,8 +131,8 @@ public class FontChooserPanel extends JPanel {
         if (font == null) {
             throw new NullPointerException();
         }
-        this.bold.setSelected(font.isBold());
-        this.italic.setSelected(font.isItalic());
+        this.boldCheck.setSelected(font.isBold());
+        this.italicCheck.setSelected(font.isItalic());
 
         final String fontName = font.getName();
         ListModel model = this.fontlist.getModel();
@@ -145,6 +150,21 @@ public class FontChooserPanel extends JPanel {
                 this.sizelist.setSelectedIndex(i);
                 break;
             }
+        }
+    }
+
+    protected void adjustComponent(JComponent comp) {
+        // comp.putClientProperty("Quaqua.Component.visualMargin", new Insets(0,0,0,0));
+        Font font = UIManager.getFont("SmallSystemFont");
+        if (font != null) {
+            comp.setFont(font);
+        }
+        comp.putClientProperty("JComponent.sizeVariant", "small");
+        if (comp instanceof JButton) {
+            comp.putClientProperty("JButton.buttonType", "roundRect");
+        }
+        if (comp instanceof JComboBox) {
+            //comp.putClientProperty("JComboBox.isSquare", Boolean.TRUE);
         }
     }
 }

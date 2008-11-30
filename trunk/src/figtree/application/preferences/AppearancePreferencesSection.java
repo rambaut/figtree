@@ -44,16 +44,19 @@ public class AppearancePreferencesSection implements PreferencesSection {
         branchLineWidthSpinner = new JSpinner(
                 new SpinnerNumberModel(1.0, 0.01, 48.0, 1.0));
         optionsPanel.addComponentWithLabel("Line Weight:", branchLineWidthSpinner);
+
+        optionsPanel.addFlexibleSpace();
+
         return optionsPanel;
     }
 
     public void retrievePreferences() {
-        int foregroundRGB = TreeAppearanceController.PREFS.getInt(
-                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.FOREGROUND_COLOUR_KEY, 
-                TreeAppearanceController.DEFAULT_FOREGROUND_COLOUR.getRGB());
-        int backgroundRGB = TreeAppearanceController.PREFS.getInt(
-                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.BACKGROUND_COLOUR_KEY,
-                TreeAppearanceController.DEFAULT_BACKGROUND_COLOUR.getRGB());
+//        int foregroundRGB = TreeAppearanceController.PREFS.getInt(
+//                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.FOREGROUND_COLOUR_KEY, 
+//                TreeAppearanceController.DEFAULT_FOREGROUND_COLOUR.getRGB());
+//        int backgroundRGB = TreeAppearanceController.PREFS.getInt(
+//                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.BACKGROUND_COLOUR_KEY,
+//                TreeAppearanceController.DEFAULT_BACKGROUND_COLOUR.getRGB());
         int selectionRGB = TreeAppearanceController.PREFS.getInt(
                 TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.SELECTION_COLOUR_KEY,
                 TreeAppearanceController.DEFAULT_SELECTION_COLOUR.getRGB());
@@ -61,15 +64,15 @@ public class AppearancePreferencesSection implements PreferencesSection {
                 TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.BRANCH_LINE_WIDTH_KEY,
                 TreeAppearanceController.DEFAULT_BRANCH_LINE_WIDTH);
 
-        foregroundButton.setSelectedColor(new Color(foregroundRGB));
-        backgroundButton.setSelectedColor(new Color(backgroundRGB));
+//        foregroundButton.setSelectedColor(new Color(foregroundRGB));
+//        backgroundButton.setSelectedColor(new Color(backgroundRGB));
         selectionButton.setSelectedColor(new Color(selectionRGB));
         branchLineWidthSpinner.setValue(branchLineWidth);
     }
 
     public void storePreferences() {
-        int foregroundRGB = foregroundButton.getSelectedColor().getRGB();
-        int backgroundRGB = backgroundButton.getSelectedColor().getRGB();
+//        int foregroundRGB = foregroundButton.getSelectedColor().getRGB();
+//        int backgroundRGB = backgroundButton.getSelectedColor().getRGB();
         int selectionRGB = selectionButton.getSelectedColor().getRGB();
         float branchLineWidth = ((Number)branchLineWidthSpinner.getValue()).floatValue();
 
@@ -87,8 +90,8 @@ public class AppearancePreferencesSection implements PreferencesSection {
                 branchLineWidth);
     }
 
-    ColorWellButton foregroundButton;
-    ColorWellButton backgroundButton;
+//    ColorWellButton foregroundButton;
+//    ColorWellButton backgroundButton;
     ColorWellButton selectionButton;
     JSpinner branchLineWidthSpinner;
 }
