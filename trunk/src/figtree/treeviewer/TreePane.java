@@ -67,32 +67,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 	}
 
 	private void setupTree() {
-		tree = originalTree;
-
-		if (isRootingOn) {
-			if (rootingType == RootingType.MID_POINT) {
-				tree = ReRootedTree.rootTreeAtCenter(tree);
-			} else if (rootingType == RootingType.USER_ROOTING && rootingNode != null) {
-				Node left = tree.getParent(rootingNode);
-				if (left != null) {
-					// rooting length should be [0, 1]
-					double length = tree.getLength(rootingNode) * rootingLength;
-                    try {
-                        tree = new ReRootedTree(tree, left, rootingNode, length);
-                    } catch (Graph.NoEdgeException e) {
-                        e.printStackTrace();
-                    }
-                }
-			}
-		}
-
-		if (orderBranchesOn) {
-			tree = new SortedRootedTree(tree, branchOrdering);
-		}
-
-		if (transformBranchesOn || !this.tree.hasLengths()) {
-			tree = new TransformedRootedTree(tree, branchTransform);
-		}
+        tree = constructTransformedTree(originalTree);
 
 		recalculateCollapsedNodes();
 
@@ -100,6 +75,37 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		invalidate();
 		repaint();
 	}
+
+    public RootedTree constructTransformedTree(RootedTree sourceTree) {
+        RootedTree newTree = sourceTree;
+
+        if (isRootingOn) {
+            if (rootingType == RootingType.MID_POINT) {
+                newTree = ReRootedTree.rootTreeAtCenter(newTree);
+            } else if (rootingType == RootingType.USER_ROOTING && rootingNode != null) {
+                Node left = newTree.getParent(rootingNode);
+                if (left != null) {
+                    // rooting length should be [0, 1]
+                    double length = newTree.getLength(rootingNode) * rootingLength;
+                    try {
+                        newTree = new ReRootedTree(newTree, left, rootingNode, length);
+                    } catch (Graph.NoEdgeException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        if (orderBranchesOn) {
+            newTree = new SortedRootedTree(newTree, branchOrdering);
+        }
+
+        if (transformBranchesOn || !sourceTree.hasLengths()) {
+            newTree = new TransformedRootedTree(newTree, branchTransform);
+        }
+
+        return newTree;
+    }
 
 	public TreeLayout getTreeLayout() {
 		return treeLayout;
