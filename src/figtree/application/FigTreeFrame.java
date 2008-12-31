@@ -1091,22 +1091,16 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 			controlPalette.getSettings(settings);
 		}
 
+        List<Tree> trees = treeViewer.getTreesAsViewed();
+        
 		switch (format) {
 			case NEWICK:
 				NewickExporter newickExporter = new NewickExporter(writer);
-				if (writeAllTrees) {
-					newickExporter.exportTrees(treeViewer.getTrees());
-				} else {
-					newickExporter.exportTree(treeViewer.getCurrentTree());
-				}
+                newickExporter.exportTrees(trees);
 				break;
 			case NEXUS:
 				FigTreeNexusExporter nexusExporter = new FigTreeNexusExporter(writer, writeAnnotations);
-				if (writeAllTrees) {
-					nexusExporter.exportTrees(treeViewer.getTrees());
-				} else {
-					nexusExporter.exportTree(treeViewer.getCurrentTree());
-				}
+                nexusExporter.exportTrees(trees);
 				if (settings != null) {
 					nexusExporter.writeFigTreeBlock(settings);
 				}
