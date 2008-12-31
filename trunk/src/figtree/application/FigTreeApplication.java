@@ -312,8 +312,8 @@ public class FigTreeApplication extends MultiDocApplication {
         }
 
         final String nameString = "FigTree";
-        final String versionString = "1.2";
-        String aboutString = "<html><center>Tree Figure Drawing Tool<br>Version " + versionString + "<br>2006-2008, Andrew Rambaut<br>" +
+        final String versionString = "1.2.1";
+        String aboutString = "<html><center>Tree Figure Drawing Tool<br>Version " + versionString + "<br>2006-2009, Andrew Rambaut<br>" +
                 "Institute of Evolutionary Biology, University of Edinburgh.<br><br>" +
                 "<a href=\"http://tree.bio.ed.ac.uk/\">http://tree.bio.ed.ac.uk/</a><br><br>" +
                 "Uses the Java Evolutionary Biology Library (JEBL)<br>" +
