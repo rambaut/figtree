@@ -10,7 +10,7 @@ public class FigTreeMenuBarFactory extends DefaultMenuBarFactory {
 	public FigTreeMenuBarFactory() {
 		if (org.virion.jam.mac.Utils.isMacOSX()) {
 			registerMenuFactory(new FigTreeMacFileMenuFactory());
-			registerMenuFactory(new DefaultEditMenuFactory());
+			registerMenuFactory(new MacEditMenuFactory());
 			registerMenuFactory(new TreeMenuFactory());
 
 			registerMenuFactory(new MacWindowMenuFactory());
