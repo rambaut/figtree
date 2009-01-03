@@ -9,7 +9,7 @@ import figtree.treeviewer.TreeAppearanceController;
 import javax.swing.*;
 import java.awt.*;
 
-import org.virion.jam.components.ColorWellButton;
+import figtree.ui.components.ColorWellButton;
 
 /**
  * @author Andrew Rambaut

@@ -10,8 +10,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 
-import org.virion.jam.components.RealNumberField;
-import org.virion.jam.components.WholeNumberField;
+import figtree.ui.components.RealNumberField;
+import figtree.ui.components.WholeNumberField;
 
 /**
  * FindDialog

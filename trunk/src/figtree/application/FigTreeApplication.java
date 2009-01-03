@@ -23,7 +23,7 @@ import org.freehep.graphicsio.emf.EMFGraphics2D;
 import org.freehep.graphicsio.svg.SVGGraphics2D;
 import org.freehep.graphicsio.gif.GIFGraphics2D;
 import org.freehep.graphicsio.swf.SWFGraphics2D;
-import org.virion.jam.app.Arguments;
+import figtree.application.Arguments;
 
 import java.awt.*;
 import java.io.*;

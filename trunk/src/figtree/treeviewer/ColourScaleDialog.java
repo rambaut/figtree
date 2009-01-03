@@ -7,8 +7,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.event.*;
 import java.awt.*;
 
-import org.virion.jam.components.RealNumberField;
-import org.virion.jam.components.ColorWellButton;
+import figtree.ui.components.RealNumberField;
+import figtree.ui.components.ColorWellButton;
 
 /**
  * ColourScaleDialog.java

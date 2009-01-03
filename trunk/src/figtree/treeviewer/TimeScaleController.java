@@ -11,7 +11,7 @@ import java.awt.event.ItemListener;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import org.virion.jam.components.RealNumberField;
+import figtree.ui.components.RealNumberField;
 
 /**
  * @author Andrew Rambaut
