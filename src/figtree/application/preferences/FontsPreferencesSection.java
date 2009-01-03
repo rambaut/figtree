@@ -4,9 +4,9 @@ import figtree.application.FigTreeApplication;
 import figtree.treeviewer.painters.LabelPainterController;
 import figtree.treeviewer.painters.ScaleBarPainterController;
 import figtree.ui.FontChooserPanel;
-import org.virion.jam.panels.OptionsPanel;
-import org.virion.jam.preferences.PreferencesSection;
-import org.virion.jam.util.IconUtils;
+import jam.panels.OptionsPanel;
+import jam.preferences.PreferencesSection;
+import jam.util.IconUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -116,7 +116,7 @@ public class FontsPreferencesSection implements PreferencesSection {
         font = new Font(name, style, size);
         branchLabelFontChooser.setSelectedFont(font);
 
-        name = ScaleBarPainterController.PREFS.get(ScaleBarPainterController.CONTROLLER_KEY + "." + 
+        name = ScaleBarPainterController.PREFS.get(ScaleBarPainterController.CONTROLLER_KEY + "." +
                 ScaleBarPainterController.FONT_NAME_KEY,
                 ScaleBarPainterController.DEFAULT_FONT_NAME);
         size = ScaleBarPainterController.PREFS.getInt(ScaleBarPainterController.CONTROLLER_KEY + "." +

@@ -1,6 +1,6 @@
 package figtree.treeviewer;
 
-import org.virion.jam.panels.OptionsPanel;
+import jam.panels.OptionsPanel;
 
 import javax.swing.*;
 import java.awt.*;

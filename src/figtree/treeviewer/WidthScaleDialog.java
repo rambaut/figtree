@@ -1,17 +1,14 @@
 package figtree.treeviewer;
 
-import org.virion.jam.components.*;
-import org.virion.jam.panels.OptionsPanel;
+import jam.panels.OptionsPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.*;
-import java.util.List;
 
-import jebl.util.Attributable;
-import figtree.treeviewer.annotations.AnnotationDefinition;
+import org.virion.jam.components.RealNumberField;
 
 /**
  * WidthScaleDialog.java

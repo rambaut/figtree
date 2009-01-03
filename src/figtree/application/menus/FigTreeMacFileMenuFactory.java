@@ -1,6 +1,6 @@
 package figtree.application.menus;
 
-import org.virion.jam.framework.*;
+import jam.framework.*;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;

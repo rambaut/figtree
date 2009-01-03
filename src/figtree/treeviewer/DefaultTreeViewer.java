@@ -12,14 +12,13 @@ package figtree.treeviewer;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.*;
-import jebl.util.Attributable;
 import figtree.treeviewer.decorators.Decorator;
 import figtree.treeviewer.painters.LabelPainter;
 import figtree.treeviewer.painters.ScalePainter;
 import figtree.treeviewer.painters.ScaleGridPainter;
 import figtree.treeviewer.painters.NodeBarPainter;
 import figtree.treeviewer.treelayouts.TreeLayout;
-import org.virion.jam.panels.StatusProvider;
+import jam.panels.StatusProvider;
 
 import javax.swing.*;
 import java.awt.*;

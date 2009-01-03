@@ -1,20 +1,14 @@
 package figtree.applet;
 
-import org.virion.jam.controlpalettes.AbstractController;
-import org.virion.jam.panels.OptionsPanel;
+import jam.controlpalettes.AbstractController;
+import jam.panels.OptionsPanel;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.text.NumberFormat;
-import java.text.DecimalFormat;
 import java.util.Map;
 
 import figtree.treeviewer.painters.LabelPainter;
-import figtree.treeviewer.painters.PainterListener;
 
 /**
  * @author Andrew Rambaut

@@ -1,7 +1,7 @@
 package figtree.treeviewer.painters;
 
-import org.virion.jam.controlpalettes.AbstractController;
-import org.virion.jam.panels.OptionsPanel;
+import jam.controlpalettes.AbstractController;
+import jam.panels.OptionsPanel;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;

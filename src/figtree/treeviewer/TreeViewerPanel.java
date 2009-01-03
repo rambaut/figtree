@@ -3,8 +3,8 @@ package figtree.treeviewer;
 import jebl.evolution.io.TreeImporter;
 import jebl.evolution.io.NexusImporter;
 import jebl.evolution.trees.Tree;
-import org.virion.jam.controlpalettes.BasicControlPalette;
-import org.virion.jam.controlpalettes.ControlPalette;
+import jam.controlpalettes.BasicControlPalette;
+import jam.controlpalettes.ControlPalette;
 
 import javax.swing.*;
 import java.awt.*;

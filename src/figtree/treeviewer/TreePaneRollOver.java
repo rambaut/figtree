@@ -4,8 +4,8 @@ import jebl.evolution.graphs.Node;
 import jebl.evolution.trees.RootedTree;
 import jebl.evolution.trees.RootedTreeUtils;
 import jebl.util.NumberFormatter;
-import org.virion.jam.panels.StatusPanel;
-import org.virion.jam.panels.StatusProvider;
+import jam.panels.StatusPanel;
+import jam.panels.StatusProvider;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

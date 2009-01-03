@@ -4,9 +4,7 @@
 package figtree.treeviewer;
 
 import figtree.treeviewer.DefaultTreeViewer;
-import org.virion.jam.panels.OptionsPanel;
-import org.virion.jam.components.RealNumberField;
-import org.virion.jam.components.WholeNumberField;
+import jam.panels.OptionsPanel;
 import figtree.treeviewer.annotations.AnnotationDefinition;
 
 import javax.swing.*;
@@ -15,6 +13,9 @@ import java.awt.*;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.util.List;
+
+import org.virion.jam.components.RealNumberField;
+import org.virion.jam.components.WholeNumberField;
 
 /**
  * FindDialog

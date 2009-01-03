@@ -5,7 +5,7 @@ import figtree.treeviewer.TreePane;
 import figtree.treeviewer.treelayouts.RectilinearTreeLayout;
 import figtree.treeviewer.treelayouts.RadialTreeLayout;
 import jebl.evolution.trees.Tree;
-import org.virion.jam.controlpalettes.ControlPalette;
+import jam.controlpalettes.ControlPalette;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

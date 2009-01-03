@@ -1,7 +1,7 @@
 package figtree.application.preferences;
 
-import org.virion.jam.preferences.PreferencesSection;
-import org.virion.jam.util.IconUtils;
+import jam.preferences.PreferencesSection;
+import jam.util.IconUtils;
 import figtree.application.FigTreeApplication;
 
 import javax.swing.*;

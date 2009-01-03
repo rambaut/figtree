@@ -1,7 +1,7 @@
 package figtree.treeviewer;
 
 import jebl.evolution.graphs.Node;
-import org.virion.jam.mac.Utils;
+import jam.mac.Utils;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -96,7 +96,7 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
 	    if (treePane.getTree() == null) {
 		    return;
 	    }
-	    
+
         if (toolMode == ToolMode.ROOTING) {
             Node node = treePane.getNodeAt((Graphics2D) treePane.getGraphics(), mouseEvent.getPoint());
             if (node != null) {

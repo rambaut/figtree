@@ -12,8 +12,8 @@ package figtree.applet;
 import figtree.treeviewer.AnnotationsListener;
 import figtree.treeviewer.DefaultTreeViewer;
 import figtree.treeviewer.annotations.AnnotationDefinition;
-import org.virion.jam.panels.StatusListener;
-import org.virion.jam.panels.StatusProvider;
+import jam.panels.StatusListener;
+import jam.panels.StatusProvider;
 
 import java.awt.*;
 import java.util.ArrayList;

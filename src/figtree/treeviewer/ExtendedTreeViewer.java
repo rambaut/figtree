@@ -15,8 +15,8 @@ import jebl.evolution.graphs.Node;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.Tree;
 import figtree.treeviewer.DefaultTreeViewer;
-import org.virion.jam.panels.StatusListener;
-import org.virion.jam.panels.StatusProvider;
+import jam.panels.StatusListener;
+import jam.panels.StatusProvider;
 import figtree.treeviewer.annotations.AnnotationDefinition;
 import figtree.treeviewer.painters.CharactersPainter;
 

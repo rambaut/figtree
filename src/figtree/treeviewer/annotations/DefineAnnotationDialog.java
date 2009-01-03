@@ -8,7 +8,7 @@
  */
 package figtree.treeviewer.annotations;
 
-import org.virion.jam.panels.OptionsPanel;
+import jam.panels.OptionsPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

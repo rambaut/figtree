@@ -1,13 +1,8 @@
 package figtree.applet;
 
-import org.virion.jam.disclosure.DisclosureListener;
-import org.virion.jam.disclosure.DisclosurePanel;
-import org.virion.jam.controlpalettes.*;
+import jam.controlpalettes.*;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

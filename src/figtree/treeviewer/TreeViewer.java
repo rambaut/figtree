@@ -15,7 +15,7 @@ import java.awt.print.Printable;
 import java.util.Collection;
 import java.util.Set;
 
-import org.virion.jam.panels.StatusProvider;
+import jam.panels.StatusProvider;
 
 /**
  * @author Andrew Rambaut
