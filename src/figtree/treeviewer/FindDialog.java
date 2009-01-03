@@ -14,8 +14,8 @@ import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.util.List;
 
-import org.virion.jam.components.RealNumberField;
-import org.virion.jam.components.WholeNumberField;
+import figtree.ui.components.RealNumberField;
+import figtree.ui.components.WholeNumberField;
 
 /**
  * FindDialog

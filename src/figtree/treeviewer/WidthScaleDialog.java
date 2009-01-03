@@ -8,7 +8,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.*;
 
-import org.virion.jam.components.RealNumberField;
+import figtree.ui.components.RealNumberField;
 
 /**
  * WidthScaleDialog.java

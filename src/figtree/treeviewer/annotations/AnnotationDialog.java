@@ -17,8 +17,8 @@ import java.awt.event.ItemListener;
 import java.util.List;
 
 import jebl.util.Attributable;
-import org.virion.jam.components.WholeNumberField;
-import org.virion.jam.components.RealNumberField;
+import figtree.ui.components.WholeNumberField;
+import figtree.ui.components.RealNumberField;
 
 /**
  * DemographicDialog.java

@@ -14,7 +14,7 @@ import java.util.prefs.Preferences;
 
 import figtree.treeviewer.ControllerOptionsPanel;
 import figtree.treeviewer.TreeViewer;
-import org.virion.jam.components.RealNumberField;
+import figtree.ui.components.RealNumberField;
 
 /**
  * @author Andrew Rambaut

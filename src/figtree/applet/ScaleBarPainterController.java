@@ -12,7 +12,7 @@ import java.text.DecimalFormat;
 import java.util.Map;
 
 import figtree.treeviewer.painters.ScaleBarPainter;
-import org.virion.jam.components.RealNumberField;
+import figtree.ui.components.RealNumberField;
 
 /**
  * @author Andrew Rambaut
