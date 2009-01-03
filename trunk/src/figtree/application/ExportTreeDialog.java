@@ -3,19 +3,12 @@
  */
 package figtree.application;
 
-import figtree.treeviewer.DefaultTreeViewer;
-import figtree.treeviewer.TreeViewer;
-import org.virion.jam.panels.OptionsPanel;
-import org.virion.jam.components.RealNumberField;
-import org.virion.jam.components.WholeNumberField;
-import figtree.treeviewer.annotations.AnnotationDefinition;
+import jam.panels.OptionsPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
-import java.util.List;
 
 /**
  * FindDialog

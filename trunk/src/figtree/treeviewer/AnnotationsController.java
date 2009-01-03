@@ -1,8 +1,8 @@
 package figtree.treeviewer;
 
 import figtree.treeviewer.TreePane;
-import org.virion.jam.controlpalettes.AbstractController;
-import org.virion.jam.panels.OptionsPanel;
+import jam.controlpalettes.AbstractController;
+import jam.panels.OptionsPanel;
 import figtree.treeviewer.annotations.AnnotationDefinition;
 import javax.swing.*;
 import java.awt.event.ItemEvent;

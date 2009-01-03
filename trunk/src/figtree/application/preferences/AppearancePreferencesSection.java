@@ -1,15 +1,15 @@
 package figtree.application.preferences;
 
-import org.virion.jam.panels.OptionsPanel;
-import org.virion.jam.preferences.PreferencesSection;
-import org.virion.jam.util.IconUtils;
-import org.virion.jam.components.ColorWellButton;
+import jam.panels.OptionsPanel;
+import jam.preferences.PreferencesSection;
+import jam.util.IconUtils;
 import figtree.application.FigTreeApplication;
 import figtree.treeviewer.TreeAppearanceController;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.prefs.Preferences;
+
+import org.virion.jam.components.ColorWellButton;
 
 /**
  * @author Andrew Rambaut
@@ -52,7 +52,7 @@ public class AppearancePreferencesSection implements PreferencesSection {
 
     public void retrievePreferences() {
 //        int foregroundRGB = TreeAppearanceController.PREFS.getInt(
-//                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.FOREGROUND_COLOUR_KEY, 
+//                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.FOREGROUND_COLOUR_KEY,
 //                TreeAppearanceController.DEFAULT_FOREGROUND_COLOUR.getRGB());
 //        int backgroundRGB = TreeAppearanceController.PREFS.getInt(
 //                TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.BACKGROUND_COLOUR_KEY,

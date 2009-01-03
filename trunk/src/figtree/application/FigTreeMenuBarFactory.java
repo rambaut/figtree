@@ -1,14 +1,14 @@
 package figtree.application;
 
-import org.virion.jam.framework.*;
-import org.virion.jam.mac.*;
+import jam.framework.*;
+import jam.mac.*;
 import figtree.application.menus.*;
 
 
 public class FigTreeMenuBarFactory extends DefaultMenuBarFactory {
 
 	public FigTreeMenuBarFactory() {
-		if (org.virion.jam.mac.Utils.isMacOSX()) {
+		if (jam.mac.Utils.isMacOSX()) {
 			registerMenuFactory(new FigTreeMacFileMenuFactory());
 			registerMenuFactory(new MacEditMenuFactory());
 			registerMenuFactory(new TreeMenuFactory());

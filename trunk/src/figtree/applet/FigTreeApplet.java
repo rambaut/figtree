@@ -3,10 +3,10 @@ package figtree.applet;
 import jebl.evolution.trees.Tree;
 import jebl.evolution.io.NewickImporter;
 import jebl.evolution.io.ImportException;
-import org.virion.jam.controlpalettes.ControlPalette;
-import org.virion.jam.panels.SearchPanel;
-import org.virion.jam.panels.SearchPanelListener;
-import org.virion.jam.panels.StatusBar;
+import jam.controlpalettes.ControlPalette;
+import jam.panels.SearchPanel;
+import jam.panels.SearchPanelListener;
+import jam.panels.StatusBar;
 import figtree.application.FigTreeNexusImporter;
 import figtree.treeviewer.*;
 

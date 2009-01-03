@@ -7,12 +7,12 @@ import jebl.evolution.io.*;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.Tree;
 import jebl.util.Attributable;
-import org.virion.jam.controlpalettes.BasicControlPalette;
-import org.virion.jam.controlpalettes.ControlPalette;
-import org.virion.jam.framework.DocumentFrame;
-import org.virion.jam.panels.*;
-import org.virion.jam.toolbar.*;
-import org.virion.jam.util.IconUtils;
+import jam.controlpalettes.BasicControlPalette;
+import jam.controlpalettes.ControlPalette;
+import jam.framework.DocumentFrame;
+import jam.panels.*;
+import jam.toolbar.*;
+import jam.util.IconUtils;
 import org.freehep.util.export.ExportDialog;
 import figtree.application.menus.TreeMenuHandler;
 import figtree.application.menus.FigTreeFileMenuHandler;
@@ -1092,7 +1092,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 		}
 
         List<Tree> trees = treeViewer.getTreesAsViewed();
-        
+
 		switch (format) {
 			case NEWICK:
 				NewickExporter newickExporter = new NewickExporter(writer);

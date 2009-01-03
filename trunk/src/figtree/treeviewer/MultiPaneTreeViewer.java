@@ -14,7 +14,7 @@ import java.awt.*;
 import java.awt.print.*;
 import java.util.*;
 
-import org.virion.jam.panels.StatusProvider;
+import jam.panels.StatusProvider;
 
 
 /**

@@ -8,9 +8,7 @@
  */
 package figtree.treeviewer.annotations;
 
-import org.virion.jam.components.RealNumberField;
-import org.virion.jam.components.WholeNumberField;
-import org.virion.jam.panels.OptionsPanel;
+import jam.panels.OptionsPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -19,6 +17,8 @@ import java.awt.event.ItemListener;
 import java.util.List;
 
 import jebl.util.Attributable;
+import org.virion.jam.components.WholeNumberField;
+import org.virion.jam.components.RealNumberField;
 
 /**
  * DemographicDialog.java

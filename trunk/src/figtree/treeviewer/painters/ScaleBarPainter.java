@@ -3,7 +3,7 @@ package figtree.treeviewer.painters;
 import figtree.treeviewer.*;
 import jebl.evolution.trees.RootedTree;
 import jebl.evolution.trees.Tree;
-import org.virion.jam.controlpalettes.ControlPalette;
+import jam.controlpalettes.ControlPalette;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

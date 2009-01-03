@@ -12,11 +12,10 @@ package figtree.application;
 
 import figtree.application.preferences.*;
 import figtree.treeviewer.ExtendedTreeViewer;
-import org.virion.jam.framework.*;
-import org.virion.jam.controlpalettes.BasicControlPalette;
-import org.virion.jam.controlpalettes.ControlPalette;
-import org.virion.jam.app.Arguments;
-import org.virion.jam.mac.Utils;
+import jam.framework.*;
+import jam.controlpalettes.BasicControlPalette;
+import jam.controlpalettes.ControlPalette;
+import jam.mac.Utils;
 import org.freehep.graphics2d.VectorGraphics;
 import org.freehep.graphicsio.ps.PSGraphics2D;
 import org.freehep.graphicsio.pdf.PDFGraphics2D;
@@ -24,6 +23,7 @@ import org.freehep.graphicsio.emf.EMFGraphics2D;
 import org.freehep.graphicsio.svg.SVGGraphics2D;
 import org.freehep.graphicsio.gif.GIFGraphics2D;
 import org.freehep.graphicsio.swf.SWFGraphics2D;
+import org.virion.jam.app.Arguments;
 
 import java.awt.*;
 import java.io.*;
@@ -340,7 +340,7 @@ public class FigTreeApplication extends MultiDocApplication {
             }
         }
 
-//		if (!org.virion.jam.mac.Utils.isMacOSX() && application.getUpperDocumentFrame() == null) {
+//		if (!jam.mac.Utils.isMacOSX() && application.getUpperDocumentFrame() == null) {
 //			// If we haven't opened any files by now, prompt for one...
 //			application.doOpen();
 //		}

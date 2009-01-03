@@ -1,8 +1,8 @@
 package figtree.application;
 
 import figtree.treeviewer.decorators.AttributableDecorator;
-import org.virion.jam.controlpalettes.ControlPalette;
-import org.virion.jam.disclosure.SlideOpenPanel;
+import jam.controlpalettes.ControlPalette;
+import jam.disclosure.SlideOpenPanel;
 import figtree.treeviewer.*;
 import figtree.treeviewer.painters.*;
 

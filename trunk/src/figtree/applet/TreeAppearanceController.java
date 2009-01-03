@@ -7,8 +7,8 @@ import figtree.treeviewer.TreeViewerListener;
 import figtree.treeviewer.painters.LabelPainter;
 import figtree.treeviewer.decorators.*;
 import jebl.util.Attributable;
-import org.virion.jam.controlpalettes.AbstractController;
-import org.virion.jam.panels.OptionsPanel;
+import jam.controlpalettes.AbstractController;
+import jam.panels.OptionsPanel;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

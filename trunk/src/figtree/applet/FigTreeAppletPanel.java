@@ -1,11 +1,10 @@
 package figtree.applet;
 
-import org.virion.jam.controlpalettes.ControlPalette;
+import jam.controlpalettes.ControlPalette;
 
 import javax.swing.*;
 import java.awt.*;
 
-import figtree.treeviewer.painters.BasicLabelPainter;
 import figtree.treeviewer.painters.ScaleBarPainter;
 import figtree.treeviewer.decorators.AttributableDecorator;
 

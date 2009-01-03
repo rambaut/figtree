@@ -3,17 +3,15 @@
  */
 package figtree.treeviewer;
 
-import figtree.treeviewer.DefaultTreeViewer;
-import org.virion.jam.panels.OptionsPanel;
-import org.virion.jam.components.RealNumberField;
-import org.virion.jam.components.WholeNumberField;
 import figtree.treeviewer.annotations.AnnotationDefinition;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
+
+import org.virion.jam.components.RealNumberField;
+import org.virion.jam.components.WholeNumberField;
 
 /**
  * FindDialog
@@ -158,7 +156,7 @@ public class FindPanel extends JPanel {
 	public void doFind() {
 		findAllButton.doClick();
 	}
-	
+
 	protected void adjustComponent(JComponent comp) {
 		// comp.putClientProperty("Quaqua.Component.visualMargin", new Insets(0,0,0,0));
 		Font font = UIManager.getFont("SmallSystemFont");

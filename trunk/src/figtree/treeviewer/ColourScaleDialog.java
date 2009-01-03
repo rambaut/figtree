@@ -1,13 +1,14 @@
 package figtree.treeviewer;
 
-import org.virion.jam.components.RealNumberField;
-import org.virion.jam.components.ColorWellButton;
-import org.virion.jam.panels.OptionsPanel;
+import jam.panels.OptionsPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.*;
 import java.awt.*;
+
+import org.virion.jam.components.RealNumberField;
+import org.virion.jam.components.ColorWellButton;
 
 /**
  * ColourScaleDialog.java

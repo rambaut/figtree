@@ -1,9 +1,9 @@
 package figtree.treeviewer;
 
 import figtree.treeviewer.treelayouts.*;
-import org.virion.jam.controlpalettes.AbstractController;
-import org.virion.jam.panels.OptionsPanel;
-import org.virion.jam.util.IconUtils;
+import jam.controlpalettes.AbstractController;
+import jam.panels.OptionsPanel;
+import jam.util.IconUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
