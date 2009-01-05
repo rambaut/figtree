@@ -103,7 +103,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 	}
 
 	public void setPointOfInterest(double x, double y) {
-		this.pointOfInterest = x;
+		this.pointOfInterest = y;
 		fireTreeLayoutChanged();
 	}
 
