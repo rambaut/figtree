@@ -14,6 +14,7 @@ import jebl.evolution.alignments.Pattern;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.Tree;
+import jebl.util.Attributable;
 import figtree.treeviewer.DefaultTreeViewer;
 import jam.panels.StatusListener;
 import jam.panels.StatusProvider;
@@ -32,185 +33,204 @@ import java.util.List;
  * @version $Id: ExtendedTreeViewer.java,v 1.38 2007/09/05 16:24:23 rambaut Exp $
  */
 public class ExtendedTreeViewer extends DefaultTreeViewer implements StatusProvider {
-	/** Creates new AlignmentPanel */
-	public ExtendedTreeViewer() {
-		super();
+    /** Creates new AlignmentPanel */
+    public ExtendedTreeViewer() {
+        super();
 
-		// setTreesPerPage(1);
+        // setTreesPerPage(1);
 
-		setBackground(Color.white);
+        setBackground(Color.white);
 
-	}
+    }
 
-	public void setPattern(Pattern pattern) {
-		if (pattern != null) {
-			//           setBranchDecorator(new ParsimonyBranchDecorator(pattern));
-		} else {
-			setBranchDecorator(null);
-		}
-	}
+    public void setPattern(Pattern pattern) {
+        if (pattern != null) {
+            //           setBranchDecorator(new ParsimonyBranchDecorator(pattern));
+        } else {
+            setBranchDecorator(null);
+        }
+    }
 
-	public void addTree(Tree tree) {
+    public void addTree(Tree tree) {
 
-		Set<String> names = new TreeSet<String>();
-		for (Node node : tree.getNodes()) {
-			names.addAll(node.getAttributeNames());
-		}
-		for (String name : names) {
-			if (!name.startsWith("!")) {
-				AnnotationDefinition annotation = new AnnotationDefinition(name, AnnotationDefinition.Type.REAL);
-				getAnnotationDefinitions().add(annotation);
-			}
-		}
-		super.addTree(tree);
+        Set<String> names = new TreeSet<String>();
+        for (Node node : tree.getNodes()) {
+            names.addAll(node.getAttributeNames());
+        }
+        for (String name : names) {
+            if (!name.startsWith("!")) {
+                AnnotationDefinition annotation = getAnnotationDefinitions().get(name);
 
-		showStatus();
-	}
+                Set<Attributable> items = new HashSet<Attributable>(tree.getNodes());
+                AnnotationDefinition.Type type = AnnotationDefinition.guessType(name, items);
 
-	public void showTree(int index) {
-		super.showTree(index);
-		showStatus();
-	}
+                if (annotation == null) {
+                    annotation = new AnnotationDefinition(name, type);
+                    getAnnotationDefinitions().put(name, annotation);
+                } else if (type != annotation.getType()){
+                    AnnotationDefinition.Type newType = AnnotationDefinition.Type.STRING;
+                    if (type == AnnotationDefinition.Type.INTEGER &&
+                            annotation.getType() == AnnotationDefinition.Type.REAL) {
+                        newType = AnnotationDefinition.Type.REAL;
+                    }
 
-	public void setCharacters(Alignment characters) {
-		CharactersPainter painter = new CharactersPainter(characters);
-		setTipLabelPainter(painter);
-	}
+                    if (newType != type) {
+                        annotation = new AnnotationDefinition(name, newType);
+                        getAnnotationDefinitions().put(name, annotation);
+                    }
 
-	public void setTaxonAnnotations(Map<AnnotationDefinition, Map<Taxon, Object>> annotations) {
-		for (AnnotationDefinition definition: annotations.keySet()) {
-			getAnnotationDefinitions().add(definition);
-			Map<Taxon, Object> annotation = annotations.get(definition);
-			for (Taxon taxon : annotation.keySet()) {
-				taxon.setAttribute(definition.getName(), annotation.get(taxon));
-			}
-		}
-		fireAnnotationsChanged();
-	}
+                }
+            }
+        }
+        super.addTree(tree);
 
-	public void showStatus() {
-		fireStatusChanged(0, "Showing tree " + Integer.toString(getCurrentTreeIndex() + 1) + " / " + getTreeCount());
-	}
+        showStatus();
+    }
 
-	public void showInfomation() {
+    public void showTree(int index) {
+        super.showTree(index);
+        showStatus();
+    }
 
-	}
+    public void setCharacters(Alignment characters) {
+        CharactersPainter painter = new CharactersPainter(characters);
+        setTipLabelPainter(painter);
+    }
 
-	public void showStatistics() {
-	}
+    public void setTaxonAnnotations(Map<AnnotationDefinition, Map<Taxon, Object>> annotations) {
+        for (AnnotationDefinition definition: annotations.keySet()) {
+            getAnnotationDefinitions().put(definition.getName(), definition);
+            Map<Taxon, Object> annotation = annotations.get(definition);
+            for (Taxon taxon : annotation.keySet()) {
+                taxon.setAttribute(definition.getName(), annotation.get(taxon));
+            }
+        }
+        fireAnnotationsChanged();
+    }
 
-	public void annotateSelected(String name, Object value) {
-		annotateSelectedNodes(name, value);
-		annotateSelectedTips(name, value);
-		fireAnnotationsChanged();
-	}
+    public void showStatus() {
+        fireStatusChanged(0, "Showing tree " + Integer.toString(getCurrentTreeIndex() + 1) + " / " + getTreeCount());
+    }
 
-	public List<AnnotationDefinition> getAnnotationDefinitions() {
-		if (annotations == null) {
-			annotations = new ArrayList<AnnotationDefinition>();
-		}
-		return annotations;
-	}
+    public void showInfomation() {
 
-	public void annotateNodesFromTips(String annotationName) {
-		List<Object> stateCodes = new ArrayList<Object>();
-		Map<Taxon, Integer> stateMap = new HashMap<Taxon, Integer>();
+    }
 
-		Tree tree = treePane.getTree();
-		for (Node node : tree.getExternalNodes()) {
-			Taxon taxon = tree.getTaxon(node);
-			Object state = taxon.getAttribute(annotationName);
-			int index = stateCodes.indexOf(state);
-			if (index == -1) {
-				index = stateCodes.size();
-				stateCodes.add(state);
-			}
-			stateMap.put(taxon, index);
-			node.setAttribute(annotationName, state);
-		}
+    public void showStatistics() {
+    }
 
-		Parsimony parsimony = new Parsimony(stateCodes.size(), stateMap);
+    public void annotateSelected(String name, Object value) {
+        annotateSelectedNodes(name, value);
+        annotateSelectedTips(name, value);
+        fireAnnotationsChanged();
+    }
 
-		for (Node node : tree.getInternalNodes()) {
-			Integer stateIndex = parsimony.getState(tree, node);
-			Object state = null;
-			if (stateIndex != null) {
-				state = stateCodes.get(stateIndex);
-			}
-			node.setAttribute(annotationName, state);
-		}
+    public Map<String, AnnotationDefinition> getAnnotationDefinitions() {
+        if (annotations == null) {
+            annotations = new HashMap<String, AnnotationDefinition>();
+        }
+        return annotations;
+    }
 
-		fireAnnotationsChanged();
-	}
+    public void annotateNodesFromTips(String annotationName) {
+        List<Object> stateCodes = new ArrayList<Object>();
+        Map<Taxon, Integer> stateMap = new HashMap<Taxon, Integer>();
 
-	public void annotateTipsFromNodes(String annotationName) {
+        Tree tree = treePane.getTree();
+        for (Node node : tree.getExternalNodes()) {
+            Taxon taxon = tree.getTaxon(node);
+            Object state = taxon.getAttribute(annotationName);
+            int index = stateCodes.indexOf(state);
+            if (index == -1) {
+                index = stateCodes.size();
+                stateCodes.add(state);
+            }
+            stateMap.put(taxon, index);
+            node.setAttribute(annotationName, state);
+        }
 
-		Tree tree = treePane.getTree();
-		for (Node node : tree.getExternalNodes()) {
-			Object state = node.getAttribute(annotationName);
-			if (state != null) {
-				Taxon taxon = tree.getTaxon(node);
-				taxon.setAttribute(annotationName, state);
-			}
-		}
+        Parsimony parsimony = new Parsimony(stateCodes.size(), stateMap);
 
-		fireAnnotationsChanged();
-	}
+        for (Node node : tree.getInternalNodes()) {
+            Integer stateIndex = parsimony.getState(tree, node);
+            Object state = null;
+            if (stateIndex != null) {
+                state = stateCodes.get(stateIndex);
+            }
+            node.setAttribute(annotationName, state);
+        }
 
-	private List<AnnotationsListener> listeners = new ArrayList<AnnotationsListener>();
+        fireAnnotationsChanged();
+    }
 
-	public void addAnnotationsListener(AnnotationsListener listener) {
-		listeners.add(listener);
-	}
+    public void annotateTipsFromNodes(String annotationName) {
 
-	public void fireAnnotationsChanged() {
-		for (AnnotationsListener listener : listeners) {
-			listener.annotationsChanged();
-		}
-		fireTreeChanged();
-	}
+        Tree tree = treePane.getTree();
+        for (Node node : tree.getExternalNodes()) {
+            Object state = node.getAttribute(annotationName);
+            if (state != null) {
+                Taxon taxon = tree.getTaxon(node);
+                taxon.setAttribute(annotationName, state);
+            }
+        }
 
-	private List<AnnotationDefinition> annotations = null;
-	private final StatusProvider.Helper statusHelper = new StatusProvider.Helper();
+        fireAnnotationsChanged();
+    }
 
-	public void addStatusListener(StatusListener statusListener) {
-		statusHelper.addStatusListener(statusListener);
-	}
+    private List<AnnotationsListener> listeners = new ArrayList<AnnotationsListener>();
 
-	public void removeStatusListener(StatusListener statusListener) {
-		statusHelper.removeStatusListener(statusListener);
-	}
+    public void addAnnotationsListener(AnnotationsListener listener) {
+        listeners.add(listener);
+    }
 
-	public void fireStatusChanged(int status, String statusText) {
-		statusHelper.fireStatusChanged(status, statusText);
-	}
+    public void fireAnnotationsChanged() {
+        for (AnnotationsListener listener : listeners) {
+            listener.annotationsChanged();
+        }
+        fireTreeChanged();
+    }
 
-	public void addOverrideProvider(StatusProvider provider) {
-		statusHelper.addOverrideProvider(provider);
-	}
+    private Map<String, AnnotationDefinition> annotations = null;
+    private final StatusProvider.Helper statusHelper = new StatusProvider.Helper();
 
-	public void removeOverrideProvider(StatusProvider provider) {
-		statusHelper.removeOverrideProvider(provider);
-	}
+    public void addStatusListener(StatusListener statusListener) {
+        statusHelper.addStatusListener(statusListener);
+    }
 
-	public void fireStatusButtonPressed() {
-		statusHelper.fireStatusButtonPressed();
-	}
+    public void removeStatusListener(StatusListener statusListener) {
+        statusHelper.removeStatusListener(statusListener);
+    }
 
-	public void statusButtonPressed() {
-		statusHelper.statusButtonPressed();
-	}
+    public void fireStatusChanged(int status, String statusText) {
+        statusHelper.fireStatusChanged(status, statusText);
+    }
 
-	public int getStatus() {
-		return statusHelper.getStatus();
-	}
+    public void addOverrideProvider(StatusProvider provider) {
+        statusHelper.addOverrideProvider(provider);
+    }
 
-	public String getStatusText() {
-		return statusHelper.getStatusText();
-	}
+    public void removeOverrideProvider(StatusProvider provider) {
+        statusHelper.removeOverrideProvider(provider);
+    }
 
-	public void setStatusText(String statusText) {
-		statusHelper.fireStatusChanged(0, statusText);
-	}
+    public void fireStatusButtonPressed() {
+        statusHelper.fireStatusButtonPressed();
+    }
+
+    public void statusButtonPressed() {
+        statusHelper.statusButtonPressed();
+    }
+
+    public int getStatus() {
+        return statusHelper.getStatus();
+    }
+
+    public String getStatusText() {
+        return statusHelper.getStatusText();
+    }
+
+    public void setStatusText(String statusText) {
+        statusHelper.fireStatusChanged(0, statusText);
+    }
 
 }

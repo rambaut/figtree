@@ -3,6 +3,7 @@ package figtree.treeviewer.decorators;
 import jebl.util.Attributable;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 /**
  * This decorator takes an attribute name and a set of attibutable Objects. It
@@ -26,11 +27,19 @@ public class ContinuousStrokeDecorator implements Decorator {
 		return paint;
 	}
 
-	public Paint getFillPaint(Paint paint) {
+    public Paint getPaint(final Paint paint, final Point2D point1, final Point2D point2) {
+        throw new UnsupportedOperationException("This decorator doesn't support gradients");
+    }
+
+    public Paint getFillPaint(Paint paint) {
 		return paint;
 	}
 
-	public Stroke getStroke(Stroke stroke) {
+    public Paint getFillPaint(final Paint paint, final Point2D point1, final Point2D point2) {
+        throw new UnsupportedOperationException("This decorator doesn't support gradients");
+    }
+
+    public Stroke getStroke(Stroke stroke) {
 		if (this.stroke == null) {
 			return stroke;
 		}
@@ -41,13 +50,21 @@ public class ContinuousStrokeDecorator implements Decorator {
 		return font;
 	}
 
-	public void setItem(Object item) {
+    public boolean isGradient() {
+        return false;
+    }
+
+    public void setItem(Object item) {
 		if (item instanceof Attributable) {
 			setAttributableItem((Attributable)item);
 		}
 	}
 
-	// Private methods
+    public void setItems(final Object item1, final Object item2) {
+        throw new UnsupportedOperationException("This decorator doesn't support gradients");
+    }
+
+    // Private methods
 	private void setAttributableItem(Attributable item) {
 
 		double value = continuousScale.getValue(item);

@@ -82,6 +82,9 @@ public class TreeViewerController extends AbstractController {
 		rectangularTreeToggle.setToolTipText("Rectangular tree layout");
 		polarTreeToggle.setToolTipText("Polar tree layout");
 		radialTreeToggle.setToolTipText("Radial tree layout");
+        rectangularTreeToggle.setFocusable(false);
+        polarTreeToggle.setFocusable(false);
+        radialTreeToggle.setFocusable(false);
 		rectangularTreeToggle.putClientProperty("Quaqua.Button.style", "toggleWest");
 		rectangularTreeToggle.putClientProperty("JButton.buttonType", "segmentedTextured");
 		rectangularTreeToggle.putClientProperty("JButton.segmentPosition", "first");
@@ -164,7 +167,6 @@ public class TreeViewerController extends AbstractController {
 		setExpansion();
 
 		optionsPanel.addSpanningComponent(layoutPanel);
-        optionsPanel.addFlexibleSpace();
 
 		rectangularTreeToggle.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent changeEvent) {

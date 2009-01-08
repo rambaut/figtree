@@ -25,7 +25,7 @@ public class RadialTreeLayoutController extends AbstractController {
 
 		titleLabel = new JLabel("Radial Layout");
 
-		optionsPanel = new ControllerOptionsPanel(2, 2);
+		optionsPanel = new ControllerOptionsPanel(0, 0);
 
 //		final int sliderMax = 100;
 //		final JSlider spreadSlider = new JSlider(SwingConstants.HORIZONTAL, 0, sliderMax, 0);

@@ -34,6 +34,7 @@
 
 	<target name="copyLibs" depends="init">
 		<copy file="../JEBL/dist/jebl.jar" tofile="${lib}/jebl.jar"/>
+        <copy file="../JAM/dist/jam.jar" tofile="${lib}/jam.jar"/>
 	</target>
 
 <!--
@@ -61,7 +62,7 @@
 	<target name="compile" depends="init,copyLibs">
 		<!-- Compile the java code from ${src} into ${build} -->
 		<javac source="1.5" srcdir="${src}" destdir="${build}"
-		       classpath="${lib}/jebl.jar:${lib}/freehep.jar:${lib}/quaqua.jar">
+		       classpath="${lib}/jebl.jar:${lib}/jam.jar:${lib}/freehep.jar:${lib}/quaqua.jar">
 			<include name="figtree/**"/>
 		</javac>
 		<copy todir="${build}" verbose="true">
@@ -75,6 +76,7 @@
 
 		<jar jarfile="${dist}/figtree.jar">
 			<zipgroupfileset dir="${lib}" includes="jebl.jar"/>
+            <zipgroupfileset dir="${lib}" includes="jam.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep.jar"/>
 			<fileset dir="${build}" includes="**/*.class,**/*.properties,**/*.png,**/*.gif"/>
 			<manifest>

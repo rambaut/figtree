@@ -296,7 +296,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 			bg.add(menuItem);
 		}
 		filterPanel = new SearchPanel("Filter", filterPopup, true);
-		filterPanel.setFocusable(false);
+//        filterPanel.getSearchText().requestFocus();
 		filterPanel.addSearchPanelListener(new SearchPanelListener() {
 
 			/**
@@ -393,12 +393,11 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 		getFindAction().setEnabled(true);
 
 		getZoomWindowAction().setEnabled(false);
-
 	}
 
 	private void defineAnnotations() {
 
-		List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
+		Collection<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions().values();
 
 		if (annotationDefinitionsDialog == null) {
 			annotationDefinitionsDialog = new AnnotationDefinitionsDialog(this);
@@ -410,9 +409,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 	private void annotateNodesFromTips() {
 		List<String> annotationNames = new ArrayList<String>();
 		annotationNames.add("Colour");
-		for (AnnotationDefinition definition : treeViewer.getAnnotationDefinitions()) {
-			annotationNames.add(definition.getName());
-		}
+        annotationNames.addAll(treeViewer.getAnnotationDefinitions().keySet());
 
 		if (selectAnnotationDialog == null) {
 			selectAnnotationDialog = new SelectAnnotationDialog(this);
@@ -435,9 +432,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 	private void annotateTipsFromNodes() {
 		List<String> annotationNames = new ArrayList<String>();
 		annotationNames.add("Colour");
-		for (AnnotationDefinition definition : treeViewer.getAnnotationDefinitions()) {
-			annotationNames.add(definition.getName());
-		}
+        annotationNames.addAll(treeViewer.getAnnotationDefinitions().keySet());
 
 		if (selectAnnotationDialog == null) {
 			selectAnnotationDialog = new SelectAnnotationDialog(this);
@@ -493,7 +488,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
 		List<AnnotationDefinition> definitions = new ArrayList<AnnotationDefinition>();
 		definitions.add(new AnnotationDefinition("Name", "!name", AnnotationDefinition.Type.STRING));
-		definitions.addAll(treeViewer.getAnnotationDefinitions());
+		definitions.addAll(treeViewer.getAnnotationDefinitions().values());
 
 		if (annotationDialog == null) {
 			annotationDialog = new AnnotationDialog(this);
@@ -1117,7 +1112,8 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 		}
 
 		if (figTreePanel.getUtilityPanel() != findPanel) {
-			List<AnnotationDefinition> definitions = treeViewer.getAnnotationDefinitions();
+			List<AnnotationDefinition> definitions = new ArrayList<AnnotationDefinition>(
+                    treeViewer.getAnnotationDefinitions().values());
 			findPanel.setup(definitions);
 			figTreePanel.showUtilityPanel(findPanel);
 		} else {

@@ -18,7 +18,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -40,9 +40,10 @@ public class AnnotationDefinitionsDialog {
 
     }
 
-    public void showDialog(List<AnnotationDefinition> annotations) {
+    public void showDialog(Collection<AnnotationDefinition> annotations) {
 
-        this.annotations = annotations;
+        this.annotations.clear();
+        this.annotations.addAll(annotations);
 
         OptionsPanel options = new OptionsPanel();
 

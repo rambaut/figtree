@@ -147,7 +147,7 @@ public class TreeAppearanceController extends AbstractController {
 
 								Decorator decorator = new ContinuousColorDecorator(
 										new ContinousScale(attribute, nodes),
-										new Color(192, 16, 0), new Color(0, 16, 192));
+										new Color(192, 16, 0), new Color(0, 16, 192), false);
 
 								treeViewer.setBranchColouringDecorator(null, null);
 								treeViewer.setBranchDecorator(decorator);

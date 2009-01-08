@@ -20,7 +20,7 @@ public class ControllerOptionsPanel extends OptionsPanel {
 	}
 
 	protected void adjustComponent(JComponent comp) {
-		// comp.putClientProperty("Quaqua.Component.visualMargin", new Insets(0,0,0,0));
+		comp.putClientProperty("Quaqua.Component.visualMargin", new Insets(0,0,0,0));
         Font font = UIManager.getFont("SmallSystemFont");
         if (font != null) {
             comp.setFont(font);
@@ -32,5 +32,6 @@ public class ControllerOptionsPanel extends OptionsPanel {
 		if (comp instanceof JComboBox) {
 			//comp.putClientProperty("JComboBox.isSquare", Boolean.TRUE);
 		}
+        comp.setFocusable(false);
 	}
 }

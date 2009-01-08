@@ -65,8 +65,8 @@ public class Parsimony {
 		}
 
 		if (!hasRecontructedStates) {
-			reconstructStates(this.tree.getRootNode(), -1);
-			// reconstructStates2(this.tree.getRootNode(), null);
+//			reconstructStates(this.tree.getRootNode(), -1);
+            reconstructStates2(this.tree.getRootNode(), null);
 			hasRecontructedStates = true;
 		}
 
