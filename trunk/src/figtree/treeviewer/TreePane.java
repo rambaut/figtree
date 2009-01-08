@@ -4,8 +4,7 @@ import jebl.evolution.graphs.Node;
 import jebl.evolution.graphs.Graph;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.*;
-import figtree.treeviewer.decorators.Decorator;
-import figtree.treeviewer.decorators.ContinuousGradientColorDecorator;
+import figtree.treeviewer.decorators.*;
 import figtree.treeviewer.painters.*;
 import figtree.treeviewer.treelayouts.*;
 
@@ -1281,8 +1280,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 				Shape transPath = transform.createTransformedShape(branchPath);
 				Paint paint = Color.BLACK;
 				if (branchDecorator != null) {
-					if (branchDecorator instanceof ContinuousGradientColorDecorator) {
-						((ContinuousGradientColorDecorator)branchDecorator).setItems(node, tree.getParent(node));
+					if (branchDecorator.isGradient()) {
+						branchDecorator.setItems(node, tree.getParent(node));
 						PathIterator iter = transPath.getPathIterator(null);
 						double[] coords = new double[6];
 						iter.currentSegment(coords);
@@ -1292,8 +1291,9 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 							iter.next();
 						} while (!iter.isDone());
 						Point2D point2 = new Point2D.Double(coords[0], coords[1]);
-						paint = ((ContinuousGradientColorDecorator)branchDecorator).getPaint(paint, point1, point2);
-					} else {
+
+						paint = branchDecorator.getPaint(paint, point1, point2);
+                    } else {
 						branchDecorator.setItem(node);
 						paint = branchDecorator.getPaint(paint);
 					}

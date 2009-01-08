@@ -3,6 +3,7 @@ package figtree.treeviewer.decorators;
 import jebl.util.Attributable;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 /**
  * @author Andrew Rambaut
@@ -22,6 +23,22 @@ public class AttributableDecorator implements Decorator {
         return this.fillPaint;
     }
 
+    public Paint getPaint(Paint paint, Point2D point1, Point2D point2) {
+        if (colour1 != null && colour2 != null) {
+            return new GradientPaint(point1, colour1, point2, colour2, false);
+        } else {
+            return paint;
+        }
+    }
+
+    public Paint getFillPaint(Paint paint, Point2D point1, Point2D point2) {
+        if (fillColour1 != null && fillColour2 != null) {
+            return new GradientPaint(point1, fillColour1, point2, fillColour2, false);
+        } else {
+            return paint;
+        }
+    }
+
     public Stroke getStroke(Stroke stroke) {
         if (this.stroke == null) return stroke;
         return this.stroke;
@@ -32,9 +49,42 @@ public class AttributableDecorator implements Decorator {
         return this.font;
     }
 
+    public boolean isGradient() {
+        return isGradient;
+    }
+
+    public void setGradient(final boolean gradient) {
+        isGradient = gradient;
+    }
+
     public void setItem(Object item) {
         if (item instanceof Attributable) {
             setAttributableItem((Attributable)item);
+        }
+    }
+
+    public void setItems(final Object item1, final Object item2) {
+        if (item2 == null) {
+            setItem(item1);
+            return;
+        }
+
+        if (item1 == null) {
+            setItem(item2);
+            return;
+        }
+
+        if (item1 instanceof Attributable) {
+            setAttributableItem((Attributable)item1);
+        }
+
+        if (item2 instanceof Attributable && paintAttributeName != null) {
+            colour2 = getColorAttribute(((Attributable)item2).getAttribute(paintAttributeName));
+            if (colour2 != null) {
+                fillColour2 = colour2.brighter();
+            } else {
+                fillColour2 = null;
+            }
         }
     }
 
@@ -66,12 +116,14 @@ public class AttributableDecorator implements Decorator {
     // Private methods
     private void setAttributableItem(Attributable item) {
         if (paintAttributeName != null) {
-            Color color = getColorAttribute(item.getAttribute(paintAttributeName));
-            if (color != null) {
-                paint = color;
-                fillPaint = color.brighter();
+            colour1 = getColorAttribute(item.getAttribute(paintAttributeName));
+            if (colour1 != null) {
+                fillColour1 = colour1.brighter();
+                paint = colour1;
+                fillPaint = fillColour1;
 //                fillPaint = new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 2);
             } else {
+                fillColour1 = null;
                 paint = null;
                 fillPaint = null;
             }
@@ -117,4 +169,10 @@ public class AttributableDecorator implements Decorator {
     private Paint fillPaint = null;
     private Font font = null;
     private Stroke stroke = null;
+
+    private boolean isGradient;
+    private Color colour1 = null;
+    private Color colour2 = null;
+    private Color fillColour1 = null;
+    private Color fillColour2 = null;
 }

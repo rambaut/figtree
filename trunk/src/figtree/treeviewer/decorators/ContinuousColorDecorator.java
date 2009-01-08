@@ -3,6 +3,7 @@ package figtree.treeviewer.decorators;
 import jebl.util.Attributable;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 /**
  * This decorator takes an attribute name and a set of attibutable Objects. It
@@ -15,12 +16,14 @@ import java.awt.*;
 public class ContinuousColorDecorator implements Decorator {
 
 	public ContinuousColorDecorator(ContinousScale continuousScale,
-	                                Color color1, Color color2) throws NumberFormatException {
+	                                Color color1, Color color2,
+                                    boolean isGradient) throws NumberFormatException {
 		this.continuousScale = continuousScale;
 		this.color1 = new float[4];
 		color1.getRGBComponents(this.color1);
 		this.color2 = new float[4];
 		color2.getRGBComponents(this.color2);
+        this.isGradient = isGradient;
 	}
 
 	// Decorator INTERFACE
@@ -34,6 +37,22 @@ public class ContinuousColorDecorator implements Decorator {
 		return fillPaint;
 	}
 
+    public Paint getPaint(Paint paint, Point2D point1, Point2D point2) {
+        if (colour1 != null && colour2 != null) {
+            return new GradientPaint(point1, colour1, point2, colour2, false);
+        } else {
+            return getPaint(paint);
+        }
+    }
+
+    public Paint getFillPaint(Paint paint, Point2D point1, Point2D point2) {
+        if (fillColour1 != null && fillColour2 != null) {
+            return new GradientPaint(point1, fillColour1, point2, fillColour2, false);
+        } else {
+            return getFillPaint(paint);
+        }
+    }
+
 	public Stroke getStroke(Stroke stroke) {
 		return stroke;
 	}
@@ -42,13 +61,55 @@ public class ContinuousColorDecorator implements Decorator {
 		return font;
 	}
 
-	public void setItem(Object item) {
+    public boolean isGradient() {
+        return isGradient;
+    }
+
+    public void setGradient(final boolean gradient) {
+        isGradient = gradient;
+    }
+
+    public void setItem(Object item) {
 		if (item instanceof Attributable) {
 			setAttributableItem((Attributable)item);
 		}
 	}
 
-	// Private methods
+    public void setItems(Object item1, Object item2) {
+		if (item2 == null) {
+			setItem(item1);
+			return;
+		}
+
+        if (item1 == null) {
+            setItem(item2);
+            return;
+        }
+
+		double value1 = getContinuousScale().getValue((Attributable)item1);
+		double value2 = getContinuousScale().getValue((Attributable)item2);
+
+		colour1 = getColour(value1);
+		colour2 = getColour(value2);
+
+		fillColour1 = null;
+		if (colour1 != null) {
+			fillColour1 = getLighterColour(colour1);
+		}
+
+		fillColour2 = null;
+		if (colour2 != null) {
+			fillColour2 = getLighterColour(colour2);
+		}
+
+
+	}
+
+    public ContinousScale getContinuousScale() {
+        return continuousScale;
+    }
+
+    // Private methods
 	private void setAttributableItem(Attributable item) {
 		double value = continuousScale.getValue((Attributable)item);
 
@@ -68,7 +129,7 @@ public class ContinuousColorDecorator implements Decorator {
 	}
 
 	// Private methods
-	protected Color getColour(double value) {
+	private Color getColour(double value) {
 		if (!Double.isNaN(value)) {
 			float p = (float)value;
 			float q = 1.0F - p;
@@ -83,12 +144,8 @@ public class ContinuousColorDecorator implements Decorator {
 		}
 	}
 
-	protected Color getLighterColour(Color color) {
+	private Color getLighterColour(Color color) {
 		return new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 2);
-	}
-
-	public ContinousScale getContinuousScale() {
-		return continuousScale;
 	}
 
 	private final ContinousScale continuousScale;
@@ -98,4 +155,11 @@ public class ContinuousColorDecorator implements Decorator {
 
 	private Color paint = null;
 	private Color fillPaint = null;
+
+    private boolean isGradient;
+    private Color colour1 = null;
+    private Color colour2 = null;
+    private Color fillColour1 = null;
+    private Color fillColour2 = null;
+
 }

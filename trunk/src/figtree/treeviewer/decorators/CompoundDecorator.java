@@ -1,6 +1,7 @@
 package figtree.treeviewer.decorators;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,13 +15,21 @@ public class CompoundDecorator implements Decorator {
 		decorators.add(decorator);
 	}
 
-	public void setItem(Object item) {
+    public boolean isGradient() {
+        return false;
+    }
+
+    public void setItem(Object item) {
 		for (Decorator decorator : decorators) {
 			decorator.setItem(item);
 		}
 	}
 
-	public Paint getPaint(Paint paint) {
+    public void setItems(final Object item1, final Object item2) {
+        throw new UnsupportedOperationException("This decorator doesn't support gradients");
+    }
+
+    public Paint getPaint(Paint paint) {
 		Paint p = paint;
 		for (Decorator decorator : decorators) {
 			p = decorator.getPaint(p);
@@ -28,7 +37,11 @@ public class CompoundDecorator implements Decorator {
 		return p;
 	}
 
-	public Paint getFillPaint(Paint paint) {
+    public Paint getPaint(final Paint paint, final Point2D point1, final Point2D point2) {
+        throw new UnsupportedOperationException("This decorator doesn't support gradients");
+    }
+
+    public Paint getFillPaint(Paint paint) {
 		Paint p = paint;
 		for (Decorator decorator : decorators) {
 			p = decorator.getFillPaint(p);
@@ -36,7 +49,11 @@ public class CompoundDecorator implements Decorator {
 		return p;
 	}
 
-	public Stroke getStroke(Stroke stroke) {
+    public Paint getFillPaint(final Paint paint, final Point2D point1, final Point2D point2) {
+        throw new UnsupportedOperationException("This decorator doesn't support gradients");
+    }
+
+    public Stroke getStroke(Stroke stroke) {
 		Stroke s = stroke;
 		for (Decorator decorator : decorators) {
 			s = decorator.getStroke(s);

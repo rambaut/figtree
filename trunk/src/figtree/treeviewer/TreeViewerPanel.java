@@ -44,13 +44,13 @@ public class TreeViewerPanel extends JPanel {
 
         // Create a tip label painter and its controller
         BasicLabelPainter tipLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.TIP);
-        controlPalette.addController(new LabelPainterController("Tip Labels", "tipLabels", tipLabelPainter));
+        controlPalette.addController(new LabelPainterController("Tip Labels", "tipLabels", tipLabelPainter, frame));
         treeViewer.setTipLabelPainter(tipLabelPainter);
 
         // Create a node label painter and its controller
         BasicLabelPainter nodeLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.NODE);
         nodeLabelPainter.setVisible(false);
-        controlPalette.addController(new LabelPainterController("Node Labels", "nodeLabels", nodeLabelPainter));
+        controlPalette.addController(new LabelPainterController("Node Labels", "nodeLabels", nodeLabelPainter, frame));
         treeViewer.setNodeLabelPainter(nodeLabelPainter);
 
         // Create a node shape painter and its controller
@@ -63,7 +63,7 @@ public class TreeViewerPanel extends JPanel {
         // Create a branch label painter and its controller
         BasicLabelPainter branchLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.BRANCH);
         branchLabelPainter.setVisible(false);
-        controlPalette.addController(new LabelPainterController("Branch Labels", "branchLabels", branchLabelPainter));
+        controlPalette.addController(new LabelPainterController("Branch Labels", "branchLabels", branchLabelPainter, frame));
         treeViewer.setBranchLabelPainter(branchLabelPainter);
 
         // Create a scale bar painter and its controller

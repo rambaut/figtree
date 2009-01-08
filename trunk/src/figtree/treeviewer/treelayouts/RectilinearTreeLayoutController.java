@@ -27,7 +27,7 @@ public class RectilinearTreeLayoutController extends AbstractController {
 
         titleLabel = new JLabel("Rectangular Layout");
 
-	    optionsPanel = new ControllerOptionsPanel(2, 2);
+	    optionsPanel = new ControllerOptionsPanel(0, 0);
 
         final int sliderMax = 10000;
         rootLengthSlider = new JSlider(SwingConstants.HORIZONTAL, 0, sliderMax, 0);

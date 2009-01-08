@@ -7,15 +7,13 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import figtree.treeviewer.ControllerOptionsPanel;
-import figtree.treeviewer.TreeViewer;
+import figtree.treeviewer.*;
 
 /**
  * @author Andrew Rambaut
@@ -44,7 +42,7 @@ public class LabelPainterController extends AbstractController {
     public static String DECIMAL_NUMBER_FORMATTING = "#.####";
     public static String SCIENTIFIC_NUMBER_FORMATTING = "0.###E0";
 
-    public LabelPainterController(String title, String key, final LabelPainter labelPainter) {
+    public LabelPainterController(String title, String key, final LabelPainter labelPainter, final JFrame frame) {
 
         this.title = title;
         this.key = key;
@@ -75,18 +73,31 @@ public class LabelPainterController extends AbstractController {
 
         final JLabel label1 = optionsPanel.addComponentWithLabel("Display:", displayAttributeCombo);
 
-        Font font = labelPainter.getFont();
-        fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 48, 1));
+//        fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 48, 1));
+//
+//        final JLabel label2 = optionsPanel.addComponentWithLabel("Font Size:", fontSizeSpinner);
+//
+//        fontSizeSpinner.addChangeListener(new ChangeListener() {
+//            public void stateChanged(ChangeEvent changeEvent) {
+//                final float size = ((Double) fontSizeSpinner.getValue()).floatValue();
+//                Font font = labelPainter.getFont().deriveFont(size);
+//                labelPainter.setFont(font);
+//            }
+//        });
 
-        final JLabel label2 = optionsPanel.addComponentWithLabel("Font Size:", fontSizeSpinner);
-
-        fontSizeSpinner.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
-                final float size = ((Double) fontSizeSpinner.getValue()).floatValue();
-                Font font = labelPainter.getFont().deriveFont(size);
-                labelPainter.setFont(font);
+        final JButton fontButton = new JButton(new AbstractAction("Font") {
+            public void actionPerformed(ActionEvent e) {
+                final Font font = labelPainter.getFont();
+                if (fontDialog == null) {
+                    fontDialog = new FontDialog(frame);
+                }
+                int result = fontDialog.showDialog(font);
+                if (result != JOptionPane.CANCEL_OPTION) {
+                    labelPainter.setFont(fontDialog.getFont());
+                }
             }
         });
+        optionsPanel.addComponent(fontButton);
 
         NumberFormat format = labelPainter.getNumberFormat();
         int digits = format.getMaximumFractionDigits();
@@ -146,8 +157,9 @@ public class LabelPainterController extends AbstractController {
         final boolean isSelected = titleCheckBox.isSelected();
         label1.setEnabled(isSelected);
         displayAttributeCombo.setEnabled(isSelected);
-        label2.setEnabled(isSelected);
-        fontSizeSpinner.setEnabled(isSelected);
+//        label2.setEnabled(isSelected);
+//        fontSizeSpinner.setEnabled(isSelected);
+        fontButton.setEnabled(isSelected);
         label3.setEnabled(isSelected);
         numericalFormatCombo.setEnabled(isSelected);
         label4.setEnabled(isSelected);
@@ -158,8 +170,9 @@ public class LabelPainterController extends AbstractController {
                 final boolean isSelected = titleCheckBox.isSelected();
                 label1.setEnabled(isSelected);
                 displayAttributeCombo.setEnabled(isSelected);
-                label2.setEnabled(isSelected);
-                fontSizeSpinner.setEnabled(isSelected);
+//                label2.setEnabled(isSelected);
+//                fontSizeSpinner.setEnabled(isSelected);
+                fontButton.setEnabled(isSelected);
                 label3.setEnabled(isSelected);
                 numericalFormatCombo.setEnabled(isSelected);
                 label4.setEnabled(isSelected);
@@ -189,14 +202,22 @@ public class LabelPainterController extends AbstractController {
     public void setSettings(Map<String,Object> settings) {
 	    titleCheckBox.setSelected((Boolean)settings.get(key+"."+IS_SHOWN));
         displayAttributeCombo.setSelectedItem(settings.get(key+"."+DISPLAY_ATTRIBUTE_KEY));
-        fontSizeSpinner.setValue((Double)settings.get(key+"."+FONT_SIZE_KEY));
+        //fontSizeSpinner.setValue((Double)settings.get(key+"."+FONT_SIZE_KEY));
+        String name = (String)settings.get(key + "." + FONT_NAME_KEY);
+        int size = ((Number)settings.get(key + "." + FONT_SIZE_KEY)).intValue();
+        int style = (Integer)settings.get(key + "." + FONT_STYLE_KEY);
+        labelPainter.setFont(new Font(name, style, size));
         digitsSpinner.setValue((Integer)settings.get(key+"."+SIGNIFICANT_DIGITS_KEY));
     }
 
     public void getSettings(Map<String, Object> settings) {
 	    settings.put(key+"."+IS_SHOWN, titleCheckBox.isSelected());
         settings.put(key+"."+DISPLAY_ATTRIBUTE_KEY, displayAttributeCombo.getSelectedItem().toString());
-        settings.put(key+"."+FONT_SIZE_KEY, fontSizeSpinner.getValue());
+        //settings.put(key+"."+FONT_SIZE_KEY, fontSizeSpinner.getValue());
+        Font font = labelPainter.getFont();
+        settings.put(key+"."+FONT_NAME_KEY, font.getName());
+        settings.put(key+"."+FONT_SIZE_KEY, font.getSize());
+        settings.put(key+"."+FONT_STYLE_KEY, font.getStyle());
         settings.put(key+"."+SIGNIFICANT_DIGITS_KEY, digitsSpinner.getValue());
     }
 
@@ -204,11 +225,14 @@ public class LabelPainterController extends AbstractController {
         return title;
     }
 
+
+
     private final JCheckBox titleCheckBox;
     private final OptionsPanel optionsPanel;
 
     private final JComboBox displayAttributeCombo;
-    private final JSpinner fontSizeSpinner;
+//    private final JSpinner fontSizeSpinner;
+    private FontDialog fontDialog = null;
 
     private final JComboBox numericalFormatCombo;
     private final JSpinner digitsSpinner;
