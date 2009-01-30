@@ -835,9 +835,13 @@ public class TreeKMLGenerator {
         settings.getAltitudeTreeSettings().getBranchStyle().setColorProperty("height");
         settings.getGroundTreeSettings().setTreeType(TreeType.SURFACE_TREE);
         settings.getGroundTreeSettings().getBranchStyle().setColorProperty("height");
-        settings.setPlotAltitude(250000);
-        settings.setMostRecentDate(2006);
+        settings.setPlotAltitude(50000);
+        settings.setMostRecentDate(2007.89);
         settings.setTimeDivisionCount(50);
+
+//        settings.setTraitName("longLat");
+//        settings.setLatitudeName("longLat1");
+//        settings.setLongitudeName("longLat2");
 
         try {
 

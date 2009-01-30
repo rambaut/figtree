@@ -109,7 +109,7 @@ public class Settings {
 
     private double mostRecentDate;
 
-    private double plotAltitude = 500000;
+    private double plotAltitude = 50000;
     private double columnRadius = 200000;           
 
     private final TreeSettings altitudeTreeSettings = new TreeSettings("altitudeTree", "", TreeType.RECTANGLE_TREE);
