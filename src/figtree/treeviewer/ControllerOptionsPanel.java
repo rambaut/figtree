@@ -32,6 +32,8 @@ public class ControllerOptionsPanel extends OptionsPanel {
 		if (comp instanceof JComboBox) {
 			//comp.putClientProperty("JComboBox.isSquare", Boolean.TRUE);
 		}
-        comp.setFocusable(false);
+        if (!(comp instanceof JTextField)) {
+            comp.setFocusable(false);
+        }
 	}
 }
