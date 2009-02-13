@@ -4,11 +4,13 @@ import jam.controlpalettes.ControlPalette;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 import figtree.treeviewer.painters.ScaleBarPainter;
-import figtree.treeviewer.decorators.AttributableDecorator;
+import figtree.treeviewer.decorators.*;
 import figtree.treeviewer.TreeViewer;
+import jebl.evolution.graphs.Node;
 import jebl.evolution.trees.Tree;
 
 /**
@@ -156,12 +158,40 @@ public class FigTreePanel extends JPanel {
 
     }
 
-    public void setTree(Tree tree) {
-        java.util.List<Tree> trees = new ArrayList<Tree>();
-        trees.add(tree);
-        treeViewer.setTrees(trees);
+    public void setColourBy(String attribute) {
+        if (attribute == null) {
+            treeViewer.setBranchColouringDecorator(null, null);
+            treeViewer.setBranchDecorator(null);
+        } else {
+            Set<Node> nodes = new HashSet<Node>();
+            for (Tree tree : treeViewer.getTrees()) {
+                for (Node node : tree.getNodes()) {
+                    nodes.add(node);
+                }
+            }
+            if (attribute != null && attribute.length() > 0) {
+                if (attribute.endsWith("*")) {
+                    Decorator decorator = new DiscreteColorDecorator();
 
+                    treeViewer.setBranchColouringDecorator(attribute.substring(0, attribute.length() - 2), decorator);
+                    treeViewer.setBranchDecorator(null);
+                } else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
+                    Decorator decorator = new DiscreteColorDecorator(attribute, nodes);
+
+                    treeViewer.setBranchColouringDecorator(null, null);
+                    treeViewer.setBranchDecorator(decorator);
+                } else {
+
+                    Decorator decorator = new ContinuousColorDecorator(
+                            new ContinousScale(attribute, nodes),
+                            new Color(192, 16, 0), new Color(0, 16, 192), false);
+
+                    treeViewer.setBranchColouringDecorator(null, null);
+                    treeViewer.setBranchDecorator(decorator);
+                }
+            }
+        }
     }
 
-    private TreeViewer treeViewer;
+    private final TreeViewer treeViewer;
 }
