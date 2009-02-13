@@ -84,6 +84,10 @@ public class ContinousScale {
 			throw new NumberFormatException("One or more values for this attribute are not numbers");
 		}
 
+        if (normalize && minValue < 0 && maxValue > 0) {
+            // if normalizing, and some are negative, assume we are normalizing with 0 at 0.5
+            minValue = - maxValue;
+        }
 		if (logarithm) {
 			if (minValue <= 0.0) {
 				throw new NumberFormatException("One or more values for this attribute are negative or zero under a log scale");
