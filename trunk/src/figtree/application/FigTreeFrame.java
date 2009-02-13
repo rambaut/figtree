@@ -18,6 +18,8 @@ import figtree.application.menus.TreeMenuHandler;
 import figtree.application.menus.FigTreeFileMenuHandler;
 import figtree.treeviewer.*;
 import figtree.treeviewer.TreeSelectionListener;
+import figtree.treeviewer.painters.StatesPainter;
+import figtree.treeviewer.decorators.DiscreteColorDecorator;
 import figtree.treeviewer.annotations.*;
 
 import javax.swing.*;
@@ -815,6 +817,21 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 				Map<AnnotationDefinition, Map<Taxon, Object>> annotations = importAnnotationsFromFile(file);
 
 				treeViewer.setTaxonAnnotations(annotations);
+
+                // Hack to show tips states...
+//                String[] annotationNames = new String[annotations.keySet().size()];
+//                DiscreteColorDecorator[] decorators = new DiscreteColorDecorator[annotations.keySet().size()];
+//
+//                int i = 0;
+//                for (AnnotationDefinition definition: annotations.keySet()) {
+//                    Map<Taxon, Object> annotation = annotations.get(definition);
+//                    annotationNames[i] = definition.getName();
+//                    decorators[i] = new DiscreteColorDecorator(annotationNames[i], annotation.keySet());
+//                    i++;
+//                }
+//                treeViewer.setTipLabelPainter(new StatesPainter(annotationNames, decorators));
+
+
 			} catch (FileNotFoundException fnfe) {
 				JOptionPane.showMessageDialog(this, "Unable to open file: File not found",
 						"Unable to open file",
@@ -857,7 +874,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 			line = reader.readLine();
 		}
 
-		Map<AnnotationDefinition, Map<Taxon, Object>> annotations = new HashMap<AnnotationDefinition, Map<Taxon, Object>>();
+		Map<AnnotationDefinition, Map<Taxon, Object>> annotations = new TreeMap<AnnotationDefinition, Map<Taxon, Object>>();
 
 		NumberFormat nf = NumberFormat.getInstance();
 

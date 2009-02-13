@@ -10,7 +10,8 @@ import java.util.Set;
  * @author Alexei Drummond
  * @version $Id: AnnotationDefinition.java,v 1.3 2006/08/28 13:19:41 rambaut Exp $
  */
-public class AnnotationDefinition {
+public class AnnotationDefinition implements Comparable<AnnotationDefinition> {
+
     public enum Type {
         INTEGER("Integer"),
         REAL("Real"),
@@ -99,7 +100,9 @@ public class AnnotationDefinition {
         return Type.STRING;
     }
 
-
+    public int compareTo(AnnotationDefinition o) {
+        return toString().compareTo(o.toString());
+    }
 
     private String name;
     private String code;
