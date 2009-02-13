@@ -5,7 +5,7 @@ import jam.mac.*;
 import figtree.application.menus.*;
 
 
-public class FigTreeMenuBarFactory extends DefaultMenuBarFactory {
+public class        FigTreeMenuBarFactory extends DefaultMenuBarFactory {
 
 	public FigTreeMenuBarFactory() {
 		if (jam.mac.Utils.isMacOSX()) {

@@ -39,6 +39,9 @@ import javax.swing.*;
 
 public class FigTreeApplication extends MultiDocApplication {
 
+    public static final String VERSION = "1.2.2";
+    public static final String DATES = "2006-2009";
+
     public static FigTreeApplication application;
 
     public FigTreeApplication(MenuBarFactory menuBarFactory, String nameString, String aboutString, Icon icon,
@@ -177,7 +180,7 @@ public class FigTreeApplication extends MultiDocApplication {
 
     public static void printTitle() {
         System.out.println();
-        centreLine("FigTree v1.2, 2006-2008", 60);
+        centreLine("FigTree v" + VERSION + ", " + DATES, 60);
         centreLine("Tree Figure Drawing Tool", 60);
         centreLine("Andrew Rambaut", 60);
         System.out.println();
@@ -312,8 +315,7 @@ public class FigTreeApplication extends MultiDocApplication {
         }
 
         final String nameString = "FigTree";
-        final String versionString = "1.2.1";
-        String aboutString = "<html><center>Tree Figure Drawing Tool<br>Version " + versionString + "<br>2006-2009, Andrew Rambaut<br>" +
+        String aboutString = "<html><center>Tree Figure Drawing Tool<br>Version " + VERSION + "<br>" + DATES + ", Andrew Rambaut<br>" +
                 "Institute of Evolutionary Biology, University of Edinburgh.<br><br>" +
                 "<a href=\"http://tree.bio.ed.ac.uk/\">http://tree.bio.ed.ac.uk/</a><br><br>" +
                 "Uses the Java Evolutionary Biology Library (JEBL)<br>" +
@@ -328,7 +330,7 @@ public class FigTreeApplication extends MultiDocApplication {
 
         application.setDocumentFrameFactory(new DocumentFrameFactory() {
             public DocumentFrame createDocumentFrame(Application app, MenuBarFactory menuBarFactory) {
-                return new FigTreeFrame(nameString + " v" + versionString);
+                return new FigTreeFrame(nameString + " v" + VERSION);
             }
         });
 

@@ -47,7 +47,7 @@ public class DiscreteKML {
 
     //circles
     int numberOfIntervals = 100;
-    double radius = 10000;
+    double radius = 0.2;
 
     //everything is written to separate buffers, and than collected in structured KML document by compileBuffer
     StringBuffer branchesBuffer = new StringBuffer();
@@ -190,7 +190,8 @@ public class DiscreteKML {
                     //System.out.println("branch "+nodeNumber+"\t+state+"+"\t"+latitude+"\t"+longitude+"\t"+parentLatitude+"\t"+parentLongitude);
 
                     //divider dependent on distance
-                    divider = (2*(int)(distance/25));
+                    //divider = (2*(int)(distance/25));
+                    divider = 25;
 
                     double currentLongitude1 = 0;
                     double currentLongitude2 = 0;
