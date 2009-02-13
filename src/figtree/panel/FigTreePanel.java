@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.ArrayList;
 
 import figtree.treeviewer.painters.ScaleBarPainter;
 import figtree.treeviewer.decorators.*;
@@ -191,6 +192,14 @@ public class FigTreePanel extends JPanel {
                 }
             }
         }
+    }
+
+    public void setTree(Tree tree) {
+        java.util.List<Tree> trees = new ArrayList<Tree>();
+        if (tree != null) {
+            trees.add(tree);
+        }
+        treeViewer.setTrees(trees);
     }
 
     private final TreeViewer treeViewer;
