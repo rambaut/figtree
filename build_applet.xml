@@ -75,7 +75,7 @@
 
         <jar jarfile="${dist}/figtreepanel.jar">
             <fileset dir="${build}"
-                     includes="figtree/applet/**/*.class,figtree/treeviewer/**/*.class,**/*.properties,**/*.png,**/*.gif"
+                     includes="figtree/panel/**/*.class,figtree/treeviewer/**/*.class,**/*.properties,**/*.png,**/*.gif"
                 />
 
             <manifest>

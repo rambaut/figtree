@@ -4,9 +4,12 @@ import jam.controlpalettes.ControlPalette;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 import figtree.treeviewer.painters.ScaleBarPainter;
 import figtree.treeviewer.decorators.AttributableDecorator;
+import figtree.treeviewer.TreeViewer;
+import jebl.evolution.trees.Tree;
 
 /**
  * This is a panel that has a TreeViewer and a BasicControlPalette with
@@ -18,6 +21,7 @@ import figtree.treeviewer.decorators.AttributableDecorator;
 public class FigTreePanel extends JPanel {
     public enum Style {
         DEFAULT,
+        SIMPLE,
         MINIMAL,
         ICARUS,
         ICARUS_SMALL
@@ -31,6 +35,8 @@ public class FigTreePanel extends JPanel {
                         ControlPalette controlPalette1,
                         ControlPalette controlPalette2,
                         Style style) {
+
+        this.treeViewer = treeViewer;
 
         if (controlPalette1 != null) {
             controlPalette1.getPanel().setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
@@ -69,6 +75,23 @@ public class FigTreePanel extends JPanel {
                         "branchLabels", branchLabelPainter));
 
                 controlPalette1.addController(new TreesController(treeViewer));
+
+                controlPalette1.addController(new LabelPainterController(
+                        "tipLabels", tipLabelPainter,
+                        "nodeLabels", nodeLabelPainter,
+                        "branchLabels", branchLabelPainter));
+                break;
+            case SIMPLE:
+                if (controlPalette1 == null) {
+                    throw new IllegalArgumentException("SIMPLE style requires a controlPalette");
+                }
+                controlPalette1.addController(new TreeViewerController(treeViewer));
+
+                controlPalette1.addController(new TreeAppearanceController(
+                        treeViewer,
+                        "tipLabels", tipLabelPainter,
+                        "nodeLabels", nodeLabelPainter,
+                        "branchLabels", branchLabelPainter));
 
                 controlPalette1.addController(new LabelPainterController(
                         "tipLabels", tipLabelPainter,
@@ -133,4 +156,12 @@ public class FigTreePanel extends JPanel {
 
     }
 
+    public void setTree(Tree tree) {
+        java.util.List<Tree> trees = new ArrayList<Tree>();
+        trees.add(tree);
+        treeViewer.setTrees(trees);
+
+    }
+
+    private TreeViewer treeViewer;
 }
