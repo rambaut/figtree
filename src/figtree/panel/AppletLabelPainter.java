@@ -1,6 +1,5 @@
-package figtree.applet;
+package figtree.panel;
 
-import figtree.treeviewer.TimeScale;
 import figtree.treeviewer.TreePane;
 import figtree.treeviewer.painters.LabelPainter;
 import figtree.treeviewer.decorators.Decorator;

@@ -7,7 +7,7 @@
  * Lesser Gnu Public Licence (LGPL)
  */
 
-package figtree.applet;
+package figtree.panel;
 
 import figtree.treeviewer.AnnotationsListener;
 import figtree.treeviewer.DefaultTreeViewer;

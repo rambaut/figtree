@@ -1,4 +1,4 @@
-package figtree.applet;
+package figtree.panel;
 
 import jebl.evolution.trees.SortedRootedTree;
 import jebl.evolution.trees.TransformedRootedTree;

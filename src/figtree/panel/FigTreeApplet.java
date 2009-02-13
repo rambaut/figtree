@@ -1,4 +1,4 @@
-package figtree.applet;
+package figtree.panel;
 
 import jebl.evolution.trees.Tree;
 import jebl.evolution.io.NewickImporter;
@@ -26,7 +26,7 @@ public class FigTreeApplet extends JApplet {
 	private AppletTreeViewer treeViewer;
 	private ControlPalette controlPalette1;
 	private ControlPalette controlPalette2;
-	private FigTreeAppletPanel figTreePanel;
+	private FigTreePanel figTreePanel;
 
 	private StatusBar statusBar;
 
@@ -34,18 +34,18 @@ public class FigTreeApplet extends JApplet {
 	private JPopupMenu filterPopup;
 
 	public void init() {
-		FigTreeAppletPanel.Style style = FigTreeAppletPanel.Style.DEFAULT;
+		FigTreePanel.Style style = FigTreePanel.Style.DEFAULT;
 
 		String styleParam = getParameter("style");
 		if (styleParam != null) {
-			style = FigTreeAppletPanel.Style.valueOf(styleParam.trim().toUpperCase());
+			style = FigTreePanel.Style.valueOf(styleParam.trim().toUpperCase());
 		}
 
 		treeViewer = new AppletTreeViewer();
 		controlPalette1 = new AppletControlPalette();
 		controlPalette2 = new AppletControlPalette();
 
-		figTreePanel = new FigTreeAppletPanel(treeViewer, controlPalette1, controlPalette2, style);
+		figTreePanel = new FigTreePanel(treeViewer, controlPalette1, controlPalette2, style);
 
 		filterPopup = new JPopupMenu();
 		for (TreeViewer.TextSearchType searchType : TreeViewer.TextSearchType.values()) {
@@ -83,7 +83,7 @@ public class FigTreeApplet extends JApplet {
 		statusBar.setStatusProvider(treeViewer);
 		statusBar.add(filterPanel, BorderLayout.EAST);
 
-		if (style != FigTreeAppletPanel.Style.ICARUS_SMALL) {
+		if (style != FigTreePanel.Style.ICARUS_SMALL) {
 			getContentPane().add(statusBar, BorderLayout.NORTH);
 		}
 

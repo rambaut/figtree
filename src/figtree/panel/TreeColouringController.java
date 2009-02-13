@@ -1,4 +1,4 @@
-package figtree.applet;
+package figtree.panel;
 
 import jebl.evolution.trees.Tree;
 import jebl.evolution.graphs.Node;

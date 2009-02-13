@@ -1,4 +1,4 @@
-package figtree.applet;
+package figtree.panel;
 
 import jam.controlpalettes.ControlPalette;
 
@@ -15,14 +15,18 @@ import figtree.treeviewer.decorators.AttributableDecorator;
  * @author Andrew Rambaut
  * @version $Id: FigTreeAppletPanel.java,v 1.4 2007/09/05 10:51:49 rambaut Exp $
  */
-public class FigTreeAppletPanel extends JPanel {
-	enum Style {
+public class FigTreePanel extends JPanel {
+    public enum Style {
 		DEFAULT,
 		ICARUS,
 		ICARUS_SMALL
 	}
 
-	public FigTreeAppletPanel(final AppletTreeViewer treeViewer,
+    public FigTreePanel(Style style) {
+        this(new AppletTreeViewer(), new AppletControlPalette(), new AppletControlPalette(), style);
+    }
+
+    public FigTreePanel(final AppletTreeViewer treeViewer,
 	                          ControlPalette controlPalette1,
 	                          ControlPalette controlPalette2,
 	                          Style style) {
