@@ -26,9 +26,9 @@ import java.util.List;
  * @author Alexei Drummond
  * @version $Id: ExtendedTreeViewer.java,v 1.38 2007/09/05 16:24:23 rambaut Exp $
  */
-public class AppletTreeViewer extends DefaultTreeViewer implements StatusProvider {
+public class SimpleTreeViewer extends DefaultTreeViewer implements StatusProvider {
 	/** Creates new AlignmentPanel */
-	public AppletTreeViewer() {
+	public SimpleTreeViewer() {
 		super();
 
 		// setTreesPerPage(1);
@@ -39,7 +39,7 @@ public class AppletTreeViewer extends DefaultTreeViewer implements StatusProvide
 
 	private List<AnnotationsListener> listeners = new ArrayList<AnnotationsListener>();
 
-	public void addAnnotationsListener(AnnotationsListener listener) {
+    public void addAnnotationsListener(AnnotationsListener listener) {
 		listeners.add(listener);
 	}
 

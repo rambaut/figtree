@@ -21,19 +21,19 @@ import java.util.List;
  * @author Andrew Rambaut
  * @version $Id: BasicLabelPainter.java 773 2007-09-04 23:51:07Z rambaut $
  */
-public class AppletLabelPainter extends LabelPainter<Node> {
+public class SimpleLabelPainter extends LabelPainter<Node> {
 
 	public static final String TAXON_NAMES = "Taxon names";
 	public static final String NODE_AGES = "Node ages";
 	public static final String BRANCH_LENGTHS = "Branch lengths";
 
-	public enum PainterIntent {
+    public enum PainterIntent {
 		NODE,
 		BRANCH,
 		TIP
 	};
 
-	public AppletLabelPainter(PainterIntent intent) {
+	public SimpleLabelPainter(PainterIntent intent) {
 		this.intent = intent;
 
 		setupAttributes(null);

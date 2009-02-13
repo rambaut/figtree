@@ -11,9 +11,9 @@ import java.util.Map;
  * @author Andrew Rambaut
  * @version $Id: BasicControlPalette.java 856 2007-12-13 23:36:02Z rambaut $
  */
-public class AppletControlPalette extends JPanel implements ControlPalette {
+public class SimpleControlPalette extends JPanel implements ControlPalette {
 
-    public AppletControlPalette() {
+    public SimpleControlPalette() {
         BoxLayout layout = new BoxLayout(this, BoxLayout.LINE_AXIS);
         setLayout(layout);
         setOpaque(true);
