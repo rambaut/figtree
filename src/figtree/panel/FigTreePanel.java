@@ -17,108 +17,120 @@ import figtree.treeviewer.decorators.AttributableDecorator;
  */
 public class FigTreePanel extends JPanel {
     public enum Style {
-		DEFAULT,
-		ICARUS,
-		ICARUS_SMALL
-	}
-
-    public FigTreePanel(Style style) {
-        this(new AppletTreeViewer(), new AppletControlPalette(), new AppletControlPalette(), style);
+        DEFAULT,
+        MINIMAL,
+        ICARUS,
+        ICARUS_SMALL
     }
 
-    public FigTreePanel(final AppletTreeViewer treeViewer,
-	                          ControlPalette controlPalette1,
-	                          ControlPalette controlPalette2,
-	                          Style style) {
+    public FigTreePanel(Style style) {
+        this(new SimpleTreeViewer(), new SimpleControlPalette(), null, style);
+    }
 
-		controlPalette1.getPanel().setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
-		controlPalette1.getPanel().setBackground(new Color(231, 237, 246));
-		controlPalette1.getPanel().setOpaque(true);
+    public FigTreePanel(final SimpleTreeViewer treeViewer,
+                        ControlPalette controlPalette1,
+                        ControlPalette controlPalette2,
+                        Style style) {
 
-		controlPalette2.getPanel().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
-		controlPalette2.getPanel().setBackground(new Color(231, 237, 246));
-		controlPalette2.getPanel().setOpaque(true);
+        if (controlPalette1 != null) {
+            controlPalette1.getPanel().setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
+            controlPalette1.getPanel().setBackground(new Color(231, 237, 246));
+            controlPalette1.getPanel().setOpaque(true);
+        }
 
-		// Create a tip label painter and its controller
-		final AppletLabelPainter tipLabelPainter = new AppletLabelPainter(AppletLabelPainter.PainterIntent.TIP);
-		// Create a node label painter and its controller
-		final AppletLabelPainter nodeLabelPainter = new AppletLabelPainter(AppletLabelPainter.PainterIntent.NODE);
-		nodeLabelPainter.setVisible(false);
-		final AppletLabelPainter branchLabelPainter = new AppletLabelPainter(AppletLabelPainter.PainterIntent.BRANCH);
-		branchLabelPainter.setVisible(false);
+        if (controlPalette2 != null) {
+            controlPalette2.getPanel().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
+            controlPalette2.getPanel().setBackground(new Color(231, 237, 246));
+            controlPalette2.getPanel().setOpaque(true);
+        }
 
-		setLayout(new BorderLayout());
+        // Create a tip label painter and its controller
+        final SimpleLabelPainter tipLabelPainter = new SimpleLabelPainter(SimpleLabelPainter.PainterIntent.TIP);
+        // Create a node label painter and its controller
+        final SimpleLabelPainter nodeLabelPainter = new SimpleLabelPainter(SimpleLabelPainter.PainterIntent.NODE);
+        nodeLabelPainter.setVisible(false);
+        final SimpleLabelPainter branchLabelPainter = new SimpleLabelPainter(SimpleLabelPainter.PainterIntent.BRANCH);
+        branchLabelPainter.setVisible(false);
 
-		switch (style) {
+        setLayout(new BorderLayout());
 
-			case DEFAULT:
-				controlPalette1.addController(new TreeViewerController(treeViewer));
+        switch (style) {
 
-				controlPalette1.addController(new TreeAppearanceController(
-						treeViewer,
-						"tipLabels", tipLabelPainter,
-						"nodeLabels", nodeLabelPainter,
-						"branchLabels", branchLabelPainter));
+            case DEFAULT:
+                if (controlPalette1 == null) {
+                    throw new IllegalArgumentException("DEFAULT style requires a controlPalette");
+                }
+                controlPalette1.addController(new TreeViewerController(treeViewer));
 
-				controlPalette1.addController(new TreesController(treeViewer));
+                controlPalette1.addController(new TreeAppearanceController(
+                        treeViewer,
+                        "tipLabels", tipLabelPainter,
+                        "nodeLabels", nodeLabelPainter,
+                        "branchLabels", branchLabelPainter));
 
-				controlPalette1.addController(new LabelPainterController(
-						"tipLabels", tipLabelPainter,
-						"nodeLabels", nodeLabelPainter,
-						"branchLabels", branchLabelPainter));
-				break;
-			case ICARUS:
-				controlPalette1.addController(new TreeViewerController(treeViewer, true));
+                controlPalette1.addController(new TreesController(treeViewer));
 
-				controlPalette1.addController(new TreeAppearanceController(
-						treeViewer,
-						"tipLabels", tipLabelPainter,
-						"nodeLabels", nodeLabelPainter,
-						"branchLabels", branchLabelPainter,
-						true));
+                controlPalette1.addController(new LabelPainterController(
+                        "tipLabels", tipLabelPainter,
+                        "nodeLabels", nodeLabelPainter,
+                        "branchLabels", branchLabelPainter));
+                break;
+            case MINIMAL:
+                break;
+            case ICARUS:
+                controlPalette1.addController(new TreeViewerController(treeViewer, true));
 
-				controlPalette1.addController(new LabelPainterController(
-						"tipLabels", tipLabelPainter,
-						"nodeLabels", nodeLabelPainter,
-						"branchLabels", branchLabelPainter));
+                controlPalette1.addController(new TreeAppearanceController(
+                        treeViewer,
+                        "tipLabels", tipLabelPainter,
+                        "nodeLabels", nodeLabelPainter,
+                        "branchLabels", branchLabelPainter,
+                        true));
 
-				controlPalette1.addController(new TreesController(treeViewer));
+                controlPalette1.addController(new LabelPainterController(
+                        "tipLabels", tipLabelPainter,
+                        "nodeLabels", nodeLabelPainter,
+                        "branchLabels", branchLabelPainter));
 
-				controlPalette2.addController(new TreeColouringController(treeViewer, "Clustering:"));
-				add(controlPalette2.getPanel(), BorderLayout.NORTH);
-				break;
-			case ICARUS_SMALL:
-				controlPalette1.addController(new TreeViewerController(treeViewer, true));
+                controlPalette1.addController(new TreesController(treeViewer));
 
-				controlPalette1.addController(new TreeAppearanceController(
-						treeViewer,
-						"tipLabels", tipLabelPainter,
-						"nodeLabels", nodeLabelPainter,
-						"branchLabels", branchLabelPainter,
-						true));
+                controlPalette2.addController(new TreeColouringController(treeViewer, "Clustering:"));
+                add(controlPalette2.getPanel(), BorderLayout.NORTH);
+                break;
+            case ICARUS_SMALL:
+                controlPalette1.addController(new TreeViewerController(treeViewer, true));
 
-				controlPalette2.addController(new TreeColouringController(treeViewer, "Clustering:"));
-				add(controlPalette2.getPanel(), BorderLayout.NORTH);
-				break;
-		}
+                controlPalette1.addController(new TreeAppearanceController(
+                        treeViewer,
+                        "tipLabels", tipLabelPainter,
+                        "nodeLabels", nodeLabelPainter,
+                        "branchLabels", branchLabelPainter,
+                        true));
 
-		treeViewer.setTipLabelPainter(tipLabelPainter);
-		treeViewer.setNodeLabelPainter(nodeLabelPainter);
-		treeViewer.setBranchLabelPainter(branchLabelPainter);
+                controlPalette2.addController(new TreeColouringController(treeViewer, "Clustering:"));
+                add(controlPalette2.getPanel(), BorderLayout.NORTH);
+                break;
+        }
 
-		AttributableDecorator tipDecorator = new AttributableDecorator();
-		tipDecorator.setPaintAttributeName("!color");
-		tipDecorator.setFontAttributeName("!font");
-		tipLabelPainter.setTextDecorator(tipDecorator);
+        treeViewer.setTipLabelPainter(tipLabelPainter);
+        treeViewer.setNodeLabelPainter(nodeLabelPainter);
+        treeViewer.setBranchLabelPainter(branchLabelPainter);
 
-		// Create a scale bar painter and its controller
-		final ScaleBarPainter scaleBarPainter = new ScaleBarPainter();
-		// controlPalette.addController(new ScaleBarPainterController(scaleBarPainter));
-		treeViewer.addScalePainter(scaleBarPainter);
+        AttributableDecorator tipDecorator = new AttributableDecorator();
+        tipDecorator.setPaintAttributeName("!color");
+        tipDecorator.setFontAttributeName("!font");
+        tipLabelPainter.setTextDecorator(tipDecorator);
 
-		add(treeViewer, BorderLayout.CENTER);
-		add(controlPalette1.getPanel(), BorderLayout.SOUTH);
+        // Create a scale bar painter and its controller
+        final ScaleBarPainter scaleBarPainter = new ScaleBarPainter();
+        // controlPalette.addController(new ScaleBarPainterController(scaleBarPainter));
+        treeViewer.addScalePainter(scaleBarPainter);
 
-	}
+        add(treeViewer, BorderLayout.CENTER);
+        if (controlPalette1 != null) {
+            add(controlPalette1.getPanel(), BorderLayout.SOUTH);
+        }
+
+    }
 
 }

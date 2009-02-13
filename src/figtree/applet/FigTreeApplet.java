@@ -1,4 +1,4 @@
-package figtree.panel;
+package figtree.applet;
 
 import jebl.evolution.trees.Tree;
 import jebl.evolution.io.NewickImporter;
@@ -9,6 +9,9 @@ import jam.panels.SearchPanelListener;
 import jam.panels.StatusBar;
 import figtree.application.FigTreeNexusImporter;
 import figtree.treeviewer.*;
+import figtree.panel.SimpleTreeViewer;
+import figtree.panel.FigTreePanel;
+import figtree.panel.SimpleControlPalette;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +26,7 @@ import java.net.MalformedURLException;
  * @version $Id: FigTreeApplet.java,v 1.1 2007/08/14 15:50:41 rambaut Exp $
  */
 public class FigTreeApplet extends JApplet {
-	private AppletTreeViewer treeViewer;
+	private SimpleTreeViewer treeViewer;
 	private ControlPalette controlPalette1;
 	private ControlPalette controlPalette2;
 	private FigTreePanel figTreePanel;
@@ -41,9 +44,9 @@ public class FigTreeApplet extends JApplet {
 			style = FigTreePanel.Style.valueOf(styleParam.trim().toUpperCase());
 		}
 
-		treeViewer = new AppletTreeViewer();
-		controlPalette1 = new AppletControlPalette();
-		controlPalette2 = new AppletControlPalette();
+		treeViewer = new SimpleTreeViewer();
+		controlPalette1 = new SimpleControlPalette();
+		controlPalette2 = new SimpleControlPalette();
 
 		figTreePanel = new FigTreePanel(treeViewer, controlPalette1, controlPalette2, style);
 
