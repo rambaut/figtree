@@ -1,4 +1,4 @@
-package figtree.applet;
+package figtree.panel;
 
 import jam.controlpalettes.*;
 

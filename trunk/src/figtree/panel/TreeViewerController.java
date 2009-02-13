@@ -1,4 +1,4 @@
-package figtree.applet;
+package figtree.panel;
 
 import figtree.treeviewer.treelayouts.*;
 import figtree.treeviewer.TreeViewer;

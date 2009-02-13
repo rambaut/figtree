@@ -34,7 +34,7 @@
 	<target name="compile" depends="init">
 		<!-- Compile the java code from ${src} into ${build} -->
 		<javac source="1.5" srcdir="${src}" destdir="${build}"
-		       classpath="${lib}/jebl.jar:${lib}/quaqua.jar:${lib}/itext-1.4.5.jar"/>
+		       classpath="${lib}/jebl.jar:${lib}/jam.jar:${lib}/freehep.jar:${lib}/quaqua.jar:${lib}/jdom.jar"/>
 		<copy todir="${build}" verbose="true">
 			<fileset dir="${src}" includes="figtree/**/*.png,figtree/**/*.gif"/>
 		</copy>
@@ -69,4 +69,19 @@
 
 	</target>
 
+    <target name="dist_panel" depends="compile" description="generate the distribution">
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}"/>
+
+        <jar jarfile="${dist}/figtreepanel.jar">
+            <fileset dir="${build}"
+                     includes="figtree/applet/**/*.class,figtree/treeviewer/**/*.class,**/*.properties,**/*.png,**/*.gif"
+                />
+
+            <manifest>
+                <attribute name="Built-By" value="${user.name}"/>
+            </manifest>
+        </jar>
+
+    </target>
 </project>
