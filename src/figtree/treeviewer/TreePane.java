@@ -1409,6 +1409,15 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 			}
 		}
 
+        // Iterate though the callout paths
+        for (Shape calloutPath : treeLayoutCache.getCalloutPathMap().values()) {
+            // Get the line that represents the path for the taxon label
+            // and add the translated bounds to the overall bounds
+            final Rectangle2D calloutBounds = calloutPath.getBounds2D();
+            treeBounds.add(calloutBounds);
+        }
+
+
 		for (Shape collapsedShape : treeLayoutCache.getCollapsedShapeMap().values()) {
 			// Add the bounds of the branch path to the overall bounds
 			final Rectangle2D branchBounds = collapsedShape.getBounds2D();
