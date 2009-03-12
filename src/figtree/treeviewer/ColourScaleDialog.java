@@ -18,124 +18,141 @@ import figtree.ui.components.ColorWellButton;
  */
 public class ColourScaleDialog {
 
-	private JFrame frame;
-	private OptionsPanel options;
-	private JCheckBox autoScaleCheck;
-//	private JCheckBox useGradientCheck;
-	private JLabel fromLabel;
-	private RealNumberField fromNumberField;
-	private JLabel toLabel;
-	private RealNumberField toNumberField;
+    private JFrame frame;
+    private OptionsPanel options;
+    private JCheckBox autoScaleCheck;
+    private JLabel fromLabel;
+    private RealNumberField fromNumberField;
+    private JLabel toLabel;
+    private RealNumberField toNumberField;
 
-	private ColorWellButton fromColourButton;
-	private ColorWellButton toColourButton;
+    private ColorWellButton fromColourButton;
+    private ColorWellButton toColourButton;
 
-	public ColourScaleDialog(final JFrame frame, boolean autoRange, double fromValue, double toValue,
-	                         final Color fromColour, final Color toColour, boolean useGradient) {
-		this.frame = frame;
+    private JCheckBox middleColourCheck;
+    private ColorWellButton middleColourButton;
 
-		autoScaleCheck = new JCheckBox("Auto-scale range between min and max values");
-		autoScaleCheck.setSelected(autoRange);
+    public ColourScaleDialog(final JFrame frame, boolean autoRange, double fromValue, double toValue,
+                             final Color fromColour, final Color toColour, final Color middleColour) {
+        this.frame = frame;
 
-		fromLabel = new JLabel("Range from:");
-		fromNumberField = new RealNumberField();
-		fromNumberField.setColumns(10);
-		fromNumberField.setValue(fromValue);
+        autoScaleCheck = new JCheckBox("Auto-scale range between min and max values");
+        autoScaleCheck.setSelected(autoRange);
 
-		toLabel = new JLabel("to:");
-		toNumberField = new RealNumberField();
-		toNumberField.setColumns(10);
-		toNumberField.setValue(toValue);
+        fromLabel = new JLabel("Range from:");
+        fromNumberField = new RealNumberField();
+        fromNumberField.setColumns(10);
+        fromNumberField.setValue(fromValue);
 
-		fromLabel.setEnabled(false);
-		fromNumberField.setEnabled(false);
-		toLabel.setEnabled(false);
-		toNumberField.setEnabled(false);
+        toLabel = new JLabel("to:");
+        toNumberField = new RealNumberField();
+        toNumberField.setColumns(10);
+        toNumberField.setValue(toValue);
 
-		fromColourButton = new ColorWellButton(fromColour, "Choose Start Colour");
-		toColourButton = new ColorWellButton(toColour, "Choose End Colour");
+        fromLabel.setEnabled(false);
+        fromNumberField.setEnabled(false);
+        toLabel.setEnabled(false);
+        toNumberField.setEnabled(false);
 
-//		useGradientCheck = new JCheckBox("Use a gradient along branches");
-//		useGradientCheck.setSelected(useGradient);
+        middleColourCheck = new JCheckBox("through:");
 
-		autoScaleCheck.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				boolean enabled = !autoScaleCheck.isSelected();
-				fromLabel.setEnabled(enabled);
-				fromNumberField.setEnabled(enabled);
-				toLabel.setEnabled(enabled);
-				toNumberField.setEnabled(enabled);
-			}});
-	}
+        fromColourButton = new ColorWellButton(fromColour, "Choose Start Colour");
+        toColourButton = new ColorWellButton(toColour, "Choose End Colour");
+        middleColourButton = new ColorWellButton(middleColour, "Choose Middle Colour");
 
-	public int showDialog() {
+        autoScaleCheck.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                boolean enabled = !autoScaleCheck.isSelected();
+                fromLabel.setEnabled(enabled);
+                fromNumberField.setEnabled(enabled);
+                toLabel.setEnabled(enabled);
+                toNumberField.setEnabled(enabled);
+            }});
 
-		options = new OptionsPanel(6, 6);
+        middleColourCheck.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                middleColourButton.setEnabled(middleColourCheck.isSelected());
+            }});
+        middleColourCheck.setSelected(middleColour != null);
+    }
 
-		options.addComponent(autoScaleCheck);
+    public int showDialog() {
 
-		JPanel panel = new JPanel();
-		panel.setLayout(new FlowLayout());
-		panel.add(fromLabel);
-		panel.add(fromNumberField);
-		panel.add(toLabel);
-		panel.add(toNumberField);
-		options.addComponent(panel);
+        options = new OptionsPanel(6, 6);
 
-		JPanel panel1 = new JPanel();
-		panel1.setLayout(new FlowLayout());
-		panel1.add(new JLabel("Colour gradient from:"));
-		panel1.add(fromColourButton);
-		panel1.add(new JLabel("to:"));
-		panel1.add(toColourButton);
-		options.addComponent(panel1);
+        options.addComponent(autoScaleCheck);
 
-//		options.addComponent(useGradientCheck);
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout());
+        panel.add(fromLabel);
+        panel.add(fromNumberField);
+        panel.add(toLabel);
+        panel.add(toNumberField);
+        options.addComponent(panel);
 
-		JOptionPane optionPane = new JOptionPane(options,
-				JOptionPane.QUESTION_MESSAGE,
-				JOptionPane.OK_CANCEL_OPTION,
-				null,
-				null,
-				null);
-		optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
+        JPanel panel1 = new JPanel();
+        panel1.setLayout(new FlowLayout());
+        panel1.add(new JLabel("Colour gradient from:"));
+        panel1.add(fromColourButton);
+        panel1.add(new JLabel("to:"));
+        panel1.add(toColourButton);
+        options.addComponent(panel1);
 
-		final JDialog dialog = optionPane.createDialog(frame, "Setup colour range");
-		dialog.pack();
+        JPanel panel2 = new JPanel();
+        panel1.setLayout(new FlowLayout());
+        panel1.add(middleColourCheck);
+        panel1.add(middleColourButton);
+        options.addComponent(panel2);
 
-		dialog.setVisible(true);
+        JOptionPane optionPane = new JOptionPane(options,
+                JOptionPane.QUESTION_MESSAGE,
+                JOptionPane.OK_CANCEL_OPTION,
+                null,
+                null,
+                null);
+        optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-		int result = JOptionPane.CANCEL_OPTION;
-		Integer value = (Integer)optionPane.getValue();
-		if (value != null && value.intValue() != -1) {
-			result = value.intValue();
-		}
+        final JDialog dialog = optionPane.createDialog(frame, "Setup colour range");
+        dialog.pack();
 
-		return result;
-	}
+        dialog.setVisible(true);
 
-	public boolean getAutoRange() {
-		return autoScaleCheck.isSelected();
-	}
+        int result = JOptionPane.CANCEL_OPTION;
+        Integer value = (Integer)optionPane.getValue();
+        if (value != null && value.intValue() != -1) {
+            result = value.intValue();
+        }
 
-	public Number getFromValue() {
-		return fromNumberField.getValue();
-	}
+        return result;
+    }
 
-	public Number getToValue() {
-		return toNumberField.getValue();
-	}
+    public boolean getAutoRange() {
+        return autoScaleCheck.isSelected();
+    }
 
-	public Color getFromColour() {
-		return fromColourButton.getSelectedColor();
-	}
+    public Number getFromValue() {
+        return fromNumberField.getValue();
+    }
 
-	public Color getToColour() {
-		return toColourButton.getSelectedColor();
-	}
+    public Number getToValue() {
+        return toNumberField.getValue();
+    }
 
-//	public boolean getUseGradient() {
-//		return useGradientCheck.isSelected();
-//	}
+    public Color getFromColour() {
+        return fromColourButton.getSelectedColor();
+    }
+
+    public Color getToColour() {
+        return toColourButton.getSelectedColor();
+    }
+
+    public Color getMiddleColour() {
+        if (middleColourCheck.isSelected()) {
+            return middleColourButton.getSelectedColor();
+        } else {
+            return null;
+        }
+    }
+
 
 }

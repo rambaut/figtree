@@ -100,7 +100,7 @@ public class BranchStyle {
     private double widthPropertyMinimum = 0.0;
     private double widthPropertyMaximum = 1.0;
 
-    private double widthBase = 2.0;
+    private double widthBase = 4.0;
     private double widthScale = 3.0;
 
     private String colorProperty = null;

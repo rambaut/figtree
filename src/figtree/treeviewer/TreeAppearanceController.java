@@ -84,6 +84,7 @@ public class TreeAppearanceController extends AbstractController {
         colourToValue = 1.0;
         fromColour = new Color(0, 16, 192);
         toColour = new Color(192, 16, 0);
+        middleColour = new Color(0, 0, 0);
         useGradient = false;
 
         JButton setupColourButton = new JButton(new AbstractAction("Setup") {
@@ -91,8 +92,7 @@ public class TreeAppearanceController extends AbstractController {
                 if (colourScaleDialog == null) {
                     colourScaleDialog = new ColourScaleDialog(frame, colourAutoRange,
                             colourFromValue, colourToValue,
-                            fromColour, toColour,
-                            useGradient);
+                            fromColour, toColour, middleColour);
                 }
                 int result = colourScaleDialog.showDialog();
                 if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
@@ -101,6 +101,7 @@ public class TreeAppearanceController extends AbstractController {
                     colourToValue = colourScaleDialog.getToValue().doubleValue();
                     fromColour = colourScaleDialog.getFromColour();
                     toColour = colourScaleDialog.getToColour();
+                    middleColour = colourScaleDialog.getMiddleColour();
 //					useGradient = colourScaleDialog.getUseGradient();
                     setupBranchDecorators();
                 }
@@ -205,7 +206,11 @@ public class TreeAppearanceController extends AbstractController {
                         scale = new ContinousScale(attribute, nodes, colourFromValue, colourToValue);
                     }
 
-                    colourDecorator = new ContinuousColorDecorator(scale, fromColour, toColour, useGradient);
+                    if (middleColour == null) {
+                        colourDecorator = new ContinuousColorDecorator(scale, fromColour, toColour, useGradient);
+                    } else {
+                        colourDecorator = new ContinuousColorDecorator(scale, fromColour, middleColour, toColour, useGradient);
+                    }
 
                 }
             }
@@ -376,6 +381,7 @@ public class TreeAppearanceController extends AbstractController {
     private double colourToValue = 1.0;
     private Color fromColour;
     private Color toColour;
+    private Color middleColour;
     private boolean useGradient = false;
 
     private boolean widthAutoRange = true;
