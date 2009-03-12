@@ -53,6 +53,14 @@ public class Settings {
         this.mostRecentDate = mostRecentDate;
     }
 
+    public double getAgeCutOff() {
+        return ageCutOff;
+    }
+
+    public void setAgeCutOff(double ageCutOff) {
+        this.ageCutOff = ageCutOff;
+    }
+
     public double getPlotAltitude() {
         return plotAltitude;
     }
@@ -107,6 +115,7 @@ public class Settings {
     private String latitudeName = "location1";
     private String longitudeName = "location2";
 
+    private double ageCutOff = 0.0; // upper bound for when time starts - 0 to include entire tree
     private double mostRecentDate;
 
     private double plotAltitude = 50000;
