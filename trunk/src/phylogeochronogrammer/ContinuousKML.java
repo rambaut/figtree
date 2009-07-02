@@ -19,6 +19,8 @@ public class ContinuousKML {
     String longitudeName;
     String documentName;
 
+    public static final String HPD_Value = "80";
+
     // variables shared by rectangle, triangle and surfacetree
     double branchWidthConstant = 3.0;   // the width of branches will be posterior*branchWidthMultiplier+branchWidthConstant
     double branchWidthMultiplier = 5.0;
@@ -134,7 +136,7 @@ public class ContinuousKML {
 
         Node rootNode = treeToExport.getRootNode();
 
-        if ((Object)rootNode.getAttribute(traitName+"_95%HPD_modality") != null) {
+        if ((Object)rootNode.getAttribute(traitName+"_"+ HPD_Value +"%HPD_modality") != null) {
             contoursAndNotSpades = true;
         }
 
@@ -718,8 +720,8 @@ public class ContinuousKML {
             altitudeMode = "relativeToGround";
         }
 
-        Object[] longitudeHPDs = (Object[])node.getAttribute(longitudeName+"_95%_HPD");
-        Object[] latitudeHPDs = (Object[])node.getAttribute(latitudeName+"_95%_HPD");
+        Object[] longitudeHPDs = (Object[])node.getAttribute(longitudeName+"_"+HPD_Value+"%_HPD");
+        Object[] latitudeHPDs = (Object[])node.getAttribute(latitudeName+"_"+HPD_Value+"%_HPD");
 
         buffer.append("\t\t<Placemark>\r");
 
@@ -774,11 +776,11 @@ public class ContinuousKML {
             altitudeMode = "relativeToGround";
         }
 
-        int modality = ((Integer)node.getAttribute(latLongName+"_95%HPD_modality")).intValue();
+        int modality = ((Integer)node.getAttribute(latLongName+"_"+HPD_Value+"%HPD_modality")).intValue();
 
         for (int x = 0; x < modality; x++) {
-            Object[] longitudeHPDs = (Object[])node.getAttribute(longitudeName+"_95%HPD_"+(x + 1));
-            Object[] latitudeHPDs = (Object[])node.getAttribute(latitudeName+"_95%HPD_"+(x + 1));
+            Object[] longitudeHPDs = (Object[])node.getAttribute(longitudeName+"_"+HPD_Value+"%HPD_"+(x + 1));
+            Object[] latitudeHPDs = (Object[])node.getAttribute(latitudeName+"_"+HPD_Value+"%HPD_"+(x + 1));
 
             buffer.append("\t\t<Placemark>\r");
 
@@ -828,9 +830,9 @@ public class ContinuousKML {
         Double latitude = (Double)node.getAttribute(latitudeName);
         double altitude = (tree.getHeight(node)*scaleFactor);
 
-        Object[] longitudeHPDs = (Object[])node.getAttribute(longitudeName+"_95%_HPD");
-        Object[] latitudeHPDs = (Object[])node.getAttribute(latitudeName+"_95%_HPD");
-        Object[] heightHPDs = (Object[])node.getAttribute("height_95%_HPD");
+        Object[] longitudeHPDs = (Object[])node.getAttribute(longitudeName+"_"+HPD_Value+"%_HPD");
+        Object[] latitudeHPDs = (Object[])node.getAttribute(latitudeName+"_"+HPD_Value+"%_HPD");
+        Object[] heightHPDs = (Object[])node.getAttribute("height_"+HPD_Value+"%_HPD");
 
         double longitudeHPDlower = (Double)longitudeHPDs[0];
         double longitudeHPDupper = (Double)longitudeHPDs[1];
