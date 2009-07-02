@@ -832,7 +832,7 @@ public class ContinuousKML {
 
         Object[] longitudeHPDs = (Object[])node.getAttribute(longitudeName+"_"+HPD_Value+"%_HPD");
         Object[] latitudeHPDs = (Object[])node.getAttribute(latitudeName+"_"+HPD_Value+"%_HPD");
-        Object[] heightHPDs = (Object[])node.getAttribute("height_"+HPD_Value+"%_HPD");
+        Object[] heightHPDs = (Object[])node.getAttribute("height_95%_HPD");
 
         double longitudeHPDlower = (Double)longitudeHPDs[0];
         double longitudeHPDupper = (Double)longitudeHPDs[1];
