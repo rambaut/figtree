@@ -59,11 +59,16 @@ public class ExtendedTreeViewer extends DefaultTreeViewer implements StatusProvi
         for (Node node : tree.getNodes()) {
             names.addAll(node.getAttributeNames());
         }
+        for (Taxon taxon : tree.getTaxa()) {
+            names.addAll(taxon.getAttributeNames());
+        }
         for (String name : names) {
             if (!name.startsWith("!")) {
                 AnnotationDefinition annotation = getAnnotationDefinitions().get(name);
 
                 Set<Attributable> items = new HashSet<Attributable>(tree.getNodes());
+                items.addAll(tree.getTaxa());
+                
                 AnnotationDefinition.Type type = AnnotationDefinition.guessType(name, items);
 
                 if (annotation == null) {
@@ -135,6 +140,16 @@ public class ExtendedTreeViewer extends DefaultTreeViewer implements StatusProvi
         return annotations;
     }
 
+    public void setAnnotationDefinitions(List<AnnotationDefinition> annotations) {
+        if (this.annotations == null) {
+            this.annotations = new HashMap<String, AnnotationDefinition>();
+        }
+        this.annotations.clear();
+        for (AnnotationDefinition definition : annotations) {
+            this.annotations.put(definition.getName(), definition);
+        }
+    }
+
     public void annotateNodesFromTips(String annotationName) {
         List<Object> stateCodes = new ArrayList<Object>();
         Map<Taxon, Integer> stateMap = new HashMap<Taxon, Integer>();
@@ -193,7 +208,7 @@ public class ExtendedTreeViewer extends DefaultTreeViewer implements StatusProvi
         fireTreeChanged();
     }
 
-    private Map<String, AnnotationDefinition> annotations = null;
+    private static Map<String, AnnotationDefinition> annotations = null;
     private final StatusProvider.Helper statusHelper = new StatusProvider.Helper();
 
     public void addStatusListener(StatusListener statusListener) {

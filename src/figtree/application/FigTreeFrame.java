@@ -405,6 +405,9 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 			annotationDefinitionsDialog = new AnnotationDefinitionsDialog(this);
 		}
 		annotationDefinitionsDialog.showDialog(definitions);
+
+        treeViewer.setAnnotationDefinitions(annotationDefinitionsDialog.getAnnotations());
+
 		treeViewer.fireAnnotationsChanged();
 	}
 
