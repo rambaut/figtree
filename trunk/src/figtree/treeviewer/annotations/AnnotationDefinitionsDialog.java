@@ -97,7 +97,11 @@ public class AnnotationDefinitionsDialog {
 		}
 	}
 
-	int labelCount = 1;
+    public List<AnnotationDefinition> getAnnotations() {
+        return annotations;
+    }
+
+    int labelCount = 1;
 
     private void addAnnotation() {
 	    AnnotationDefinition definition = new AnnotationDefinition("Label" + labelCount, AnnotationDefinition.Type.INTEGER);
