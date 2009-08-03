@@ -32,12 +32,12 @@
 		<mkdir dir="${lib}"/>
 	</target>
 
+<!--
 	<target name="copyLibs" depends="init">
 		<copy file="../JEBL/dist/jebl.jar" tofile="${lib}/jebl.jar"/>
         <copy file="../JAM/dist/jam.jar" tofile="${lib}/jam.jar"/>
 	</target>
 
-<!--
 	<target name="freehep" depends="init" description="generate the distribution">
 
 		<jar jarfile="${lib}/freehep.jar">
@@ -57,9 +57,11 @@
 		</jar>
 
 	</target>
--->
 
 	<target name="compile" depends="init,copyLibs">
+-->
+
+	<target name="compile" depends="init">
 		<!-- Compile the java code from ${src} into ${build} -->
 		<javac source="1.5" srcdir="${src}" destdir="${build}"
 		       classpath="${lib}/jebl.jar:${lib}/jam.jar:${lib}/freehep.jar:${lib}/quaqua.jar">
