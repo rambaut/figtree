@@ -89,4 +89,39 @@
 
 	</target>
 
+    <property name="version" value="1.2.3" />
+    <property name="releases" value="releases" />
+    <property name="FigTree_release" value="FigTree v" />
+
+    <target name="windows_Release" depends="dist"
+                                   description="create Windows version of FigTree">
+
+        <property name="windows_release.dir" location="${releases}/Windows/${FigTree_release}${version}" />
+
+        <!-- Create the release directory -->
+        <mkdir dir="${windows_release.dir}" />
+
+        <property name="launch4j.dir" location="${releases}/Launch4j" />
+        <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
+            classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
+
+        <copy file="${releases}/doc/README.txt" todir="${windows_release.dir}"/>
+
+        <!-- FigTree v?.?.?.exe -->
+        <launch4j configFile="${releases}/FigTree_launch4j.xml"
+                  jar="${dist}/figtree.jar"
+                  outfile="${windows_release.dir}/${FigTree_release}${version}.exe"
+                  fileVersion="${version}.0"
+                  txtFileVersion="${version}"
+                  productVersion="${version}.0"
+                  txtProductVersion="${version}"/>
+
+        <zip destfile="${releases}/Windows/${FigTree_release}${version}.zip">
+            <zipfileset dir="${windows_release.dir}" prefix="${FigTree_release}${version}"/>
+        </zip>
+
+        <echo message="Windows version release is finished." />
+
+    </target>
+
 </project>
