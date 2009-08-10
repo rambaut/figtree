@@ -69,7 +69,7 @@ public class ScaleBarPainterController extends AbstractController {
 
         autoScaleCheck = new JCheckBox("Automatic scale");
         autoScaleCheck.setSelected(true);
-        optionsPanel.addComponent(autoScaleCheck, true);
+        optionsPanel.addSpanningComponent(autoScaleCheck);
 
         scaleRangeText = new RealNumberField(0.0, Double.MAX_VALUE);
         scaleRangeText.setValue(0.0);

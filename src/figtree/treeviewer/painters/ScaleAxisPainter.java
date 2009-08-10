@@ -39,6 +39,10 @@ public class ScaleAxisPainter extends LabelPainter<TreePane> implements ScalePai
 
     }
 
+    public void setAxisReversed(final boolean isAxisReversed) {
+        treePane.setAxisReversed(isAxisReversed);  
+    }
+
     public void setAxisSpacing(double majorTickSpacing, double minorTickSpacing) {
         treePane.setTickSpacing(majorTickSpacing, minorTickSpacing);
     }
