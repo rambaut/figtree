@@ -66,7 +66,11 @@ public class PolarTreeLayout extends AbstractTreeLayout {
     }
 
     public Shape getAxisLine(double height) {
-        return new Ellipse2D.Double(-height, -height, height * 2.0, height * 2.0);
+        double x = height;
+        if (isAxisReversed()) {
+            x = maxXPosition - x;
+        }
+        return new Ellipse2D.Double(-x, -x, x * 2.0, x * 2.0);
     }
 
     public Shape getHeightArea(double height1, double height2) {

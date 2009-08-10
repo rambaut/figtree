@@ -74,7 +74,7 @@ public class ScaleAxisPainterController extends AbstractController {
 		titleCheckBox.setSelected(scaleAxisPainter.isVisible());
 
         reverseAxisCheck = new JCheckBox("Reverse axis");
-        reverseAxisCheck.setSelected(true);
+        reverseAxisCheck.setSelected(false);
         optionsPanel.addSpanningComponent(reverseAxisCheck);
 
         showGridCheck = new JCheckBox("Show grid");
