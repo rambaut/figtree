@@ -21,8 +21,7 @@ import java.util.List;
  * @version $Id: TreePane.java 823 2007-10-28 20:28:47Z stevensh $
  */
 public class TreePane extends JComponent implements PainterListener, Printable {
-
-	public enum RootingType {
+    public enum RootingType {
 		USER_ROOTING("User Selection"),
 		MID_POINT("Midpoint");
 //		LEAST_SQUARES("least squares");
@@ -252,7 +251,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 	 */
 	public double scaleOnAxis(double value) {
 		double height = timeScale.getHeight(value, tree);
-		if (axisReversed) {
+		if (treeLayout.isAxisReversed()) {
 			return treeBounds.getX() + treeBounds.getWidth() - (height * treeScale);
 		} else {
 			return treeBounds.getX() + (height * treeScale);
@@ -279,7 +278,15 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
 	public void setAxisOrigin(double axisOrigin) {
 		this.axisOrigin = axisOrigin;
+        calibrated = false;
+        repaint();
 	}
+
+    public void setAxisReversed(final boolean isAxisReversed) {
+      treeLayout.setAxisReversed(isAxisReversed);
+        calibrated = false;
+        repaint();
+    }
 
 	private void setupScaleAxis() {
 		double treeHeight = tree.getHeight(tree.getRootNode()) + treeLayout.getRootLength();
@@ -291,13 +298,11 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 				minValue = axisOrigin;
 			}
 			scaleAxis.setRange(minValue, maxValue);
-			axisReversed = false;
 		} else {
 			if (axisOrigin > minValue) {
 				minValue = axisOrigin;
 			}
 			scaleAxis.setRange(maxValue, minValue);
-			axisReversed = true;
 		}
 	}
 
@@ -1859,7 +1864,6 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
 	private ScaleAxis scaleAxis = new ScaleAxis(ScaleAxis.AT_DATA, ScaleAxis.AT_DATA);
 	private double axisOrigin = 0.0;
-	private boolean axisReversed = false;
 	private TimeScale timeScale = new TimeScale(1.0, 0.0);
 
 	//private Insets insets = new Insets(0, 0, 0, 0);

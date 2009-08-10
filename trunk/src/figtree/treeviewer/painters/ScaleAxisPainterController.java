@@ -32,6 +32,10 @@ public class ScaleAxisPainterController extends AbstractController {
 
 	private static final String NUMBER_FORMATTING_KEY = "numberFormatting";
 
+    private static final String REVERSE_AXIS_KEY = "reverseAxis";
+
+    private static final String SHOW_GRID_KEY = "showGrid";
+
 	private static final String AUTOMATIC_SCALE_KEY = "automaticScale";
 	private static final String MINOR_TICKS_KEY = "minorTicks";
 	private static final String MAJOR_TICKS_KEY = "majorTicks";
@@ -69,9 +73,17 @@ public class ScaleAxisPainterController extends AbstractController {
 
 		titleCheckBox.setSelected(scaleAxisPainter.isVisible());
 
+        reverseAxisCheck = new JCheckBox("Reverse axis");
+        reverseAxisCheck.setSelected(true);
+        optionsPanel.addSpanningComponent(reverseAxisCheck);
+
+        showGridCheck = new JCheckBox("Show grid");
+        showGridCheck.setSelected(true);
+        optionsPanel.addSpanningComponent(showGridCheck);
+
 		autoScaleCheck = new JCheckBox("Automatic scale");
 		autoScaleCheck.setSelected(true);
-		optionsPanel.addComponent(autoScaleCheck, true);
+		optionsPanel.addSpanningComponent(autoScaleCheck);
 
 		majorTicksText = new RealNumberField();
 		majorTicksText.setValue(1.0);
@@ -170,7 +182,19 @@ public class ScaleAxisPainterController extends AbstractController {
 			}
 		});
 
-		autoScaleCheck.addChangeListener(new ChangeListener() {
+        reverseAxisCheck.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
+                scaleAxisPainter.setAxisReversed(reverseAxisCheck.isSelected());
+            }
+        });
+
+        showGridCheck.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
+                scaleGridPainter.setVisible(showGridCheck.isSelected());
+            }
+        });
+
+        autoScaleCheck.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent changeEvent) {
 				if (autoScaleCheck.isSelected()) {
 					scaleAxisPainter.setAutomatic(true);
@@ -250,6 +274,8 @@ public class ScaleAxisPainterController extends AbstractController {
 
 	public void setSettings(Map<String,Object> settings) {
 		titleCheckBox.setSelected((Boolean)settings.get(SCALE_AXIS_KEY + "." + IS_SHOWN));
+        reverseAxisCheck.setSelected((Boolean)settings.get(SCALE_AXIS_KEY + "." + REVERSE_AXIS_KEY));
+        showGridCheck.setSelected((Boolean)settings.get(SCALE_AXIS_KEY + "." + SHOW_GRID_KEY));
 //		minorTicksText.setValue((Double)settings.get(SCALE_AXIS_KEY + "." + MINOR_TICKS_KEY));
 		majorTicksText.setValue((Double)settings.get(SCALE_AXIS_KEY + "." + MAJOR_TICKS_KEY));
 		originText.setValue((Double)settings.get(SCALE_AXIS_KEY + "." + ORIGIN_KEY));
@@ -262,6 +288,8 @@ public class ScaleAxisPainterController extends AbstractController {
 
 	public void getSettings(Map<String, Object> settings) {
 		settings.put(SCALE_AXIS_KEY + "." + IS_SHOWN, titleCheckBox.isSelected());
+        settings.put(SCALE_AXIS_KEY + "." + REVERSE_AXIS_KEY, reverseAxisCheck.isSelected());
+        settings.put(SCALE_AXIS_KEY + "." + SHOW_GRID_KEY, showGridCheck.isSelected());
 		settings.put(SCALE_AXIS_KEY + "." + AUTOMATIC_SCALE_KEY, autoScaleCheck.isSelected());
 //		settings.put(SCALE_AXIS_KEY + "." + MINOR_TICKS_KEY, minorTicksText.getValue());
 		settings.put(SCALE_AXIS_KEY + "." + MAJOR_TICKS_KEY, majorTicksText.getValue());
@@ -274,6 +302,8 @@ public class ScaleAxisPainterController extends AbstractController {
 	private final JCheckBox titleCheckBox;
 	private final OptionsPanel optionsPanel;
 
+    private final JCheckBox reverseAxisCheck;
+    private final JCheckBox showGridCheck;
 	private final JCheckBox autoScaleCheck;
 	private final RealNumberField minorTicksText;
 	private final RealNumberField majorTicksText;

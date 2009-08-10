@@ -11,12 +11,12 @@ import java.awt.geom.Point2D;
  */
 public interface TreeLayout {
 
-	public enum AxisType {
+    public enum AxisType {
         CONTINUOUS,
         DISCRETE
     }
 
-	void layout(RootedTree tree, TreeLayoutCache cache);
+    void layout(RootedTree tree, TreeLayoutCache cache);
 
     /**
      * Add a listener for this layout
@@ -52,9 +52,14 @@ public interface TreeLayout {
      */
     boolean isShowingRootBranch();
 
-	double getRootLength();
+    double getRootLength();
 
-	void setRootLength(double rootLength);
+    void setRootLength(double rootLength);
+
+    boolean isAxisReversed();
+
+    void setAxisReversed(final boolean axisReversed);
+
 
     /**
      * Return whether this layout is showing a branch colouring
@@ -62,9 +67,9 @@ public interface TreeLayout {
      */
     boolean isShowingColouring();
 
-	void setFishEye(double fishEye);
+    void setFishEye(double fishEye);
 
-	void setPointOfInterest(double x, double y);
+    void setPointOfInterest(double x, double y);
 
     /**
      * Return whether the two axis scales should be maintained
@@ -99,15 +104,15 @@ public interface TreeLayout {
 
     void setBranchColouringAttributeName(String colouringAttributeName);
 
-	String getCartoonAttributeName();
+    String getCartoonAttributeName();
 
     void setCartoonAttributeName(String cartoonAttributeName);
 
-	String getCollapsedAttributeName();
+    String getCollapsedAttributeName();
 
     void setCollapsedAttributeName(String collapsedAttributeName);
 
-	String getHilightAttributeName();
+    String getHilightAttributeName();
 
     void setHilightAttributeName(String hilightAttributeName);
 }

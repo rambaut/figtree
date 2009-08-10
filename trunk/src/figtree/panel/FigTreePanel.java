@@ -34,7 +34,7 @@ public class FigTreePanel extends JPanel {
         this(new SimpleTreeViewer(), new SimpleControlPalette(), null, style);
     }
 
-    public FigTreePanel(final SimpleTreeViewer treeViewer,
+    public FigTreePanel(final TreeViewer treeViewer,
                         ControlPalette controlPalette1,
                         ControlPalette controlPalette2,
                         Style style) {

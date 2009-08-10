@@ -27,6 +27,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 
 	private double maxXPosition;
 
+
 	public AxisType getXAxisType() {
 		return AxisType.CONTINUOUS;
 	}
@@ -57,7 +58,10 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 	}
 
 	public Shape getAxisLine(double height) {
-		double x = height;
+        double x = height;
+        if (isAxisReversed()) {
+            x = maxXPosition - x;
+        }
 		double y1 = 0.0;
 		double y2 = 1.0;
 		return new Line2D.Double(x, y1, x, y2);

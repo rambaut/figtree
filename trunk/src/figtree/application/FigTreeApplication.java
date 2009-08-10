@@ -192,7 +192,7 @@ public class FigTreeApplication extends MultiDocApplication {
         centreLine("Uses the Java Evolutionary Biology Library (JEBL)", 60);
         centreLine("http://jebl.sourceforge.net/", 60);
         centreLine("Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, ", 60);
-        centreLine("Tulio de Oliveira & Beth Shapiro", 60);
+        centreLine("Tulio de Oliveira, Beth Shapiro & Marc Suchard", 60);
 	    System.out.println();
     }
 
