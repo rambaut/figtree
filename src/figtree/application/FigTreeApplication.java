@@ -320,7 +320,7 @@ public class FigTreeApplication extends MultiDocApplication {
                 "<a href=\"http://tree.bio.ed.ac.uk/\">http://tree.bio.ed.ac.uk/</a><br><br>" +
                 "Uses the Java Evolutionary Biology Library (JEBL)<br>" +
                 "<a href=\"http://sourceforge.net/projects/jebl/\">http://jebl.sourceforge.net/</a><br><br>" +
-                "Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, <br>Tulio de Oliveira & Beth Shapiro</center></html>";
+                "Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, <br>Tulio de Oliveira, Beth Shapiro & Marc Suchard</center></html>";
 
         String websiteURLString = "http://tree.bio.ed.ac.uk/software/figtree/";
         String helpURLString = "http://tree.bio.ed.ac.uk/software/figtree/";
