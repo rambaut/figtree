@@ -49,8 +49,8 @@ public class DiscreteKMLString {
     //circles
     int numberOfIntervals = 100;
     boolean autoRadius = false;
-    double radius = 150000;
-    String circleOpacity = "CF";
+    double radius = 25000;
+    String circleOpacity = "BF";
 
     //some taxa may have different coordinates than its state
     boolean coordinatesForTaxa = false;
