@@ -487,6 +487,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		if (selectedTip != null) {
 			this.selectedTips.add(selectedTip);
 		}
+        selectTipsFromSelectedNodes();
 		fireSelectionChanged();
 		clearSelectionPaths();
 		repaint();

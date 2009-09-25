@@ -388,6 +388,19 @@ public class DefaultTreeViewer extends TreeViewer {
         }
     }
 
+    public void selectTaxa(Collection<String> taxonNames) {
+        treePane.clearSelection();
+
+        RootedTree tree = treePane.getTree();
+
+        for (Node node : tree.getExternalNodes()) {
+            Object value = null;
+            if (taxonNames.contains(tree.getTaxon(node).getName())) {
+                treePane.addSelectedTip(node);
+            }
+        }
+    }
+
     private boolean matchesItem(Object item, NumberSearchType searchType, Number searchValue) {
         if (item != null && item instanceof Number) {
 
