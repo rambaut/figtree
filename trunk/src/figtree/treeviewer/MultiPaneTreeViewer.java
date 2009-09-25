@@ -277,7 +277,10 @@ public class MultiPaneTreeViewer extends TreeViewer {
 	public void selectNodes(String attributeName, NumberSearchType searchType, Number searchValue) {
 	}
 
-	public void collapseSelectedNodes() {
+    public void selectTaxa(final Collection<String> taxonNames) {
+    }
+
+    public void collapseSelectedNodes() {
 //         treePane.collapseSelectedNodes();
 	}
 

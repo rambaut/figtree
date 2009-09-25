@@ -61,6 +61,8 @@ public abstract class TreeViewer extends JPanel implements Printable {
 
 	public abstract void selectNodes(String attributeName, NumberSearchType searchType, Number searchValue);
 
+    public abstract void selectTaxa(Collection<String> taxonNames);
+
 	public abstract void collapseSelectedNodes();
 
     public abstract void annotateSelectedNodes(String name, Object value);

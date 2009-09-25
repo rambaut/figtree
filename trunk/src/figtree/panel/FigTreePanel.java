@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import figtree.treeviewer.painters.ScaleBarPainter;
 import figtree.treeviewer.decorators.*;
 import figtree.treeviewer.TreeViewer;
+import figtree.treeviewer.TreePaneSelector;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.trees.Tree;
 
@@ -192,6 +193,10 @@ public class FigTreePanel extends JPanel {
                 }
             }
         }
+    }
+
+    public TreeViewer getTreeViewer() {
+        return treeViewer;
     }
 
     public void setTree(Tree tree) {
