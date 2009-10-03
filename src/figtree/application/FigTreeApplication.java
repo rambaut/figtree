@@ -12,6 +12,7 @@ package figtree.application;
 
 import figtree.application.preferences.*;
 import figtree.treeviewer.ExtendedTreeViewer;
+import figtree.treeviewer.TreePane;
 import jam.framework.*;
 import jam.controlpalettes.BasicControlPalette;
 import jam.controlpalettes.ControlPalette;
@@ -34,12 +35,13 @@ import ch.randelshofer.quaqua.QuaquaManager;
 import jebl.evolution.io.ImportException;
 import jebl.evolution.io.NewickImporter;
 import jebl.evolution.trees.Tree;
+import jebl.evolution.trees.RootedTree;
 
 import javax.swing.*;
 
 public class FigTreeApplication extends MultiDocApplication {
 
-    public static final String VERSION = "1.2.3";
+    public static final String VERSION = "1.2.4";
     public static final String DATES = "2006-2009";
 
     public static FigTreeApplication application;
@@ -126,30 +128,47 @@ public class FigTreeApplication extends MultiDocApplication {
 
 	        treeViewer.getContentPane().setSize(width, height);
 
-	        File file = new File(graphicFileName);
+            OutputStream stream;
+            if (graphicFileName != null) {
+                stream = new FileOutputStream(graphicFileName);
+            } else {
+                stream = System.out;
+            }
 
 	        Properties p = new Properties();
 	        p.setProperty("PageSize","A5");
 	        VectorGraphics g;
 
 	        if (graphicFormat.equals("PDF")) {
-		        System.out.println("Creating PDF graphic: " + graphicFileName);
-		        g = new PDFGraphics2D(file, new Dimension(width, height));
+                if (graphicFileName != null) {
+                    System.out.println("Creating PDF graphic: " + graphicFileName);
+                }
+		        g = new PDFGraphics2D(stream, new Dimension(width, height));
 	        } else if (graphicFormat.equals("PS")) {
-		        System.out.println("Creating PS graphic: " + graphicFileName);
-		        g = new PSGraphics2D(file, new Dimension(width, height));
+                if (graphicFileName != null) {
+                    System.out.println("Creating PS graphic: " + graphicFileName);
+                }
+		        g = new PSGraphics2D(stream, new Dimension(width, height));
 	        } else if (graphicFormat.equals("EMF")) {
-		        System.out.println("Creating EMF graphic: " + graphicFileName);
-		        g = new EMFGraphics2D(file, new Dimension(width, height));
+                if (graphicFileName != null) {
+                    System.out.println("Creating EMF graphic: " + graphicFileName);
+                }
+		        g = new EMFGraphics2D(stream, new Dimension(width, height));
 	        } else if (graphicFormat.equals("SVG")) {
-		        System.out.println("Creating SVG graphic: " + graphicFileName);
-		        g = new SVGGraphics2D(file, new Dimension(width, height));
+                if (graphicFileName != null) {
+                    System.out.println("Creating SVG graphic: " + graphicFileName);
+                }
+		        g = new SVGGraphics2D(stream, new Dimension(width, height));
 	        } else if (graphicFormat.equals("SWF")) {
-		        System.out.println("Creating SWF graphic: " + graphicFileName);
-		        g = new SWFGraphics2D(file, new Dimension(width, height));
+                if (graphicFileName != null) {
+                    System.out.println("Creating SWF graphic: " + graphicFileName);
+                }
+		        g = new SWFGraphics2D(stream, new Dimension(width, height));
 	        } else if (graphicFormat.equals("GIF")) {
-		        System.out.println("Creating GIF graphic: " + graphicFileName);
-		        g = new GIFGraphics2D(file, new Dimension(width, height));
+                if (graphicFileName != null) {
+                    System.out.println("Creating GIF graphic: " + graphicFileName);
+                }
+		        g = new GIFGraphics2D(stream, new Dimension(width, height));
 //	        } else if (graphicFormat.equals("PNG")) {
 //		        g = new PNGGraphics2D(file, new Dimension(width, height));
 //	        } else if (graphicFormat.equals("JPEG")) {
@@ -256,9 +275,20 @@ public class FigTreeApplication extends MultiDocApplication {
             String graphicFormat = arguments.getStringOption("graphic");
             String[] args2 = arguments.getLeftoverArguments();
 
-            printTitle();
-            createGraphic(graphicFormat, width, height, args2[0], args2[1]);
-            System.exit(0);
+            if (args2.length == 0) {
+                // no tree file specified
+                printTitle();
+                printUsage(arguments);
+                System.exit(0);
+            } else if (args2.length == 1) {
+                // no graphic file specified - write to stdout
+                createGraphic(graphicFormat, width, height, args2[0], (args2.length > 1 ? args2[1] : null));
+                System.exit(0);
+            } else {
+                printTitle();
+                createGraphic(graphicFormat, width, height, args2[0], (args2.length > 1 ? args2[1] : null));
+                System.exit(0);
+            }
         }
 
         boolean lafLoaded = false;

@@ -33,7 +33,7 @@
 
 	<target name="compile" depends="init">
 		<!-- Compile the java code from ${src} into ${build} -->
-		<javac source="1.5" srcdir="${src}" destdir="${build}"
+		<javac source="1.5" srcdir="${src}/figtree" destdir="${build}"
 		       classpath="${lib}/jebl.jar:${lib}/jam.jar:${lib}/freehep.jar:${lib}/quaqua.jar:${lib}/jdom.jar"/>
 		<copy todir="${build}" verbose="true">
 			<fileset dir="${src}" includes="figtree/**/*.png,figtree/**/*.gif"/>
@@ -46,7 +46,7 @@
 
 		<jar jarfile="${dist}/figtreeapplet.jar">
 			<fileset dir="${build}"
-			         includes="**/*.class,**/*.properties,**/*.png,**/*.gif"
+			         includes="figtree/**/*.class,**/*.properties,**/*.png,**/*.gif"
 				/>
 			<fileset dir="../JEBL/build"
 			         includes="**/*.class,**/*.properties,**/*.png,**/*.gif"
