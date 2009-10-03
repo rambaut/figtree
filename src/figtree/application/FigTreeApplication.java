@@ -294,7 +294,7 @@ public class FigTreeApplication extends MultiDocApplication {
         boolean lafLoaded = false;
 
         if (Utils.isMacOSX()) {
-            if (Utils.getMacOSXVersion().startsWith("10.5")) {
+            if (Utils.getMacOSXMajorVersionNumber() >= 5) {
                 System.setProperty("apple.awt.brushMetalLook","true");
             }
 

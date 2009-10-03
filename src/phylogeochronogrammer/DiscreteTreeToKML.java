@@ -78,8 +78,7 @@ public class DiscreteTreeToKML {
             return;
         }
 
-
-        double date = 2000;
+        double date = 2008.526;
         if (args.length > 2) {
             date = Double.parseDouble(args[2]);
         }
