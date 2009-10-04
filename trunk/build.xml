@@ -32,16 +32,13 @@
 		<mkdir dir="${lib}"/>
 	</target>
 
-<!--
 	<target name="copyLibs" depends="init">
 		<copy file="../JEBL/dist/jebl.jar" tofile="${lib}/jebl.jar"/>
-        <copy file="../JAM/dist/jam.jar" tofile="${lib}/jam.jar"/>
 	</target>
 
 	<target name="freehep" depends="init" description="generate the distribution">
 
 		<jar jarfile="${lib}/freehep.jar">
-            <metainf dir="${lib}/META-INF" includes="services/org.freehep.util.export.ExportFileType"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-export-2.1.1.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-graphics2d-2.1.1.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-graphicsio-2.1.1.jar"/>
@@ -54,17 +51,15 @@
 			<zipgroupfileset dir="${lib}" includes="freehep-swing-2.0.3.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-util-2.0.2.jar"/>
 			<zipgroupfileset dir="${lib}" includes="freehep-xml-2.1.1.jar"/>
+            <metainf dir="${lib}/META-INF" includes="services/org.freehep.util.export.ExportFileType"/>
 		</jar>
 
 	</target>
 
-	<target name="compile" depends="init,copyLibs">
--->
-
-	<target name="compile" depends="init">
+	<target name="compile" depends="init,copyLibs,freehep">
 		<!-- Compile the java code from ${src} into ${build} -->
 		<javac source="1.5" srcdir="${src}" destdir="${build}"
-		       classpath="${lib}/jebl.jar:${lib}/jam.jar:${lib}/freehep.jar:${lib}/quaqua.jar">
+		       classpath="${lib}/jebl.jar:${lib}/jam.jar:${lib}/freehep.jar:${lib}/iText-2.1.7.jar:${lib}/quaqua.jar">
 			<include name="figtree/**"/>
 		</javac>
 		<copy todir="${build}" verbose="true">
@@ -78,8 +73,8 @@
 
 		<jar jarfile="${dist}/figtree.jar">
 			<zipgroupfileset dir="${lib}" includes="jebl.jar"/>
-            <zipgroupfileset dir="${lib}" includes="jam.jar"/>
-			<zipgroupfileset dir="${lib}" includes="freehep.jar"/>
+			<zipgroupfileset dir="${lib}" includes="jam.jar"/>
+            <zipgroupfileset dir="${lib}" includes="freehep.jar"/>
 			<fileset dir="${build}" includes="**/*.class,**/*.properties,**/*.png,**/*.gif"/>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
@@ -87,41 +82,142 @@
 			</manifest>
 		</jar>
 
+        <jar jarfile="${dist}/figtree-pdf.jar">
+            <zipgroupfileset dir="${lib}" includes="jebl.jar"/>
+            <zipgroupfileset dir="${lib}" includes="jam.jar"/>
+            <zipgroupfileset dir="${lib}" includes="iText-2.1.7.jar"/>
+            <fileset dir="${build}" includes="**/*.class,**/*.properties,**/*.png,**/*.gif"/>
+            <manifest>
+                <attribute name="Built-By" value="${user.name}"/>
+                <attribute name="Main-Class" value="figtree.application.FigTreePDF"/>
+            </manifest>
+        </jar>
+
 	</target>
 
-    <property name="version" value="1.2.3" />
-    <property name="releases" value="releases" />
-    <property name="FigTree_release" value="FigTree v" />
+    <property name="version" value="1.2.4" />
+    <property name="release_dir" value="release" />
+    <property name="name" value="FigTree" />
 
+    <property name="common_dir" value="${release_dir}/common" />
+
+    <property name="Mac_dir" value="${release_dir}/Mac" />
+    <property name="Linux_dir" value="${release_dir}/Linux" />
+    <property name="Windows_dir" value="${release_dir}/Windows" />
+
+    <property name="Mac_package_dir" value="${Mac_dir}/${name} v${version}" />
+    <property name="Linux_package_dir" value="${Linux_dir}/${name}_v${version}" />
+    <property name="Windows_package_dir" value="${Windows_dir}/${name} v${version}" />
+
+    <!-- Need to either install Launch4j under {BEAST workspace}/${release}
+                 or install it in the default directory and change the location of launch4j.dir -->
     <target name="windows_Release" depends="dist"
-                                   description="create Windows version of FigTree">
+                                   description="release Windows version of FigTree">
 
-        <property name="windows_release.dir" location="${releases}/Windows/${FigTree_release}${version}" />
-
+        <delete dir="${Windows_package_dir}" />
         <!-- Create the release directory -->
-        <mkdir dir="${windows_release.dir}" />
+        <mkdir dir="${Windows_package_dir}" />
 
-        <property name="launch4j.dir" location="${releases}/Launch4j" />
+        <property name="launch4j.dir" location="${Windows_dir}/launch4j" />
         <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
             classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
 
-        <copy file="${releases}/doc/README.txt" todir="${windows_release.dir}"/>
+        <!--<copy todir="${Windows_package_dir}/doc">-->
+            <!--<fileset dir="${common_dir}/doc"/>-->
+        <!--</copy>-->
+        <!--<copy todir="${Windows_package_dir}/examples">-->
+            <!--<fileset dir="${common_dir}/examples"/>-->
+        <!--</copy>-->
+        <!--<copy todir="${Windows_package_dir}/native">-->
+            <!--<fileset dir="${common_dir}/native"/>-->
+        <!--</copy>-->
+        <!--<copy todir="${Windows_package_dir}/scripts">-->
+            <!--<fileset dir="${Windows_dir}/scripts"/>-->
+        <!--</copy>-->
 
-        <!-- FigTree v?.?.?.exe -->
-        <launch4j configFile="${releases}/FigTree_launch4j.xml"
+        <copy file="${dist}/figtree.jar" todir="${Windows_dir}/lib"/>
+        <copy todir="${Windows_package_dir}/lib">
+            <fileset dir="${Windows_dir}/lib"/>
+        </copy>
+        <copy file="${common_dir}/README.txt" todir="${Windows_package_dir}"/>
+
+        <launch4j configFile="${Windows_dir}/FigTree_launch4j.xml"
                   jar="${dist}/figtree.jar"
-                  outfile="${windows_release.dir}/${FigTree_release}${version}.exe"
+                  outfile="${Windows_package_dir}/${name} v${version}.exe"
                   fileVersion="${version}.0"
                   txtFileVersion="${version}"
                   productVersion="${version}.0"
                   txtProductVersion="${version}"/>
 
-        <zip destfile="${releases}/Windows/${FigTree_release}${version}.zip">
-            <zipfileset dir="${windows_release.dir}" prefix="${FigTree_release}${version}"/>
+        <zip destfile="${Windows_dir}/${name} v${version}.zip">
+            <zipfileset dir="${Windows_package_dir}" prefix="${name} v${version}"/>
         </zip>
 
         <echo message="Windows version release is finished." />
+    </target>
 
+    <target name="linux_unix_Release"
+                                   description="release Linux/Unix version of FigTree">
+        <delete dir="${Linux_package_dir}" />
+        <!-- Create the release directory -->
+        <mkdir dir="${Linux_package_dir}" />
+
+        <copy todir="${Linux_package_dir}/bin">
+            <fileset dir="${Linux_dir}/scripts"/>
+        </copy>
+
+        <copy file="${Linux_dir}/icons/figtree.png" todir="${Linux_package_dir}/images"/>
+        <copy file="${dist}/figtree.jar" todir="${Linux_package_dir}/lib"/>
+        <copy todir="${Linux_package_dir}/lib">
+            <fileset dir="${Linux_dir}/lib"/>
+        </copy>
+        <copy file="${common_dir}/README.txt" todir="${Linux_package_dir}"/>
+
+        <tar destfile="${release_dir}/${name}_v${version}.tgz" compression="gzip">
+            <tarfileset dir="${Linux_package_dir}" prefix="${name}_v${version}"/>
+        </tar>
+
+        <echo message="Linux/Unix version release is finished." />
+    </target>
+
+    <target name="mac_Release"
+                                   description="release Mac version of FigTree">
+        <delete dir="${Mac_package_dir}" />
+        <!-- Create the release directory -->
+        <mkdir dir="${Mac_package_dir}" />
+
+        <copy file="${dist}/figtree.jar" todir="${Mac_package_dir}/lib"/>
+        <copy file="${common_dir}/README.txt" todir="${Mac_package_dir}"/>
+        <copy todir="${Mac_package_dir}/QuickLook Plugin">
+            <fileset dir="${Mac_dir}/QuickLook Plugin"/>
+        </copy>
+
+        <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler"/>
+
+        <!-- create a jar bundle for the mac -->
+        <jarbundler dir="${Mac_package_dir}"
+                        name="${name} v${version}"
+                        mainclass="figtree.application.FigTreeApplication"
+                        icon="${Mac_dir}/icons/FigTree.icns"
+                        jvmversion="1.5+"
+                        arguments=""
+                        version="${version}"
+                        infostring="${name} v${version}, Copyright 2006-2009, Andrew Rambaut"
+                        bundleid="figtree" >
+            <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
+            <jarfileset dir="${dist}">
+                <include name="**/figtree.jar"/>
+            </jarfileset>
+            <jarfileset dir="${Mac_dir}/lib">
+                <include name="**/*.jar"/>
+            </jarfileset>
+            <documenttype name="FigTree tree file"
+                          extensions="tree tre trees ntf tf"
+                          iconFile="${Mac_dir}/icons/FigTreeDocIcon.icns"
+                          role="Editor"/>
+        </jarbundler>
+
+        <echo message="Mac version release is finished." />
     </target>
 
 </project>
