@@ -134,7 +134,7 @@ public class FigTreeApplication extends MultiDocApplication {
             }
 
 	        Properties p = new Properties();
-	        p.setProperty("PageSize","A5");
+//	        p.setProperty("PageSize","A5");
 	        VectorGraphics g;
 
 	        if (graphicFormat.equals("PDF")) {
@@ -219,7 +219,7 @@ public class FigTreeApplication extends MultiDocApplication {
         System.out.println();
         System.out.println("  Example: figtree test.tree");
         System.out.println("  Example: figtree -graphic PDF test.tree test.pdf");
-	    System.out.println("  Example: figtree -graphic PNG -width 320 -height 320 test.tree test.png");
+	    System.out.println("  Example: figtree -graphic GIF -width 320 -height 320 test.tree test.gif");
         System.out.println();
     }
 
