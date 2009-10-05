@@ -1,18 +1,23 @@
 package figtree.treeviewer.painters;
 
 import jebl.evolution.trees.Tree;
+import jebl.util.Attributable;
 
 import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Collection;
+import java.util.Set;
+
+import figtree.treeviewer.decorators.Decorator;
 
 /**
  * @author Andrew Rambaut
  * @version $Id: LabelPainter.java 536 2006-11-21 16:10:24Z rambaut $
  */
 public abstract class LabelPainter<T> extends AbstractPainter<T> {
+    private Set<? extends Attributable> attributableItems;
 
-	protected LabelPainter() {
+    protected LabelPainter() {
 	}
 
 	// Abstract
@@ -23,8 +28,10 @@ public abstract class LabelPainter<T> extends AbstractPainter<T> {
 
     public abstract void setDisplayAttribute(String displayAttribute);
 
-    public abstract void setColourAttribute(String displayAttribute);
-    
+    public abstract void setTextDecorator(Decorator textDecorator);
+
+    public abstract Set<Attributable> getAttributableItems();
+
 	// Getters
 
 	public Paint getForeground() {

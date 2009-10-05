@@ -28,5 +28,11 @@ public abstract class AbstractPainter<T> implements Painter<T> {
         }
     }
 
+    public void fireAttributesChanged() {
+        for (PainterListener listener : listeners) {
+            listener.attributesChanged();
+        }
+    }
+    
     private final List<PainterListener> listeners = new ArrayList<PainterListener>();
 }

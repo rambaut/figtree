@@ -90,6 +90,9 @@ public class NodeShapeController extends AbstractController {
             }
 
             public void painterSettingsChanged() {
+            }
+
+            public void attributesChanged() {
                 Object item1 = displayLowerAttributeCombo.getSelectedItem();
                 Object item2 = displayUpperAttributeCombo.getSelectedItem();
                 displayLowerAttributeCombo.removeAllItems();

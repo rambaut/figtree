@@ -3,10 +3,14 @@ package figtree.treeviewer.painters;
 import figtree.treeviewer.TimeScale;
 import figtree.treeviewer.TreePane;
 import figtree.treeviewer.decorators.Decorator;
+import figtree.treeviewer.decorators.DiscreteColorDecorator;
+import figtree.treeviewer.decorators.ContinousScale;
+import figtree.treeviewer.decorators.ContinuousColorDecorator;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.RootedTree;
 import jebl.evolution.trees.Tree;
+import jebl.util.Attributable;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -23,354 +27,358 @@ import java.util.List;
  */
 public class BasicLabelPainter extends LabelPainter<Node> {
 
-	public static final String NAMES = "Names";
-	public static final String NODE_AGES = "Node ages";
-	public static final String NODE_HEIGHTS = "Node heights (raw)";
-	public static final String BRANCH_TIMES = "Branch times";
-	public static final String BRANCH_LENGTHS = "Branch lengths (raw)";
+    public static final String NAMES = "Names";
+    public static final String NODE_AGES = "Node ages";
+    public static final String NODE_HEIGHTS = "Node heights (raw)";
+    public static final String BRANCH_TIMES = "Branch times";
+    public static final String BRANCH_LENGTHS = "Branch lengths (raw)";
 
-	public enum PainterIntent {
-		NODE,
-		BRANCH,
-		TIP
-	};
 
-	public BasicLabelPainter(PainterIntent intent) {
-		this.intent = intent;
+    public enum PainterIntent {
+        NODE,
+        BRANCH,
+        TIP
+    };
 
-		setupAttributes(null);
+    public BasicLabelPainter(PainterIntent intent) {
+        this.intent = intent;
 
-		if (this.displayAttribute == null) {
-			this.displayAttribute = attributes[0];
-		} else {
-			this.displayAttribute = "";
-		}
+        setupAttributes(null);
 
-        if (this.colourAttribute == null) {
-            this.colourAttribute = "User Selection";
+        if (this.displayAttribute == null) {
+            this.displayAttribute = attributes[0];
         } else {
-            this.colourAttribute = "";
+            this.displayAttribute = "";
         }
 
-	}
+    }
 
-	public void setupAttributes(Collection<? extends Tree> trees) {
+    public void setupAttributes(Collection<? extends Tree> trees) {
 
-		List<String> attributeNames = new ArrayList<String>();
+        List<String> attributeNames = new ArrayList<String>();
 
-		Set<String> nodeAttributes = new TreeSet<String>();
-		if (trees != null) {
-			for (Tree tree : trees) {
-				if (intent == PainterIntent.TIP) {
-					for (Node node : tree.getExternalNodes()) {
-						nodeAttributes.addAll(node.getAttributeNames());
-					}
-					for (Taxon taxon : tree.getTaxa()) {
-						nodeAttributes.addAll(taxon.getAttributeNames());
-					}
-				} else if (intent == PainterIntent.NODE) {
-					for (Node node : tree.getInternalNodes()) {
-						nodeAttributes.addAll(node.getAttributeNames());
-					}
-				} else {
-					for (Node node : tree.getNodes()) {
-						nodeAttributes.addAll(node.getAttributeNames());
-					}
-				}
-			}
-		}
+        attributableItems.clear();
 
-		switch( intent ) {
-			case TIP: {
-				attributeNames.add(NAMES);
-				attributeNames.add(NODE_AGES);
-				attributeNames.add(NODE_HEIGHTS);
-				attributeNames.add(BRANCH_TIMES);
-				attributeNames.add(BRANCH_LENGTHS);
-				break;
-			}
-			case NODE: {
-				if (nodeAttributes.contains("!name")) {
-					attributeNames.add(NAMES);
-				}
-				attributeNames.add(NODE_AGES);
-				attributeNames.add(NODE_HEIGHTS);
-				attributeNames.add(BRANCH_TIMES);
-				attributeNames.add(BRANCH_LENGTHS);
-				break;
-			}
-			case BRANCH: {
-				if (nodeAttributes.contains("!name")) {
-					attributeNames.add(NAMES);
-				}
-				attributeNames.add(BRANCH_TIMES);
-				attributeNames.add(BRANCH_LENGTHS);
-				attributeNames.add(NODE_AGES);
-				attributeNames.add(NODE_HEIGHTS);
-				break;
-			}
-		}
+        Set<String> nodeAttributes = new TreeSet<String>();
+        if (trees != null) {
+            for (Tree tree : trees) {
+                if (intent == PainterIntent.TIP) {
+                    for (Node node : tree.getExternalNodes()) {
+                        attributableItems.add(node);
+                        nodeAttributes.addAll(node.getAttributeNames());
+                    }
+                    for (Taxon taxon : tree.getTaxa()) {
+                        attributableItems.add(taxon);
+                        nodeAttributes.addAll(taxon.getAttributeNames());
+                    }
+                } else if (intent == PainterIntent.NODE) {
+                    for (Node node : tree.getInternalNodes()) {
+                        attributableItems.add(node);
+                        nodeAttributes.addAll(node.getAttributeNames());
+                    }
+                } else {
+                    for (Node node : tree.getNodes()) {
+                        attributableItems.add(node);
+                        nodeAttributes.addAll(node.getAttributeNames());
+                    }
+                }
+            }
+        }
 
-		for (String attributeName : nodeAttributes) {
-			if (!attributeName.startsWith("!")) {
-				attributeNames.add(attributeName);
-			}
-		}
+        switch( intent ) {
+            case TIP: {
+                attributeNames.add(NAMES);
+                attributeNames.add(NODE_AGES);
+                attributeNames.add(NODE_HEIGHTS);
+                attributeNames.add(BRANCH_TIMES);
+                attributeNames.add(BRANCH_LENGTHS);
+                break;
+            }
+            case NODE: {
+                if (nodeAttributes.contains("!name")) {
+                    attributeNames.add(NAMES);
+                }
+                attributeNames.add(NODE_AGES);
+                attributeNames.add(NODE_HEIGHTS);
+                attributeNames.add(BRANCH_TIMES);
+                attributeNames.add(BRANCH_LENGTHS);
+                break;
+            }
+            case BRANCH: {
+                if (nodeAttributes.contains("!name")) {
+                    attributeNames.add(NAMES);
+                }
+                attributeNames.add(BRANCH_TIMES);
+                attributeNames.add(BRANCH_LENGTHS);
+                attributeNames.add(NODE_AGES);
+                attributeNames.add(NODE_HEIGHTS);
+                break;
+            }
+        }
 
-		this.attributes = new String[attributeNames.size()];
-		attributeNames.toArray(this.attributes);
+        for (String attributeName : nodeAttributes) {
+            if (!attributeName.startsWith("!")) {
+                attributeNames.add(attributeName);
+            }
+        }
 
-		firePainterSettingsChanged();
-	}
+        this.attributes = new String[attributeNames.size()];
+        attributeNames.toArray(this.attributes);
 
-	public void setTreePane(TreePane treePane) {
-		this.treePane = treePane;
-	}
+        fireAttributesChanged();
+    }
 
-	public Decorator getBorderDecorator() {
-		return borderDecorator;
-	}
+    public Set<Attributable> getAttributableItems() {
+        return attributableItems;
+    }
 
-	public void setBorderDecorator(Decorator borderDecorator) {
-		this.borderDecorator = borderDecorator;
-	}
+    public void setTreePane(TreePane treePane) {
+        this.treePane = treePane;
+    }
 
-	public Decorator getTextDecorator() {
-		return textDecorator;
-	}
+    public Decorator getBorderDecorator() {
+        return borderDecorator;
+    }
 
-	public void setTextDecorator(Decorator textDecorator) {
-		this.textDecorator = textDecorator;
-	}
+    public void setBorderDecorator(Decorator borderDecorator) {
+        this.borderDecorator = borderDecorator;
+    }
 
-	public Tree getTree() {
-		return treePane.getTree();
-	}
+    public Decorator getTextDecorator() {
+        return textDecorator;
+    }
 
-	protected String getLabel(Tree tree, Node node) {
-		if (displayAttribute.equalsIgnoreCase(NAMES)) {
-			if (intent == PainterIntent.TIP) {
-				Taxon taxon = tree.getTaxon(node);
-				if (taxon != null) {
-					if (textDecorator != null) {
-						textDecorator.setItem(taxon);
-					}
-					String name = (String)taxon.getAttribute("!name");
-					if (name != null) {
-						return name;
-					}
-					return taxon.getName();
-				} else {
-					String name = (String)node.getAttribute("!name");
-					if (name != null) {
-						return name;
-					}
-					return null;
-				}
+    public void setTextDecorator(Decorator textDecorator) {
+        this.textDecorator = textDecorator;
 
-			} else {
-				String name = (String)node.getAttribute("!name");
-				if (name != null) {
-					return name;
-				}
-				return null;
-			}
-		}
+        firePainterSettingsChanged();
+    }
 
-		if ( tree instanceof RootedTree) {
-			final RootedTree rtree = (RootedTree) tree;
+    public Tree getTree() {
+        return treePane.getTree();
+    }
 
-			if (textDecorator != null) {
-				textDecorator.setItem(node);
-			}
+    protected String getLabel(Tree tree, Node node) {
+        if (displayAttribute.equalsIgnoreCase(NAMES)) {
+            if (intent == PainterIntent.TIP) {
+                Taxon taxon = tree.getTaxon(node);
+                if (taxon != null) {
+                    if (textDecorator != null) {
+                        textDecorator.setItem(taxon);
+                    }
+                    String name = (String)taxon.getAttribute("!name");
+                    if (name != null) {
+                        return name;
+                    }
+                    return taxon.getName();
+                } else {
+                    String name = (String)node.getAttribute("!name");
+                    if (name != null) {
+                        return name;
+                    }
+                    return null;
+                }
 
-			if (displayAttribute.equalsIgnoreCase(NODE_AGES) ) {
-				TimeScale timeScale = treePane.getTimeScale();
-				double age = timeScale.getAge(rtree.getHeight(node), rtree);
-				return getNumberFormat().format(age);
-			} else if (displayAttribute.equalsIgnoreCase(NODE_HEIGHTS) ) {
-				return getNumberFormat().format(rtree.getHeight(node));
-			} else if (displayAttribute.equalsIgnoreCase(BRANCH_TIMES) ) {
-				TimeScale timeScale = treePane.getTimeScale();
-				double time = timeScale.getTime(rtree.getLength(node), rtree);
-				return getNumberFormat().format(time);
-			} else if (displayAttribute.equalsIgnoreCase(BRANCH_LENGTHS) ) {
-				return getNumberFormat().format(rtree.getLength(node));
-			}
-		}
+            } else {
+                String name = (String)node.getAttribute("!name");
+                if (name != null) {
+                    return name;
+                }
+                return null;
+            }
+        }
 
-		Object value = node.getAttribute(displayAttribute);
-		if (value == null) {
-			Taxon taxon = tree.getTaxon(node);
-			if (taxon != null) {
-				value = taxon.getAttribute(displayAttribute);
-			}
-		}
+        if ( tree instanceof RootedTree) {
+            final RootedTree rtree = (RootedTree) tree;
 
-		return formatValue(value);
-	}
+            if (textDecorator != null) {
+                textDecorator.setItem(node);
+            }
 
-	private String formatValue(Object value) {
-		if (value != null) {
-			if (value instanceof Double) {
-				return getNumberFormat().format(value);
-			} else if (value instanceof Object[]) {
-				Object[] values = (Object[])value;
+            if (displayAttribute.equalsIgnoreCase(NODE_AGES) ) {
+                TimeScale timeScale = treePane.getTimeScale();
+                double age = timeScale.getAge(rtree.getHeight(node), rtree);
+                return getNumberFormat().format(age);
+            } else if (displayAttribute.equalsIgnoreCase(NODE_HEIGHTS) ) {
+                return getNumberFormat().format(rtree.getHeight(node));
+            } else if (displayAttribute.equalsIgnoreCase(BRANCH_TIMES) ) {
+                TimeScale timeScale = treePane.getTimeScale();
+                double time = timeScale.getTime(rtree.getLength(node), rtree);
+                return getNumberFormat().format(time);
+            } else if (displayAttribute.equalsIgnoreCase(BRANCH_LENGTHS) ) {
+                return getNumberFormat().format(rtree.getLength(node));
+            }
+        }
 
-				if (values.length == 0) return null;
-				if (values.length == 1) return formatValue(values[0]);
+        Object value = node.getAttribute(displayAttribute);
+        if (value == null) {
+            Taxon taxon = tree.getTaxon(node);
+            if (taxon != null) {
+                value = taxon.getAttribute(displayAttribute);
+            }
+        }
 
-				StringBuilder builder = new StringBuilder("[");
-				builder.append(formatValue(values[0]));
-				for (int i = 1; i < values.length; i++) {
-					builder.append(",");
-					builder.append(formatValue(values[i]));
-				}
-				builder.append("]");
-				return builder.toString();
-			}
-			return value.toString();
-		}
-		return null;
-	}
+        return formatValue(value);
+    }
 
-	public Rectangle2D calibrate(Graphics2D g2, Node item) {
-		Tree tree = treePane.getTree();
+    private String formatValue(Object value) {
+        if (value != null) {
+            if (value instanceof Double) {
+                return getNumberFormat().format(value);
+            } else if (value instanceof Object[]) {
+                Object[] values = (Object[])value;
 
-		String label = getLabel(tree, item);
+                if (values.length == 0) return null;
+                if (values.length == 1) return formatValue(values[0]);
 
-		final Font oldFont = g2.getFont();
-		if (textDecorator != null) {
-			g2.setFont(textDecorator.getFont(getFont()));
-		} else {
-			g2.setFont(getFont());
-		}
+                StringBuilder builder = new StringBuilder("[");
+                builder.append(formatValue(values[0]));
+                for (int i = 1; i < values.length; i++) {
+                    builder.append(",");
+                    builder.append(formatValue(values[i]));
+                }
+                builder.append("]");
+                return builder.toString();
+            }
+            return value.toString();
+        }
+        return null;
+    }
 
-		FontMetrics fm = g2.getFontMetrics();
-		preferredHeight = fm.getHeight();
-		preferredWidth = 0;
+    public Rectangle2D calibrate(Graphics2D g2, Node item) {
+        Tree tree = treePane.getTree();
 
-		if (label != null) {
-			Rectangle2D rect = fm.getStringBounds(label, g2);
-			preferredWidth = rect.getWidth();
-		}
+        String label = getLabel(tree, item);
 
-		yOffset = (float)fm.getAscent();
+        final Font oldFont = g2.getFont();
+        if (textDecorator != null) {
+            g2.setFont(textDecorator.getFont(getFont()));
+        } else {
+            g2.setFont(getFont());
+        }
 
-		g2.setFont(oldFont);
+        FontMetrics fm = g2.getFontMetrics();
+        preferredHeight = fm.getHeight();
+        preferredWidth = 0;
 
-		return new Rectangle2D.Double(0.0, 0.0, preferredWidth, preferredHeight);
-	}
+        if (label != null) {
+            Rectangle2D rect = fm.getStringBounds(label, g2);
+            preferredWidth = rect.getWidth();
+        }
 
-	public double getPreferredWidth() {
-		return preferredWidth;
-	}
+        yOffset = (float)fm.getAscent();
 
-	public double getPreferredHeight() {
-		return preferredHeight;
-	}
+        g2.setFont(oldFont);
 
-	public double getHeightBound() {
-		return preferredHeight + yOffset;
-	}
+        return new Rectangle2D.Double(0.0, 0.0, preferredWidth, preferredHeight);
+    }
 
-	public void paint(Graphics2D g2, Node item, Justification justification, Rectangle2D bounds) {
-		Tree tree = treePane.getTree();
+    public double getPreferredWidth() {
+        return preferredWidth;
+    }
 
-		if (TreePane.DEBUG_OUTLINE) {
-			g2.setPaint(Color.red);
-			g2.draw(bounds);
-		}
+    public double getPreferredHeight() {
+        return preferredHeight;
+    }
 
-		String label = getLabel(tree, item);
+    public double getHeightBound() {
+        return preferredHeight + yOffset;
+    }
 
-		Font oldFont = g2.getFont();
+    public void paint(Graphics2D g2, Node item, Justification justification, Rectangle2D bounds) {
+        Tree tree = treePane.getTree();
 
-		Paint backgroundPaint = getBackground();
-		Paint borderPaint = getBorderPaint();
-		Stroke borderStroke = getBorderStroke();
+        if (TreePane.DEBUG_OUTLINE) {
+            g2.setPaint(Color.red);
+            g2.draw(bounds);
+        }
 
-		if (borderDecorator != null) {
-			backgroundPaint = borderDecorator.getPaint(backgroundPaint);
-			borderPaint = borderDecorator.getPaint(borderPaint);
-			borderStroke = borderDecorator.getStroke(borderStroke);
-		}
+        String label = getLabel(tree, item);
 
-		if (backgroundPaint != null) {
-			g2.setPaint(backgroundPaint);
-			g2.fill(bounds);
-		}
+        Font oldFont = g2.getFont();
 
-		if (borderPaint != null && borderStroke != null) {
-			g2.setPaint(borderPaint);
-			g2.setStroke(borderStroke);
-			g2.draw(bounds);
-		}
+        Paint backgroundPaint = getBackground();
+        Paint borderPaint = getBorderPaint();
+        Stroke borderStroke = getBorderStroke();
 
-		if (textDecorator != null) {
-			g2.setPaint(textDecorator.getPaint(getForeground()));
-			g2.setFont(textDecorator.getFont(getFont()));
-		} else {
-			g2.setPaint(getForeground());
-			g2.setFont(getFont());
-		}
+        if (borderDecorator != null) {
+            backgroundPaint = borderDecorator.getPaint(backgroundPaint);
+            borderPaint = borderDecorator.getPaint(borderPaint);
+            borderStroke = borderDecorator.getStroke(borderStroke);
+        }
 
-		if (label != null) {
+        if (backgroundPaint != null) {
+            g2.setPaint(backgroundPaint);
+            g2.fill(bounds);
+        }
 
-			Rectangle2D rect = g2.getFontMetrics().getStringBounds(label, g2);
+        if (borderPaint != null && borderStroke != null) {
+            g2.setPaint(borderPaint);
+            g2.setStroke(borderStroke);
+            g2.draw(bounds);
+        }
 
-			float xOffset;
-			float y = yOffset + (float) bounds.getY();
-			switch (justification) {
-				case CENTER:
-					xOffset = (float)(-rect.getWidth()/2.0);
-					y = yOffset + (float) rect.getY();
+        if (textDecorator != null) {
+            textDecorator.setItem(item);
+            g2.setPaint(textDecorator.getPaint(getForeground()));
+            g2.setFont(textDecorator.getFont(getFont()));
+        } else {
+            g2.setPaint(getForeground());
+            g2.setFont(getFont());
+        }
+
+        if (label != null) {
+
+            Rectangle2D rect = g2.getFontMetrics().getStringBounds(label, g2);
+
+            float xOffset;
+            float y = yOffset + (float) bounds.getY();
+            switch (justification) {
+                case CENTER:
+                    xOffset = (float)(-rect.getWidth()/2.0);
+                    y = yOffset + (float) rect.getY();
 //xOffset = (float) (bounds.getX() + (bounds.getWidth() - rect.getWidth()) / 2.0);
-					break;
-				case FLUSH:
-				case LEFT:
-					xOffset = (float) bounds.getX();
-					break;
-				case RIGHT:
-					xOffset = (float) (bounds.getX() + bounds.getWidth() - rect.getWidth());
-					break;
-				default:
-					throw new IllegalArgumentException("Unrecognized alignment enum option");
-			}
+                    break;
+                case FLUSH:
+                case LEFT:
+                    xOffset = (float) bounds.getX();
+                    break;
+                case RIGHT:
+                    xOffset = (float) (bounds.getX() + bounds.getWidth() - rect.getWidth());
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unrecognized alignment enum option");
+            }
 
-			g2.drawString(label, xOffset, y);
-		}
+            g2.drawString(label, xOffset, y);
+        }
 
-		g2.setFont(oldFont);
-	}
+        g2.setFont(oldFont);
+    }
 
-	public String[] getAttributes() {
-		return attributes;
-	}
+    public String[] getAttributes() {
+        return attributes;
+    }
 
-	public void setDisplayAttribute(String displayAttribute) {
-		this.displayAttribute = displayAttribute;
-		firePainterChanged();
-	}
-
-    public void setColourAttribute(String colourAttribute) {
-        this.colourAttribute = colourAttribute;
+    public void setDisplayAttribute(String displayAttribute) {
+        this.displayAttribute = displayAttribute;
         firePainterChanged();
     }
 
-	private PainterIntent intent;
+    private PainterIntent intent;
 
-	private double preferredWidth;
-	private double preferredHeight;
-	private float yOffset;
+    private double preferredWidth;
+    private double preferredHeight;
+    private float yOffset;
 
-	protected String displayAttribute;
-    protected String colourAttribute;
-	protected String[] attributes;
+    protected String displayAttribute;
+    protected String[] attributes;
+    private Set<Attributable> attributableItems = new HashSet<Attributable>();
 
-	protected TreePane treePane;
+    protected TreePane treePane;
 
-	private Decorator textDecorator = null;
-	private Decorator borderDecorator = null;
+    private Decorator textDecorator = null;
+    private Decorator borderDecorator = null;
+
 
 }

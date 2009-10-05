@@ -11,6 +11,7 @@ import java.awt.event.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import figtree.treeviewer.*;
@@ -26,6 +27,8 @@ import jebl.util.Attributable;
 public class LabelPainterController extends AbstractController {
 
     public static Preferences PREFS = Preferences.userNodeForPackage(TreeViewer.class);
+
+    private static final String USER_SELECTION = "User Selection";
 
     public static final String FONT_NAME_KEY = "fontName";
     public static final String FONT_SIZE_KEY = "fontSize";
@@ -54,9 +57,10 @@ public class LabelPainterController extends AbstractController {
         this.key = key;
         this.labelPainter = labelPainter;
 
-        userLabelColourDecorator = new AttributableDecorator();
-        userLabelColourDecorator.setPaintAttributeName("!color");
-        userLabelColourDecorator.setStrokeAttributeName("!stroke");
+        userLabelDecorator = new AttributableDecorator();
+        userLabelDecorator.setPaintAttributeName("!color");
+        userLabelDecorator.setFontAttributeName("!font");
+        labelPainter.setTextDecorator(userLabelDecorator);
 
         final String defaultFontName = PREFS.get(key + "." + FONT_NAME_KEY, DEFAULT_FONT_NAME);
         final int defaultFontStyle = PREFS.getInt(key + "." + FONT_STYLE_KEY, DEFAULT_FONT_STYLE);
@@ -65,8 +69,8 @@ public class LabelPainterController extends AbstractController {
 
         labelPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
         labelPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
-        
-	    optionsPanel = new ControllerOptionsPanel(2, 2);
+
+        optionsPanel = new ControllerOptionsPanel(2, 2);
 
         titleCheckBox = new JCheckBox(getTitle());
 
@@ -81,28 +85,14 @@ public class LabelPainterController extends AbstractController {
             }
         });
 
-        colourAttributeCombo = new JComboBox(attributes);
+        colourAttributeCombo = new JComboBox(new String[] { USER_SELECTION });
         colourAttributeCombo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
-                String attribute = (String)colourAttributeCombo.getSelectedItem();
-                labelPainter.setColourAttribute(attribute);
+                setupLabelDecorator();
             }
         });
 
         final JLabel label1 = optionsPanel.addComponentWithLabel("Display:", displayAttributeCombo);
-
-//        fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 48, 1));
-//
-//        final JLabel label2 = optionsPanel.addComponentWithLabel("Font Size:", fontSizeSpinner);
-//
-//        fontSizeSpinner.addChangeListener(new ChangeListener() {
-//            public void stateChanged(ChangeEvent changeEvent) {
-//                final float size = ((Double) fontSizeSpinner.getValue()).floatValue();
-//                Font font = labelPainter.getFont().deriveFont(size);
-//                labelPainter.setFont(font);
-//            }
-//        });
-
 
         colourAutoRange = true;
         colourFromValue = 0.0;
@@ -111,7 +101,7 @@ public class LabelPainterController extends AbstractController {
         toColour = new Color(192, 16, 0);
         middleColour = new Color(0, 0, 0);
 
-        JButton setupColourButton = new JButton(new AbstractAction("Setup") {
+        final JButton setupColourButton = new JButton(new AbstractAction("Setup") {
             public void actionPerformed(ActionEvent e) {
                 if (colourScaleDialog == null) {
                     colourScaleDialog = new ColourScaleDialog(frame, colourAutoRange,
@@ -126,12 +116,12 @@ public class LabelPainterController extends AbstractController {
                     fromColour = colourScaleDialog.getFromColour();
                     toColour = colourScaleDialog.getToColour();
                     middleColour = colourScaleDialog.getMiddleColour();
-//                    setupLabelDecorators();
+                    setupLabelDecorator();
                 }
             }
         });
 
-        optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
+        final JLabel label2 = optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
         optionsPanel.addComponent(setupColourButton);
         optionsPanel.addSeparator();
 
@@ -191,29 +181,19 @@ public class LabelPainterController extends AbstractController {
             public void painterChanged() {
 
             }
-
             public void painterSettingsChanged() {
-                Object item1 = displayAttributeCombo.getSelectedItem();
-                Object item2 = colourAttributeCombo.getSelectedItem();
-                displayAttributeCombo.removeAllItems();
-                colourAttributeCombo.removeAllItems();
-                colourAttributeCombo.addItem("User Selection");
-                for (String name : labelPainter.getAttributes()) {
-                    displayAttributeCombo.addItem(name);
-                    colourAttributeCombo.addItem(name);
-                }
-                displayAttributeCombo.setSelectedItem(item1);
-                colourAttributeCombo.setSelectedItem(item2);
-
-                optionsPanel.repaint();
+            }
+            public void attributesChanged() {
+                setupAttributes();
             }
         });
 
         final boolean isSelected = titleCheckBox.isSelected();
         label1.setEnabled(isSelected);
         displayAttributeCombo.setEnabled(isSelected);
-//        label2.setEnabled(isSelected);
-//        fontSizeSpinner.setEnabled(isSelected);
+        label2.setEnabled(isSelected);
+        colourAttributeCombo.setEnabled(isSelected);
+        setupColourButton.setEnabled(isSelected);
         fontButton.setEnabled(isSelected);
         label3.setEnabled(isSelected);
         numericalFormatCombo.setEnabled(isSelected);
@@ -225,8 +205,9 @@ public class LabelPainterController extends AbstractController {
                 final boolean isSelected = titleCheckBox.isSelected();
                 label1.setEnabled(isSelected);
                 displayAttributeCombo.setEnabled(isSelected);
-//                label2.setEnabled(isSelected);
-//                fontSizeSpinner.setEnabled(isSelected);
+                label2.setEnabled(isSelected);
+                colourAttributeCombo.setEnabled(isSelected);
+                setupColourButton.setEnabled(isSelected);
                 fontButton.setEnabled(isSelected);
                 label3.setEnabled(isSelected);
                 numericalFormatCombo.setEnabled(isSelected);
@@ -238,129 +219,76 @@ public class LabelPainterController extends AbstractController {
 
     }
 
-//    private void setupLabelDecorators() {
-//
-//        Set<Node> nodes = new HashSet<Node>();
-//        for (Tree tree : treeViewer.getTrees()) {
-//            for (Node node : tree.getNodes()) {
-//                nodes.add(node);
-//            }
-//        }
-//
-//        Decorator colourDecorator = null;
-//
-//        if (branchColourAttributeCombo.getSelectedIndex() == 0) {
-//            colourDecorator = userBranchColourDecorator;
-//            userBranchColourDecorator.setGradient(useGradient);
-//        } else {
-//            String attribute = (String) branchColourAttributeCombo.getSelectedItem();
-//            if (attribute != null && attribute.length() > 0) {
-//                if (attribute.endsWith("*")) {
-//                    // This is a branch colouring (i.e., the colour can change
-//                    // along the length of the branch...
-//                    treeViewer.setBranchColouringDecorator(
-//                            attribute.substring(0, attribute.length() - 2),
-//                            new DiscreteColorDecorator());
-//                    return;
-//                } else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
-//
-//                    colourDecorator = new DiscreteColorDecorator(attribute, nodes, useGradient);
-//                } else {
-//                    ContinousScale scale;
-//                    if (colourAutoRange) {
-//                        scale = new ContinousScale(attribute, nodes);
-//                    } else {
-//                        scale = new ContinousScale(attribute, nodes, colourFromValue, colourToValue);
-//                    }
-//
-//                    if (middleColour == null) {
-//                        colourDecorator = new ContinuousColorDecorator(scale, fromColour, toColour, useGradient);
-//                    } else {
-//                        colourDecorator = new ContinuousColorDecorator(scale, fromColour, middleColour, toColour, useGradient);
-//                    }
-//
-//                }
-//            }
-//        }
-//
-//        if (colourDecorator != null && colourDecorator.isGradient()) {
-//            // At present using a gradient precludes the use of the compoundDecorator
-//            // and thus the branch width..
-//            treeViewer.setBranchDecorator(colourDecorator);
-//            return;
-//        }
-//
-//
-//
-//        CompoundDecorator compoundDecorator = new CompoundDecorator();
-//
-//        if (colourDecorator != null) {
-//            treeViewer.setBranchColouringDecorator(null, null);
-//            compoundDecorator.addDecorator(colourDecorator);
-//        }
-//
-//        if (branchWidthAttributeCombo.getSelectedIndex() > 0) {
-//            String attribute = (String) branchWidthAttributeCombo.getSelectedItem();
-//            if (attribute != null && attribute.length() > 0) {
-//                if (!DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
-//                    ContinousScale scale;
-//                    if (widthAutoRange) {
-//                        scale = new ContinousScale(attribute, nodes);
-//                    } else {
-//                        scale = new ContinousScale(attribute, nodes, widthFromValue, widthToValue);
-//                    }
-//                    compoundDecorator.addDecorator(new ContinuousStrokeDecorator(
-//                            scale, (float)fromWidth, (float)toWidth)
-//                    );
-//
-//                }
-//            }
-//        }
-//        treeViewer.setBranchDecorator(compoundDecorator);
-//
-//    }
+    private void setupAttributes() {
+        Object item1 = displayAttributeCombo.getSelectedItem();
+        displayAttributeCombo.removeAllItems();
+        for (String name : labelPainter.getAttributes()) {
+            displayAttributeCombo.addItem(name);
+        }
+        displayAttributeCombo.setSelectedItem(item1);
 
-    private String[] getAttributeNames(Collection<? extends Attributable> items) {
-        java.util.Set<String> attributeNames = new TreeSet<String>();
-
+        List<String> names = new ArrayList<String>();
+        Set<Attributable> items = labelPainter.getAttributableItems();
         for (Attributable item : items) {
             for (String name : item.getAttributeNames()) {
-                if (!name.startsWith("!")) {
-                    Object attr = item.getAttribute(name);
-                    if (!(attr instanceof Object[])) {
-                        attributeNames.add(name);
-                    } else {
-                        boolean isColouring = true;
-
-                        Object[] array = (Object[])attr;
-                        boolean isIndex = true;
-                        for (Object element : array) {
-                            if (isIndex && !(element instanceof Integer) ||
-                                    !isIndex && !(element instanceof Double)) {
-                                isColouring = false;
-                                break;
-                            }
-                            isIndex = !isIndex;
-                        }
-
-                        if (isIndex) {
-                            // a colouring should finish on an index (which means isIndex should be false)...
-                            isColouring = false;
-                        }
-
-                        if (isColouring) {
-                            attributeNames.add(name + " *");
-                        }
-
-                    }
+                if (!names.contains(name)) {
+                    names.add(name);
                 }
             }
         }
+        Object item2 = colourAttributeCombo.getSelectedItem();
+        colourAttributeCombo.removeAllItems();
+        colourAttributeCombo.addItem(USER_SELECTION);
+        for (String name : names) {
+            if (!name.startsWith("!")) {
+                colourAttributeCombo.addItem(name);
+            }
+        }
+        colourAttributeCombo.setSelectedItem(item2);
 
-        String[] attributeNameArray = new String[attributeNames.size()];
-        attributeNames.toArray(attributeNameArray);
+        optionsPanel.repaint();
+    }
 
-        return attributeNameArray;
+    private void setupLabelDecorator() {
+
+        Decorator textDecorator = null;
+        String attribute = (String)colourAttributeCombo.getSelectedItem();
+
+        textDecorator = userLabelDecorator;
+
+        if (attribute != null && attribute.length() > 0) {
+            if (!attribute.equalsIgnoreCase(USER_SELECTION)) {
+                Decorator colourDecorator = null;
+                Set<Attributable> items = labelPainter.getAttributableItems();
+
+                if (DiscreteColorDecorator.isDiscrete(attribute, items)) {
+                    colourDecorator = new DiscreteColorDecorator(attribute, items, false);
+                } else {
+                    ContinousScale scale;
+                    if (colourAutoRange) {
+                        scale = new ContinousScale(attribute, items);
+                    } else {
+                        scale = new ContinousScale(attribute, items, colourFromValue, colourToValue);
+                    }
+
+                    if (middleColour == null) {
+                        colourDecorator = new ContinuousColorDecorator(scale, fromColour, toColour, false);
+                    } else {
+                        colourDecorator = new ContinuousColorDecorator(scale, fromColour, middleColour, toColour, false);
+                    }
+                }
+
+                CompoundDecorator compoundDecorator = new CompoundDecorator();
+                compoundDecorator.addDecorator(colourDecorator);
+                AttributableDecorator fontDecorator = new AttributableDecorator();
+                userLabelDecorator.setFontAttributeName("!font");
+                compoundDecorator.addDecorator(fontDecorator);
+
+                textDecorator = compoundDecorator;
+            }
+        }
+
+        labelPainter.setTextDecorator(textDecorator);
     }
 
     public JComponent getTitleComponent() {
@@ -380,10 +308,9 @@ public class LabelPainterController extends AbstractController {
     }
 
     public void setSettings(Map<String,Object> settings) {
-	    titleCheckBox.setSelected((Boolean)settings.get(key+"."+IS_SHOWN));
+        titleCheckBox.setSelected((Boolean)settings.get(key+"."+IS_SHOWN));
         displayAttributeCombo.setSelectedItem(settings.get(key+"."+DISPLAY_ATTRIBUTE_KEY));
         colourAttributeCombo.setSelectedItem(settings.get(key+"."+COLOR_ATTRIBUTE_KEY));
-        //fontSizeSpinner.setValue((Double)settings.get(key+"."+FONT_SIZE_KEY));
         String name = (String)settings.get(key + "." + FONT_NAME_KEY);
         int size = ((Number)settings.get(key + "." + FONT_SIZE_KEY)).intValue();
         int style = (Integer)settings.get(key + "." + FONT_STYLE_KEY);
@@ -392,10 +319,9 @@ public class LabelPainterController extends AbstractController {
     }
 
     public void getSettings(Map<String, Object> settings) {
-	    settings.put(key+"."+IS_SHOWN, titleCheckBox.isSelected());
+        settings.put(key+"."+IS_SHOWN, titleCheckBox.isSelected());
         settings.put(key+"."+DISPLAY_ATTRIBUTE_KEY, displayAttributeCombo.getSelectedItem().toString());
         settings.put(key+"."+COLOR_ATTRIBUTE_KEY, colourAttributeCombo.getSelectedItem().toString());
-        //settings.put(key+"."+FONT_SIZE_KEY, fontSizeSpinner.getValue());
         Font font = labelPainter.getFont();
         settings.put(key+"."+FONT_NAME_KEY, font.getName());
         settings.put(key+"."+FONT_SIZE_KEY, font.getSize());
@@ -413,7 +339,7 @@ public class LabelPainterController extends AbstractController {
     private final OptionsPanel optionsPanel;
 
     private final JComboBox displayAttributeCombo;
-//    private final JSpinner fontSizeSpinner;
+    //    private final JSpinner fontSizeSpinner;
     private FontDialog fontDialog = null;
 
     private final JComboBox numericalFormatCombo;
@@ -424,7 +350,7 @@ public class LabelPainterController extends AbstractController {
 
     private final LabelPainter labelPainter;
 
-    private final AttributableDecorator userLabelColourDecorator;
+    private final AttributableDecorator userLabelDecorator;
 
     private final JComboBox colourAttributeCombo;
 

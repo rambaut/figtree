@@ -7,6 +7,7 @@ import jebl.evolution.graphs.Node;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.RootedTree;
 import jebl.evolution.trees.Tree;
+import jebl.util.Attributable;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -118,7 +119,11 @@ public class SimpleLabelPainter extends LabelPainter<Node> {
 		this.textDecorator = textDecorator;
 	}
 
-	public Tree getTree() {
+    public Set<Attributable> getAttributableItems() {
+        return null;
+    }
+
+    public Tree getTree() {
 		return treePane.getTree();
 	}
 
@@ -298,10 +303,6 @@ public class SimpleLabelPainter extends LabelPainter<Node> {
 		this.displayAttribute = displayAttribute;
 		firePainterChanged();
 	}
-
-    public void setColourAttribute(final String displayAttribute) {
-        throw new UnsupportedOperationException("setDisplayAttribute not implemented in panel.SimpleLabelPainter");        
-    }
 
     private PainterIntent intent;
 
