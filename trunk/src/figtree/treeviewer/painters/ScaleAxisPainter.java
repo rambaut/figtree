@@ -40,7 +40,7 @@ public class ScaleAxisPainter extends LabelPainter<TreePane> implements ScalePai
     }
 
     public void setAxisReversed(final boolean isAxisReversed) {
-        treePane.setAxisReversed(isAxisReversed);  
+        treePane.setAxisReversed(isAxisReversed);
     }
 
     public void setAxisSpacing(double majorTickSpacing, double minorTickSpacing) {
@@ -274,9 +274,14 @@ public class ScaleAxisPainter extends LabelPainter<TreePane> implements ScalePai
 	}
 
 	public void setDisplayAttribute(String displayAttribute) {
+        throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleAxisPainter");
 	}
 
-	private BasicStroke scaleBarStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
+    public void setColourAttribute(final String displayAttribute) {
+        throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleAxisPainter");
+    }
+
+    private BasicStroke scaleBarStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
 
 	private double topMargin = 4.0;
 	private double bottomMargin = 4.0;

@@ -164,9 +164,14 @@ public class ScaleGridPainter extends LabelPainter<TreePane> implements ScalePai
 	}
 
 	public void setDisplayAttribute(String displayAttribute) {
+        throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleGridPainter");
 	}
 
-	private BasicStroke majorStroke = new BasicStroke(0.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
+    public void setColourAttribute(final String displayAttribute) {
+        throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleGridPainter");
+    }
+
+    private BasicStroke majorStroke = new BasicStroke(0.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
     private BasicStroke minorStroke = new BasicStroke(0.25f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
 
 	private double preferredHeight;

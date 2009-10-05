@@ -29,13 +29,15 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
-import ch.randelshofer.quaqua.QuaquaManager;
+//import ch.randelshofer.quaqua.QuaquaManager;
 import jebl.evolution.io.ImportException;
 import jebl.evolution.io.NewickImporter;
 import jebl.evolution.trees.Tree;
 import jebl.evolution.trees.RootedTree;
 
 import javax.swing.*;
+
+import ch.randelshofer.quaqua.QuaquaManager;
 
 public class FigTreeApplication extends MultiDocApplication {
 
@@ -313,7 +315,13 @@ public class FigTreeApplication extends MultiDocApplication {
                 includes.add("Tree");
                 includes.add("SplitPane");
                 includes.add("TitledBorder");
-                QuaquaManager.setIncludedUIs(includes);
+
+                try {
+                    QuaquaManager.setIncludedUIs(includes);
+                } catch (java.lang.NoClassDefFoundError ncdfe) {
+                    // this is to protect against the figtree.jar being
+                    // run on Mac OS without Quaqua on the classpath
+                }
 
                 UIManager.setLookAndFeel(
                     "ch.randelshofer.quaqua.QuaquaLookAndFeel"

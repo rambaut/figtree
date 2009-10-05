@@ -135,7 +135,7 @@
             <!--<fileset dir="${Windows_dir}/scripts"/>-->
         <!--</copy>-->
 
-        <copy file="${dist}/figtree.jar" todir="${Windows_dir}/lib"/>
+        <copy file="${dist}/figtree.jar" todir="${Windows_package_dir}/lib"/>
         <copy todir="${Windows_package_dir}/lib">
             <fileset dir="${Windows_dir}/lib"/>
         </copy>
