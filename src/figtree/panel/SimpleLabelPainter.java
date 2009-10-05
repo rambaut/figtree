@@ -299,7 +299,11 @@ public class SimpleLabelPainter extends LabelPainter<Node> {
 		firePainterChanged();
 	}
 
-	private PainterIntent intent;
+    public void setColourAttribute(final String displayAttribute) {
+        throw new UnsupportedOperationException("setDisplayAttribute not implemented in panel.SimpleLabelPainter");        
+    }
+
+    private PainterIntent intent;
 
 	private double preferredWidth;
 	private double preferredHeight;

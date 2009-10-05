@@ -46,6 +46,12 @@ public class BasicLabelPainter extends LabelPainter<Node> {
 			this.displayAttribute = "";
 		}
 
+        if (this.colourAttribute == null) {
+            this.colourAttribute = "User Selection";
+        } else {
+            this.colourAttribute = "";
+        }
+
 	}
 
 	public void setupAttributes(Collection<? extends Tree> trees) {
@@ -347,6 +353,11 @@ public class BasicLabelPainter extends LabelPainter<Node> {
 		firePainterChanged();
 	}
 
+    public void setColourAttribute(String colourAttribute) {
+        this.colourAttribute = colourAttribute;
+        firePainterChanged();
+    }
+
 	private PainterIntent intent;
 
 	private double preferredWidth;
@@ -354,6 +365,7 @@ public class BasicLabelPainter extends LabelPainter<Node> {
 	private float yOffset;
 
 	protected String displayAttribute;
+    protected String colourAttribute;
 	protected String[] attributes;
 
 	protected TreePane treePane;

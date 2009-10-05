@@ -199,6 +199,11 @@ public class ScaleBarPainter extends LabelPainter<TreePane> implements ScalePain
     }
 
     public void setDisplayAttribute(String displayAttribute) {
+        throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleBarPainter");
+    }
+
+    public void setColourAttribute(final String displayAttribute) {
+        throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleBarPainter");
     }
 
     private BasicStroke scaleBarStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);

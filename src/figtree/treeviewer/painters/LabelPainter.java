@@ -23,6 +23,8 @@ public abstract class LabelPainter<T> extends AbstractPainter<T> {
 
     public abstract void setDisplayAttribute(String displayAttribute);
 
+    public abstract void setColourAttribute(String displayAttribute);
+    
 	// Getters
 
 	public Paint getForeground() {
