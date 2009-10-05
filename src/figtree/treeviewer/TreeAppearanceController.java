@@ -223,8 +223,6 @@ public class TreeAppearanceController extends AbstractController {
             return;
         }
 
-
-
         CompoundDecorator compoundDecorator = new CompoundDecorator();
 
         if (colourDecorator != null) {

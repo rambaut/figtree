@@ -1,14 +1,17 @@
 package figtree.treeviewer.painters;
 
 import figtree.treeviewer.*;
+import figtree.treeviewer.decorators.Decorator;
 import jebl.evolution.trees.RootedTree;
 import jebl.evolution.trees.Tree;
+import jebl.util.Attributable;
 import jam.controlpalettes.ControlPalette;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Andrew Rambaut
@@ -202,8 +205,11 @@ public class ScaleBarPainter extends LabelPainter<TreePane> implements ScalePain
         throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleBarPainter");
     }
 
-    public void setColourAttribute(final String displayAttribute) {
-        throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleBarPainter");
+    public void setTextDecorator(Decorator textDecorator) {
+    }
+
+    public Set<Attributable> getAttributableItems() {
+        return null;
     }
 
     private BasicStroke scaleBarStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);

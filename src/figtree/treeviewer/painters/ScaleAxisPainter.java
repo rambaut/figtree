@@ -2,15 +2,18 @@ package figtree.treeviewer.painters;
 
 import figtree.treeviewer.ScaleAxis;
 import figtree.treeviewer.TreePane;
+import figtree.treeviewer.decorators.Decorator;
 import figtree.treeviewer.treelayouts.RectilinearTreeLayout;
 import figtree.treeviewer.treelayouts.RadialTreeLayout;
 import jebl.evolution.trees.Tree;
+import jebl.util.Attributable;
 import jam.controlpalettes.ControlPalette;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Andrew Rambaut
@@ -277,8 +280,11 @@ public class ScaleAxisPainter extends LabelPainter<TreePane> implements ScalePai
         throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleAxisPainter");
 	}
 
-    public void setColourAttribute(final String displayAttribute) {
-        throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleAxisPainter");
+    public void setTextDecorator(Decorator textDecorator) {
+    }
+
+    public Set<Attributable> getAttributableItems() {
+        return null;
     }
 
     private BasicStroke scaleBarStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);

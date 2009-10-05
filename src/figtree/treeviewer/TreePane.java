@@ -348,7 +348,12 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 		repaint();
 	}
 
-	public BasicStroke getBranchStroke() {
+    public void attributesChanged() {
+        calibrated = false;
+        repaint();
+    }
+
+    public BasicStroke getBranchStroke() {
 		return branchLineStroke;
 	}
 

@@ -10,4 +10,5 @@ public interface PainterListener {
 
     void painterSettingsChanged();
 
+    void attributesChanged();
 }

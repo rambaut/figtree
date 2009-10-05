@@ -2,13 +2,16 @@ package figtree.treeviewer.painters;
 
 import figtree.treeviewer.ScaleAxis;
 import figtree.treeviewer.TreePane;
+import figtree.treeviewer.decorators.Decorator;
 import figtree.treeviewer.treelayouts.RadialTreeLayout;
 import jebl.evolution.trees.Tree;
+import jebl.util.Attributable;
 import jam.controlpalettes.ControlPalette;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Andrew Rambaut
@@ -167,8 +170,11 @@ public class ScaleGridPainter extends LabelPainter<TreePane> implements ScalePai
         throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleGridPainter");
 	}
 
-    public void setColourAttribute(final String displayAttribute) {
-        throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleGridPainter");
+    public void setTextDecorator(Decorator textDecorator) {
+    }
+
+    public Set<Attributable> getAttributableItems() {
+        return null;
     }
 
     private BasicStroke majorStroke = new BasicStroke(0.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);

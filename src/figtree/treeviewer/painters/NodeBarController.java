@@ -54,10 +54,12 @@ public class NodeBarController extends AbstractController {
 
         this.nodeBarPainter.addPainterListener(new PainterListener() {
             public void painterChanged() {
-
             }
 
             public void painterSettingsChanged() {
+            }
+
+            public void attributesChanged() {
                 Object item = displayAttributeCombo.getSelectedItem();
                 displayAttributeCombo.removeAllItems();
                 for (String name : nodeBarPainter.getAttributeNames()) {

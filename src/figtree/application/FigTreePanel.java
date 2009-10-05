@@ -44,11 +44,6 @@ public class FigTreePanel extends JPanel {
         controlPalette.addController(new LabelPainterController("Tip Labels", "tipLabels", tipLabelPainter, frame));
         treeViewer.setTipLabelPainter(tipLabelPainter);
 
-        AttributableDecorator tipDecorator = new AttributableDecorator();
-        tipDecorator.setPaintAttributeName("!color");
-        tipDecorator.setFontAttributeName("!font");
-        tipLabelPainter.setTextDecorator(tipDecorator);
-
         // Create a node label painter and its controller
         final BasicLabelPainter nodeLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.NODE);
         nodeLabelPainter.setVisible(false);
