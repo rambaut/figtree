@@ -520,13 +520,61 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 			}
 		}
 		if (annotationDialog.showDialog(definitions, item) != JOptionPane.CANCEL_OPTION) {
-			String code = annotationDialog.getDefinition().getCode();
+            AnnotationDefinition newDefinition = annotationDialog.getDefinition();
+
+            List<AnnotationDefinition> defs = new ArrayList<AnnotationDefinition>(treeViewer.getAnnotationDefinitions().values());
+			if (!defs.contains(newDefinition)) {
+                defs.add(newDefinition);
+                treeViewer.setAnnotationDefinitions(defs);
+            }
+
+            String code = newDefinition.getCode();
 			Object value = annotationDialog.getValue();
 
 			treeViewer.annotateSelected(code, value);
 			setDirty();
 		}
 	}
+
+    private void copySelectedAnnotations() {
+        treeViewer.setToolMode(TreePaneSelector.ToolMode.SELECT);
+
+        List<AnnotationDefinition> definitions = new ArrayList<AnnotationDefinition>();
+        definitions.add(new AnnotationDefinition("Name", "!name", AnnotationDefinition.Type.STRING));
+        definitions.addAll(treeViewer.getAnnotationDefinitions().values());
+
+        if (copyAnnotationDialog == null) {
+//            copyAnnotationDialog = new AnnotationDialog(this, true);
+        }
+
+        Set<Node> nodes = treeViewer.getSelectedNodes();
+        Set<Node> tips = treeViewer.getSelectedTips();
+
+        Attributable item = null;
+        if (nodes.size() + tips.size() == 1 ) {
+            if (nodes.size() == 1) {
+                item = nodes.iterator().next();
+            }else if (tips.size() == 1) {
+                item = tips.iterator().next();
+            }
+        } else {
+            int result = JOptionPane.showConfirmDialog(this,
+                    "More than one node selected for annotation. This operation\n" +
+                            "may overwrite existing annotations. Do you wish to continue?" ,
+                    "Annotating Tree",
+                    JOptionPane.WARNING_MESSAGE);
+            if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
+                return;
+            }
+        }
+        if (annotationDialog.showDialog(definitions, item) != JOptionPane.CANCEL_OPTION) {
+            String code = annotationDialog.getDefinition().getCode();
+            Object value = annotationDialog.getValue();
+
+            treeViewer.annotateSelected(code, value);
+            setDirty();
+        }
+    }
 
 	private static Color lastColor = Color.GRAY;
 
@@ -1255,7 +1303,11 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 		return annotateAction;
 	}
 
-	public Action getAnnotateNodesFromTipsAction() {
+    public Action getCopyAnnotationsAction() {
+        return copyAnnotationsAction;
+    }
+
+    public Action getAnnotateNodesFromTipsAction() {
 		return annotateNodesFromTipsAction;
 	}
 
@@ -1389,6 +1441,12 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 		}
 	};
 
+    private AbstractAction copyAnnotationsAction = new AbstractAction(COPY_ANNOTATION_VALUES) {
+        public void actionPerformed(ActionEvent ae) {
+            copySelectedAnnotations();
+        }
+    };
+
 	private AbstractAction annotateNodesFromTipsAction = new AbstractAction(ANNOTATE_NODES_FROM_TIPS) {
 		public void actionPerformed(ActionEvent ae) {
 			annotateNodesFromTips();
@@ -1465,5 +1523,6 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 	private FindPanel findPanel = null;
 	private AnnotationDefinitionsDialog annotationDefinitionsDialog = null;
 	private AnnotationDialog annotationDialog = null;
+    private AnnotationDialog copyAnnotationDialog = null;
 	private SelectAnnotationDialog selectAnnotationDialog = null;
 }

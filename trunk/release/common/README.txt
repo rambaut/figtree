@@ -1,4 +1,4 @@
-                   FigTree v1.2.4 2006-2009
+                   FigTree v1.3 2006-2009
                         Andrew Rambaut
 
               Institute of Evolutionary Biology
@@ -27,10 +27,12 @@ FigTree is designed as a graphical viewer of phylogenetic trees and as a program
 ___________________________________________________________________________
 2) VERSION HISTORY
 
-v1.2.4 Released ?th ??? 2009. 
+v1.3 Released ?th ??? 2009. 
 	
 New Features:
 	Added a 'Color by' option to tip, node and branch labels so the colour of the labels can be controlled by an attribute.
+	
+	Added an option to copy the values of one annotation to another for selected nodes. 
 	
 	Implemented a 'QuickLook' plugin for Mac OS X.
 
