@@ -84,6 +84,9 @@ public class TreeMenuFactory implements MenuFactory {
 	        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_QUOTE, MenuBarFactory.MENU_MASK));
 	        menu.add(item);
 
+            item = new JMenuItem(((TreeMenuHandler)frame).getCopyAnnotationsAction());
+            menu.add(item);
+
 	        item = new JMenuItem(((TreeMenuHandler)frame).getAnnotateNodesFromTipsAction());
 	        menu.add(item);
 
@@ -192,6 +195,10 @@ public class TreeMenuFactory implements MenuFactory {
 	        item = new JMenuItem(TreeMenuHandler.ANNOTATE_TIPS_FROM_NODES);
 	        item.setEnabled(false);
 	        menu.add(item);
+
+            item = new JMenuItem(TreeMenuHandler.COPY_ANNOTATION_VALUES);
+            item.setEnabled(false);
+            menu.add(item);
 
 //	        item = new JMenuItem(TreeMenuHandler.CLEAR_ANNOTATIONS);
 //	        item.setEnabled(false);

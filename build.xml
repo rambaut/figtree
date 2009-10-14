@@ -95,7 +95,7 @@
 
 	</target>
 
-    <property name="version" value="1.2.4" />
+    <property name="version" value="1.3.0" />
     <property name="release_dir" value="release" />
     <property name="name" value="FigTree" />
 
@@ -121,19 +121,6 @@
         <property name="launch4j.dir" location="${Windows_dir}/launch4j" />
         <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
             classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
-
-        <!--<copy todir="${Windows_package_dir}/doc">-->
-            <!--<fileset dir="${common_dir}/doc"/>-->
-        <!--</copy>-->
-        <!--<copy todir="${Windows_package_dir}/examples">-->
-            <!--<fileset dir="${common_dir}/examples"/>-->
-        <!--</copy>-->
-        <!--<copy todir="${Windows_package_dir}/native">-->
-            <!--<fileset dir="${common_dir}/native"/>-->
-        <!--</copy>-->
-        <!--<copy todir="${Windows_package_dir}/scripts">-->
-            <!--<fileset dir="${Windows_dir}/scripts"/>-->
-        <!--</copy>-->
 
         <copy file="${dist}/figtree.jar" todir="${Windows_package_dir}/lib"/>
         <copy todir="${Windows_package_dir}/lib">
