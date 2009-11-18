@@ -537,43 +537,44 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 	}
 
     private void copySelectedAnnotations() {
-        treeViewer.setToolMode(TreePaneSelector.ToolMode.SELECT);
-
-        List<AnnotationDefinition> definitions = new ArrayList<AnnotationDefinition>();
-        definitions.add(new AnnotationDefinition("Name", "!name", AnnotationDefinition.Type.STRING));
-        definitions.addAll(treeViewer.getAnnotationDefinitions().values());
-
-        if (copyAnnotationDialog == null) {
+        // todo This function is disabled as it is not completely implemented
+//        treeViewer.setToolMode(TreePaneSelector.ToolMode.SELECT);
+//
+//        List<AnnotationDefinition> definitions = new ArrayList<AnnotationDefinition>();
+//        definitions.add(new AnnotationDefinition("Name", "!name", AnnotationDefinition.Type.STRING));
+//        definitions.addAll(treeViewer.getAnnotationDefinitions().values());
+//
+//        if (copyAnnotationDialog == null) {
 //            copyAnnotationDialog = new AnnotationDialog(this, true);
-        }
-
-        Set<Node> nodes = treeViewer.getSelectedNodes();
-        Set<Node> tips = treeViewer.getSelectedTips();
-
-        Attributable item = null;
-        if (nodes.size() + tips.size() == 1 ) {
-            if (nodes.size() == 1) {
-                item = nodes.iterator().next();
-            }else if (tips.size() == 1) {
-                item = tips.iterator().next();
-            }
-        } else {
-            int result = JOptionPane.showConfirmDialog(this,
-                    "More than one node selected for annotation. This operation\n" +
-                            "may overwrite existing annotations. Do you wish to continue?" ,
-                    "Annotating Tree",
-                    JOptionPane.WARNING_MESSAGE);
-            if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
-                return;
-            }
-        }
-        if (annotationDialog.showDialog(definitions, item) != JOptionPane.CANCEL_OPTION) {
-            String code = annotationDialog.getDefinition().getCode();
-            Object value = annotationDialog.getValue();
-
-            treeViewer.annotateSelected(code, value);
-            setDirty();
-        }
+//        }
+//
+//        Set<Node> nodes = treeViewer.getSelectedNodes();
+//        Set<Node> tips = treeViewer.getSelectedTips();
+//
+//        Attributable item = null;
+//        if (nodes.size() + tips.size() == 1 ) {
+//            if (nodes.size() == 1) {
+//                item = nodes.iterator().next();
+//            }else if (tips.size() == 1) {
+//                item = tips.iterator().next();
+//            }
+//        } else {
+//            int result = JOptionPane.showConfirmDialog(this,
+//                    "More than one node selected for annotation. This operation\n" +
+//                            "may overwrite existing annotations. Do you wish to continue?" ,
+//                    "Annotating Tree",
+//                    JOptionPane.WARNING_MESSAGE);
+//            if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
+//                return;
+//            }
+//        }
+//        if (annotationDialog.showDialog(definitions, item) != JOptionPane.CANCEL_OPTION) {
+//            String code = annotationDialog.getDefinition().getCode();
+//            String code2 = annotationDialog.getDestinationDefinition().getCode();
+//
+//            treeViewer.copySelected(code, value);
+//            setDirty();
+//        }
     }
 
 	private static Color lastColor = Color.GRAY;
