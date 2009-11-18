@@ -101,7 +101,7 @@ public class LabelPainterController extends AbstractController {
         toColour = new Color(192, 16, 0);
         middleColour = new Color(0, 0, 0);
 
-        final JButton setupColourButton = new JButton(new AbstractAction("Setup") {
+        final JButton setupColourButton = new JButton(new AbstractAction("Colours") {
             public void actionPerformed(ActionEvent e) {
                 if (colourScaleDialog == null) {
                     colourScaleDialog = new ColourScaleDialog(frame, colourAutoRange,
@@ -122,8 +122,6 @@ public class LabelPainterController extends AbstractController {
         });
 
         final JLabel label2 = optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
-        optionsPanel.addComponent(setupColourButton);
-        optionsPanel.addSeparator();
 
         final JButton fontButton = new JButton(new AbstractAction("Font") {
             public void actionPerformed(ActionEvent e) {
@@ -137,7 +135,15 @@ public class LabelPainterController extends AbstractController {
                 }
             }
         });
-        optionsPanel.addComponent(fontButton);
+
+        JPanel panel = new JPanel();
+        panel.setOpaque(false);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
+        ControllerOptionsPanel.setComponentLook(setupColourButton);
+        ControllerOptionsPanel.setComponentLook(fontButton);
+        panel.add(setupColourButton);
+        panel.add(fontButton);
+        final JLabel label3 = optionsPanel.addComponentWithLabel("Set:", panel);
 
         NumberFormat format = labelPainter.getNumberFormat();
         int digits = format.getMaximumFractionDigits();
@@ -162,11 +168,11 @@ public class LabelPainterController extends AbstractController {
             }
         });
 
-        final JLabel label3 = optionsPanel.addComponentWithLabel("Format:", numericalFormatCombo);
+        final JLabel label4 = optionsPanel.addComponentWithLabel("Format:", numericalFormatCombo);
 
         digitsSpinner = new JSpinner(new SpinnerNumberModel(digits, 2, 14, 1));
 
-        final JLabel label4 = optionsPanel.addComponentWithLabel("Sig. Digits:", digitsSpinner);
+        final JLabel label5 = optionsPanel.addComponentWithLabel("Sig. Digits:", digitsSpinner);
 
         digitsSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
@@ -193,11 +199,12 @@ public class LabelPainterController extends AbstractController {
         displayAttributeCombo.setEnabled(isSelected);
         label2.setEnabled(isSelected);
         colourAttributeCombo.setEnabled(isSelected);
+        label3.setEnabled(isSelected);
         setupColourButton.setEnabled(isSelected);
         fontButton.setEnabled(isSelected);
-        label3.setEnabled(isSelected);
-        numericalFormatCombo.setEnabled(isSelected);
         label4.setEnabled(isSelected);
+        numericalFormatCombo.setEnabled(isSelected);
+        label5.setEnabled(isSelected);
         digitsSpinner.setEnabled(isSelected);
 
         titleCheckBox.addChangeListener(new ChangeListener() {
@@ -207,11 +214,12 @@ public class LabelPainterController extends AbstractController {
                 displayAttributeCombo.setEnabled(isSelected);
                 label2.setEnabled(isSelected);
                 colourAttributeCombo.setEnabled(isSelected);
+                label3.setEnabled(isSelected);
                 setupColourButton.setEnabled(isSelected);
                 fontButton.setEnabled(isSelected);
-                label3.setEnabled(isSelected);
-                numericalFormatCombo.setEnabled(isSelected);
                 label4.setEnabled(isSelected);
+                numericalFormatCombo.setEnabled(isSelected);
+                label5.setEnabled(isSelected);
                 digitsSpinner.setEnabled(isSelected);
                 labelPainter.setVisible(isSelected);
             }

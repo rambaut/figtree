@@ -55,7 +55,8 @@ public class AnnotationDialog {
         options = new OptionsPanel(6, 6);
 
         annotationCombo = new JComboBox(definitions.toArray());
-        annotationCombo.addItem(CREATE_NEW);
+        // todo This requires a bit more work so has been disabled for now...
+//        annotationCombo.addItem(CREATE_NEW);
         annotationCombo.setSelectedIndex(0);
 
         setupOptionsPanel();
