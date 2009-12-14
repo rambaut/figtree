@@ -407,6 +407,14 @@ public class MultiPaneTreeViewer extends TreeViewer {
 		fireTreeSettingsChanged();
 	}
 
+    public void setNodeBackgroundDecorator(Decorator nodeBackgroundDecorator) {
+        for (TreePane treePane : treePanes) {
+            treePane.setNodeBackgroundDecorator(nodeBackgroundDecorator);
+        }
+        fireTreeSettingsChanged();
+    }
+
+
 	public void setSelectionColor(Color selectionColor) {
 		for (TreePane treePane : treePanes) {
 			treePane.setSelectionColor(selectionColor);

@@ -33,8 +33,8 @@ public class TreeAppearanceController extends AbstractController {
     public static final String BACKGROUND_COLOUR_KEY = "backgroundColour";
     public static final String SELECTION_COLOUR_KEY = "selectionColour";
     public static final String BRANCH_COLOR_ATTRIBUTE_KEY = "branchColorAttribute";
+    public static final String BACKGROUND_COLOR_ATTRIBUTE_KEY = "backgroundColorAttribute";
     public static final String BRANCH_LINE_WIDTH_KEY = "branchLineWidth";
-
     public static final String BRANCH_WIDTH_ATTRIBUTE_KEY = "branchWidthAttribute";
 
     // The defaults if there is nothing in the preferences
@@ -77,32 +77,25 @@ public class TreeAppearanceController extends AbstractController {
 
         branchWidthAttributeCombo = new JComboBox(new String[] { "No attributes" });
         branchColourAttributeCombo = new JComboBox(new String[] { "No attributes" });
+        backgroundColourAttributeCombo = new JComboBox(new String[] { "No attributes" });
         setupAttributes(treeViewer.getTrees());
 
-        colourAutoRange = true;
-        colourFromValue = 0.0;
-        colourToValue = 1.0;
-        fromColour = new Color(0, 16, 192);
-        toColour = new Color(192, 16, 0);
-        middleColour = new Color(0, 0, 0);
-        useGradient = false;
+        branchColourSettings.autoRange  = true;
+        branchColourSettings.fromValue = 0.0;
+        branchColourSettings.toValue = 1.0;
+        branchColourSettings.fromColour = new Color(0, 16, 192);
+        branchColourSettings.toColour = new Color(192, 16, 0);
+        branchColourSettings.middleColour = new Color(0, 0, 0);
+        branchColourSettings.useGradient = false;
 
         JButton setupColourButton = new JButton(new AbstractAction("Setup") {
             public void actionPerformed(ActionEvent e) {
                 if (colourScaleDialog == null) {
-                    colourScaleDialog = new ColourScaleDialog(frame, colourAutoRange,
-                            colourFromValue, colourToValue,
-                            fromColour, toColour, middleColour);
+                    colourScaleDialog = new ColourScaleDialog(frame, branchColourSettings);
                 }
                 int result = colourScaleDialog.showDialog();
                 if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-                    colourAutoRange = colourScaleDialog.getAutoRange();
-                    colourFromValue = colourScaleDialog.getFromValue().doubleValue();
-                    colourToValue = colourScaleDialog.getToValue().doubleValue();
-                    fromColour = colourScaleDialog.getFromColour();
-                    toColour = colourScaleDialog.getToColour();
-                    middleColour = colourScaleDialog.getMiddleColour();
-//					useGradient = colourScaleDialog.getUseGradient();
+                    colourScaleDialog.getSettings(branchColourSettings);
                     setupBranchDecorators();
                 }
             }
@@ -110,7 +103,7 @@ public class TreeAppearanceController extends AbstractController {
         final JCheckBox useGradientCheck = new JCheckBox("Gradient");
         useGradientCheck.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent event) {
-                useGradient = useGradientCheck.isSelected();
+                branchColourSettings.useGradient = useGradientCheck.isSelected();
                 setupBranchDecorators();
             }
         });
@@ -145,19 +138,41 @@ public class TreeAppearanceController extends AbstractController {
         });
         optionsPanel.addComponentWithLabel("Width by:", branchWidthAttributeCombo);
         optionsPanel.addComponent(setupWidthButton);
+        optionsPanel.addSeparator();
 
+        backgroundColourSettings.autoRange  = true;
+        backgroundColourSettings.fromValue = 0.0;
+        backgroundColourSettings.toValue = 1.0;
+        backgroundColourSettings.fromColour = new Color(255, 255, 255);
+        backgroundColourSettings.toColour = new Color(192, 16, 0);
+        backgroundColourSettings.middleColour = null;
+        backgroundColourSettings.useGradient = false;
 
-        branchWidthAttributeCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
-                setupBranchDecorators();
+        JButton bgSetupColourButton = new JButton(new AbstractAction("Setup") {
+            public void actionPerformed(ActionEvent e) {
+                if (bgColourScaleDialog == null) {
+                    bgColourScaleDialog = new ColourScaleDialog(frame, backgroundColourSettings);
+                }
+                int result = bgColourScaleDialog.showDialog();
+                if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
+                    bgColourScaleDialog.getSettings(backgroundColourSettings);
+                    setupBranchDecorators();
+                }
             }
         });
 
-        branchColourAttributeCombo.addItemListener(new ItemListener() {
+        optionsPanel.addComponentWithLabel("Background:", backgroundColourAttributeCombo);
+        optionsPanel.addComponent(bgSetupColourButton);
+
+       ItemListener listener = new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
                 setupBranchDecorators();
             }
-        });
+       };
+
+        branchColourAttributeCombo.addItemListener(listener);
+        branchWidthAttributeCombo.addItemListener(listener);
+        backgroundColourAttributeCombo.addItemListener(listener);
 
         treeViewer.addTreeViewerListener(new TreeViewerListener() {
             public void treeChanged() {
@@ -182,9 +197,34 @@ public class TreeAppearanceController extends AbstractController {
 
         Decorator colourDecorator = null;
 
+        if (backgroundColourAttributeCombo.getSelectedIndex() > 0) {
+            String attribute = (String) backgroundColourAttributeCombo.getSelectedItem();
+            if (attribute != null && attribute.length() > 0) {
+                if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
+                    colourDecorator = new DiscreteColorDecorator(attribute, nodes, false);
+                } else {
+                    ContinousScale scale;
+                    if (branchColourSettings.autoRange) {
+                        scale = new ContinousScale(attribute, nodes);
+                    } else {
+                        scale = new ContinousScale(attribute, nodes, backgroundColourSettings.fromValue, backgroundColourSettings.toValue);
+                    }
+
+                    if (backgroundColourSettings.middleColour == null) {
+                        colourDecorator = new ContinuousColorDecorator(scale, backgroundColourSettings.fromColour, backgroundColourSettings.toColour, false);
+                    } else {
+                        colourDecorator = new ContinuousColorDecorator(scale, backgroundColourSettings.fromColour, backgroundColourSettings.middleColour, backgroundColourSettings.toColour, false);
+                    }
+
+                }
+            }
+        }
+
+        treeViewer.setNodeBackgroundDecorator(colourDecorator);
+
         if (branchColourAttributeCombo.getSelectedIndex() == 0) {
             colourDecorator = userBranchColourDecorator;
-            userBranchColourDecorator.setGradient(useGradient);
+            userBranchColourDecorator.setGradient(branchColourSettings.useGradient);
         } else {
             String attribute = (String) branchColourAttributeCombo.getSelectedItem();
             if (attribute != null && attribute.length() > 0) {
@@ -197,19 +237,19 @@ public class TreeAppearanceController extends AbstractController {
                     return;
                 } else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
 
-                    colourDecorator = new DiscreteColorDecorator(attribute, nodes, useGradient);
+                    colourDecorator = new DiscreteColorDecorator(attribute, nodes, branchColourSettings.useGradient);
                 } else {
                     ContinousScale scale;
-                    if (colourAutoRange) {
+                    if (branchColourSettings.autoRange) {
                         scale = new ContinousScale(attribute, nodes);
                     } else {
-                        scale = new ContinousScale(attribute, nodes, colourFromValue, colourToValue);
+                        scale = new ContinousScale(attribute, nodes, branchColourSettings.fromValue, branchColourSettings.toValue);
                     }
 
-                    if (middleColour == null) {
-                        colourDecorator = new ContinuousColorDecorator(scale, fromColour, toColour, useGradient);
+                    if (branchColourSettings.middleColour == null) {
+                        colourDecorator = new ContinuousColorDecorator(scale, branchColourSettings.fromColour, branchColourSettings.toColour, branchColourSettings.useGradient);
                     } else {
-                        colourDecorator = new ContinuousColorDecorator(scale, fromColour, middleColour, toColour, useGradient);
+                        colourDecorator = new ContinuousColorDecorator(scale, branchColourSettings.fromColour, branchColourSettings.middleColour, branchColourSettings.toColour, branchColourSettings.useGradient);
                     }
 
                 }
@@ -251,14 +291,19 @@ public class TreeAppearanceController extends AbstractController {
 
     }
 
+
     private void setupAttributes(Collection<? extends Tree> trees) {
         Object selected1 = branchColourAttributeCombo.getSelectedItem();
         Object selected2 = branchWidthAttributeCombo.getSelectedItem();
+        Object selected3 = backgroundColourAttributeCombo.getSelectedItem();
 
         branchColourAttributeCombo.removeAllItems();
         branchWidthAttributeCombo.removeAllItems();
+        backgroundColourAttributeCombo.removeAllItems();
+
         branchColourAttributeCombo.addItem("User Selection");
         branchWidthAttributeCombo.addItem("User Selection");
+        backgroundColourAttributeCombo.addItem("User Selection");
         if (trees == null) {
             return;
         }
@@ -274,10 +319,12 @@ public class TreeAppearanceController extends AbstractController {
         for (String name : names) {
             branchColourAttributeCombo.addItem(name);
             branchWidthAttributeCombo.addItem(name);
+            backgroundColourAttributeCombo.addItem(name);
         }
 
         branchColourAttributeCombo.setSelectedItem(selected1);
         branchWidthAttributeCombo.setSelectedItem(selected2);
+        branchWidthAttributeCombo.setSelectedItem(selected3);
     }
 
     private String[] getAttributeNames(Collection<? extends Attributable> items) {
@@ -346,6 +393,7 @@ public class TreeAppearanceController extends AbstractController {
         treeViewer.setSelectionColor((Color)settings.get(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY));
 
         branchColourAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BRANCH_COLOR_ATTRIBUTE_KEY));
+        backgroundColourAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BACKGROUND_COLOR_ATTRIBUTE_KEY));
         branchLineWidthSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY));
     }
 
@@ -356,6 +404,7 @@ public class TreeAppearanceController extends AbstractController {
         settings.put(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY, treeViewer.getSelectionPaint());
 
         settings.put(CONTROLLER_KEY + "." + BRANCH_COLOR_ATTRIBUTE_KEY, branchColourAttributeCombo.getSelectedItem().toString());
+        settings.put(CONTROLLER_KEY + "." + BACKGROUND_COLOR_ATTRIBUTE_KEY, backgroundColourAttributeCombo.getSelectedItem().toString());
         settings.put(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY, branchLineWidthSpinner.getValue());
     }
 
@@ -365,6 +414,7 @@ public class TreeAppearanceController extends AbstractController {
     private final OptionsPanel optionsPanel;
 
     private final JComboBox branchColourAttributeCombo;
+    private final JComboBox backgroundColourAttributeCombo;
     private final JSpinner branchLineWidthSpinner;
 
     private final JComboBox branchWidthAttributeCombo;
@@ -372,20 +422,17 @@ public class TreeAppearanceController extends AbstractController {
     private final TreeViewer treeViewer;
 
     private ColourScaleDialog colourScaleDialog = null;
+    private ColourScaleDialog bgColourScaleDialog = null;
     private WidthScaleDialog widthScaleDialog = null;
 
-    private boolean colourAutoRange = true;
-    private double colourFromValue = 0.0;
-    private double colourToValue = 1.0;
-    private Color fromColour;
-    private Color toColour;
-    private Color middleColour;
-    private boolean useGradient = false;
+    private ColourScaleDialog.ColourSettings branchColourSettings = new ColourScaleDialog.ColourSettings();
+    private ColourScaleDialog.ColourSettings backgroundColourSettings = new ColourScaleDialog.ColourSettings();
 
     private boolean widthAutoRange = true;
     private double widthFromValue = 0.0;
     private double widthToValue = 1.0;
     private double fromWidth;
     private double toWidth;
+
 
 }

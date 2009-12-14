@@ -592,6 +592,10 @@ public class DefaultTreeViewer extends TreeViewer {
         treePane.setBranchColouringDecorator(branchColouringAttribute, branchColouringDecorator);
     }
 
+    public void setNodeBackgroundDecorator(Decorator nodeBackgroundDecorator) {
+        treePane.setNodeBackgroundDecorator(nodeBackgroundDecorator);
+    }
+    
     public void setSelectionColor(Color selectionColor) {
         treePane.setSelectionColor(selectionColor);
     }

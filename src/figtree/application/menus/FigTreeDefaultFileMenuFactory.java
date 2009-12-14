@@ -59,6 +59,10 @@ public class FigTreeDefaultFileMenuFactory implements MenuFactory {
 		    item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExportGraphicAction());
 		    item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK + KeyEvent.ALT_MASK));
 		    menu.add(item);
+
+            item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExportPDFAction());
+            item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK + KeyEvent.SHIFT_MASK + KeyEvent.ALT_MASK));
+            menu.add(item);
 		} else {
 		    // If the frame is not a TracerFileMenuHandler then leave out the import/export options.
 		}

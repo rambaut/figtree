@@ -18,8 +18,17 @@ import figtree.ui.components.ColorWellButton;
  */
 public class ColourScaleDialog {
 
+    public static class ColourSettings {
+        public boolean autoRange = true;
+        public double fromValue = 0.0;
+        public double toValue = 1.0;
+        public Color fromColour;
+        public Color toColour;
+        public Color middleColour;
+        public boolean useGradient = false;
+    }
+
     private JFrame frame;
-    private OptionsPanel options;
     private JCheckBox autoScaleCheck;
     private JLabel fromLabel;
     private RealNumberField fromNumberField;
@@ -32,22 +41,21 @@ public class ColourScaleDialog {
     private JCheckBox middleColourCheck;
     private ColorWellButton middleColourButton;
 
-    public ColourScaleDialog(final JFrame frame, boolean autoRange, double fromValue, double toValue,
-                             final Color fromColour, final Color toColour, final Color middleColour) {
+    public ColourScaleDialog(final JFrame frame, final ColourSettings settings) {
         this.frame = frame;
 
         autoScaleCheck = new JCheckBox("Auto-scale range between min and max values");
-        autoScaleCheck.setSelected(autoRange);
+        autoScaleCheck.setSelected(settings.autoRange);
 
         fromLabel = new JLabel("Range from:");
         fromNumberField = new RealNumberField();
         fromNumberField.setColumns(10);
-        fromNumberField.setValue(fromValue);
+        fromNumberField.setValue(settings.fromValue);
 
         toLabel = new JLabel("to:");
         toNumberField = new RealNumberField();
         toNumberField.setColumns(10);
-        toNumberField.setValue(toValue);
+        toNumberField.setValue(settings.toValue);
 
         fromLabel.setEnabled(false);
         fromNumberField.setEnabled(false);
@@ -56,9 +64,9 @@ public class ColourScaleDialog {
 
         middleColourCheck = new JCheckBox("through:");
 
-        fromColourButton = new ColorWellButton(fromColour, "Choose Start Colour");
-        toColourButton = new ColorWellButton(toColour, "Choose End Colour");
-        middleColourButton = new ColorWellButton(middleColour, "Choose Middle Colour");
+        fromColourButton = new ColorWellButton(settings.fromColour, "Choose Start Colour");
+        toColourButton = new ColorWellButton(settings.toColour, "Choose End Colour");
+        middleColourButton = new ColorWellButton(settings.middleColour, "Choose Middle Colour");
 
         autoScaleCheck.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -73,12 +81,13 @@ public class ColourScaleDialog {
             public void itemStateChanged(ItemEvent e) {
                 middleColourButton.setEnabled(middleColourCheck.isSelected());
             }});
-        middleColourCheck.setSelected(middleColour != null);
+        middleColourCheck.setSelected(settings.middleColour != null);
+        middleColourButton.setEnabled(settings.middleColour != null);
     }
 
     public int showDialog() {
 
-        options = new OptionsPanel(6, 6);
+        final OptionsPanel options = new OptionsPanel(6, 6);
 
         options.addComponent(autoScaleCheck);
 
@@ -126,31 +135,16 @@ public class ColourScaleDialog {
         return result;
     }
 
-    public boolean getAutoRange() {
-        return autoScaleCheck.isSelected();
-    }
-
-    public Number getFromValue() {
-        return fromNumberField.getValue();
-    }
-
-    public Number getToValue() {
-        return toNumberField.getValue();
-    }
-
-    public Color getFromColour() {
-        return fromColourButton.getSelectedColor();
-    }
-
-    public Color getToColour() {
-        return toColourButton.getSelectedColor();
-    }
-
-    public Color getMiddleColour() {
+    public void getSettings(ColourSettings settings) {
+        settings.autoRange = autoScaleCheck.isSelected();
+        settings.fromValue =  fromNumberField.getValue();
+        settings.toValue = toNumberField.getValue();
+        settings.fromColour = fromColourButton.getSelectedColor();
+        settings.toColour = toColourButton.getSelectedColor();
         if (middleColourCheck.isSelected()) {
-            return middleColourButton.getSelectedColor();
+            settings.middleColour = middleColourButton.getSelectedColor();
         } else {
-            return null;
+            settings.middleColour = null;
         }
     }
 

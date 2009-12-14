@@ -94,28 +94,21 @@ public class LabelPainterController extends AbstractController {
 
         final JLabel label1 = optionsPanel.addComponentWithLabel("Display:", displayAttributeCombo);
 
-        colourAutoRange = true;
-        colourFromValue = 0.0;
-        colourToValue = 1.0;
-        fromColour = new Color(0, 16, 192);
-        toColour = new Color(192, 16, 0);
-        middleColour = new Color(0, 0, 0);
+        colourSettings.autoRange = true;
+        colourSettings.fromValue = 0.0;
+        colourSettings.toValue = 1.0;
+        colourSettings.fromColour = new Color(0, 16, 192);
+        colourSettings.toColour = new Color(192, 16, 0);
+        colourSettings.middleColour = new Color(0, 0, 0);
 
         final JButton setupColourButton = new JButton(new AbstractAction("Colours") {
             public void actionPerformed(ActionEvent e) {
                 if (colourScaleDialog == null) {
-                    colourScaleDialog = new ColourScaleDialog(frame, colourAutoRange,
-                            colourFromValue, colourToValue,
-                            fromColour, toColour, middleColour);
+                    colourScaleDialog = new ColourScaleDialog(frame, colourSettings);
                 }
                 int result = colourScaleDialog.showDialog();
                 if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-                    colourAutoRange = colourScaleDialog.getAutoRange();
-                    colourFromValue = colourScaleDialog.getFromValue().doubleValue();
-                    colourToValue = colourScaleDialog.getToValue().doubleValue();
-                    fromColour = colourScaleDialog.getFromColour();
-                    toColour = colourScaleDialog.getToColour();
-                    middleColour = colourScaleDialog.getMiddleColour();
+                    colourScaleDialog.getSettings(colourSettings);
                     setupLabelDecorator();
                 }
             }
@@ -273,16 +266,16 @@ public class LabelPainterController extends AbstractController {
                     colourDecorator = new DiscreteColorDecorator(attribute, items, false);
                 } else {
                     ContinousScale scale;
-                    if (colourAutoRange) {
+                    if (colourSettings.autoRange) {
                         scale = new ContinousScale(attribute, items);
                     } else {
-                        scale = new ContinousScale(attribute, items, colourFromValue, colourToValue);
+                        scale = new ContinousScale(attribute, items, colourSettings.fromValue, colourSettings.toValue);
                     }
 
-                    if (middleColour == null) {
-                        colourDecorator = new ContinuousColorDecorator(scale, fromColour, toColour, false);
+                    if (colourSettings.middleColour == null) {
+                        colourDecorator = new ContinuousColorDecorator(scale, colourSettings.fromColour, colourSettings.toColour, false);
                     } else {
-                        colourDecorator = new ContinuousColorDecorator(scale, fromColour, middleColour, toColour, false);
+                        colourDecorator = new ContinuousColorDecorator(scale, colourSettings.fromColour, colourSettings.middleColour, colourSettings.toColour, false);
                     }
                 }
 
@@ -364,11 +357,6 @@ public class LabelPainterController extends AbstractController {
 
     private ColourScaleDialog colourScaleDialog = null;
 
-    private boolean colourAutoRange = true;
-    private double colourFromValue = 0.0;
-    private double colourToValue = 1.0;
-    private Color fromColour;
-    private Color toColour;
-    private Color middleColour;
+    ColourScaleDialog.ColourSettings colourSettings = new ColourScaleDialog.ColourSettings();
 
 }
