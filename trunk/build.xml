@@ -126,7 +126,9 @@
         <copy todir="${Windows_package_dir}/lib">
             <fileset dir="${Windows_dir}/lib"/>
         </copy>
-        <copy file="${common_dir}/README.txt" todir="${Windows_package_dir}"/>
+        <copy todir="${Windows_package_dir}">
+            <fileset dir="${common_dir}/"/>
+        </copy>
 
         <launch4j configFile="${Windows_dir}/FigTree_launch4j.xml"
                   jar="${dist}/figtree.jar"
@@ -158,7 +160,9 @@
         <copy todir="${Linux_package_dir}/lib">
             <fileset dir="${Linux_dir}/lib"/>
         </copy>
-        <copy file="${common_dir}/README.txt" todir="${Linux_package_dir}"/>
+        <copy todir="${Linux_package_dir}">
+            <fileset dir="${common_dir}/"/>
+        </copy>
 
         <tar destfile="${release_dir}/${name}_v${version}.tgz" compression="gzip">
             <tarfileset dir="${Linux_package_dir}" prefix="${name}_v${version}"/>
@@ -174,7 +178,9 @@
         <mkdir dir="${Mac_package_dir}" />
 
         <copy file="${dist}/figtree.jar" todir="${Mac_package_dir}/lib"/>
-        <copy file="${common_dir}/README.txt" todir="${Mac_package_dir}"/>
+        <copy todir="${Mac_package_dir}">
+            <fileset dir="${common_dir}/"/>
+        </copy>
         <copy todir="${Mac_package_dir}/QuickLook Plugin">
             <fileset dir="${Mac_dir}/QuickLook Plugin"/>
         </copy>
@@ -187,6 +193,7 @@
                         mainclass="figtree.application.FigTreeApplication"
                         icon="${Mac_dir}/icons/FigTree.icns"
                         jvmversion="1.5+"
+                        vmoptions="-Xmx512M"
                         arguments=""
                         version="${version}"
                         infostring="${name} v${version}, Copyright 2006-2009, Andrew Rambaut"
@@ -196,13 +203,31 @@
                 <include name="**/figtree.jar"/>
             </jarfileset>
             <jarfileset dir="${Mac_dir}/lib">
-                <include name="**/*.jar"/>
+                <include name="**/quaqua.jar"/>
+            </jarfileset>
+            <jarfileset dir="${Mac_dir}/lib">
+                <include name="libquaqua*.jnilib"/>
             </jarfileset>
             <documenttype name="FigTree tree file"
                           extensions="tree tre trees ntf tf"
                           iconFile="${Mac_dir}/icons/FigTreeDocIcon.icns"
                           role="Editor"/>
         </jarbundler>
+
+        <echo message="Building disk image." />
+
+        <!-- create disk image -->
+        <exec executable="/usr/bin/hdiutil">
+            <arg value="create"/>
+            <arg value="-ov"/>
+            <arg value="-srcfolder"/>
+            <arg value="${Mac_package_dir}"/>
+            <arg value="-volname"/>
+            <arg value="${name} v${version}"/>
+            <arg value="-imagekey"/>
+            <arg value="zlib-level=6"/>
+            <arg value="${release_dir}/${name} v${version}.dmg"/>
+        </exec>
 
         <echo message="Mac version release is finished." />
     </target>

@@ -10,4 +10,6 @@ public interface FigTreeFileMenuHandler {
 	Action getExportTreesAction();
 
 	Action getExportGraphicAction();
+
+    Action getExportPDFAction();
 }

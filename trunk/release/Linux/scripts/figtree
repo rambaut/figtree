@@ -1,4 +1,4 @@
 #!/bin/sh
 
-java -Xms64m -Xmx128m -jar lib/figtree.jar $*
+java -Xms64m -Xmx512m -jar lib/figtree.jar $*
 

@@ -25,6 +25,14 @@ public class TreeLayoutCache {
         return branchPaths;
     }
 
+    public Shape getNodeArea(Node node) {
+        return nodeAreas.get(node);
+    }
+
+    public Map<Node, Shape> getNodeAreaMap() {
+        return nodeAreas;
+    }
+
     public Shape getCollapsedShape(Node node) {
         return collapsedShapes.get(node);
     }
@@ -88,6 +96,7 @@ public class TreeLayoutCache {
 	public void clear() {
 		nodePoints.clear();
         branchPaths.clear();
+        nodeAreas.clear();
         collapsedShapes.clear();
 		hilightNodes.clear();
 		hilightShapes.clear();
@@ -98,8 +107,9 @@ public class TreeLayoutCache {
         calloutPaths.clear();
 }
 
-	protected Map<Node, Point2D> nodePoints = new HashMap<Node, Point2D>();
+    protected Map<Node, Point2D> nodePoints = new HashMap<Node, Point2D>();
     protected Map<Node, Shape> branchPaths = new HashMap<Node, Shape>();
+    protected Map<Node, Shape> nodeAreas = new HashMap<Node, Shape>();
     protected Map<Node, Shape> collapsedShapes = new HashMap<Node, Shape>();
 	protected List<Node> hilightNodes = new ArrayList<Node>();
 	protected Map<Node, Shape> hilightShapes = new HashMap<Node, Shape>();

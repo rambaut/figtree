@@ -79,6 +79,10 @@ public class FigTreeMacFileMenuFactory implements MenuFactory {
 		    item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExportGraphicAction());
 		    item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK + KeyEvent.ALT_MASK));
 		    menu.add(item);
+
+            item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExportPDFAction());
+            item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK + KeyEvent.SHIFT_MASK + KeyEvent.ALT_MASK));
+            menu.add(item);
 		} else {
 		    // If the frame is not a TracerFileMenuHandler then create a dummy set of disabled menu options.
 		    // At present the only situation where this may happen is in Mac OS X when no windows
@@ -100,6 +104,11 @@ public class FigTreeMacFileMenuFactory implements MenuFactory {
 		    item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK + KeyEvent.ALT_MASK));
 		    item.setEnabled(false);
 		    menu.add(item);
+
+            item = new JMenuItem("Export PDF...");
+            item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK + KeyEvent.SHIFT_MASK + KeyEvent.ALT_MASK));
+            item.setEnabled(false);
+            menu.add(item);
 		}
 
 		menu.addSeparator();

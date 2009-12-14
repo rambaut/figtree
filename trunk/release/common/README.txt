@@ -7,7 +7,7 @@
 
 
 UNIX/Linux/Mac OS X (command-line) version README
-Last updated: a.rambaut@ed.ac.uk - ?th ??? 2009
+Last updated: a.rambaut@ed.ac.uk - 4th December 2009
 
 Contents:
 1) INTRODUCTION
@@ -27,17 +27,23 @@ FigTree is designed as a graphical viewer of phylogenetic trees and as a program
 ___________________________________________________________________________
 2) VERSION HISTORY
 
-v1.3 Released ?th ??? 2009. 
+v1.3 Released 14th December 2009. 
 	
 New Features:
+	Added a 'Background' colouring option to the 'Appearance' panel so the colour under each clade can be controlled by an attribute.
+
 	Added a 'Color by' option to tip, node and branch labels so the colour of the labels can be controlled by an attribute.
 	
-	Added an option to copy the values of one annotation to another for selected nodes. 
+	Restored a Export to PDF option in the File menu. This uses a different library for creating PDFs from the Graphics export and doesn't require any settings (it should produce a PDF that matches the screen image).
 	
 	Implemented a 'QuickLook' plugin for Mac OS X.
 
 Bug Fixes:
 	Fixed an issue with 'branch' attributes not being loaded from a NEXUS file.
+	
+	The tree panel now has focus when the window opens which allows direct copy/pasting of tree files.
+
+	New attributes are available in the Find panel. 
 		
 v1.2.3 Released 10th Aug 2009. 
 	

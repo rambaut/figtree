@@ -5,7 +5,7 @@
   <jre>
     <minVersion>1.5.0</minVersion>
     <initialHeapSize>64</initialHeapSize>
-    <maxHeapSize>128</maxHeapSize>
+    <maxHeapSize>512</maxHeapSize>
   </jre>    
   <versionInfo>
     <fileDescription>FigTree</fileDescription>
