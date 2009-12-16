@@ -136,7 +136,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 
         Point2D rootPoint = constructNode(tree, root, 0.0, getRootLength(), cache);
 
-        constructNodeAreas(tree, root, true, new Area(), cache);
+        constructNodeAreas(tree, root, new Area(), cache, new Point2D[2]);
 
         // construct a root branch line
         double ty = transformY(rootPoint.getY());
@@ -313,9 +313,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
         return nodePoint;
     }
 
-    private Point2D constructNodeAreas(final RootedTree tree, final Node node, boolean lowerChild, final Area parentNodeArea, TreeLayoutCache cache) {
-
-        Point2D childPoint;
+    private void constructNodeAreas(final RootedTree tree, final Node node, final Area parentNodeArea, TreeLayoutCache cache, Point2D[] outChildPoints) {
 
         if (!tree.isExternal(node)) {
 
@@ -330,20 +328,24 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
             int index = (rotate ? children.size() - 1 : 0);
             Node child1 = children.get(index);
             Area childArea1 = new Area();
-            Point2D childPoint1 = constructNodeAreas(tree, child1, true, childArea1, cache);
+
+            Point2D[] childPoints1 = new Point2D[2];
+
+            constructNodeAreas(tree, child1, childArea1, cache, childPoints1);
 
             Rectangle2D branchBounds1 = cache.getBranchPath(child1).getBounds2D();
 
             index = (rotate ? 0 : children.size() - 1);
             Node child2 = children.get(index);
             Area childArea2 = new Area();
-            Point2D childPoint2 = constructNodeAreas(tree, child2, false, childArea2, cache);
+            Point2D[] childPoints2 = new Point2D[2];
+            constructNodeAreas(tree, child2, childArea2, cache, childPoints2);
 
-            if (lowerChild) {
-                childPoint = childPoint2;
-            } else {
-                childPoint = childPoint1;
-            }
+            Point2D childPoint1 = childPoints1[1];
+            Point2D childPoint2 = childPoints2[0];
+
+            outChildPoints[0] = childPoints1[0];
+            outChildPoints[1] = childPoints2[1];
 
             Rectangle2D branchBounds2 = cache.getBranchPath(child2).getBounds2D();
 
@@ -382,8 +384,8 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
                 nodePath.lineTo(x1, y1);
 
                 final float x2 = (float) childPoint1.getX();
-                nodePath.lineTo(x2, y1);
-
+//                nodePath.lineTo(x2, y1);
+//
                 final float y3 = (float) childPoint1.getY();
                 nodePath.lineTo(x2, y3);
 
@@ -443,10 +445,8 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
             cache.nodeAreas.put(node, nodeArea);
 
         } else {
-            childPoint = cache.getNodePoint(node);
+            outChildPoints[0] = outChildPoints[1] = cache.getNodePoint(node);
         }
-
-        return childPoint;
     }
 
     private Point2D constructCartoonNode(RootedTree tree, Node node, double xPosition, TreeLayoutCache cache) {
