@@ -59,7 +59,7 @@
 	<target name="compile" depends="init,copyLibs,freehep">
 		<!-- Compile the java code from ${src} into ${build} -->
 		<javac source="1.5" target="1.5" srcdir="${src}" destdir="${build}"
-		       classpath="${lib}/jebl.jar:${lib}/jam.jar:${lib}/freehep.jar:${lib}/iText-2.1.7.jar:${lib}/quaqua.jar">
+		       classpath="${lib}/jebl.jar:${lib}/jam.jar:${lib}/freehep.jar:${lib}/iText.jar:${lib}/quaqua.jar">
 			<include name="figtree/**"/>
 		</javac>
 		<copy todir="${build}" verbose="true">
@@ -75,6 +75,7 @@
 			<zipgroupfileset dir="${lib}" includes="jebl.jar"/>
 			<zipgroupfileset dir="${lib}" includes="jam.jar"/>
             <zipgroupfileset dir="${lib}" includes="freehep.jar"/>
+            <zipgroupfileset dir="${lib}" includes="iText.jar"/>
 			<fileset dir="${build}" includes="**/*.class,**/*.properties,**/*.png,**/*.gif"/>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
@@ -85,7 +86,7 @@
         <jar jarfile="${dist}/figtree-pdf.jar">
             <zipgroupfileset dir="${lib}" includes="jebl.jar"/>
             <zipgroupfileset dir="${lib}" includes="jam.jar"/>
-            <zipgroupfileset dir="${lib}" includes="iText-2.1.7.jar"/>
+            <zipgroupfileset dir="${lib}" includes="iText.jar"/>
             <fileset dir="${build}" includes="**/*.class,**/*.properties,**/*.png,**/*.gif"/>
             <manifest>
                 <attribute name="Built-By" value="${user.name}"/>

@@ -45,6 +45,8 @@ public class ContinuousTreeToKML {
             date = Double.parseDouble(args[2]);
         }
 
+        System.out.println("most recent sampling date " + date);
+
         String coordinateName = "location";
         if (args.length > 3) {
             coordinateName = args[3];

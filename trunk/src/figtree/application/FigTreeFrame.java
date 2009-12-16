@@ -1,5 +1,11 @@
 package figtree.application;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.DefaultFontMapper;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfTemplate;
+import com.itextpdf.text.pdf.PdfWriter;
 import jebl.evolution.alignments.Alignment;
 import jebl.evolution.alignments.BasicAlignment;
 import jebl.evolution.graphs.Node;
@@ -31,9 +37,6 @@ import java.io.*;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.List;
-
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.*;
 
 public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandler, TreeMenuHandler {
     private final ExtendedTreeViewer treeViewer;
@@ -1096,7 +1099,8 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
             File file = new File(dialog.getDirectory(), dialog.getFile());
 
             Rectangle2D bounds = treeViewer.getContentPane().getBounds();
-            Document document = new Document(new com.lowagie.text.Rectangle((float)bounds.getWidth(), (float)bounds.getHeight()));
+            Document document = new Document(new com.itextpdf
+                    .text.Rectangle((float)bounds.getWidth(), (float)bounds.getHeight()));
             try {
                 // step 2
                 PdfWriter writer;

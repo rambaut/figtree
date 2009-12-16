@@ -10,6 +10,10 @@
 
 package figtree.application;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfTemplate;
+import com.itextpdf.text.pdf.PdfWriter;
 import figtree.treeviewer.ExtendedTreeViewer;
 import jam.controlpalettes.BasicControlPalette;
 import jam.controlpalettes.ControlPalette;
@@ -23,15 +27,9 @@ import jebl.evolution.io.ImportException;
 import jebl.evolution.io.NewickImporter;
 import jebl.evolution.trees.Tree;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfTemplate;
-
 public class FigTreePDF {
 
-    public static final String VERSION = "1.2.4";
+    public static final String VERSION = "1.3";
     public static final String DATES = "2006-2009";
 
     static public void createGraphic(int width, int height, String treeFileName, String graphicFileName) {
@@ -99,7 +97,7 @@ public class FigTreePDF {
             }
 
             Document document = new Document();
-            document.setPageSize(new Rectangle(width, height));
+            document.setPageSize(new com.itextpdf.text.Rectangle(width, height));
             try {
                 PdfWriter writer = PdfWriter.getInstance(document, stream);
                 document.open();

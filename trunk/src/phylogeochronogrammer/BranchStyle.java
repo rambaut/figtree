@@ -107,6 +107,6 @@ public class BranchStyle {
     private double colorPropertyMinimum = 0.0;
     private double colorPropertyMaximum = 1.0;
 
-    private Color colorStart = Color.white;
-    private Color colorFinish = Color.blue;
+    private Color colorStart = Color.blue;
+    private Color colorFinish = Color.white;
 }

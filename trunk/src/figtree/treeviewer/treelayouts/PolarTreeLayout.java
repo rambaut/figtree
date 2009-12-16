@@ -13,25 +13,25 @@ import java.util.List;
  */
 public class PolarTreeLayout extends AbstractTreeLayout {
 
-	private double rootAngle = 180.0;
-	private double rootLengthProportion = 0.01;
-	private double angularRange = 360.0;
+    private double rootAngle = 180.0;
+    private double rootLengthProportion = 0.01;
+    private double angularRange = 360.0;
 
     private double fishEye = 0.0;
     private double pointOfInterest = 0.5;
     private int tipCount = 0;
 
-	private double totalRootLength = 0.0;
+    private double totalRootLength = 0.0;
 
-	private boolean showingRootBranch = true;
+    private boolean showingRootBranch = true;
 
-	private TipLabelPosition tipLabelPosition = TipLabelPosition.FLUSH;
+    private TipLabelPosition tipLabelPosition = TipLabelPosition.FLUSH;
 
 
-	private double yPosition;
-	private double yIncrement;
+    private double yPosition;
+    private double yIncrement;
 
-	private double maxXPosition;
+    private double maxXPosition;
 
     public enum TipLabelPosition {
         FLUSH,
@@ -51,15 +51,15 @@ public class PolarTreeLayout extends AbstractTreeLayout {
         return true;
     }
 
-	public void setFishEye(double fishEye) {
+    public void setFishEye(double fishEye) {
         this.fishEye = fishEye;
         fireTreeLayoutChanged();
-	}
+    }
 
-	public void setPointOfInterest(double x, double y) {
+    public void setPointOfInterest(double x, double y) {
         this.pointOfInterest = getPolarAngle(x, y);
         fireTreeLayoutChanged();
-	}
+    }
 
     public double getHeightOfPoint(Point2D point) {
         throw new UnsupportedOperationException("Method getHeightOfPoint() is not supported in this TreeLayout");
@@ -93,9 +93,9 @@ public class PolarTreeLayout extends AbstractTreeLayout {
         return showingRootBranch;
     }
 
-	public double getTotalRootLength() {
-		return totalRootLength;
-	}
+    public double getTotalRootLength() {
+        return totalRootLength;
+    }
 
     public double getRootLengthProportion() {
         return rootLengthProportion;
@@ -132,17 +132,17 @@ public class PolarTreeLayout extends AbstractTreeLayout {
         fireTreeLayoutChanged();
     }
 
-	public boolean isShowingColouring() {
-	    return (branchColouringAttribute != null);
-	}
+    public boolean isShowingColouring() {
+        return (branchColouringAttribute != null);
+    }
 
-	public void layout(RootedTree tree, TreeLayoutCache cache) {
+    public void layout(RootedTree tree, TreeLayoutCache cache) {
 
-	    cache.clear();
+        cache.clear();
 
 
-		Node root = tree.getRootNode();
-		double totalRootLength = (rootLengthProportion * tree.getHeight(root)) * 10.0;
+        Node root = tree.getRootNode();
+        double totalRootLength = (rootLengthProportion * tree.getHeight(root)) * 10.0;
 
         maxXPosition = 0.0;
         getMaxXPosition(tree, root, totalRootLength);
@@ -152,9 +152,9 @@ public class PolarTreeLayout extends AbstractTreeLayout {
         tipCount = tree.getExternalNodes().size();
         yIncrement = 1.0 / tipCount;
 
-        final Point2D rootPoint = constructNode(tree, root, 0.0, totalRootLength, cache);
+        final Point2D rootPoint = constructNode(tree, root, 0.0, totalRootLength, new Area(), cache);
 
-        constructNodeAreas(tree, root, new Area(), cache);
+//        constructNodeAreas(tree, root, new Area(), cache);
 
         if (showingRootBranch) {
             // construct a root branch line
@@ -166,7 +166,7 @@ public class PolarTreeLayout extends AbstractTreeLayout {
         }
     }
 
-    private Point2D constructNode(RootedTree tree, Node node, double xParent, double xPosition, TreeLayoutCache cache) {
+    private Point2D constructNode(RootedTree tree, Node node, double xParent, double xPosition, final Area parentNodeArea, TreeLayoutCache cache) {
 
         Point2D nodePoint;
 
@@ -176,56 +176,80 @@ public class PolarTreeLayout extends AbstractTreeLayout {
                 constructHilight(tree, node, xParent, xPosition, cache);
             }
 
-	        if (collapsedAttributeName != null && node.getAttribute(collapsedAttributeName) != null) {
-		        nodePoint = constructCollapsedNode(tree, node, xPosition, cache);
-	        } else if (cartoonAttributeName != null && node.getAttribute(cartoonAttributeName) != null) {
-		        nodePoint = constructCartoonNode(tree, node, xPosition, cache);
-	        } else {
+            if (collapsedAttributeName != null && node.getAttribute(collapsedAttributeName) != null) {
+                nodePoint = constructCollapsedNode(tree, node, xPosition, cache);
+            } else if (cartoonAttributeName != null && node.getAttribute(cartoonAttributeName) != null) {
+                nodePoint = constructCartoonNode(tree, node, xPosition, cache);
+            } else {
                 double yPos = 0.0;
 
-                List<Node> children = tree.getChildren(node);
-                Point2D[] childPoints = new Point2D[children.size()];
+                List<Node> childList = tree.getChildren(node);
+                Node[] children = new Node[childList.size()];
+                Point2D[] childPoints = new Point2D[childList.size()];
 
-                int i = 0;
-                for (Node child : children) {
+                boolean rotate = false;
+                if (node.getAttribute("!rotate") != null &&
+                        ((Boolean)node.getAttribute("!rotate"))) {
+                    rotate = true;
+                }
 
-                    final double length = tree.getLength(child);
-                    childPoints[i] = constructNode(tree, child, xPosition, xPosition + length, cache);
+                Area[] childAreas = new Area[childList.size()];
+
+                for (int i = 0; i < childList.size(); i++) {
+                    int index = i;
+                    if (rotate) {
+                        index = childList.size() - i - 1;
+                    }
+                    children[i] = childList.get(index);
+
+                    final double length = tree.getLength(children[i]);
+                    childAreas[i] = new Area();
+                    childPoints[i] = constructNode(tree, children[i], xPosition, xPosition + length, childAreas[i], cache);
+
+                    parentNodeArea.add(childAreas[i]);
+
                     yPos += childPoints[i].getY();
-
-                    i++;
                 }
 
                 // the y-position of the node is the average of the child nodes
-                yPos /= children.size();
+                yPos /= childList.size();
 
                 nodePoint = new Point2D.Double(xPosition, yPos);
                 Point2D transformedNodePoint = transform(nodePoint);
 
                 final double start = getAngle(yPos);
 
-		        boolean rotate = false;
-		        if (node.getAttribute("!rotate") != null &&
-				        ((Boolean)node.getAttribute("!rotate"))) {
-			        rotate = true;
-		        }
+                GeneralPath nodeAreaPath = new GeneralPath();
 
-		        for (i = 0; i < children.size(); i++) {
-			        int index = i;
-			        if (rotate) {
-				        index = children.size() - i - 1;
-			        }
-			        Node child = children.get(index);
+                double firstChildAngle = 0;
+
+                for (int i = 0; i < childList.size(); i++) {
+                    int index = i;
+                    if (rotate) {
+                        index = childList.size() - i - 1;
+                    }
 
                     GeneralPath branchPath = new GeneralPath();
-                    final Point2D transformedChildPoint = transform(childPoints[index]);
+                    final Point2D transformedChildPoint = transform(childPoints[i]);
 
                     final Point2D transformedShoulderPoint = transform(
-                            nodePoint.getX(), childPoints[index].getY());
+                            nodePoint.getX(), childPoints[i].getY());
+
+                    if (i == 0) {
+                        nodeAreaPath.moveTo(
+                                (float) transformedShoulderPoint.getX(),
+                                (float) transformedShoulderPoint.getY());
+                        final Point2D transformedPoint2 = transform(
+                                maxXPosition, childPoints[i].getY());
+                        nodeAreaPath.lineTo(
+                                (float) transformedPoint2.getX(),
+                                (float) transformedPoint2.getY());
+                        firstChildAngle = getAngle(childPoints[i].getY());
+                    }
 
                     Object[] colouring = null;
                     if (branchColouringAttribute != null) {
-                        colouring = (Object[])child.getAttribute(branchColouringAttribute);
+                        colouring = (Object[])children[i].getAttribute(branchColouringAttribute);
                     }
                     if (colouring != null) {
                         // If there is a colouring, then we break the path up into
@@ -233,22 +257,22 @@ public class PolarTreeLayout extends AbstractTreeLayout {
                         // and colour them as we draw them.
 
                         float nodeHeight = (float) tree.getHeight(node);
-                        float childHeight = (float) tree.getHeight(child);
+                        float childHeight = (float) tree.getHeight(children[i]);
 
-                        double x1 = childPoints[index].getX();
+                        double x1 = childPoints[i].getX();
                         double x0 = nodePoint.getX();
 
                         branchPath.moveTo(
                                 (float) transformedChildPoint.getX(),
                                 (float) transformedChildPoint.getY());
 
-	                    float x = (float)x1;
+                        float x = (float)x1;
                         for (int j = 0; j < colouring.length - 1; j+=2) {
 //                            double height = ((Number)colouring[j+1]).doubleValue();
 //                            double p = (height - childHeight) / (nodeHeight - childHeight);
-	                        float interval = ((Number)colouring[j+1]).floatValue();
-	                        float p = interval / (nodeHeight - childHeight);
-	                        x -= ((x1 - x0) * p);
+                            float interval = ((Number)colouring[j+1]).floatValue();
+                            float p = interval / (nodeHeight - childHeight);
+                            x -= ((x1 - x0) * p);
                             final Point2D transformedPoint = transform(x, childPoints[index].getY());
                             branchPath.lineTo(
                                     (float) transformedPoint.getX(),
@@ -274,8 +298,22 @@ public class PolarTreeLayout extends AbstractTreeLayout {
                     arc.setArcByCenter(0.0, 0.0, nodePoint.getX(), finish, start - finish, Arc2D.OPEN);
                     branchPath.append(arc, true);
 
+                    if (i == childList.size() - 1) {
+                        Arc2D arc2 = new Arc2D.Double();
+                        arc2.setArcByCenter(0.0, 0.0, maxXPosition, firstChildAngle, finish - firstChildAngle, Arc2D.OPEN);
+                        nodeAreaPath.append(arc2, true);
+
+                        nodeAreaPath.lineTo(
+                                (float) transformedShoulderPoint.getX(),
+                                (float) transformedShoulderPoint.getY());
+
+                        Arc2D arc3 = new Arc2D.Double();
+                        arc3.setArcByCenter(0.0, 0.0, nodePoint.getX(), finish, firstChildAngle - finish, Arc2D.OPEN);
+                        nodeAreaPath.append(arc3, true);
+                    }
+
                     // add the branchPath to the map of branch paths
-                    cache.branchPaths.put(child, branchPath);
+                    cache.branchPaths.put(children[i], branchPath);
 
                     final double x3 = (nodePoint.getX() + childPoints[index].getX()) / 2;
 
@@ -283,8 +321,19 @@ public class PolarTreeLayout extends AbstractTreeLayout {
                             transform(x3 - 1.0, childPoints[index].getY()),
                             transform(x3 + 1.0, childPoints[index].getY()));
 
-                    cache.branchLabelPaths.put(child, branchLabelPath);
+                    cache.branchLabelPaths.put(children[i], branchLabelPath);
                 }
+
+                nodeAreaPath.closePath();
+
+                Area nodeArea = new Area(nodeAreaPath);
+                parentNodeArea.add(nodeArea);
+
+                for (Area childArea : childAreas) {
+                    nodeArea.subtract(childArea);
+                }
+
+                cache.nodeAreas.put(node, nodeArea);
 
                 Line2D nodeLabelPath = new Line2D.Double(
                         transform(nodePoint.getX(), yPos),
@@ -363,13 +412,12 @@ public class PolarTreeLayout extends AbstractTreeLayout {
             Area childArea2 = new Area();
             constructNodeAreas(tree, child2, childArea2, cache);
 
-//            GeneralPath nodePath = new GeneralPath();
-//            nodePath.setWindingRule();
-//
-//            PathIterator pi1 = cache.getBranchPath(child1).getPathIterator(null);
-//            nodePath.append(pi1, false);
-//
-//            // start point
+            GeneralPath nodePath = new GeneralPath();
+
+            PathIterator pi1 = cache.getBranchPath(child1).getPathIterator(null);
+            nodePath.append(pi1, false);
+
+            // start point
 //            final float x0 = (float) branchBounds1.getX();
 //            final float y0 = (float) (branchBounds1.getY() + branchBounds1.getHeight());
 //            nodePath.moveTo(x0, y0);
@@ -484,7 +532,7 @@ public class PolarTreeLayout extends AbstractTreeLayout {
 
                 Line2D calloutPath = new Line2D.Double(transformedNodePoint, transform(maxXPosition, yPosition[0]));
 
-	            cache.calloutPaths.put(node, calloutPath);
+                cache.calloutPaths.put(node, calloutPath);
 
             } else if (tipLabelPosition == TipLabelPosition.HORIZONTAL) {
                 // this option disabled in getControls (JH)
@@ -501,129 +549,129 @@ public class PolarTreeLayout extends AbstractTreeLayout {
         }
     }
 
-	private Point2D constructCollapsedNode(RootedTree tree, Node node, double xPosition, TreeLayoutCache cache) {
+    private Point2D constructCollapsedNode(RootedTree tree, Node node, double xPosition, TreeLayoutCache cache) {
 
-		Point2D nodePoint;
+        Point2D nodePoint;
 
-		Object[] values = (Object[])node.getAttribute(collapsedAttributeName);
-		//String tipName = (String)values[0];
-		double tipHeight = (Double)values[1];
-		double height = tree.getHeight(node);
-		double maxXPos = xPosition + height - tipHeight;
+        Object[] values = (Object[])node.getAttribute(collapsedAttributeName);
+        //String tipName = (String)values[0];
+        double tipHeight = (Double)values[1];
+        double height = tree.getHeight(node);
+        double maxXPos = xPosition + height - tipHeight;
 
-		double minYPos = yPosition - (yIncrement * 0.5);
-		double maxYPos = minYPos + yIncrement;
-		yPosition += yIncrement;
+        double minYPos = yPosition - (yIncrement * 0.5);
+        double maxYPos = minYPos + yIncrement;
+        yPosition += yIncrement;
 
-		// the y-position of the node is the average of the child nodes
-		double yPos = (maxYPos + minYPos) / 2;
+        // the y-position of the node is the average of the child nodes
+        double yPos = (maxYPos + minYPos) / 2;
 
-		nodePoint = new Point2D.Double(xPosition, yPos);
-		Point2D transformedNodePoint0 = transform(nodePoint);
-		Point2D transformedNodePoint1 = transform(new Point2D.Double(maxXPos, minYPos));
+        nodePoint = new Point2D.Double(xPosition, yPos);
+        Point2D transformedNodePoint0 = transform(nodePoint);
+        Point2D transformedNodePoint1 = transform(new Point2D.Double(maxXPos, minYPos));
 
-		GeneralPath collapsedShape = new GeneralPath();
+        GeneralPath collapsedShape = new GeneralPath();
 
-		collapsedShape.moveTo((float)transformedNodePoint0.getX(), (float)transformedNodePoint0.getY());
+        collapsedShape.moveTo((float)transformedNodePoint0.getX(), (float)transformedNodePoint0.getY());
 
-		collapsedShape.lineTo((float)transformedNodePoint1.getX(), (float)transformedNodePoint1.getY());
-		final double start = getAngle(maxYPos);
-		final double finish = getAngle(minYPos);
-		Arc2D arc = new Arc2D.Double();
-		arc.setArcByCenter(0.0, 0.0, maxXPos, finish, start - finish, Arc2D.OPEN);
-		collapsedShape.append(arc, true);
-		collapsedShape.closePath();
+        collapsedShape.lineTo((float)transformedNodePoint1.getX(), (float)transformedNodePoint1.getY());
+        final double start = getAngle(maxYPos);
+        final double finish = getAngle(minYPos);
+        Arc2D arc = new Arc2D.Double();
+        arc.setArcByCenter(0.0, 0.0, maxXPos, finish, start - finish, Arc2D.OPEN);
+        collapsedShape.append(arc, true);
+        collapsedShape.closePath();
 
-		// add the collapsedShape to the map of branch paths
-		cache.collapsedShapes.put(node, collapsedShape);
+        // add the collapsedShape to the map of branch paths
+        cache.collapsedShapes.put(node, collapsedShape);
 
-		Line2D nodeLabelPath = new Line2D.Double(
-		        transform(nodePoint.getX(), yPos),
-		        transform(nodePoint.getX() + 1.0, yPos));
+        Line2D nodeLabelPath = new Line2D.Double(
+                transform(nodePoint.getX(), yPos),
+                transform(nodePoint.getX() + 1.0, yPos));
 
-		cache.nodeLabelPaths.put(node, nodeLabelPath);
+        cache.nodeLabelPaths.put(node, nodeLabelPath);
 
-		Line2D nodeBarPath = new Line2D.Double(
-		        transform(nodePoint.getX(), yPos),
-		        transform(nodePoint.getX() - 1.0, yPos));
+        Line2D nodeBarPath = new Line2D.Double(
+                transform(nodePoint.getX(), yPos),
+                transform(nodePoint.getX() - 1.0, yPos));
 
-		cache.nodeBarPaths.put(node, nodeBarPath);
+        cache.nodeBarPaths.put(node, nodeBarPath);
 
-		Point2D transformedNodePoint = transform(maxXPos, yPos);
+        Point2D transformedNodePoint = transform(maxXPos, yPos);
 
-		Line2D tipLabelPath;
+        Line2D tipLabelPath;
 
-		if (tipLabelPosition == TipLabelPosition.FLUSH) {
+        if (tipLabelPosition == TipLabelPosition.FLUSH) {
 
-		    tipLabelPath = new Line2D.Double(transformedNodePoint, transform(maxXPos + 1.0, yPos));
+            tipLabelPath = new Line2D.Double(transformedNodePoint, transform(maxXPos + 1.0, yPos));
 
-		} else if (tipLabelPosition == TipLabelPosition.RADIAL) {
+        } else if (tipLabelPosition == TipLabelPosition.RADIAL) {
 
-		    tipLabelPath = new Line2D.Double(transform(maxXPosition, yPos),
-		            transform(maxXPosition + 1.0, yPos));
+            tipLabelPath = new Line2D.Double(transform(maxXPosition, yPos),
+                    transform(maxXPosition + 1.0, yPos));
 
-		    Line2D calloutPath = new Line2D.Double(transformedNodePoint, transform(maxXPosition, yPos));
+            Line2D calloutPath = new Line2D.Double(transformedNodePoint, transform(maxXPosition, yPos));
 
-			cache.calloutPaths.put(node, calloutPath);
+            cache.calloutPaths.put(node, calloutPath);
 
-		} else if (tipLabelPosition == TipLabelPosition.HORIZONTAL) {
-		    // this option disabled in getControls (JH)
-		    throw new UnsupportedOperationException("Not implemented yet");
-		} else {
-		    // this is a bug
-		    throw new IllegalArgumentException("Unrecognized enum value");
-		}
+        } else if (tipLabelPosition == TipLabelPosition.HORIZONTAL) {
+            // this option disabled in getControls (JH)
+            throw new UnsupportedOperationException("Not implemented yet");
+        } else {
+            // this is a bug
+            throw new IllegalArgumentException("Unrecognized enum value");
+        }
 
-		cache.tipLabelPaths.put(node, tipLabelPath);
+        cache.tipLabelPaths.put(node, tipLabelPath);
 
-		// add the node point to the map of node points
-		cache.nodePoints.put(node, transformedNodePoint0);
+        // add the node point to the map of node points
+        cache.nodePoints.put(node, transformedNodePoint0);
 
-		return nodePoint;
-	}
+        return nodePoint;
+    }
 
-	private void constructHilight(RootedTree tree, Node node, double xParent, double xPosition, TreeLayoutCache cache) {
+    private void constructHilight(RootedTree tree, Node node, double xParent, double xPosition, TreeLayoutCache cache) {
 
-		Object[] values = (Object[])node.getAttribute(hilightAttributeName);
-		int tipCount = (Integer)values[0];
-		double tipHeight = (Double)values[1];
-		double height = tree.getHeight(node);
+        Object[] values = (Object[])node.getAttribute(hilightAttributeName);
+        int tipCount = (Integer)values[0];
+        double tipHeight = (Double)values[1];
+        double height = tree.getHeight(node);
 
-		GeneralPath hilightShape = new GeneralPath();
+        GeneralPath hilightShape = new GeneralPath();
 
-		double x0 = ((xPosition + xParent) / 2.0);
-		double x1 = (xPosition + height /*- tipHeight*/);
-		double y0 = yPosition - (yIncrement / 2);
-		double y1 = yPosition + (yIncrement * tipCount) - (yIncrement / 2);
+        double x0 = ((xPosition + xParent) / 2.0);
+        double x1 = (xPosition + height /*- tipHeight*/);
+        double y0 = yPosition - (yIncrement / 2);
+        double y1 = yPosition + (yIncrement * tipCount) - (yIncrement / 2);
 
-		Point2D p1 = transform(new Point2D.Double(x0, y0));
-		Point2D p2 = transform(new Point2D.Double(x1, y0));
-		Point2D p3 = transform(new Point2D.Double(x1, y1));
-		Point2D p4 = transform(new Point2D.Double(x0, y1));
+        Point2D p1 = transform(new Point2D.Double(x0, y0));
+        Point2D p2 = transform(new Point2D.Double(x1, y0));
+        Point2D p3 = transform(new Point2D.Double(x1, y1));
+        Point2D p4 = transform(new Point2D.Double(x0, y1));
 
 
-		final double start = getAngle(y0);
-		final double finish = getAngle(y1);
+        final double start = getAngle(y0);
+        final double finish = getAngle(y1);
 
-		hilightShape.moveTo((float)p1.getX(), (float)p1.getY());
-		hilightShape.lineTo((float)p2.getX(), (float)p2.getY());
+        hilightShape.moveTo((float)p1.getX(), (float)p1.getY());
+        hilightShape.lineTo((float)p2.getX(), (float)p2.getY());
 
-		Arc2D arc = new Arc2D.Double();
-		arc.setArcByCenter(0.0, 0.0, x1, start, finish - start, Arc2D.OPEN);
-		hilightShape.append(arc, true);
+        Arc2D arc = new Arc2D.Double();
+        arc.setArcByCenter(0.0, 0.0, x1, start, finish - start, Arc2D.OPEN);
+        hilightShape.append(arc, true);
 
-		hilightShape.lineTo((float)p3.getX(), (float)p3.getY());
+        hilightShape.lineTo((float)p3.getX(), (float)p3.getY());
 
-		arc = new Arc2D.Double();
-		arc.setArcByCenter(0.0, 0.0, x0, finish, start - finish, Arc2D.OPEN);
-		hilightShape.append(arc, true);
+        arc = new Arc2D.Double();
+        arc.setArcByCenter(0.0, 0.0, x0, finish, start - finish, Arc2D.OPEN);
+        hilightShape.append(arc, true);
 
-		hilightShape.closePath();
+        hilightShape.closePath();
 
-		// add the collapsedShape to the map of branch paths
-		cache.hilightNodes.add(node);
-		cache.hilightShapes.put(node, hilightShape);
-	}
+        // add the collapsedShape to the map of branch paths
+        cache.hilightNodes.add(node);
+        cache.hilightShapes.put(node, hilightShape);
+    }
 
     private void getMaxXPosition(RootedTree tree, Node node, double xPosition) {
 
