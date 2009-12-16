@@ -77,6 +77,9 @@ public class RadialTreeLayout extends AbstractTreeLayout {
 
             constructNode(tree, root, 0.0, Math.PI * 2, 0.0, 0.0, 0.0, cache);
 
+            // Haven't been able to make these look nice....
+//            constructNodeAreas(tree, root, new Area(), cache);
+
         } catch (Graph.NoEdgeException e) {
             e.printStackTrace();
         }
@@ -216,6 +219,52 @@ public class RadialTreeLayout extends AbstractTreeLayout {
         cache.nodePoints.put(node, nodePoint);
 
         return nodePoint;
+    }
+
+    private void constructNodeAreas(final RootedTree tree, final Node node, final Area parentNodeArea, TreeLayoutCache cache) {
+
+        if (!tree.isExternal(node)) {
+
+            List<Node> children = tree.getChildren(node);
+
+            boolean rotate = false;
+            if (node.getAttribute("!rotate") != null &&
+                    ((Boolean)node.getAttribute("!rotate"))) {
+                rotate = true;
+            }
+
+            int index = (rotate ? children.size() - 1 : 0);
+            Node child1 = children.get(index);
+            Area childArea1 = new Area();
+
+            constructNodeAreas(tree, child1, childArea1, cache);
+
+            index = (rotate ? 0 : children.size() - 1);
+            Node child2 = children.get(index);
+            Area childArea2 = new Area();
+            constructNodeAreas(tree, child2, childArea2, cache);
+
+            GeneralPath nodePath = new GeneralPath();
+            Line2D line1 = (Line2D)cache.getBranchPath(child1);
+            Line2D line2 = (Line2D)cache.getBranchPath(child2);
+
+            nodePath.moveTo(line2.getX1(), line2.getY1());
+            nodePath.lineTo(line2.getX2(), line2.getY2());
+            nodePath.lineTo(line1.getX1(), line1.getY1());
+
+            nodePath.closePath();
+
+            Area nodeArea = new Area(nodePath);
+
+            parentNodeArea.add(nodeArea);
+            parentNodeArea.add(childArea1);
+            parentNodeArea.add(childArea2);
+
+            nodeArea.subtract(childArea1);
+            nodeArea.subtract(childArea2);
+
+            cache.nodeAreas.put(node, nodeArea);
+        }
     }
 
     private void constructHilight(RootedTree tree, Node node, double angleStart, double angleFinish, double xPosition,

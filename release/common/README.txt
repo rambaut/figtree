@@ -7,7 +7,7 @@
 
 
 UNIX/Linux/Mac OS X (command-line) version README
-Last updated: a.rambaut@ed.ac.uk - 4th December 2009
+Last updated: a.rambaut@ed.ac.uk - 14th December 2009
 
 Contents:
 1) INTRODUCTION
