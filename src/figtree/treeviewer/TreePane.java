@@ -1197,6 +1197,10 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                     background = nodeBackgroundDecorator.getPaint(background);
                     g2.setPaint(background);
                     g2.fill(transNodePath);
+
+//                  Experimental outlining - requires order of drawing to be pre-order 
+//                    g2.setStroke(new BasicStroke(8, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
+//                    g2.draw(transNodePath);
                 }
             }
         }
