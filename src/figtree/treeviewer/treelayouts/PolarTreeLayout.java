@@ -154,6 +154,8 @@ public class PolarTreeLayout extends AbstractTreeLayout {
 
         final Point2D rootPoint = constructNode(tree, root, 0.0, totalRootLength, cache);
 
+        constructNodeAreas(tree, root, new Area(), cache);
+
         if (showingRootBranch) {
             // construct a root branch line
             final double y = rootPoint.getY();
@@ -336,6 +338,66 @@ public class PolarTreeLayout extends AbstractTreeLayout {
         }
 
         return nodePoint;
+    }
+
+    private void constructNodeAreas(final RootedTree tree, final Node node, final Area parentNodeArea, TreeLayoutCache cache) {
+
+        if (!tree.isExternal(node)) {
+
+            List<Node> children = tree.getChildren(node);
+
+            boolean rotate = false;
+            if (node.getAttribute("!rotate") != null &&
+                    ((Boolean)node.getAttribute("!rotate"))) {
+                rotate = true;
+            }
+
+            int index = (rotate ? children.size() - 1 : 0);
+            Node child1 = children.get(index);
+            Area childArea1 = new Area();
+
+            constructNodeAreas(tree, child1, childArea1, cache);
+
+            index = (rotate ? 0 : children.size() - 1);
+            Node child2 = children.get(index);
+            Area childArea2 = new Area();
+            constructNodeAreas(tree, child2, childArea2, cache);
+
+//            GeneralPath nodePath = new GeneralPath();
+//            nodePath.setWindingRule();
+//
+//            PathIterator pi1 = cache.getBranchPath(child1).getPathIterator(null);
+//            nodePath.append(pi1, false);
+//
+//            // start point
+//            final float x0 = (float) branchBounds1.getX();
+//            final float y0 = (float) (branchBounds1.getY() + branchBounds1.getHeight());
+//            nodePath.moveTo(x0, y0);
+//
+//            final float y1 = (float) branchBounds1.getY();
+//            nodePath.lineTo(x0, y1);
+//
+//            nodePath.lineTo(maxXPosition, y1);
+//
+//            final float y2 = (float) (branchBounds2.getY() + branchBounds2.getHeight());
+//            nodePath.lineTo(maxXPosition, y2);
+//
+//            nodePath.lineTo(x0, y2);
+//
+//            nodePath.lineTo(x0, y0);
+//            nodePath.closePath();
+//
+//            Area nodeArea = new Area(nodePath);
+//
+//            parentNodeArea.add(nodeArea);
+//            parentNodeArea.add(childArea1);
+//            parentNodeArea.add(childArea2);
+//
+//            nodeArea.subtract(childArea1);
+//            nodeArea.subtract(childArea2);
+//
+//            cache.nodeAreas.put(node, nodeArea);
+        }
     }
 
     private Point2D constructCartoonNode(RootedTree tree, Node node, double xPosition, TreeLayoutCache cache) {

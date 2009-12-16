@@ -136,7 +136,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 
         Point2D rootPoint = constructNode(tree, root, 0.0, getRootLength(), cache);
 
-        constructNodeAreas(tree, root, new Area(), cache, new Point2D[2]);
+        constructNodeAreas(tree, root, new Area(), cache);
 
         // construct a root branch line
         double ty = transformY(rootPoint.getY());
@@ -313,7 +313,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
         return nodePoint;
     }
 
-    private void constructNodeAreas(final RootedTree tree, final Node node, final Area parentNodeArea, TreeLayoutCache cache, Point2D[] outChildPoints) {
+    private void constructNodeAreas(final RootedTree tree, final Node node, final Area parentNodeArea, TreeLayoutCache cache) {
 
         if (!tree.isExternal(node)) {
 
@@ -329,23 +329,14 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
             Node child1 = children.get(index);
             Area childArea1 = new Area();
 
-            Point2D[] childPoints1 = new Point2D[2];
-
-            constructNodeAreas(tree, child1, childArea1, cache, childPoints1);
+            constructNodeAreas(tree, child1, childArea1, cache);
 
             Rectangle2D branchBounds1 = cache.getBranchPath(child1).getBounds2D();
 
             index = (rotate ? 0 : children.size() - 1);
             Node child2 = children.get(index);
             Area childArea2 = new Area();
-            Point2D[] childPoints2 = new Point2D[2];
-            constructNodeAreas(tree, child2, childArea2, cache, childPoints2);
-
-            Point2D childPoint1 = childPoints1[1];
-            Point2D childPoint2 = childPoints2[0];
-
-            outChildPoints[0] = childPoints1[0];
-            outChildPoints[1] = childPoints2[1];
+            constructNodeAreas(tree, child2, childArea2, cache);
 
             Rectangle2D branchBounds2 = cache.getBranchPath(child2).getBounds2D();
 
@@ -361,15 +352,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
                 final float y1 = (float) branchBounds1.getY();
                 nodePath.lineTo(x0, y1);
 
-//                final float x1 = (float) childPoint1.getX();
                 nodePath.lineTo(maxXPosition, y1);
-
-//                final float y2 = (float) childPoint1.getY();
-//                nodePath.lineTo(maxXPosition, y2);
-//
-////                final float x2 = (float) childPoint2.getX();
-//                final float y3 = (float) childPoint2.getY();
-//                nodePath.lineTo(maxXPosition, y3);
 
                 final float y2 = (float) (branchBounds2.getY() + branchBounds2.getHeight());
                 nodePath.lineTo(maxXPosition, y2);
@@ -383,22 +366,13 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
                 final float y1 = (float) branchBounds1.getY();
                 nodePath.lineTo(x1, y1);
 
-//                final float x2 = (float) childPoint1.getX();
                 nodePath.lineTo(maxXPosition, y1);
 
-//                final float y3 = (float) childPoint1.getY();
-//                nodePath.lineTo(maxXPosition, y3);
-//
-////                final float x3 = (float) childPoint2.getX();
-//                final float y4 = (float) childPoint2.getY();
-//                nodePath.lineTo(maxXPosition, y4);
-
-//                final float x4 = (float) (branchBounds2.getX() + branchBounds2.getWidth());
-                final float y5 = (float) (branchBounds2.getY() + branchBounds2.getHeight());
-                nodePath.lineTo(maxXPosition, y5);
+                final float y2 = (float) (branchBounds2.getY() + branchBounds2.getHeight());
+                nodePath.lineTo(maxXPosition, y2);
 
                 final float x2 = (float) (branchBounds2.getX() + branchBounds2.getWidth());
-                nodePath.lineTo(x2, y5);
+                nodePath.lineTo(x2, y2);
             } else {
                 final float x1 = (float) (branchBounds1.getX() + branchBounds1.getWidth());
                 final float y1 = (float) branchBounds1.getY();
@@ -408,17 +382,8 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 
                 nodePath.lineTo(x0, y2);
                 nodePath.quadTo(x0, y1, x2, y1);
-//                nodePath.lineTo(x1, y1);
 
-//                final float x3 = (float) childPoint1.getX();
                 nodePath.lineTo(maxXPosition, y1);
-
-//                final float y3 = (float) childPoint1.getY();
-//                nodePath.lineTo(maxXPosition, y3);
-//
-////                final float x4 = (float) childPoint2.getX();
-//                final float y4 = (float) childPoint2.getY();
-//                nodePath.lineTo(maxXPosition, y4);
 
                 final float y3 = (float) (branchBounds2.getY() + branchBounds2.getHeight());
                 nodePath.lineTo(maxXPosition, y3);
@@ -444,9 +409,6 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
             nodeArea.subtract(childArea2);
 
             cache.nodeAreas.put(node, nodeArea);
-
-        } else {
-            outChildPoints[0] = outChildPoints[1] = cache.getNodePoint(node);
         }
     }
 
