@@ -179,6 +179,7 @@
         <mkdir dir="${Mac_package_dir}" />
 
         <copy file="${dist}/figtree.jar" todir="${Mac_package_dir}/lib"/>
+        <copy file="${dist}/figtree-pdf.jar" todir="${Mac_package_dir}/QuickLook Plugin/FigTreeQuickLookPlugin.qlgenerator/Contents/Resources"/>
         <copy todir="${Mac_package_dir}">
             <fileset dir="${common_dir}/"/>
         </copy>
