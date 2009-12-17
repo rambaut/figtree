@@ -354,10 +354,10 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
                 final float y1 = (float) branchBounds1.getY();
                 nodePath.lineTo(x0, y1);
 
-                nodePath.lineTo(maxXPosition, y1);
+                nodePath.lineTo((float)maxXPosition, y1);
 
                 final float y2 = (float) (branchBounds2.getY() + branchBounds2.getHeight());
-                nodePath.lineTo(maxXPosition, y2);
+                nodePath.lineTo((float)maxXPosition, y2);
 
                 nodePath.lineTo(x0, y2);
 
@@ -368,10 +368,10 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
                 final float y1 = (float) branchBounds1.getY();
                 nodePath.lineTo(x1, y1);
 
-                nodePath.lineTo(maxXPosition, y1);
+                nodePath.lineTo((float)maxXPosition, y1);
 
                 final float y2 = (float) (branchBounds2.getY() + branchBounds2.getHeight());
-                nodePath.lineTo(maxXPosition, y2);
+                nodePath.lineTo((float)maxXPosition, y2);
 
                 final float x2 = (float) (branchBounds2.getX() + branchBounds2.getWidth());
                 nodePath.lineTo(x2, y2);
@@ -385,14 +385,14 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
                 nodePath.lineTo(x0, y2);
                 nodePath.quadTo(x0, y1, x2, y1);
 
-                nodePath.lineTo(maxXPosition, y1);
+                nodePath.lineTo((float)maxXPosition, y1);
 
                 final float y3 = (float) (branchBounds2.getY() + branchBounds2.getHeight());
-                nodePath.lineTo(maxXPosition, y3);
+                nodePath.lineTo((float)maxXPosition, y3);
 
                 final float x3 = (float) (branchBounds2.getX() + branchBounds2.getWidth());
-                float x4 = x3 - ((x3 - x0) * (float) (1.0 - curvature));
-                float y4 = y0 + ((y3 - y0) * (float) (1.0 - curvature));
+                final float x4 = x3 - ((x3 - x0) * (float) (1.0 - curvature));
+                final float y4 = y0 + ((y3 - y0) * (float) (1.0 - curvature));
 
                 nodePath.lineTo(x4, y3);
                 nodePath.quadTo(x0, y3, x0, y4);
