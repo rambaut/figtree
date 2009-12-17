@@ -1,3 +1,0 @@
-To install, drag "FigTreeQuickLookPlugin.qlgenerator" to the folder /Library/QuickLook 
-(to make the plugin available to all users) or to the Library/QuickLook folder in your 
-user folder (you may have to create the 'QuickLook' folder if it doesn't already exist.
