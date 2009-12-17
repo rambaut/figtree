@@ -315,7 +315,9 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 
     private void constructNodeAreas(final RootedTree tree, final Node node, final Area parentNodeArea, TreeLayoutCache cache) {
 
-        if (!tree.isExternal(node)) {
+        if (!tree.isExternal(node) &&
+                (collapsedAttributeName == null || node.getAttribute(collapsedAttributeName) == null) &&
+                (cartoonAttributeName == null || node.getAttribute(cartoonAttributeName) == null)) {
 
             List<Node> children = tree.getChildren(node);
 

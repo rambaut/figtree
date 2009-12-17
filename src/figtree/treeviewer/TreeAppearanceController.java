@@ -324,7 +324,7 @@ public class TreeAppearanceController extends AbstractController {
 
         branchColourAttributeCombo.setSelectedItem(selected1);
         branchWidthAttributeCombo.setSelectedItem(selected2);
-        branchWidthAttributeCombo.setSelectedItem(selected3);
+        backgroundColourAttributeCombo.setSelectedItem(selected3);
     }
 
     private String[] getAttributeNames(Collection<? extends Attributable> items) {
