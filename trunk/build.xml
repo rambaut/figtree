@@ -32,32 +32,7 @@
 		<mkdir dir="${lib}"/>
 	</target>
 
-	<target name="copyLibs" depends="init">
-		<copy file="../JEBL/dist/jebl.jar" tofile="${lib}/jebl.jar"/>
-	</target>
-
-    <property name="freehep" location="freehep"/>
-    
-	<target name="freehep" depends="init" description="generate the distribution">
-
-		<jar update="false" jarfile="${lib}/freehep.jar">
-			<zipgroupfileset dir="${freehep}" includes="freehep-export-2.1.1.jar"/>
-			<zipgroupfileset dir="${freehep}" includes="freehep-graphics2d-2.1.1.jar"/>
-			<zipgroupfileset dir="${freehep}" includes="freehep-graphicsio-2.1.1.jar"/>
-			<zipgroupfileset dir="${freehep}" includes="freehep-graphicsio-emf-2.1.1.jar"/>
-			<zipgroupfileset dir="${freehep}" includes="freehep-graphicsio-ps-2.1.1.jar"/>
-			<zipgroupfileset dir="${freehep}" includes="freehep-graphicsio-svg-2.1.1.jar"/>
-			<zipgroupfileset dir="${freehep}" includes="freehep-graphicsio-swf-2.1.1.jar"/>
-            <zipgroupfileset dir="${freehep}" includes="freehep-graphicsio-pdf-2.1.1.jar"/>
-			<zipgroupfileset dir="${freehep}" includes="freehep-io-2.0.2.jar"/>
-			<zipgroupfileset dir="${freehep}" includes="freehep-swing-2.0.3.jar"/>
-			<zipgroupfileset dir="${freehep}" includes="freehep-util-2.0.2.jar"/>
-			<zipgroupfileset dir="${freehep}" includes="freehep-xml-2.1.1.jar"/>
-            <fileset dir="${freehep}" includes="META-INF/services/org.freehep.util.export.ExportFileType"/>
-		</jar>
-	</target>
-
-	<target name="compile" depends="init,copyLibs">
+	<target name="compile" depends="init">
 		<!-- Compile the java code from ${src} into ${build} -->
 		<javac source="1.5" target="1.5" srcdir="${src}" destdir="${build}"
 		       classpath="${lib}/jebl.jar:${lib}/jam.jar:${lib}/freehep.jar:${lib}/iText.jar:${lib}/quaqua.jar">
@@ -82,7 +57,6 @@
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Main-Class" value="figtree.application.FigTreeApplication"/>
 			</manifest>
-            <metainf dir="${freehep}" includes="META-INF/services/org.freehep.util.export.ExportFileType"/>
 		</jar>
 
         <jar jarfile="${dist}/figtree-pdf.jar">
