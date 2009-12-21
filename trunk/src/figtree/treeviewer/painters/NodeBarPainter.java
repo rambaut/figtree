@@ -50,7 +50,7 @@ public class NodeBarPainter extends NodePainter {
 		this.attributeNames = new String[attributeNames.size()];
 		attributeNames.toArray(this.attributeNames);
 
-		firePainterSettingsChanged();
+		fireAttributesChanged();
 	}
 
 	public void setTreePane(TreePane treePane) {
