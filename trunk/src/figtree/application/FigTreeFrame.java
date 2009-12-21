@@ -23,8 +23,6 @@ import figtree.application.menus.TreeMenuHandler;
 import figtree.application.menus.FigTreeFileMenuHandler;
 import figtree.treeviewer.*;
 import figtree.treeviewer.TreeSelectionListener;
-import figtree.treeviewer.painters.StatesPainter;
-import figtree.treeviewer.decorators.DiscreteColorDecorator;
 import figtree.treeviewer.annotations.*;
 import org.freehep.util.export.ExportDialog;
 

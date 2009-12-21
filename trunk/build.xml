@@ -53,12 +53,8 @@
 			<zipgroupfileset dir="${freehep}" includes="freehep-swing-2.0.3.jar"/>
 			<zipgroupfileset dir="${freehep}" includes="freehep-util-2.0.2.jar"/>
 			<zipgroupfileset dir="${freehep}" includes="freehep-xml-2.1.1.jar"/>
-		</jar>
-
-        <jar update="true" jarfile="${lib}/freehep.jar">
             <fileset dir="${freehep}" includes="META-INF/services/org.freehep.util.export.ExportFileType"/>
-        </jar>
-
+		</jar>
 	</target>
 
 	<target name="compile" depends="init,copyLibs">
