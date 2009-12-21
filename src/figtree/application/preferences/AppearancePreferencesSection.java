@@ -60,7 +60,7 @@ public class AppearancePreferencesSection implements PreferencesSection {
         int selectionRGB = TreeAppearanceController.PREFS.getInt(
                 TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.SELECTION_COLOUR_KEY,
                 TreeAppearanceController.DEFAULT_SELECTION_COLOUR.getRGB());
-        float branchLineWidth = TreeAppearanceController.PREFS.getFloat(
+        double branchLineWidth = TreeAppearanceController.PREFS.getFloat(
                 TreeAppearanceController.CONTROLLER_KEY + "." + TreeAppearanceController.BRANCH_LINE_WIDTH_KEY,
                 TreeAppearanceController.DEFAULT_BRANCH_LINE_WIDTH);
 

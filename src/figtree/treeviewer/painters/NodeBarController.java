@@ -9,10 +9,11 @@ import javax.swing.event.ChangeEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.awt.*;
-import java.util.Map;
+import java.util.*;
 import java.util.prefs.Preferences;
 
 import figtree.treeviewer.ControllerOptionsPanel;
+import jebl.util.Attributable;
 
 /**
  * @author Andrew Rambaut
@@ -60,14 +61,7 @@ public class NodeBarController extends AbstractController {
             }
 
             public void attributesChanged() {
-                Object item = displayAttributeCombo.getSelectedItem();
-                displayAttributeCombo.removeAllItems();
-                for (String name : nodeBarPainter.getAttributeNames()) {
-                    displayAttributeCombo.addItem(name);
-                }
-                displayAttributeCombo.setSelectedItem(item);
-
-                optionsPanel.repaint();
+                setupAttributes();
             }
         });
 
@@ -98,6 +92,17 @@ public class NodeBarController extends AbstractController {
                 nodeBarPainter.setVisible(isSelected);
             }
         });
+    }
+
+    private void setupAttributes() {
+        Object item1 = displayAttributeCombo.getSelectedItem();
+        displayAttributeCombo.removeAllItems();
+        for (String name : nodeBarPainter.getAttributeNames()) {
+            displayAttributeCombo.addItem(name);
+        }
+        displayAttributeCombo.setSelectedItem(item1);
+
+        optionsPanel.repaint();
     }
 
     public JComponent getTitleComponent() {
