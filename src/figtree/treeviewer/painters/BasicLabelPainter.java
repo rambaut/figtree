@@ -2,10 +2,7 @@ package figtree.treeviewer.painters;
 
 import figtree.treeviewer.TimeScale;
 import figtree.treeviewer.TreePane;
-import figtree.treeviewer.decorators.Decorator;
-import figtree.treeviewer.decorators.DiscreteColorDecorator;
-import figtree.treeviewer.decorators.ContinousScale;
-import figtree.treeviewer.decorators.ContinuousColorDecorator;
+import figtree.treeviewer.decorators.*;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.RootedTree;
@@ -210,12 +207,17 @@ public class BasicLabelPainter extends LabelPainter<Node> {
             }
         }
 
-        Object value = node.getAttribute(displayAttribute);
-        if (value == null) {
+        Object value;
+
+        if (intent == PainterIntent.TIP) {
             Taxon taxon = tree.getTaxon(node);
             if (taxon != null) {
                 value = taxon.getAttribute(displayAttribute);
+            } else {
+                value = node.getAttribute(displayAttribute);
             }
+        } else {
+            value = node.getAttribute(displayAttribute);
         }
 
         return formatValue(value);
@@ -319,7 +321,14 @@ public class BasicLabelPainter extends LabelPainter<Node> {
         }
 
         if (textDecorator != null) {
-            textDecorator.setItem(item);
+            // this is a bit of a hack to detect whether we should be getting the
+            // colour attribute from the taxon, or some other attribute from the
+            // node:
+            if (textDecorator instanceof AttributableDecorator) {
+                textDecorator.setItem(tree.getTaxon(item));
+            } else {
+                textDecorator.setItem(item);
+            }
             g2.setPaint(textDecorator.getPaint(getForeground()));
             g2.setFont(textDecorator.getFont(getFont()));
         } else {

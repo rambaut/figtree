@@ -495,7 +495,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     public void addSelectedTip(Node selectedTip) {
         if (selectedTip != null) {
-            this.selectedTips.add(selectedTip);
+            this.selectedNodes
+                    .add(selectedTip);
         }
         selectTipsFromSelectedNodes();
         fireSelectionChanged();
@@ -799,6 +800,9 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     public void annotateSelectedTips(String name, Object value) {
         for (Node selectedTip : selectedTips) {
             Taxon selectedTaxon = tree.getTaxon(selectedTip);
+//            if (selectedTaxon == null) {
+//                throw new IllegalArgumentException("missing taxon?");
+//            }
             selectedTaxon.setAttribute(name, value);
         }
         repaint();
