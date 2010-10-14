@@ -401,14 +401,14 @@ public class DiscreteKMLString {
                         String[] endYearMonthDay = convertToYearMonthDay(endDate);
                         //System.out.println(yearMonthDay[0]+"\t"+date+"\t"+mostRecentDate+"\t"+(treeToExport.getHeight(node) + (a + 1) * ((treeToExport.getHeight(parentNode) - (treeToExport.getHeight(node)))/divider))+"\t"+date);
                         if (ancient) {
-                            branchesBuffer.append("\t\t\t\t<begin>"+date+"</begin>\r");
+                            branchesBuffer.append("\t\t\t\t<begin>"+(int)date+"</begin>\r");
                         } else {
                             branchesBuffer.append("\t\t\t\t<begin>"+yearMonthDay[0]+"-"+yearMonthDay[1]+"-"+yearMonthDay[2]+"</begin>\r");
                         }
 
                         if (temporary) {
                             if (ancient) {
-                                branchesBuffer.append("\t\t\t\t<end>"+endDate+"</end>\r");
+                                branchesBuffer.append("\t\t\t\t<end>"+(int)endDate+"</end>\r");
                             } else {
                                 branchesBuffer.append("\t\t\t\t<end>"+endYearMonthDay[0]+"-"+endYearMonthDay[1]+"-"+endYearMonthDay[2]+"</end>\r");
                             }
@@ -898,12 +898,12 @@ public class DiscreteKMLString {
                //         "<geomScale>$geomScale</geomScale></Style>\r" +
                         "\t\t\t\t<TimeSpan>\r");
                          if (ancient) {
-                             buffer.append("\t\t\t\t\t<begin>"+(mostRecentDate - beginDate)+"</begin>\r");
+                             buffer.append("\t\t\t\t\t<begin>"+(int)(mostRecentDate - beginDate)+"</begin>\r");
                          } else {
                              buffer.append("\t\t\t\t\t<begin>"+begin[0]+"-"+begin[1]+"-"+begin[2]+"</begin>\r");
                          }
                          if (ancient) {
-                             buffer.append("\t\t\t\t\t<end>"+(mostRecentDate - endDate)+"</end>\r");
+                             buffer.append("\t\t\t\t\t<end>"+(int)(mostRecentDate - endDate)+"</end>\r");
                          } else {
                              buffer.append("\t\t\t\t\t<end>"+end[0]+"-"+end[1]+"-"+end[2]+"</end>\r");
                          }
