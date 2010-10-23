@@ -26,17 +26,18 @@ public class DiscreteKML {
     double branchWidthConstant = 2.0;   // the width of branches will be stateProbability*branchWidthMultiplier+branchWidthConstant
     double branchWidthMultiplier = 5.0;
 
-    double divider = 20; // this is to chop up the branches of the surface tree in 'divider' segments
+    double divider = 50; // this is to chop up the branches of the surface tree in 'divider' segments
+    //divider = (2*(int)(distance/25)); --> this is further down overriding the usual divider
     boolean useStateProbability = true; // use state probabilities for branch width
-    double branchWidth = 2.0; // branch width if posterior probabilities are not used
+    double branchWidth = 10.0; // branch width if posterior probabilities are not used
     boolean usePosterior = false; // use posterior probabilities to color branch
     boolean useHeights = true; // use heights (time) to color branches
-    String startBranchColor = "FFFF33"; //red: 0000FF green: 00FF00 magenta: FF00FF white: FFFFFF yellow: 00FFFF
-    String endBranchColor = "00FF00";
+    String startBranchColor = "00FF00"; //red: 0000FF green: 00FF00 magenta: FF00FF white: FFFFFF yellow: 00FFFF
+    String endBranchColor = "00FFFF";
     String branchColor = "ffffff"; // branch color if color range based on rates is not used
     boolean arcBranches = true; // branches are arcs with heights proportional to the distance between locations
-    boolean arcTimeHeight = true; // the height of the arcs is proportional to the time the branch spans, by default archeights are proportional to the distance between locations
-    double altitudeFactor = 30; // this is the factor with which to multiply the time of the branch to get the altitude for that branch in the surface Tree
+    boolean arcTimeHeight = false; // the height of the arcs is proportional to the time the branch spans, by default archeights are proportional to the distance between locations
+    double altitudeFactor = 100; // this is the factor with which to multiply the time of the branch to get the altitude for that branch in the surface Tree
 
     double mostRecentDate;  // required to convert heights to calendar dates
     boolean ancient = false;
@@ -47,7 +48,8 @@ public class DiscreteKML {
 
     //circles
     int numberOfIntervals = 100;
-    double radius = 0.2;
+    double radius = 20000;
+    String circleOpacity = "AF";
 
     //everything is written to separate buffers, and than collected in structured KML document by compileBuffer
     StringBuffer branchesBuffer = new StringBuffer();
@@ -106,7 +108,7 @@ public class DiscreteKML {
         states = locationStates;
 
         radius = 100*Math.abs(maxLat-minLat)*Math.abs(maxLong-minLong);
-        radius = 200000;
+        radius = 15000;
 
         stateCoordinates = locationCoordinates;
         stateNames = locationNames;
@@ -191,7 +193,6 @@ public class DiscreteKML {
 
                     //divider dependent on distance
                     //divider = (2*(int)(distance/25));
-                    divider = 25;
 
                     double currentLongitude1 = 0;
                     double currentLongitude2 = 0;
@@ -291,7 +292,7 @@ public class DiscreteKML {
                         branchesBuffer.append("\t\t</Placemark>\r");
 
                         styleBuffer.append("\t<Style id=\"branch"+ nodeNumber +"_part"+(a+1)+"_style\">\r");
-                        styleBuffer.append("\t\t<BranchStyle>\r");
+                        styleBuffer.append("\t\t<LineStyle>\r");
                         if (useStateProbability) {
                             double stateprobabilityDifference = (stateProbability - parentStateProbability)/divider;
                             styleBuffer.append("\t\t\t<width>"+(branchWidthConstant+(parentStateProbability+((a + 1)*stateprobabilityDifference))*branchWidthMultiplier)+"</width>\r");
@@ -308,7 +309,7 @@ public class DiscreteKML {
                         } else {
                             styleBuffer.append("\t\t\t<color>"+"FF"+branchColor+"</color>\r");
                         }
-                        styleBuffer.append("\t\t</BranchStyle>\r");
+                        styleBuffer.append("\t\t</LineStyle>\r");
                         styleBuffer.append("\t</Style>\r");
 
                     }
@@ -400,9 +401,9 @@ public class DiscreteKML {
         }
         writeCircle(rootLat, rootLong, 36, radius, rootState, rootHeight, (rootHeight-delta), circleBuffer);
         styleBuffer.append("\t<Style id=\"circle_"+rootHeight+"_style\">\r");
-        styleBuffer.append("\t\t<BranchStyle>\r\t\t\t<width>0.1</width>\r\t\t</BranchStyle>\r");
+        styleBuffer.append("\t\t<LineStyle>\r\t\t\t<width>0.1</width>\r\t\t</LineStyle>\r");
         styleBuffer.append("\t\t<PolyStyle>\r");
-        styleBuffer.append("\t\t\t<color>"+"7F"+ ContinuousKML.getKMLColor(rootHeight,
+        styleBuffer.append("\t\t\t<color>"+circleOpacity+ ContinuousKML.getKMLColor(rootHeight,
                 heightMinAndMax, startBranchColor, endBranchColor)+"</color>\r");
         styleBuffer.append("\t\t\t<outline>0</outline>\r");
         styleBuffer.append("\t\t</PolyStyle>\r");
@@ -418,9 +419,9 @@ public class DiscreteKML {
                 }
             }
             styleBuffer.append("\t<Style id=\"circle_"+numberOflineages[o][0]+"_style\">\r");
-            styleBuffer.append("\t\t<BranchStyle>\r\t\t\t<width>0.1</width>\r\t\t</BranchStyle>\r");
+            styleBuffer.append("\t\t<LineStyle>\r\t\t\t<width>0.1</width>\r\t\t</LineStyle>\r");
             styleBuffer.append("\t\t<PolyStyle>\r");
-            styleBuffer.append("\t\t\t<color>"+"7F"+ ContinuousKML.getKMLColor(numberOflineages[o][0],
+            styleBuffer.append("\t\t\t<color>"+circleOpacity+ ContinuousKML.getKMLColor(numberOflineages[o][0],
                     heightMinAndMax, startBranchColor, endBranchColor)+"</color>\r");
             styleBuffer.append("\t\t\t<outline>0</outline>\r");
             styleBuffer.append("\t\t</PolyStyle>\r");

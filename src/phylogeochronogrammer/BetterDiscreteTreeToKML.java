@@ -22,6 +22,7 @@ import java.util.List;
 public class BetterDiscreteTreeToKML {
 
     public static final String HELP = "help";
+    public static final String ANNOTATION = "annotation";
     public static final String COORDINATES = "coordinates";
     public static final String TIMESCALER = "timescaler";
     public static final String MRSD = "mrsd";
@@ -111,7 +112,7 @@ public class BetterDiscreteTreeToKML {
             }
     }
 
-    private static double[] parseVariableLengthDoubleArray(String inString) throws Arguments.ArgumentException {
+    public static double[] parseVariableLengthDoubleArray(String inString) throws Arguments.ArgumentException {
 
         List<Double> returnList = new ArrayList<Double>();
         StringTokenizer st = new StringTokenizer(inString,",");
@@ -156,6 +157,8 @@ public class BetterDiscreteTreeToKML {
         RootedTree tree = null;
         String[][] locations = null;
 
+        String stateAnnotation = "state";
+
         //in case trees are scaled in other time units
         double timeScaler = 1;
 
@@ -198,6 +201,7 @@ public class BetterDiscreteTreeToKML {
         Arguments arguments = new Arguments(
                 new Arguments.Option[]{
                         new Arguments.StringOption(COORDINATES, "coordinate file", "specifies a tab-delimited file with coordinates for the locations"),
+                        new Arguments.StringOption(ANNOTATION, "location state annotation string", "specifies the string used for location state annotation [default=state]"),
                         new Arguments.RealOption(TIMESCALER,"specifies the scaling factor by which to rescale time [default=1]"),
                         new Arguments.RealOption(MRSD,"specifies the most recent sampling data in fractional years to rescale time [default=2009]"),
                         new Arguments.RealOption(BWC,"specifies the branch width constant [default=2]"),
@@ -272,6 +276,11 @@ public class BetterDiscreteTreeToKML {
 
             if (arguments.hasOption(ALTITUDE)) {
                 altitudeFactor = arguments.getRealOption(ALTITUDE);
+            }
+
+            String stateAnnotationString = arguments.getStringOption(ANNOTATION);
+            if (stateAnnotationString != null){
+                stateAnnotation = stateAnnotationString;
             }
 
             String useStateProbString = arguments.getStringOption(USP);
@@ -395,7 +404,7 @@ public class BetterDiscreteTreeToKML {
             }
         }
 
-        DiscreteKMLString exporterString = new DiscreteKMLString(tree, locations, inputFileName, mostRecentDate, timeScaler, divider, branchWidthConstant, branchWidthMultiplier, useStateProbability, branchWidth, startBranchColor, endBranchColor, branchColor, useHeights, usePosterior, arcBranches, arcTimeHeight, altitudeFactor, temporary, numberOfIntervals, radius, circleOpacity, coordinatesForTaxa, taxaCoordinates, makeTreeSlices);
+        DiscreteKMLString exporterString = new DiscreteKMLString(tree, stateAnnotation, locations, inputFileName, mostRecentDate, timeScaler, divider, branchWidthConstant, branchWidthMultiplier, useStateProbability, branchWidth, startBranchColor, endBranchColor, branchColor, useHeights, usePosterior, arcBranches, arcTimeHeight, altitudeFactor, temporary, numberOfIntervals, radius, circleOpacity, coordinatesForTaxa, taxaCoordinates, makeTreeSlices);
 
         try {
             BufferedWriter out1 = new BufferedWriter(new FileWriter(outputFileName));
