@@ -18,7 +18,7 @@ import java.io.PrintStream;
  */
 public class DiscreteKMLString {
 
-    public static final String STATE = "state";
+    String annotation = "state";
 
     //input related variables
     RootedTree treeToExport;
@@ -78,8 +78,9 @@ public class DiscreteKMLString {
     public DiscreteKMLString(){
     }
 
-    public DiscreteKMLString(RootedTree tree, String name, double date, String[][] locations){
+    public DiscreteKMLString(RootedTree tree, String annotation, String name, double date, String[][] locations){
         treeToExport = tree;
+        this.annotation = annotation;
         documentName = name;
         mostRecentDate = date;
         double[][] locationCoordinates = new double[locations.length][2];
@@ -104,8 +105,9 @@ public class DiscreteKMLString {
         }
     }
 
-    public DiscreteKMLString(RootedTree tree, String name, double date, String[][] stateLocations, String startBranchColor, String endBranchColor, double timeScaler){
+    public DiscreteKMLString(RootedTree tree, String annotation, String name, double date, String[][] stateLocations, String startBranchColor, String endBranchColor, double timeScaler){
         treeToExport = tree;
+        this.annotation = annotation;
         documentName = name;
         mostRecentDate = date;
         double[][] stateLocationCoordinates = new double[stateLocations.length][2];
@@ -137,8 +139,9 @@ public class DiscreteKMLString {
         }
     }
 
-    public DiscreteKMLString(RootedTree tree, String name, double date, String[][] stateLocations, String startBranchColor, String endBranchColor, double timeScaler, String[][] taxaLocations){
+    public DiscreteKMLString(RootedTree tree, String annotation, String name, double date, String[][] stateLocations, String startBranchColor, String endBranchColor, double timeScaler, String[][] taxaLocations){
         treeToExport = tree;
+        this.annotation = annotation;
         documentName = name;
         mostRecentDate = date;
         double[][] stateLocationCoordinates = new double[stateLocations.length][2];
@@ -177,8 +180,9 @@ public class DiscreteKMLString {
         }
     }
 
-    public DiscreteKMLString(RootedTree tree, String[][] stateLocations, String name, double date, double timeScaler, double divider, double branchWidthConstant, double branchWidthMultiplier, boolean useStateProbability, double branchWidth, String startBranchColor, String endBranchColor, String branchColor, boolean useHeights, boolean usePosterior, boolean arcBranches, boolean arcTimeHeight, double altitudeFactor, boolean temporary, int numberOfIntervals, double radius, String circleOpacity, boolean coordinatesForTaxa, String[][] taxaCoordinates, boolean makeTreeSlices) {
+    public DiscreteKMLString(RootedTree tree, String annotation, String[][] stateLocations, String name, double date, double timeScaler, double divider, double branchWidthConstant, double branchWidthMultiplier, boolean useStateProbability, double branchWidth, String startBranchColor, String endBranchColor, String branchColor, boolean useHeights, boolean usePosterior, boolean arcBranches, boolean arcTimeHeight, double altitudeFactor, boolean temporary, int numberOfIntervals, double radius, String circleOpacity, boolean coordinatesForTaxa, String[][] taxaCoordinates, boolean makeTreeSlices) {
         treeToExport = tree;
+        this.annotation = annotation;
         documentName = name;
         mostRecentDate = date;
         double[][] stateLocationCoordinates = new double[stateLocations.length][2];
@@ -291,8 +295,7 @@ public class DiscreteKMLString {
 
         for (Node node : treeToExport.getNodes()) {
             nodeNumber++;
-            String state = ((((String)node.getAttribute(STATE)).replaceAll("\"","")).replaceAll(" ","")).trim();
-
+            String state = ((((String)node.getAttribute(annotation)).replaceAll("\"","")).replaceAll(" ","")).trim();
             //in case the location state is a concatenation of other states (occurs when they get the same posterior prob)
             if (state.contains("+")) {
                 state = state.substring(0,state.indexOf("+"));
@@ -304,12 +307,12 @@ public class DiscreteKMLString {
                 Node parentNode = treeToExport.getParent(node);
 
                 // test to see node has the attribute
-                Object testAttribute = parentNode.getAttribute(STATE);
+                Object testAttribute = parentNode.getAttribute(annotation);
                 if (testAttribute == null) {
                     System.err.print("An internal node has no state attribute; make sure to set the posterior probability limit to 0 when annotating an MCC tree in TreeAnnotator!");        
                 }
 
-                String parentState = ((((String)parentNode.getAttribute(STATE)).replaceAll("\"","")).replaceAll(" ","")).trim();
+                String parentState = ((((String)parentNode.getAttribute(annotation)).replaceAll("\"","")).replaceAll(" ","")).trim();
 
                 if (parentState.contains("+")) {
                     parentState = parentState.substring(0,parentState.indexOf('+'));
@@ -326,7 +329,7 @@ public class DiscreteKMLString {
 
                 if (!(state.toLowerCase()).equals(parentState.toLowerCase()) || considerTaxonCoordinateForThisNode) {
 
-                    double stateProbability = (Double)node.getAttribute("state.prob");
+                    double stateProbability = (Double)node.getAttribute(annotation+".prob");
                     double latitude = getCoordinate(state, stateNames, stateCoordinates, 0);
                     double longitude = getCoordinate(state, stateNames, stateCoordinates, 1);
                     double posteriorProb = 1;
@@ -343,7 +346,7 @@ public class DiscreteKMLString {
                         System.err.println(state+" has no coordinate??");
                     }
 
-                    double parentStateProbability = (Double)parentNode.getAttribute("state.prob");
+                    double parentStateProbability = (Double)parentNode.getAttribute(annotation+".prob");
                     double parentLatitude = getCoordinate(parentState, stateNames, stateCoordinates, 0);
                     double parentLongitude = getCoordinate(parentState, stateNames, stateCoordinates, 1);
 
@@ -391,7 +394,7 @@ public class DiscreteKMLString {
                         //convert height of the branch segment to a real date (based on th date for the most recent sample)
                         double date = mostRecentDate - ((treeToExport.getHeight(node)*timeScaler) + (a + 1) *
                             (((treeToExport.getHeight(parentNode)*timeScaler) - ((treeToExport.getHeight(node))*timeScaler))/divider));
-//used to make branches dissapear over time
+                        //used to make branches dissapear over time
                         double endDate = mostRecentDate - ((treeToExport.getHeight(node)*timeScaler) - (divider-(a + 1)) *
                             (((treeToExport.getHeight(parentNode)*timeScaler) - ((treeToExport.getHeight(node))*timeScaler))/divider));
                         if (endDate > mostRecentDate) {
@@ -533,7 +536,7 @@ public class DiscreteKMLString {
 
         for (Node node : treeToExport.getNodes()) {
             nodeNumber++;
-            String state = ((((String)node.getAttribute(STATE)).replaceAll("\"","")).replaceAll(" ","")).trim();
+            String state = ((((String)node.getAttribute(annotation)).replaceAll("\"","")).replaceAll(" ","")).trim();
 
             //in case the location state is a concatenation of other states (occurs when they get the same posterior prob)
             if (state.contains("+")) {
@@ -544,7 +547,7 @@ public class DiscreteKMLString {
             if (!treeToExport.isRoot(node)) {
 
                 Node parentNode = treeToExport.getParent(node);
-                String parentState = ((((String)parentNode.getAttribute(STATE)).replaceAll("\"","")).replaceAll(" ","")).trim();
+                String parentState = ((((String)parentNode.getAttribute(annotation)).replaceAll("\"","")).replaceAll(" ","")).trim();
 
                 if (parentState.contains("+")) {
                     parentState = parentState.substring(0,parentState.indexOf('+'));
@@ -677,8 +680,8 @@ public class DiscreteKMLString {
                     if (!treeToExport.isRoot(node)) {
 
                          Node parentNode = treeToExport.getParent(node);
-                         String state = (((String)node.getAttribute(STATE)).replaceAll("\"","")).trim();
-                         String parentState = (((String)parentNode.getAttribute(STATE)).replaceAll("\"","")).trim();
+                         String state = (((String)node.getAttribute(annotation)).replaceAll("\"","")).trim();
+                         String parentState = (((String)parentNode.getAttribute(annotation)).replaceAll("\"","")).trim();
 
 
                          if ((treeToExport.getHeight(node) <= numberOflineages[j][0]) && (treeToExport.getHeight(parentNode) > numberOflineages[j][0])) {
@@ -693,7 +696,7 @@ public class DiscreteKMLString {
 
 
                     } else {
-                        rootState = (((String)node.getAttribute(STATE)).replaceAll("\"","")).trim();
+                        rootState = (((String)node.getAttribute(annotation)).replaceAll("\"","")).trim();
                     }
                 }
 
