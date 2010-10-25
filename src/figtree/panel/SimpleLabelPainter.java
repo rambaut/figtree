@@ -268,7 +268,9 @@ public class SimpleLabelPainter extends LabelPainter<Node> {
 
 		if (label != null) {
 
-			Rectangle2D rect = g2.getFontMetrics().getStringBounds(label, g2);
+			Rectangle2D rect = null;
+			if (justification == Justification.CENTER || justification == Justification.RIGHT)
+				rect = g2.getFontMetrics().getStringBounds(label, g2);
 
 			float xOffset;
 			float y = yOffset + (float) bounds.getY();
