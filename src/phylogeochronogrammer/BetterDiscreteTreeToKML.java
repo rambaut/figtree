@@ -1,15 +1,21 @@
 package phylogeochronogrammer;
 
 
-import jebl.evolution.trees.RootedTree;
-import jebl.evolution.io.TreeImporter;
-import jebl.evolution.io.NexusImporter;
-import jebl.evolution.io.ImportException;
-
-import java.io.*;
-import java.util.StringTokenizer;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
+
+import jebl.evolution.io.ImportException;
+import jebl.evolution.io.NexusImporter;
+import jebl.evolution.io.TreeImporter;
+import jebl.evolution.trees.RootedTree;
+import figtree.application.Arguments;
 
 /**
  * Created by IntelliJ IDEA.
