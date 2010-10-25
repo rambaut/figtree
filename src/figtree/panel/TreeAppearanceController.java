@@ -309,7 +309,7 @@ public class TreeAppearanceController extends AbstractController {
 		}
 		branchLineWidthSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY));
 
-		fontSizeSpinner.setValue((Double)settings.get(tipKey+"."+FONT_SIZE_KEY));
+		fontSizeSpinner.setValue(((Number)settings.get(tipKey+"."+FONT_SIZE_KEY)).doubleValue());
 		digitsSpinner.setValue((Integer)settings.get(tipKey+"."+SIGNIFICANT_DIGITS_KEY));
 	}
 
