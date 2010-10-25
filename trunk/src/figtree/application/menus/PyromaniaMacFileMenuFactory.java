@@ -1,4 +1,4 @@
-package pyromania.menus;
+package figtree.application.menus;
 
 import jam.framework.*;
 
