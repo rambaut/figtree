@@ -41,8 +41,8 @@ import ch.randelshofer.quaqua.QuaquaManager;
 
 public class FigTreeApplication extends MultiDocApplication {
 
-    public static final String VERSION = "1.3.1";
-    public static final String DATES = "2006-2009";
+    public static final String VERSION = "1.4.0";
+    public static final String DATES = "2006-2012";
 
     public static FigTreeApplication application;
 
