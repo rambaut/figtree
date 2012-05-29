@@ -5,7 +5,6 @@ import jebl.util.Attributable;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
-import java.util.List;
 
 /**
  * This decorator takes an attribute name and a set of attibutable Objects.
@@ -16,7 +15,7 @@ import java.util.List;
  * @author Andrew Rambaut
  * @version $Id: DiscreteColorDecorator.java 639 2007-02-15 10:05:28Z rambaut $
  */
-public class DiscreteColorDecorator implements Decorator {
+public class OldDiscreteColorDecorator implements Decorator {
 
 
     public static Color[] DEFAULT_PAINTS = new Color[] {
@@ -50,19 +49,23 @@ public class DiscreteColorDecorator implements Decorator {
             new Color(120,128,17)
     };
 
-    public DiscreteColorDecorator() {
+    public OldDiscreteColorDecorator() {
         this(DEFAULT_PAINTS);
     }
 
-    public DiscreteColorDecorator(Color[] paints) {
+    public OldDiscreteColorDecorator(Color[] paints) {
         this.paints = paints;
     }
 
-    public DiscreteColorDecorator(String attributeName, Set<? extends Attributable> items) {
-        this(attributeName, items, false);
+    public OldDiscreteColorDecorator(String attributeName, Set<? extends Attributable> items) {
+        this(attributeName, items, DEFAULT_PAINTS, false);
     }
 
-    public DiscreteColorDecorator(String attributeName, Set<? extends Attributable> items, boolean isGradient) {
+    public OldDiscreteColorDecorator(String attributeName, Set<? extends Attributable> items, boolean isGradient) {
+        this(attributeName, items, DEFAULT_PAINTS, isGradient);
+    }
+
+    public OldDiscreteColorDecorator(String attributeName, Set<? extends Attributable> items, Color[] paints, boolean isGradient) {
         this.attributeName = attributeName;
 
         // First collect the set of all attribute values
@@ -80,70 +83,18 @@ public class DiscreteColorDecorator implements Decorator {
             }
         }
 
-        Set<Object> values;
         if (unsortedValues.size() > 0) {
-            values = unsortedValues;
-            values.addAll(sortedValues);
+            unsortedValues.addAll(sortedValues);
+            setValues(unsortedValues, paints);
         } else {
-            values = sortedValues;
+            setValues(sortedValues, paints);
         }
-
-        Color[] colors = createColours(values.size(), 1, 0.0F, 1.0F, 0.5F, 0.75F, 0.25F, false);
-
-        setValues(values, colors);
 
         this.isGradient = isGradient;
     }
 
-    private Color[] createColours(int colourCount, int levelCount, float hueStart, float hueFinish, float saturation, float upperLevel, float lowerLevel, boolean cycleLevelsFirst) {
-        int hueCount = colourCount / levelCount;
-        if (colourCount % levelCount > 0) {
-            hueCount +=  levelCount - (colourCount % levelCount);
-        }
-
-        Color[] paints = new Color[hueCount * levelCount];
-        float hDelta = (hueFinish - hueStart) / hueCount;
-        float bDelta = (upperLevel - lowerLevel) / levelCount;
-
-        if (cycleLevelsFirst) {
-            float brightness = upperLevel;
-            int k = 0;
-            for (int i = 0; i < levelCount; i++) {
-                float hue = hueStart;
-                for (int j = 0; j < hueCount; j++) {
-                    paints[k] = Color.getHSBColor(hue, saturation, brightness);
-                    hue += hDelta;
-                    k++;
-                }
-                brightness -= bDelta;
-            }
-        } else {
-            float hue = hueStart;
-            int k = 0;
-            for (int i = 0; i < hueCount; i++) {
-                float brightness = upperLevel;
-                for (int j = 0; j < levelCount; j++) {
-                    paints[k] = Color.getHSBColor(hue, saturation, brightness);
-                    brightness -= bDelta;
-                    k++;
-                }
-                hue += hDelta;
-            }
-
-        }
-        return paints;
-    }
-
-    public List<Object> getValues() {
-        return new ArrayList<Object>(colourMap.keySet());
-    }
-
-    public Color getColor(Object value) {
-        return (Color)colourMap.get(value);
-    }
-
     public void setValues(Collection<? extends Object> values, Color[] paints) {
-        colourMap = new TreeMap<Object, Paint>();
+        colourMap = new HashMap<Object, Paint>();
         this.paints = paints;
 
         // now create a paint map for these values

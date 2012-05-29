@@ -93,6 +93,13 @@ public class TreeAppearanceController extends AbstractController {
                 if (colourScaleDialog == null) {
                     colourScaleDialog = new ColourScaleDialog(frame, branchColourSettings);
                 }
+                Decorator decorator = null;
+                if (branchColourAttributeCombo.getSelectedIndex() > 0) {
+                    String attribute = (String) branchColourAttributeCombo.getSelectedItem();
+                    decorator = decoratorMap.get(attribute);
+                }
+
+                colourScaleDialog.setDecorator(decorator);
                 int result = colourScaleDialog.showDialog();
                 if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
                     colourScaleDialog.getSettings(branchColourSettings);
@@ -164,11 +171,11 @@ public class TreeAppearanceController extends AbstractController {
         optionsPanel.addComponentWithLabel("Background:", backgroundColourAttributeCombo);
         optionsPanel.addComponent(bgSetupColourButton);
 
-       ItemListener listener = new ItemListener() {
+        ItemListener listener = new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
                 setupBranchDecorators();
             }
-       };
+        };
 
         branchColourAttributeCombo.addItemListener(listener);
         branchWidthAttributeCombo.addItemListener(listener);
@@ -254,9 +261,11 @@ public class TreeAppearanceController extends AbstractController {
 
                 }
             }
+            decoratorMap.put(attribute, colourDecorator);
         }
 
-        if (colourDecorator != null && colourDecorator.isGradient()) {
+
+            if (colourDecorator != null && colourDecorator.isGradient()) {
             // At present using a gradient precludes the use of the compoundDecorator
             // and thus the branch width..
             treeViewer.setBranchDecorator(colourDecorator);
@@ -407,6 +416,8 @@ public class TreeAppearanceController extends AbstractController {
         settings.put(CONTROLLER_KEY + "." + BACKGROUND_COLOR_ATTRIBUTE_KEY, backgroundColourAttributeCombo.getSelectedItem().toString());
         settings.put(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY, branchLineWidthSpinner.getValue());
     }
+
+    private final Map<String, Decorator> decoratorMap = new HashMap<String, Decorator>();
 
     private final AttributableDecorator userBranchColourDecorator;
 
