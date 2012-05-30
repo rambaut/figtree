@@ -33,10 +33,16 @@ public class DefaultTreeViewer extends TreeViewer {
     private final static double MAX_ZOOM = 20;
     private final static double MAX_VERTICAL_EXPANSION = 20;
 
+    public DefaultTreeViewer() {
+        this(null);
+    }
+
     /**
      * Creates new TreeViewer
      */
-    public DefaultTreeViewer() {
+    public DefaultTreeViewer(JFrame frame) {
+        this.frame = frame;
+
         setLayout(new BorderLayout());
 
         this.treePane = new TreePane();
@@ -141,6 +147,14 @@ public class DefaultTreeViewer extends TreeViewer {
     }
 
     public void showTree(int index) {
+        if (isRootingOn() && getRootingType() == TreePane.RootingType.USER_ROOTING) {
+            JOptionPane.showMessageDialog(frame, "Cannot switch trees when user rooting option is on.\n" +
+                    "Turn this option off to switch trees",
+                    "Unable to switch trees",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         Tree tree = trees.get(index);
         if (tree instanceof RootedTree) {
             treePane.setTree((RootedTree)tree);
@@ -720,4 +734,5 @@ public class DefaultTreeViewer extends TreeViewer {
 
     protected JViewport viewport;
 
+    private final JFrame frame;
 }

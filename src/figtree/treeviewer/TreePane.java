@@ -84,7 +84,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                 Node left = newTree.getParent(rootingNode);
                 if (left != null) {
                     // rooting length should be [0, 1]
-                    double length = newTree.getLength(rootingNode) * rootingLength;
+
+                    double length = newTree.hasLengths() ? newTree.getLength(rootingNode) * rootingLength : 1.0;
                     try {
                         newTree = new ReRootedTree(newTree, left, rootingNode, length);
                     } catch (Graph.NoEdgeException e) {
@@ -172,8 +173,14 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
     public void setRootLocation(Node node, double length) {
-        if (isRootingOn()) {
-            rootingNode = ((ReRootedTree)tree).getSourceNode(node);
+        RootedTree source = tree;
+
+        if (tree instanceof FilteredRootedTree) {
+            source = ((FilteredRootedTree) tree).getSource();
+        }
+
+        if (source instanceof  ReRootedTree) {
+            rootingNode = ((ReRootedTree)source).getSourceNode(node);
         } else {
             rootingNode = node;
         }
