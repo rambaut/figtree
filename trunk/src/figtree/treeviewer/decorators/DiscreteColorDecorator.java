@@ -18,7 +18,6 @@ import java.util.List;
  */
 public class DiscreteColorDecorator implements Decorator {
 
-
     public static Color[] DEFAULT_PAINTS = new Color[] {
             new Color(64,35,225),
             new Color(229,35,60),
@@ -80,7 +79,6 @@ public class DiscreteColorDecorator implements Decorator {
             }
         }
 
-        Set<Object> values;
         if (unsortedValues.size() > 0) {
             values = unsortedValues;
             values.addAll(sortedValues);
@@ -88,50 +86,9 @@ public class DiscreteColorDecorator implements Decorator {
             values = sortedValues;
         }
 
-        Color[] colors = createColours(values.size(), 1, 0.0F, 1.0F, 0.5F, 0.75F, 0.25F, false);
-
-        setValues(values, colors);
+        setValues(values, DEFAULT_PAINTS);
 
         this.isGradient = isGradient;
-    }
-
-    private Color[] createColours(int colourCount, int levelCount, float hueStart, float hueFinish, float saturation, float upperLevel, float lowerLevel, boolean cycleLevelsFirst) {
-        int hueCount = colourCount / levelCount;
-        if (colourCount % levelCount > 0) {
-            hueCount +=  levelCount - (colourCount % levelCount);
-        }
-
-        Color[] paints = new Color[hueCount * levelCount];
-        float hDelta = (hueFinish - hueStart) / hueCount;
-        float bDelta = (upperLevel - lowerLevel) / levelCount;
-
-        if (cycleLevelsFirst) {
-            float brightness = upperLevel;
-            int k = 0;
-            for (int i = 0; i < levelCount; i++) {
-                float hue = hueStart;
-                for (int j = 0; j < hueCount; j++) {
-                    paints[k] = Color.getHSBColor(hue, saturation, brightness);
-                    hue += hDelta;
-                    k++;
-                }
-                brightness -= bDelta;
-            }
-        } else {
-            float hue = hueStart;
-            int k = 0;
-            for (int i = 0; i < hueCount; i++) {
-                float brightness = upperLevel;
-                for (int j = 0; j < levelCount; j++) {
-                    paints[k] = Color.getHSBColor(hue, saturation, brightness);
-                    brightness -= bDelta;
-                    k++;
-                }
-                hue += hDelta;
-            }
-
-        }
-        return paints;
     }
 
     public List<Object> getValues() {
@@ -312,6 +269,8 @@ public class DiscreteColorDecorator implements Decorator {
     }
 
     private String attributeName = null;
+
+    Set<Object> values;
 
     private Map<Object, Paint> colourMap = null;
     private Paint[] paints = null;

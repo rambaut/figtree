@@ -6,6 +6,9 @@ import com.itextpdf.text.pdf.DefaultFontMapper;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
+import figtree.treeviewer.decorators.DiscreteColorDecorator;
+import figtree.treeviewer.decorators.HSBDiscreteColorDecorator;
+import figtree.treeviewer.painters.StatesPainter;
 import jebl.evolution.alignments.Alignment;
 import jebl.evolution.alignments.BasicAlignment;
 import jebl.evolution.graphs.Node;
@@ -882,17 +885,17 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                 treeViewer.setTaxonAnnotations(annotations);
 
                 // Hack to show tips states...
-//                String[] annotationNames = new String[annotations.keySet().size()];
-//                DiscreteColorDecorator[] decorators = new DiscreteColorDecorator[annotations.keySet().size()];
-//
-//                int i = 0;
-//                for (AnnotationDefinition definition: annotations.keySet()) {
-//                    Map<Taxon, Object> annotation = annotations.get(definition);
-//                    annotationNames[i] = definition.getName();
-//                    decorators[i] = new DiscreteColorDecorator(annotationNames[i], annotation.keySet());
-//                    i++;
-//                }
-//                treeViewer.setTipLabelPainter(new StatesPainter(annotationNames, decorators));
+                String[] annotationNames = new String[annotations.keySet().size()];
+                DiscreteColorDecorator[] decorators = new DiscreteColorDecorator[annotations.keySet().size()];
+
+                int i = 0;
+                for (AnnotationDefinition definition: annotations.keySet()) {
+                    Map<Taxon, Object> annotation = annotations.get(definition);
+                    annotationNames[i] = definition.getName();
+                    decorators[i] = new HSBDiscreteColorDecorator(annotationNames[i], annotation.keySet());
+                    i++;
+                }
+                treeViewer.setTipLabelPainter(new StatesPainter(annotationNames, decorators));
 
 
             } catch (FileNotFoundException fnfe) {
