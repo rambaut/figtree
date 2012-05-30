@@ -5,14 +5,17 @@ import figtree.treeviewer.TreeViewer;
 import figtree.ui.components.RealNumberField;
 import jam.controlpalettes.AbstractController;
 import jam.panels.OptionsPanel;
+import jebl.util.Attributable;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Map;
+import java.util.*;
 import java.util.prefs.Preferences;
 
 /**
@@ -48,15 +51,29 @@ public class LegendPainterController extends AbstractController {
         final String attribute = PREFS.get(CONTROLLER_KEY + "." + ATTRIBUTE_KEY, DEFAULT_ATTRIBUTE_KEY);
 
         legendPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
-        legendPainter.setAttribute(attribute);
+        legendPainter.setDisplayAttribute(attribute);
 
         optionsPanel = new ControllerOptionsPanel(2, 2);
 
         titleCheckBox = new JCheckBox(getTitle());
         titleCheckBox.setSelected(legendPainter.isVisible());
 
+        String[] attributes = legendPainter.getAttributes();
         attributeCombo = new JComboBox();
+        attributeCombo.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent itemEvent) {
+                String attribute = (String)attributeCombo.getSelectedItem();
+                legendPainter.setDisplayAttribute(attribute);
+            }
+        });
+
         final JLabel label1 = optionsPanel.addComponentWithLabel("Attribute:", attributeCombo);
+
+        attributeCombo.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent itemEvent) {
+                legendPainter.setDisplayAttribute((String)attributeCombo.getSelectedItem());
+            }
+        });
 
         Font font = legendPainter.getFont();
         fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 48, 1));
@@ -68,6 +85,17 @@ public class LegendPainterController extends AbstractController {
                 final float size = ((Double) fontSizeSpinner.getValue()).floatValue();
                 Font font = legendPainter.getFont().deriveFont(size);
                 legendPainter.setFont(font);
+            }
+        });
+
+        legendPainter.addPainterListener(new PainterListener() {
+            public void painterChanged() {
+
+            }
+            public void painterSettingsChanged() {
+            }
+            public void attributesChanged() {
+                setupAttributes();
             }
         });
 
@@ -107,6 +135,27 @@ public class LegendPainterController extends AbstractController {
 
     }
 
+    private void setupAttributes() {
+        Object item1 = attributeCombo.getSelectedItem();
+        attributeCombo.removeAllItems();
+        for (String name : legendPainter.getAttributes()) {
+            attributeCombo.addItem(name);
+        }
+        attributeCombo.setSelectedItem(item1);
+
+        java.util.List<String> names = new ArrayList<String>();
+        Set<Attributable> items = legendPainter.getAttributableItems();
+        for (Attributable item : items) {
+            for (String name : item.getAttributeNames()) {
+                if (!names.contains(name)) {
+                    names.add(name);
+                }
+            }
+        }
+
+        optionsPanel.repaint();
+    }
+
     public JComponent getTitleComponent() {
         return titleCheckBox;
     }
@@ -124,7 +173,7 @@ public class LegendPainterController extends AbstractController {
 
     public void setSettings(Map<String,Object> settings) {
         titleCheckBox.setSelected((Boolean)settings.get(CONTROLLER_KEY + "." + IS_SHOWN));
-        attributeCombo.setSelectedItem((Boolean)settings.get(CONTROLLER_KEY + "." + ATTRIBUTE_KEY));
+        attributeCombo.setSelectedItem((Boolean) settings.get(CONTROLLER_KEY + "." + ATTRIBUTE_KEY));
         fontSizeSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + FONT_SIZE_KEY));
     }
 

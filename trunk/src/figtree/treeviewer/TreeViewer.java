@@ -1,12 +1,9 @@
 package figtree.treeviewer;
 
+import figtree.treeviewer.painters.*;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.trees.*;
 import figtree.treeviewer.decorators.Decorator;
-import figtree.treeviewer.painters.ScalePainter;
-import figtree.treeviewer.painters.LabelPainter;
-import figtree.treeviewer.painters.NodeBarPainter;
-import figtree.treeviewer.painters.ScaleGridPainter;
 import figtree.treeviewer.treelayouts.TreeLayout;
 
 import javax.swing.*;
@@ -96,12 +93,17 @@ public abstract class TreeViewer extends JPanel implements Printable {
 
     public abstract void setScaleGridPainter(ScaleGridPainter scaleGridPainter);
 
+    public abstract void setLegendPainter(LegendPainter legendPainter);
+
     public abstract void setBranchDecorator(Decorator branchDecorator);
 
     public abstract void setBranchColouringDecorator(String branchColouringAttribute, Decorator branchColouringDecorator);
 
     public abstract void setNodeBackgroundDecorator(Decorator nodeBackgroundDecorator);
 
+    public abstract Decorator getDecoratorForAttribute(String attribute);
+
+    public abstract void setDecoratorForAttribute(String attribute, Decorator decorator);
     public abstract void setSelectionColor(Color selectionColor);
 
     public abstract Paint getSelectionPaint();

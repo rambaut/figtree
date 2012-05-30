@@ -947,6 +947,18 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         repaint();
     }
 
+    public LegendPainter getLegendPainter() {
+        return legendPainter;
+    }
+
+    public Decorator getDecoratorForAttribute(String attribute) {
+        return attributeDecoratorMap.get(attribute);
+    }
+
+    public void setDecoratorForAttribute(String attribute, Decorator decorator) {
+        attributeDecoratorMap.put(attribute, decorator);
+    }
+
     public void setPreferredSize(Dimension dimension) {
         if (treeLayout.maintainAspectRatio()) {
             super.setPreferredSize(new Dimension(dimension.width, dimension.height));
@@ -1939,6 +1951,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     private Decorator branchDecorator = null;
     private Decorator branchColouringDecorator = null;
     private String branchColouringAttribute = null;
+
+    private final Map<String, Decorator> attributeDecoratorMap = new HashMap<String, Decorator>();
 
     private Decorator nodeBackgroundDecorator = null;
 

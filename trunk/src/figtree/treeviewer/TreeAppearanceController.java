@@ -94,7 +94,7 @@ public class TreeAppearanceController extends AbstractController {
                 Decorator decorator = null;
                 if (branchColourAttributeCombo.getSelectedIndex() > 0) {
                     String attribute = (String) branchColourAttributeCombo.getSelectedItem();
-                    decorator = decoratorMap.get(attribute);
+                    decorator = treeViewer.getDecoratorForAttribute(attribute);
                 }
 
                 if (decorator instanceof HSBDiscreteColorDecorator) {
@@ -175,7 +175,7 @@ public class TreeAppearanceController extends AbstractController {
                 Decorator decorator = null;
                 if (backgroundColourAttributeCombo.getSelectedIndex() > 0) {
                     String attribute = (String) backgroundColourAttributeCombo.getSelectedItem();
-                    decorator = decoratorMap.get(attribute);
+                    decorator = treeViewer.getDecoratorForAttribute(attribute);
                 }
 
                 if (decorator instanceof HSBDiscreteColorDecorator) {
@@ -241,7 +241,7 @@ public class TreeAppearanceController extends AbstractController {
         if (backgroundColourAttributeCombo.getSelectedIndex() > 0) {
             String attribute = (String) backgroundColourAttributeCombo.getSelectedItem();
             if (attribute != null && attribute.length() > 0) {
-                colourDecorator = decoratorMap.get(attribute);
+                colourDecorator = treeViewer.getDecoratorForAttribute(attribute);
 
                 if (colourDecorator == null) {
                     if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
@@ -262,7 +262,7 @@ public class TreeAppearanceController extends AbstractController {
                     }
                 }
 
-                decoratorMap.put(attribute, colourDecorator);
+                treeViewer.setDecoratorForAttribute(attribute, colourDecorator);
             }
         }
 
@@ -274,7 +274,7 @@ public class TreeAppearanceController extends AbstractController {
         } else {
             String attribute = (String) branchColourAttributeCombo.getSelectedItem();
             if (attribute != null && attribute.length() > 0) {
-                colourDecorator = decoratorMap.get(attribute);
+                colourDecorator = treeViewer.getDecoratorForAttribute(attribute);
                 if (colourDecorator == null) {
                     if (attribute.endsWith("*")) {
                         // This is a branch colouring (i.e., the colour can change
@@ -307,7 +307,7 @@ public class TreeAppearanceController extends AbstractController {
                     ((ContinuousColorDecorator)colourDecorator).setGradient(branchColourIsGradient);
                 }
 
-                decoratorMap.put(attribute, colourDecorator);
+                treeViewer.setDecoratorForAttribute(attribute, colourDecorator);
             }
         }
 
@@ -463,8 +463,6 @@ public class TreeAppearanceController extends AbstractController {
         settings.put(CONTROLLER_KEY + "." + BACKGROUND_COLOR_ATTRIBUTE_KEY, backgroundColourAttributeCombo.getSelectedItem().toString());
         settings.put(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY, branchLineWidthSpinner.getValue());
     }
-
-    private final Map<String, Decorator> decoratorMap = new HashMap<String, Decorator>();
 
     private final AttributableDecorator userBranchColourDecorator;
 

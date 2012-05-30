@@ -5,6 +5,8 @@ import figtree.treeviewer.TreePane;
 import figtree.treeviewer.decorators.Decorator;
 import figtree.treeviewer.decorators.DiscreteColorDecorator;
 import jam.controlpalettes.ControlPalette;
+import jebl.evolution.graphs.Node;
+import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.RootedTree;
 import jebl.evolution.trees.Tree;
 import jebl.util.Attributable;
@@ -12,8 +14,7 @@ import jebl.util.Attributable;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Andrew Rambaut
@@ -23,6 +24,13 @@ import java.util.Set;
 public class LegendPainter extends LabelPainter<TreePane> implements ScalePainter {
 
     public LegendPainter() {
+        setupAttributes(null);
+
+        if (this.displayAttribute == null) {
+            this.displayAttribute = attributes[0];
+        } else {
+            this.displayAttribute = "";
+        }
     }
 
     public void setTreePane(TreePane treePane) {
@@ -36,64 +44,51 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
     }
 
     public void paint(Graphics2D g2, TreePane treePane, Justification justification, Rectangle2D bounds) {
-        g2.setPaint(Color.BLACK);
-            g2.draw(bounds);
+        Decorator decorator = treePane.getDecoratorForAttribute(displayAttribute);
 
-//        Font oldFont = g2.getFont();
-//        Paint oldPaint = g2.getPaint();
-//        Stroke oldStroke = g2.getStroke();
-//
-//        if (getBackground() != null) {
-//            g2.setPaint(getBackground());
-//            g2.fill(bounds);
-//        }
-//
-//        if (getBorderPaint() != null && getBorderStroke() != null) {
-//            g2.setPaint(getBorderPaint());
-//            g2.setStroke(getBorderStroke());
-//            g2.draw(bounds);
-//        }
-//
-//        g2.setFont(getFont());
-//
-//        // we don't need accuracy but a nice short number
-//        final String label = Double.toString(scaleRange);
-//
-//        Rectangle2D rect = g2.getFontMetrics().getStringBounds(label, g2);
-//
-//        double x1, x2;
-//        float xOffset;
-//        switch (justification) {
-//            case CENTER:
-//                xOffset = (float) (bounds.getX() + (bounds.getWidth() - rect.getWidth()) / 2.0);
-//                x1 = (bounds.getX() + (bounds.getWidth() - preferredWidth) / 2.0);
-//                x2 = x1 + preferredWidth;
-//                break;
-//            case FLUSH:
-//            case LEFT:
-//                xOffset = (float) bounds.getX();
-//                x1 = bounds.getX();
-//                x2 = x1 + preferredWidth;
-//                break;
-//            case RIGHT:
-//                xOffset = (float) (bounds.getX() + bounds.getWidth() - rect.getWidth());
-//                x2 = bounds.getX() + bounds.getWidth();
-//                x1 = x2 - preferredWidth;
-//                break;
-//            default:
-//                throw new IllegalArgumentException("Unrecognized alignment enum option");
-//        }
-//
-//        g2.setPaint(getForeground());
-//        g2.setStroke(getScaleBarStroke());
-//
-//        g2.draw(new Line2D.Double(x1, bounds.getY() + topMargin, x2, bounds.getY() + topMargin));
-//
-//        g2.drawString(label, xOffset, yOffset + (float) bounds.getY());
-//
-//        g2.setFont(oldFont);
-//        g2.setPaint(oldPaint);
-//        g2.setStroke(oldStroke);
+        Font oldFont = g2.getFont();
+        Paint oldPaint = g2.getPaint();
+        Stroke oldStroke = g2.getStroke();
+
+        if (getBackground() != null) {
+            g2.setPaint(getBackground());
+            g2.fill(bounds);
+        }
+
+        if (getBorderPaint() != null && getBorderStroke() != null) {
+            g2.setPaint(getBorderPaint());
+            g2.setStroke(getBorderStroke());
+            g2.draw(bounds);
+        }
+
+        g2.setFont(getFont());
+
+        if (decorator instanceof DiscreteColorDecorator) {
+            // we don't need accuracy but a nice short number
+            final String label = ((DiscreteColorDecorator)decorator).getValues().get(0).toString();
+
+            Rectangle2D labelBounds = g2.getFontMetrics().getStringBounds(label, g2);
+            float yOffset = (float)g2.getFontMetrics().getAscent();
+
+            float xOffset1 = (float)(labelBounds.getHeight() * 0.5);
+            float xOffset2 = (float)(labelBounds.getHeight() * 2);
+            float y = (float)(labelBounds.getHeight() * 0.5);
+
+
+            for (Object value : ((DiscreteColorDecorator)decorator).getValues()) {
+                g2.setPaint(((DiscreteColorDecorator)decorator).getColor(value));
+                Rectangle2D rect = new Rectangle2D.Double(xOffset1, y, labelBounds.getHeight(), labelBounds.getHeight());
+                g2.fill(rect);
+                g2.drawString(value.toString(), xOffset2, y + yOffset);
+
+                y += labelBounds.getHeight() * 1.5F;
+            }
+        } else {
+            // draw a continuous legend
+        }
+        g2.setFont(oldFont);
+        g2.setPaint(oldPaint);
+        g2.setStroke(oldStroke);
     }
 
     public double getPreferredWidth() {
@@ -105,24 +100,15 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
     }
 
     public double getHeightBound() {
-        return preferredHeight + yOffset;
+        return preferredHeight;
     }
 
-    public DiscreteColorDecorator getDecorator() {
-        return decorator;
+    public String getDisplayAttribute() {
+        return displayAttribute;
     }
 
-    public void setDecorator(DiscreteColorDecorator decorator) {
-        this.decorator = decorator;
-        firePainterChanged();
-    }
-
-    public String getAttribute() {
-        return attribute;
-    }
-
-    public void setAttribute(String attribute) {
-        this.attribute = attribute;
+    public void setDisplayAttribute(String displayAttribute) {
+        this.displayAttribute = displayAttribute;
         firePainterChanged();
     }
 
@@ -131,36 +117,59 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
     }
 
     public String[] getAttributes() {
-        return new String[0];
+        return attributes;
     }
 
     public void setupAttributes(Collection<? extends Tree> trees) {
-        // nothing to do...
-    }
 
-    public void setDisplayAttribute(String displayAttribute) {
-        throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleBarPainter");
+        java.util.List<String> attributeNames = new ArrayList<String>();
+
+        attributableItems.clear();
+
+        Set<String> nodeAttributes = new TreeSet<String>();
+        if (trees != null) {
+            for (Tree tree : trees) {
+                for (Node node : tree.getNodes()) {
+                    attributableItems.add(node);
+                    nodeAttributes.addAll(node.getAttributeNames());
+                }
+                for (Taxon taxon : tree.getTaxa()) {
+                    attributableItems.add(taxon);
+                    nodeAttributes.addAll(taxon.getAttributeNames());
+                }
+            }
+        }
+
+        attributeNames.add(BasicLabelPainter.NODE_AGES);
+        attributeNames.add(BasicLabelPainter.NODE_HEIGHTS);
+        attributeNames.add(BasicLabelPainter.BRANCH_TIMES);
+        attributeNames.add(BasicLabelPainter.BRANCH_LENGTHS);
+
+        for (String attributeName : nodeAttributes) {
+            if (!attributeName.startsWith("!")) {
+                attributeNames.add(attributeName);
+            }
+        }
+
+        this.attributes = new String[attributeNames.size()];
+        attributeNames.toArray(this.attributes);
+
+        fireAttributesChanged();
     }
 
     public void setTextDecorator(Decorator textDecorator) {
     }
 
     public Set<Attributable> getAttributableItems() {
-        return null;
+        return attributableItems;
     }
 
-
-    private DiscreteColorDecorator decorator;
-
-    private String attribute;
-
-    private double topMargin = 4.0;
-    private double bottomMargin = 4.0;
+    protected String displayAttribute;
+    protected String[] attributes;
+    private Set<Attributable> attributableItems = new HashSet<Attributable>();
 
     private double preferredHeight;
     private double preferredWidth;
-
-    private float yOffset;
 
     protected TreePane treePane;
 }
