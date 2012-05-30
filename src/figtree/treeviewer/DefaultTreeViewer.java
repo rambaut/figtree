@@ -9,14 +9,11 @@
 
 package figtree.treeviewer;
 
+import figtree.treeviewer.painters.*;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.*;
 import figtree.treeviewer.decorators.Decorator;
-import figtree.treeviewer.painters.LabelPainter;
-import figtree.treeviewer.painters.ScalePainter;
-import figtree.treeviewer.painters.ScaleGridPainter;
-import figtree.treeviewer.painters.NodeBarPainter;
 import figtree.treeviewer.treelayouts.TreeLayout;
 import jam.panels.StatusProvider;
 
@@ -100,6 +97,10 @@ public class DefaultTreeViewer extends TreeViewer {
 
         if (treePane.getNodeBarPainter() != null) {
             treePane.getNodeBarPainter().setupAttributes(trees);
+        }
+
+        if (treePane.getLegendPainter() != null) {
+            treePane.getLegendPainter().setupAttributes(trees);
         }
     }
 
@@ -584,6 +585,11 @@ public class DefaultTreeViewer extends TreeViewer {
         treePane.setScaleGridPainter(scaleGridPainter);
     }
 
+    public void setLegendPainter(LegendPainter legendPainter) {
+        treePane.setLegendPainter(legendPainter);
+        legendPainter.setupAttributes(trees);
+    }
+
     public void setBranchDecorator(Decorator branchDecorator) {
         treePane.setBranchDecorator(branchDecorator);
     }
@@ -595,7 +601,15 @@ public class DefaultTreeViewer extends TreeViewer {
     public void setNodeBackgroundDecorator(Decorator nodeBackgroundDecorator) {
         treePane.setNodeBackgroundDecorator(nodeBackgroundDecorator);
     }
-    
+
+    public Decorator getDecoratorForAttribute(String attribute) {
+        return treePane.getDecoratorForAttribute(attribute);
+    }
+
+    public void setDecoratorForAttribute(String attribute, Decorator decorator) {
+        treePane.setDecoratorForAttribute(attribute, decorator);
+    }
+
     public void setSelectionColor(Color selectionColor) {
         treePane.setSelectionColor(selectionColor);
     }

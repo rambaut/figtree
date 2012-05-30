@@ -1,13 +1,10 @@
 package figtree.treeviewer;
 
+import figtree.treeviewer.painters.*;
 import jebl.evolution.trees.*;
 import jebl.evolution.graphs.Node;
 import figtree.treeviewer.treelayouts.TreeLayout;
 import figtree.treeviewer.decorators.Decorator;
-import figtree.treeviewer.painters.ScaleGridPainter;
-import figtree.treeviewer.painters.LabelPainter;
-import figtree.treeviewer.painters.NodeBarPainter;
-import figtree.treeviewer.painters.ScalePainter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -81,7 +78,11 @@ public class MultiPaneTreeViewer extends TreeViewer {
 		if (treePane.getNodeBarPainter() != null) {
 			treePane.getNodeBarPainter().setupAttributes(trees);
 		}
-	}
+
+        if (treePane.getLegendPainter() != null) {
+            treePane.getLegendPainter().setupAttributes(trees);
+        }
+    }
 
 	public void addTrees(Collection<? extends Tree> trees) {
 		int count = getTreeCount();
@@ -393,7 +394,15 @@ public class MultiPaneTreeViewer extends TreeViewer {
         fireTreeSettingsChanged();
     }
 
-	public void setBranchDecorator(Decorator branchDecorator) {
+    public void setLegendPainter(LegendPainter legendPainter) {
+        for (TreePane treePane : treePanes) {
+            treePane.setLegendPainter(legendPainter);
+        }
+        legendPainter.setupAttributes(trees);
+        fireTreeSettingsChanged();
+    }
+
+    public void setBranchDecorator(Decorator branchDecorator) {
 		for (TreePane treePane : treePanes) {
 			treePane.setBranchDecorator(branchDecorator);
 		}
@@ -414,8 +423,19 @@ public class MultiPaneTreeViewer extends TreeViewer {
         fireTreeSettingsChanged();
     }
 
+    public Decorator getDecoratorForAttribute(String attribute) {
+        return treePanes.get(0).getDecoratorForAttribute(attribute);
+    }
 
-	public void setSelectionColor(Color selectionColor) {
+    public void setDecoratorForAttribute(String attribute, Decorator decorator) {
+        for (TreePane treePane : treePanes) {
+            treePane.setDecoratorForAttribute(attribute, decorator);
+        }
+        fireTreeSettingsChanged();
+    }
+
+
+    public void setSelectionColor(Color selectionColor) {
 		for (TreePane treePane : treePanes) {
 			treePane.setSelectionColor(selectionColor);
 		}

@@ -82,7 +82,7 @@ public class FigTreePanel extends JPanel {
         final LegendPainter legendPainter = new LegendPainter();
         legendPainter.setVisible(false);
         controlPalette.addController(new LegendPainterController(legendPainter));
-        treeViewer.addScalePainter(scaleAxisPainter);
+        treeViewer.setLegendPainter(legendPainter);
 
         slideOpenPanel = new SlideOpenPanel(treeViewer);
 
@@ -97,6 +97,7 @@ public class FigTreePanel extends JPanel {
                 nodeLabelPainter.setupAttributes(treeViewer.getTrees());
                 nodeBarPainter.setupAttributes(treeViewer.getTrees());
                 branchLabelPainter.setupAttributes(treeViewer.getTrees());
+                legendPainter.setupAttributes(treeViewer.getTrees());
             }
         });
     }
