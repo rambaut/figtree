@@ -25,6 +25,7 @@ import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
 
 import javax.swing.JComponent;
 import javax.swing.JSlider;
@@ -40,7 +41,7 @@ import javax.swing.plaf.basic.BasicSliderUI;
 class RangeSliderUI extends BasicSliderUI {
 
     /** Color of selected range. */
-    private Color rangeColor = Color.GREEN;
+    private Color rangeColor = Color.DARK_GRAY;
     
     /** Location and size of thumb for upper value. */
     private Rectangle upperThumbRect;
@@ -137,9 +138,11 @@ class RangeSliderUI extends BasicSliderUI {
         // value on the track.
         if (slider.getOrientation() == JSlider.HORIZONTAL) {
             int upperPosition = xPositionForValue(slider.getValue() + slider.getExtent());
+//            upperThumbRect.x = upperPosition - (upperThumbRect.width / 2);
+//            upperThumbRect.y = trackRect.y;
             upperThumbRect.x = upperPosition - (upperThumbRect.width / 2);
             upperThumbRect.y = trackRect.y;
-            
+
         } else {
             int upperPosition = yPositionForValue(slider.getValue() + slider.getExtent());
             upperThumbRect.x = trackRect.x;
@@ -263,19 +266,19 @@ class RangeSliderUI extends BasicSliderUI {
         Graphics2D g2d = (Graphics2D) g.create();
 
         // Create default thumb shape.
-        Shape thumbShape = createThumbShape(w - 1, h - 1);
+        Shape thumbShape = createThumbShape(w - 1, h - 1, false);
 
         // Draw thumb.
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.translate(knobBounds.x, knobBounds.y);
 
-        g2d.setColor(Color.CYAN);
+        g2d.setColor(Color.LIGHT_GRAY);
         g2d.fill(thumbShape);
 
-        g2d.setColor(Color.BLUE);
+        g2d.setColor(Color.GRAY);
         g2d.draw(thumbShape);
-        
+
         // Dispose graphics.
         g2d.dispose();
     }
@@ -292,17 +295,17 @@ class RangeSliderUI extends BasicSliderUI {
         Graphics2D g2d = (Graphics2D) g.create();
 
         // Create default thumb shape.
-        Shape thumbShape = createThumbShape(w - 1, h - 1);
+        Shape thumbShape = createThumbShape(w - 1, h - 1, true);
 
         // Draw thumb.
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.translate(knobBounds.x, knobBounds.y);
 
-        g2d.setColor(Color.PINK);
+        g2d.setColor(Color.LIGHT_GRAY);
         g2d.fill(thumbShape);
 
-        g2d.setColor(Color.RED);
+        g2d.setColor(Color.GRAY);
         g2d.draw(thumbShape);
 
         // Dispose graphics.
@@ -312,10 +315,29 @@ class RangeSliderUI extends BasicSliderUI {
     /**
      * Returns a Shape representing a thumb.
      */
-    private Shape createThumbShape(int width, int height) {
+    private Shape createThumbShape(int width, int height, boolean upper) {
         // Use circular shape.
-        Ellipse2D shape = new Ellipse2D.Double(0, 0, width, height);
-        return shape;
+//        Ellipse2D shape = new Ellipse2D.Double(0, 0, width, height);
+//        return shape;
+
+        Path2D path = new Path2D.Float();
+        if (slider.getOrientation() == JSlider.HORIZONTAL) {
+        float d = 0.5F * width;
+        path.moveTo(d, 0);
+        path.lineTo((upper ? width : 0.0), d);
+        path.lineTo((upper ? width : 0.0), height);
+        path.lineTo(0.5 * width, height);
+        } else {
+            float d = 0.5F * height;
+            path.moveTo(0, d);
+            path.lineTo(d, (upper ? height : 0.0));
+            path.lineTo(width, (upper ? height : 0.0));
+            path.lineTo(height, 0.5 * height);
+
+        }
+        path.closePath();
+
+        return path;
     }
     
     /** 
@@ -405,24 +427,44 @@ class RangeSliderUI extends BasicSliderUI {
             if (slider.isRequestFocusEnabled()) {
                 slider.requestFocus();
             }
-            
-            // Determine which thumb is pressed.  If the upper thumb is 
+
+            // Determine which thumb is pressed.  If the upper thumb is
             // selected (last one dragged), then check its position first;
             // otherwise check the position of the lower thumb first.
+//            if (upperThumbSelected) {
+//                if (upperThumbRect.contains(currentMouseX, currentMouseY)) {
+//                    upperPressed = true;
+//                } else if (thumbRect.contains(currentMouseX, currentMouseY)) {
+//                    lowerPressed = true;
+//                }
+//            } else {
+//                if (thumbRect.contains(currentMouseX, currentMouseY)) {
+//                    lowerPressed = true;
+//                } else if (upperThumbRect.contains(currentMouseX, currentMouseY)) {
+//                    upperPressed = true;
+//                }
+//            }
+
+            // Determine which thumb is pressed.  First check against the upper
+            // slider rects top half...
             boolean lowerPressed = false;
             boolean upperPressed = false;
-            if (upperThumbSelected) {
-                if (upperThumbRect.contains(currentMouseX, currentMouseY)) {
-                    upperPressed = true;
-                } else if (thumbRect.contains(currentMouseX, currentMouseY)) {
-                    lowerPressed = true;
-                }
+            Rectangle urect = new Rectangle(upperThumbRect);
+            Rectangle lrect = new Rectangle(thumbRect);
+            if (slider.getOrientation() == JSlider.HORIZONTAL) {
+                urect.width = (int)Math.round(0.5 * urect.width);
+                urect.x += urect.width;
+                lrect.width = urect.width;
+
             } else {
-                if (thumbRect.contains(currentMouseX, currentMouseY)) {
-                    lowerPressed = true;
-                } else if (upperThumbRect.contains(currentMouseX, currentMouseY)) {
-                    upperPressed = true;
-                }
+                urect.height = (int)Math.round(0.5 * urect.height);
+                urect.y += urect.height;
+                lrect.height = urect.height;
+            }
+            if (urect.contains(currentMouseX, currentMouseY)) {
+                upperPressed = true;
+            } else if (lrect.contains(currentMouseX, currentMouseY)) {
+                lowerPressed = true;
             }
 
             // Handle lower thumb pressed.
