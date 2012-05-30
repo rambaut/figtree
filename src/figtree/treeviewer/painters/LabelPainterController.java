@@ -16,8 +16,6 @@ import java.util.prefs.Preferences;
 
 import figtree.treeviewer.*;
 import figtree.treeviewer.decorators.*;
-import jebl.evolution.graphs.Node;
-import jebl.evolution.trees.Tree;
 import jebl.util.Attributable;
 
 /**
@@ -103,12 +101,12 @@ public class LabelPainterController extends AbstractController {
 
         final JButton setupColourButton = new JButton(new AbstractAction("Colours") {
             public void actionPerformed(ActionEvent e) {
-                if (colourScaleDialog == null) {
-                    colourScaleDialog = new ColourScaleDialog(frame, colourSettings);
+                if (continuousColourScaleDialog == null) {
+                    continuousColourScaleDialog = new ContinuousColourScaleDialog(frame, colourSettings);
                 }
-                int result = colourScaleDialog.showDialog();
+                int result = continuousColourScaleDialog.showDialog();
                 if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-                    colourScaleDialog.getSettings(colourSettings);
+                    continuousColourScaleDialog.getSettings(colourSettings);
                     setupLabelDecorator();
                 }
             }
@@ -263,7 +261,7 @@ public class LabelPainterController extends AbstractController {
                 Set<Attributable> items = labelPainter.getAttributableItems();
 
                 if (DiscreteColorDecorator.isDiscrete(attribute, items)) {
-                    colourDecorator = new DiscreteColorDecorator(attribute, items, false);
+                    colourDecorator = new HSBDiscreteColorDecorator(attribute, items, false);
                 } else {
                     ContinousScale scale;
                     if (colourSettings.autoRange) {
@@ -355,8 +353,8 @@ public class LabelPainterController extends AbstractController {
 
     private final JComboBox colourAttributeCombo;
 
-    private ColourScaleDialog colourScaleDialog = null;
+    private ContinuousColourScaleDialog continuousColourScaleDialog = null;
 
-    ColourScaleDialog.ColourSettings colourSettings = new ColourScaleDialog.ColourSettings();
+    ContinuousColourScaleDialog.ColourSettings colourSettings = new ContinuousColourScaleDialog.ColourSettings();
 
 }

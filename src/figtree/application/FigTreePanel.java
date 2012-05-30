@@ -78,6 +78,12 @@ public class FigTreePanel extends JPanel {
         treeViewer.addScalePainter(scaleAxisPainter);
         treeViewer.setScaleGridPainter(scaleGridPainter);
 
+        // Create a legend controller
+        final LegendPainter legendPainter = new LegendPainter();
+        legendPainter.setVisible(false);
+        controlPalette.addController(new LegendPainterController(legendPainter));
+        treeViewer.addScalePainter(scaleAxisPainter);
+
         slideOpenPanel = new SlideOpenPanel(treeViewer);
 
         setLayout(new BorderLayout());

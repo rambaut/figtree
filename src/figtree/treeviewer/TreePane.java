@@ -937,6 +937,16 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         repaint();
     }
 
+    public void setLegendPainter(LegendPainter legendPainter) {
+        legendPainter.setTreePane(this);
+        legendPainter.addPainterListener(this);
+
+        this.legendPainter = legendPainter;
+
+        calibrated = false;
+        repaint();
+    }
+
     public void setPreferredSize(Dimension dimension) {
         if (treeLayout.maintainAspectRatio()) {
             super.setPreferredSize(new Dimension(dimension.width, dimension.height));
@@ -1180,6 +1190,10 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         final Paint oldPaint = g2.getPaint();
         final Stroke oldStroke = g2.getStroke();
         final Font oldFont = g2.getFont();
+
+        if (legendPainter != null && legendPainter.isVisible()) {
+            legendPainter.paint(g2, this, Painter.Justification.CENTER, legendBounds);
+        }
 
         // Paint scales
         for (ScalePainter scalePainter : scalePainters) {
@@ -1821,6 +1835,12 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
         }
 
+        if (legendPainter != null && legendPainter.isVisible()) {
+            legendPainter.calibrate(g2, this);
+            final double w2 = legendPainter.getPreferredWidth();
+            legendBounds = new Rectangle2D.Double(0, 0, w2, treeBounds.getHeight());
+        }
+
         calloutPaths.clear();
         clearSelectionPaths();
 
@@ -1935,6 +1955,10 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     private Map<ScalePainter, Rectangle2D> scaleBounds = new HashMap<ScalePainter, Rectangle2D>();
 
     private ScaleGridPainter scaleGridPainter = null;
+
+    private LegendPainter legendPainter = null;
+    private Rectangle2D legendBounds = new Rectangle2D.Double();
+
 
     private BasicStroke branchLineStroke = new BasicStroke(1.0F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
     private BasicStroke calloutStroke = new BasicStroke(0.5F, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1.0f, new float[]{0.5f, 2.0f}, 0.0f);
