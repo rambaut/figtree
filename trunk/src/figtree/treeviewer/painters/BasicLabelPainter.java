@@ -207,7 +207,7 @@ public class BasicLabelPainter extends LabelPainter<Node> {
             }
         }
 
-        Object value;
+        Object value = null;
 
         if (intent == PainterIntent.TIP) {
             Taxon taxon = tree.getTaxon(node);
@@ -216,7 +216,9 @@ public class BasicLabelPainter extends LabelPainter<Node> {
             } else {
                 value = node.getAttribute(displayAttribute);
             }
-        } else {
+        }
+
+        if (value == null) {
             value = node.getAttribute(displayAttribute);
         }
 

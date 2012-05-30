@@ -36,6 +36,9 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
     }
 
     public void paint(Graphics2D g2, TreePane treePane, Justification justification, Rectangle2D bounds) {
+        g2.setPaint(Color.BLACK);
+            g2.draw(bounds);
+
 //        Font oldFont = g2.getFont();
 //        Paint oldPaint = g2.getPaint();
 //        Stroke oldStroke = g2.getStroke();
