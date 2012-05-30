@@ -23,6 +23,7 @@ import figtree.treeviewer.annotations.AnnotationDefinition;
 import figtree.treeviewer.painters.CharactersPainter;
 import figtree.treeviewer.painters.StatesPainter;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -35,9 +36,13 @@ import java.util.List;
  * @version $Id: ExtendedTreeViewer.java,v 1.38 2007/09/05 16:24:23 rambaut Exp $
  */
 public class ExtendedTreeViewer extends DefaultTreeViewer implements StatusProvider {
-    /** Creates new AlignmentPanel */
+
     public ExtendedTreeViewer() {
-        super();
+       this(null);
+    }
+
+    public ExtendedTreeViewer(JFrame frame) {
+        super(frame);
 
         // setTreesPerPage(1);
 

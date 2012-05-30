@@ -59,7 +59,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         //       setImportAction(importCharactersAction);
         setExportAction(exportTreesAction);
 
-        treeViewer = new ExtendedTreeViewer();
+        treeViewer = new ExtendedTreeViewer(this);
         controlPalette = new BasicControlPalette(200, BasicControlPalette.DisplayMode.ONLY_ONE_OPEN);
 
         figTreePanel = new FigTreePanel(this, treeViewer, controlPalette);
@@ -248,7 +248,15 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         final ToolbarAction prevTreeToolbarAction =
                 new ToolbarAction(null, "Previous Tree...", prevIcon) {
                     public void actionPerformed(ActionEvent e){
-                        treeViewer.showPreviousTree();
+                        if (treeViewer.isRootingOn() && treeViewer.getRootingType() == TreePane.RootingType.USER_ROOTING) {
+                            JOptionPane.showMessageDialog(FigTreeFrame.this, "Cannot switch trees when user rooting option is on.\n" +
+                                    "Turn this option off to switch trees",
+                                    "Unable to switch trees",
+                                    JOptionPane.ERROR_MESSAGE);
+
+                        } else {
+                            treeViewer.showPreviousTree();
+                        }
                     }
                 };
         JButton prevTreeToolButton = new ToolbarButton(prevTreeToolbarAction, true);
@@ -260,7 +268,15 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         final ToolbarAction nextTreeToolbarAction =
                 new ToolbarAction(null, "Next Tree...", nextIcon) {
                     public void actionPerformed(ActionEvent e){
-                        treeViewer.showNextTree();
+                        if (treeViewer.isRootingOn() && treeViewer.getRootingType() == TreePane.RootingType.USER_ROOTING) {
+                            JOptionPane.showMessageDialog(FigTreeFrame.this, "Cannot switch trees when user rooting option is on.\n" +
+                                    "Turn this option off to switch trees",
+                                    "Unable to switch trees",
+                                    JOptionPane.ERROR_MESSAGE);
+
+                        } else {
+                            treeViewer.showNextTree();
+                        }
                     }
                 };
         JButton nextTreeToolButton = new ToolbarButton(nextTreeToolbarAction, true);

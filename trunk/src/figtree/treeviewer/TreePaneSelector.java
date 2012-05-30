@@ -25,16 +25,15 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
         SCROLL
     };
 
-	public enum ToolMode {
-	    SELECT,
-	    ROOTING,
-		CARTOONING,
-		COLLAPSING,
-		ROTATING,
-		ANNOTATING,
-		COLOURING
-	};
-
+    public enum ToolMode {
+        SELECT,
+        ROOTING,
+        CARTOONING,
+        COLLAPSING,
+        ROTATING,
+        ANNOTATING,
+        COLOURING
+    };
 
     public TreePaneSelector(TreePane treePane) {
         this.treePane = treePane;
@@ -52,6 +51,7 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
     }
 
     public void setSelectionMode(SelectionMode selectionMode) {
+        defaultSelectionMode = selectionMode;
         this.selectionMode = selectionMode;
     }
 
@@ -92,9 +92,9 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
     }
 
     public void mouseClicked(MouseEvent mouseEvent) {
-	    if (treePane.getTree() == null) {
-		    return;
-	    }
+        if (treePane.getTree() == null) {
+            return;
+        }
 
         if (toolMode == ToolMode.ROOTING) {
             Node node = treePane.getNodeAt((Graphics2D) treePane.getGraphics(), mouseEvent.getPoint());
@@ -102,12 +102,12 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
                 treePane.setRootLocation(node, 0.5);
             }
         } else if (toolMode == ToolMode.ROTATING) {
-	        Node node = treePane.getNodeAt((Graphics2D) treePane.getGraphics(), mouseEvent.getPoint());
-			treePane.rotateNode(node);
+            Node node = treePane.getNodeAt((Graphics2D) treePane.getGraphics(), mouseEvent.getPoint());
+            treePane.rotateNode(node);
         } else if (dragMode == DragMode.SELECT) {
             boolean isCrossHairShown = treePane.isCrosshairShown();
 
-             treePane.setCrosshairShown(false);
+            treePane.setCrosshairShown(false);
 
             Node selectedNode = treePane.getNodeAt((Graphics2D) treePane.getGraphics(), mouseEvent.getPoint());
             if (!mouseEvent.isShiftDown()) {
@@ -150,9 +150,9 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
     }
 
     public void mouseReleased(MouseEvent mouseEvent) {
-	    if (treePane.getTree() == null) {
-		    return;
-	    }
+        if (treePane.getTree() == null) {
+            return;
+        }
 
         if (dragMode == DragMode.SELECT) {
             if (treePane.getDragRectangle() != null) {
@@ -198,26 +198,35 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
         }
     }
 
-	public void mouseExited(MouseEvent mouseEvent) {
-		if (isCommandKeyDown(mouseEvent)) {
+    public void mouseExited(MouseEvent mouseEvent) {
+        if (isCommandKeyDown(mouseEvent)) {
             treePane.setCursorPosition(mouseEvent.getPoint());
         }
     }
 
     public void mouseMoved(MouseEvent mouseEvent) {
-	    if (isCommandKeyDown(mouseEvent)) {
+        if (isCommandKeyDown(mouseEvent)) {
             treePane.setCursorPosition(mouseEvent.getPoint());
         }
     }
 
-	/**
-	 * On Mac, check for the 'Command' key, otherwise use the 'Control' key
-	 * @param event
-	 * @return is it pressed
-	 */
-	private boolean isCommandKeyDown(InputEvent event) {
-		return Utils.isMacOSX() ? event.isMetaDown() : event.isControlDown();
-	}
+    /**
+     * On Mac, check for the 'Command' key, otherwise use the 'Control' key
+     * @param event
+     * @return is it pressed
+     */
+    private boolean isCommandKeyDown(InputEvent event) {
+        return Utils.isMacOSX() ? event.isMetaDown() : event.isControlDown();
+    }
+
+    /**
+     * On Mac, check for the 'Option' key, otherwise use the 'Alt' key
+     * @param event
+     * @return is it pressed
+     */
+    private boolean isOptionKeyDown(InputEvent event) {
+        return event.isAltDown();
+    }
 
     public void mouseDragged(MouseEvent mouseEvent) {
 
@@ -267,6 +276,19 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
         if (event.getKeyCode() == KeyEvent.VK_SPACE) {
             dragMode = DragMode.SCROLL;
         }
+        if (isOptionKeyDown(event)) {
+            switch (defaultSelectionMode) {
+                case NODE:
+                case CLADE:
+                    selectionMode = SelectionMode.TAXA;
+                    break;
+                case TAXA:
+                    selectionMode = SelectionMode.NODE               ;
+                    break;
+            }
+        } else {
+            selectionMode = defaultSelectionMode;
+        }
         crossHairCursor = isCommandKeyDown(event);
         setupCursor();
     }
@@ -281,6 +303,7 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
 
     private TreePane treePane;
 
+    private SelectionMode defaultSelectionMode = SelectionMode.NODE;
     private SelectionMode selectionMode = SelectionMode.NODE;
 
     private ToolMode toolMode = ToolMode.SELECT;

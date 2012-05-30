@@ -91,7 +91,7 @@ public class TreeViewerPanel extends JPanel {
 
         JFrame frame = new JFrame("TreeViewer Test");
 
-        TreeViewer treeViewer = new DefaultTreeViewer();
+        TreeViewer treeViewer = new DefaultTreeViewer(frame);
         ControlPalette controlPalette = new BasicControlPalette(200, BasicControlPalette.DisplayMode.ONLY_ONE_OPEN);
 
         frame.getContentPane().add(new TreeViewerPanel(frame, treeViewer, controlPalette), BorderLayout.CENTER);
