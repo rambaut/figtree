@@ -41,7 +41,6 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
         treePane.addMouseListener(this);
         treePane.addMouseMotionListener(this);
         treePane.addKeyListener(this);
-
     }
 
     public SelectionMode getSelectionMode() {
@@ -143,6 +142,8 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
     }
 
     public void mousePressed(MouseEvent mouseEvent) {
+        treePane.requestFocus();
+
         // This is used for dragging in combination with mouseDragged
         // in the MouseMotionListener, below.
         dragPoint = new Point2D.Double(mouseEvent.getPoint().getX(), mouseEvent.getPoint().getY());

@@ -59,7 +59,6 @@ public class DefaultTreeViewer extends TreeViewer {
         // This overrides MouseListener and MouseMotionListener to allow selection in the TreePane -
         // It installs itself within the constructor.
         treePaneSelector = new TreePaneSelector(treePane);
-
         treePaneRollOver = new TreePaneRollOver(treePane);
 
         setFocusable(true);
@@ -551,7 +550,7 @@ public class DefaultTreeViewer extends TreeViewer {
         treePaneSelector.setDragMode(dragMode);
     }
 
-    // A load of deligated method calls through to treePane (which is now hidden outside the package).
+    // A load of delegated method calls through to treePane (which is now hidden outside the package).
     public void setTipLabelPainter(LabelPainter<Node> tipLabelPainter) {
         treePane.setTipLabelPainter(tipLabelPainter);
         tipLabelPainter.setupAttributes(trees);
