@@ -34,7 +34,17 @@ final public class ReRootedTree implements RootedTree {
         children.add(node1);
 
         Node node2 = createNodes(source, ingroupNode, outgroupNode);
-        setLength(node2, Math.max(source.getEdgeLength(ingroupNode, outgroupNode) - ingroupBranchLength, 0.0));
+        double l = source.getEdgeLength(ingroupNode, outgroupNode);
+        if (outgroupNode == source.getRootNode()) {
+            // the tree is already rooted at the required location
+            for (Node adj : source.getAdjacencies(outgroupNode)) {
+                if (adj != ingroupNode) {
+                   l += source.getEdgeLength(outgroupNode, adj);
+                }
+            }
+
+            setLength(node2, Math.max(l - ingroupBranchLength, 0.0));
+        }
         children.add(node2);
 
         createInternalNode(null, children);
@@ -127,7 +137,7 @@ final public class ReRootedTree implements RootedTree {
     }
 
     public Node getSourceNode(Node node) {
-        return ((ReRootedNode)node).source;    
+        return ((ReRootedNode)node).source;
     }
 
     /**
