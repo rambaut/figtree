@@ -16,6 +16,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -73,8 +75,8 @@ public class DiscreteColourScaleDialog {
 
         setDecorator(decorator);
 
-        primaryAxisCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
+        primaryAxisCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 setupDecorator(decorator);
                 tableModel.fireTableDataChanged();
             }
@@ -131,7 +133,7 @@ public class DiscreteColourScaleDialog {
     }
 
     public void setupDecorator(HSBDiscreteColorDecorator decorator) {
-        decorator.setPrimaryAxis((HSBDiscreteColorDecorator.Axis)primaryAxisCombo.getSelectedItem());
+        decorator.setPrimaryAxis((HSBDiscreteColorDecorator.Axis) primaryAxisCombo.getSelectedItem());
         decorator.setSecondaryCount(secondaryCountSpinnerModel.getNumber().intValue());
 
         decorator.setHueLower(((float) hueSlider.getValue()) / SLIDER_RANGE);

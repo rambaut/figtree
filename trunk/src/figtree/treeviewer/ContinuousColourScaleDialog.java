@@ -76,8 +76,8 @@ public class ContinuousColourScaleDialog {
         toColourButton = new ColorWellButton(settings.toColour, "Choose End Colour");
         middleColourButton = new ColorWellButton(settings.middleColour, "Choose Middle Colour");
 
-        autoScaleCheck.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
+        autoScaleCheck.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 boolean enabled = !autoScaleCheck.isSelected();
                 fromLabel.setEnabled(enabled);
                 fromNumberField.setEnabled(enabled);
@@ -85,8 +85,8 @@ public class ContinuousColourScaleDialog {
                 toNumberField.setEnabled(enabled);
             }});
 
-        middleColourCheck.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
+        middleColourCheck.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 middleColourButton.setEnabled(middleColourCheck.isSelected());
             }});
         middleColourCheck.setSelected(settings.middleColour != null);

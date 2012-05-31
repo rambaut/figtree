@@ -5,6 +5,8 @@ import jam.controlpalettes.AbstractController;
 import jam.panels.OptionsPanel;
 import figtree.treeviewer.annotations.AnnotationDefinition;
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
@@ -28,8 +30,8 @@ public class AnnotationsController extends AbstractController {
 //		for (AnnotationDefinition annotation : treeViewer.getAnnotationDefinitions()) {
 //		    combo2.addItem(annotation);
 //		}
-        combo2.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
+        combo2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 Object item = combo2.getSelectedItem();
                 if (item instanceof AnnotationDefinition) {
 //                    treePane.setBranchDecorator(new AnnotationBranchDecorator((AnnotationDefinition)item));

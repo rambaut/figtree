@@ -11,6 +11,8 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
@@ -60,18 +62,18 @@ public class LegendPainterController extends AbstractController {
 
         String[] attributes = legendPainter.getAttributes();
         attributeCombo = new JComboBox();
-        attributeCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
-                String attribute = (String)attributeCombo.getSelectedItem();
+        attributeCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                String attribute = (String) attributeCombo.getSelectedItem();
                 legendPainter.setDisplayAttribute(attribute);
             }
         });
 
         final JLabel label1 = optionsPanel.addComponentWithLabel("Attribute:", attributeCombo);
 
-        attributeCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
-                legendPainter.setDisplayAttribute((String)attributeCombo.getSelectedItem());
+        attributeCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                legendPainter.setDisplayAttribute((String) attributeCombo.getSelectedItem());
             }
         });
 

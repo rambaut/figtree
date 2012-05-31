@@ -7,6 +7,8 @@ import jam.panels.OptionsPanel;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
@@ -34,11 +36,11 @@ public class MultiPaneTreeViewerController extends AbstractController {
 		});
 
 		final JComboBox treesPerPageCombo = new JComboBox(new String[] { "1", "2", "3", "4", "5", "6", "7", "8" });
-		treesPerPageCombo.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent itemEvent) {
-				treeViewer.setTreesPerPage(treesPerPageCombo.getSelectedIndex() + 1);
-			}
-		});
+		treesPerPageCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                treeViewer.setTreesPerPage(treesPerPageCombo.getSelectedIndex() + 1);
+            }
+        });
 
 
 		treeViewer.addTreeViewerListener(new TreeViewerListener() {

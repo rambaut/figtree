@@ -10,6 +10,8 @@ import figtree.treeviewer.annotations.AnnotationDefinition;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.util.List;
@@ -99,41 +101,41 @@ public class FindDialog {
 		final JDialog dialog = optionPane.createDialog(frame, "Find");
 		dialog.pack();
 
-		targetCombo.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				Object item = targetCombo.getSelectedItem();
+		targetCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                Object item = targetCombo.getSelectedItem();
 
-				if (item.equals(Target.BRANCH_LENGTH) || item.equals(Target.NODE_AGE)) {
-					type = AnnotationDefinition.Type.REAL;
-				} else if (item instanceof AnnotationDefinition) {
-					type = ((AnnotationDefinition) item).getType();
-				} else {
-					type = AnnotationDefinition.Type.STRING;
-				}
+                if (item.equals(Target.BRANCH_LENGTH) || item.equals(Target.NODE_AGE)) {
+                    type = AnnotationDefinition.Type.REAL;
+                } else if (item instanceof AnnotationDefinition) {
+                    type = ((AnnotationDefinition) item).getType();
+                } else {
+                    type = AnnotationDefinition.Type.STRING;
+                }
 
-				panel.removeAll();
-				panel.add(targetCombo, BorderLayout.WEST);
-				switch (type) {
-					case INTEGER:
-						panel.add(numberSearchCombo, BorderLayout.CENTER);
-						panel.add(integerText, BorderLayout.EAST);
-						integerText.setColumns(10);
-						caseSensitiveCheck.setEnabled(false);
-						break;
-					case REAL:
-						panel.add(numberSearchCombo, BorderLayout.CENTER);
-						panel.add(doubleText, BorderLayout.EAST);
-						doubleText.setColumns(10);
-						caseSensitiveCheck.setEnabled(false);
-						break;
-					default:
-						panel.add(textSearchCombo, BorderLayout.CENTER);
-						panel.add(searchText, BorderLayout.EAST);
-						caseSensitiveCheck.setEnabled(true);
-				}
-				dialog.pack();
-			}
-		});
+                panel.removeAll();
+                panel.add(targetCombo, BorderLayout.WEST);
+                switch (type) {
+                    case INTEGER:
+                        panel.add(numberSearchCombo, BorderLayout.CENTER);
+                        panel.add(integerText, BorderLayout.EAST);
+                        integerText.setColumns(10);
+                        caseSensitiveCheck.setEnabled(false);
+                        break;
+                    case REAL:
+                        panel.add(numberSearchCombo, BorderLayout.CENTER);
+                        panel.add(doubleText, BorderLayout.EAST);
+                        doubleText.setColumns(10);
+                        caseSensitiveCheck.setEnabled(false);
+                        break;
+                    default:
+                        panel.add(textSearchCombo, BorderLayout.CENTER);
+                        panel.add(searchText, BorderLayout.EAST);
+                        caseSensitiveCheck.setEnabled(true);
+                }
+                dialog.pack();
+            }
+        });
 
 		targetCombo.setSelectedIndex(selectedTargetIndex);
 
