@@ -365,7 +365,15 @@ public class MultiPaneTreeViewer extends TreeViewer {
 		fireTreeSettingsChanged();
 	}
 
-	public void setBranchLabelPainter(LabelPainter<Node> branchLabelPainter) {
+    public void setNodeShapePainter(NodeShapePainter nodeShapePainter) {
+        for (TreePane treePane : treePanes) {
+            treePane.setNodeShapePainter(nodeShapePainter);
+        }
+        nodeShapePainter.setupAttributes(trees);
+        fireTreeSettingsChanged();
+    }
+
+    public void setBranchLabelPainter(LabelPainter<Node> branchLabelPainter) {
 		for (TreePane treePane : treePanes) {
 			treePane.setBranchLabelPainter(branchLabelPainter);
 		}

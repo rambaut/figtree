@@ -581,6 +581,11 @@ public class DefaultTreeViewer extends TreeViewer {
         nodeBarPainter.setupAttributes(trees);
     }
 
+    public void setNodeShapePainter(NodeShapePainter nodeShapePainter) {
+        treePane.setNodeShapePainter(nodeShapePainter);
+        nodeShapePainter.setupAttributes(trees);
+    }
+
     public void setBranchLabelPainter(LabelPainter<Node> branchLabelPainter) {
         treePane.setBranchLabelPainter(branchLabelPainter);
         branchLabelPainter.setupAttributes(trees);

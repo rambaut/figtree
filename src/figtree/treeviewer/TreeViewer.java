@@ -34,33 +34,33 @@ public abstract class TreeViewer extends JPanel implements Printable {
 
     public abstract void showTree(int index);
 
-	public abstract void setTreeLayout(TreeLayout treeLayout);
+    public abstract void setTreeLayout(TreeLayout treeLayout);
 
-	public abstract void setZoom(double zoom);
+    public abstract void setZoom(double zoom);
 
-	public abstract void setVerticalExpansion(double verticalExpansion);
+    public abstract void setVerticalExpansion(double verticalExpansion);
 
-	public abstract boolean verticalExpansionAllowed();
+    public abstract boolean verticalExpansionAllowed();
 
-	public abstract void setTimeScale(TimeScale timeScale);
+    public abstract void setTimeScale(TimeScale timeScale);
 
     public abstract boolean hasSelection();
 
-	public abstract Set<Node> getSelectedNodes();
+    public abstract Set<Node> getSelectedNodes();
 
-	public abstract Set<Node> getSelectedTips();
+    public abstract Set<Node> getSelectedTips();
 
     public abstract void selectTaxa(String attributeName, TextSearchType searchType, String searchString, boolean caseSensitive);
 
-	public abstract void selectNodes(String attributeName, TextSearchType searchType, String searchString, boolean caseSensitive);
+    public abstract void selectNodes(String attributeName, TextSearchType searchType, String searchString, boolean caseSensitive);
 
-	public abstract void selectTaxa(String attributeName, NumberSearchType searchType, Number searchValue);
+    public abstract void selectTaxa(String attributeName, NumberSearchType searchType, Number searchValue);
 
-	public abstract void selectNodes(String attributeName, NumberSearchType searchType, Number searchValue);
+    public abstract void selectNodes(String attributeName, NumberSearchType searchType, Number searchValue);
 
     public abstract void selectTaxa(Collection<String> taxonNames);
 
-	public abstract void collapseSelectedNodes();
+    public abstract void collapseSelectedNodes();
 
     public abstract void annotateSelectedNodes(String name, Object value);
 
@@ -68,7 +68,7 @@ public abstract class TreeViewer extends JPanel implements Printable {
 
     public abstract void selectAll();
 
-	public abstract void clearSelectedTaxa();
+    public abstract void clearSelectedTaxa();
 
     public abstract void addTreeSelectionListener(TreeSelectionListener treeSelectionListener);
 
@@ -77,7 +77,7 @@ public abstract class TreeViewer extends JPanel implements Printable {
 
     public abstract void setSelectionMode(TreePaneSelector.SelectionMode selectionMode);
 
-	public abstract void setDragMode(TreePaneSelector.DragMode dragMode);
+    public abstract void setDragMode(TreePaneSelector.DragMode dragMode);
 
     public abstract void setTipLabelPainter(LabelPainter<Node> tipLabelPainter);
 
@@ -85,11 +85,13 @@ public abstract class TreeViewer extends JPanel implements Printable {
 
     public abstract void setNodeBarPainter(NodeBarPainter nodeBarPainter);
 
+    public abstract void setNodeShapePainter(NodeShapePainter nodeShapePainter);
+
     public abstract void setBranchLabelPainter(LabelPainter<Node> branchLabelPainter);
 
     public abstract void addScalePainter(ScalePainter scalePainter);
 
-	public abstract void removeScalePainter(ScalePainter scalePainter);
+    public abstract void removeScalePainter(ScalePainter scalePainter);
 
     public abstract void setScaleGridPainter(ScaleGridPainter scaleGridPainter);
 
@@ -139,45 +141,45 @@ public abstract class TreeViewer extends JPanel implements Printable {
 
     public abstract JComponent getContentPane();
 
-	public abstract void addTreeViewerListener(TreeViewerListener listener);
+    public abstract void addTreeViewerListener(TreeViewerListener listener);
 
-	public abstract void removeTreeViewerListener(TreeViewerListener listener);
+    public abstract void removeTreeViewerListener(TreeViewerListener listener);
 
 
-	public enum TextSearchType {
-	    CONTAINS("contains"),
-	    STARTS_WITH("starts with"),
-	    ENDS_WITH("ends with"),
-	    MATCHES("matches"),
-		REG_EX("regular expression");
+    public enum TextSearchType {
+        CONTAINS("contains"),
+        STARTS_WITH("starts with"),
+        ENDS_WITH("ends with"),
+        MATCHES("matches"),
+        REG_EX("regular expression");
 
-	    TextSearchType(String name) {
-	        this.name = name;
-	    }
+        TextSearchType(String name) {
+            this.name = name;
+        }
 
-	    public String toString() {
-	        return name;
-	    }
+        public String toString() {
+            return name;
+        }
 
-	    private final String name;
-	}
+        private final String name;
+    }
 
-	public enum NumberSearchType {
-	    EQUALS("equals"),
-		NOT_EQUALS("doesn't equals"),
-	    GREATER_THAN("greater than"),
-		EQUALS_OR_GREATER_THAN("equals or greater than"),
-	    LESS_THAN("less than"),
-		EQUALS_OR_LESS_THAN("equals or less than");
+    public enum NumberSearchType {
+        EQUALS("equals"),
+        NOT_EQUALS("doesn't equals"),
+        GREATER_THAN("greater than"),
+        EQUALS_OR_GREATER_THAN("equals or greater than"),
+        LESS_THAN("less than"),
+        EQUALS_OR_LESS_THAN("equals or less than");
 
-	    NumberSearchType(String name) {
-	        this.name = name;
-	    }
+        NumberSearchType(String name) {
+            this.name = name;
+        }
 
-	    public String toString() {
-	        return name;
-	    }
+        public String toString() {
+            return name;
+        }
 
-	    private final String name;
-	}
+        private final String name;
+    }
 }

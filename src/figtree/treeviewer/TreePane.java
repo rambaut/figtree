@@ -908,6 +908,24 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         return nodeBarPainter;
     }
 
+
+    public void setNodeShapePainter(NodeShapePainter nodeShapePainter) {
+        nodeShapePainter.setTreePane(this);
+        if (this.nodeShapePainter != null) {
+            this.nodeShapePainter.removePainterListener(this);
+        }
+        this.nodeShapePainter = nodeShapePainter;
+        if (this.nodeShapePainter != null) {
+            this.nodeShapePainter.addPainterListener(this);
+        }
+        calibrated = false;
+        repaint();
+    }
+
+    public NodeShapePainter getNodeShapePainter() {
+        return nodeShapePainter;
+    }
+
     public void addScalePainter(ScalePainter scalePainter) {
         assert scalePainter != null;
 
@@ -1387,6 +1405,15 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                 nodeBarPainter.paint(g2, node, NodePainter.Justification.CENTER, nodeBar);
             }
         }
+
+        // Paint node shapes
+//        if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
+//            for (Node node : nodeShapes.keySet() ) {
+//                Shape nodeShape = nodeShapes.get(node);
+//                nodeShape = transform.createTransformedShape(nodeShape);
+//                nodeShapePainter.paint(g2, node, NodePainter.Justification.CENTER, nodeShape);
+//            }
+//        }
 
         // Paint tip labels
         if (tipLabelPainter != null && tipLabelPainter.isVisible()) {
@@ -1970,6 +1997,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     private LabelPainter<Node> branchLabelPainter = null;
 
     private NodeBarPainter nodeBarPainter = null;
+
+    private NodeShapePainter nodeShapePainter = null;
 
     private List<ScalePainter> scalePainters = new ArrayList<ScalePainter>();
     private Rectangle2D totalScaleBounds = null;

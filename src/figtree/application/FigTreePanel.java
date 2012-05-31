@@ -50,12 +50,18 @@ public class FigTreePanel extends JPanel {
         controlPalette.addController(new LabelPainterController("Node Labels", "nodeLabels", nodeLabelPainter, frame));
         treeViewer.setNodeLabelPainter(nodeLabelPainter);
 
-        // Create a node shape painter and its controller
+        // Create a node bar painter and its controller
         final NodeBarPainter nodeBarPainter = new NodeBarPainter();
         nodeBarPainter.setForeground(new Color(24, 32, 228, 128));
         nodeBarPainter.setVisible(false);
         controlPalette.addController(new NodeBarController("Node Bars", nodeBarPainter));
         treeViewer.setNodeBarPainter(nodeBarPainter);
+
+        // Create a node shape painter and its controller
+        final NodeShapePainter nodeShapePainter = new NodeShapePainter();
+        nodeShapePainter.setVisible(false);
+        controlPalette.addController(new NodeShapeController("Node Shapes", nodeShapePainter));
+        treeViewer.setNodeShapePainter(nodeShapePainter);
 
         // Create a branch label painter and its controller
         final BasicLabelPainter branchLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.BRANCH);
