@@ -6,6 +6,8 @@ import jam.panels.OptionsPanel;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
@@ -73,20 +75,20 @@ public class TimeScaleController extends AbstractController {
 		group.add(scaleFactorRadio);
 		group.add(scaleRootRadio);
 
-		scaleFactorRadio.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent event) {
-				boolean selected = scaleFactorRadio.isSelected();
-				label1.setEnabled(selected);
-				offsetAgeText.setEnabled(selected);
-				label2.setEnabled(selected);
-				scaleFactorText.setEnabled(selected);
+		scaleFactorRadio.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                boolean selected = scaleFactorRadio.isSelected();
+                label1.setEnabled(selected);
+                offsetAgeText.setEnabled(selected);
+                label2.setEnabled(selected);
+                scaleFactorText.setEnabled(selected);
 
-				label3.setEnabled(!selected);
-				rootAgeText.setEnabled(!selected);
+                label3.setEnabled(!selected);
+                rootAgeText.setEnabled(!selected);
 
-				setTimeScale();
-			}
-		});
+                setTimeScale();
+            }
+        });
 
 		offsetAgeText.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent changeEvent) {

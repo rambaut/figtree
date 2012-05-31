@@ -205,15 +205,15 @@ public class TreeAppearanceController extends AbstractController {
         optionsPanel.addComponentWithLabel("Background:", backgroundColourAttributeCombo);
         optionsPanel.addComponent(bgSetupColourButton);
 
-        ItemListener listener = new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
+        ActionListener listener = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 setupBranchDecorators();
             }
         };
 
-        branchColourAttributeCombo.addItemListener(listener);
-        branchWidthAttributeCombo.addItemListener(listener);
-        backgroundColourAttributeCombo.addItemListener(listener);
+        branchColourAttributeCombo.addActionListener(listener);
+        branchWidthAttributeCombo.addActionListener(listener);
+        backgroundColourAttributeCombo.addActionListener(listener);
 
         treeViewer.addTreeViewerListener(new TreeViewerListener() {
             public void treeChanged() {

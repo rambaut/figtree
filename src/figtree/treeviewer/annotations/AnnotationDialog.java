@@ -72,8 +72,8 @@ public class AnnotationDialog {
         final JDialog dialog = optionPane.createDialog(frame, "Annotate Selection");
         dialog.pack();
 
-        annotationCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
+        annotationCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 setupOptionsPanel();
                 dialog.pack();
             }});
@@ -111,8 +111,8 @@ public class AnnotationDialog {
             });
             options.addComponentWithLabel("Type:", typeCombo);
 
-            typeCombo.addItemListener(new ItemListener() {
-                public void itemStateChanged(ItemEvent e) {
+            typeCombo.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent event) {
                     definition = new AnnotationDefinition(nameField.getText(), (AnnotationDefinition.Type)typeCombo.getSelectedItem());
                     setupValues();
                 }});

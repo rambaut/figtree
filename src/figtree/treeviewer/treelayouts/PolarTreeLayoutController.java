@@ -6,6 +6,7 @@ import jam.panels.OptionsPanel;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.event.ActionEvent;
 import java.util.Map;
 
 import figtree.treeviewer.ControllerOptionsPanel;
@@ -92,8 +93,8 @@ public class PolarTreeLayoutController extends AbstractController {
 //                labelPositionCombo.addItem(position);
 //        }
 //        labelPositionCombo.setSelectedItem(treeLayout.getTipLabelPosition());
-//        labelPositionCombo.addItemListener(new ItemListener() {
-//            public void itemStateChanged(ItemEvent itemEvent) {
+//        labelPositionCombo.addActionListener(new ActionListener() {
+//        public void actionPerformed(ActionEvent event) {
 //                treeLayout.setTipLabelPosition((PolarTreeLayout.TipLabelPosition) labelPositionCombo.getSelectedItem());
 //
 //            }

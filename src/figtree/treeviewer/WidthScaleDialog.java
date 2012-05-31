@@ -4,6 +4,8 @@ import jam.panels.OptionsPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.*;
@@ -58,14 +60,15 @@ public class WidthScaleDialog {
 		toWidthField.setColumns(4);
 	    toWidthField.setValue(toWidth);
 
-	    autoScaleCheck.addItemListener(new ItemListener() {
-		    public void itemStateChanged(ItemEvent e) {
-			    boolean enabled = !autoScaleCheck.isSelected();
-			    fromLabel.setEnabled(enabled);
-			    fromNumberField.setEnabled(enabled);
-			    toLabel.setEnabled(enabled);
-			    toNumberField.setEnabled(enabled);
-		    }});
+	    autoScaleCheck.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                boolean enabled = !autoScaleCheck.isSelected();
+                fromLabel.setEnabled(enabled);
+                fromNumberField.setEnabled(enabled);
+                toLabel.setEnabled(enabled);
+                toNumberField.setEnabled(enabled);
+            }
+        });
     }
 
     public int showDialog() {
@@ -101,8 +104,8 @@ public class WidthScaleDialog {
         final JDialog dialog = optionPane.createDialog(frame, "Setup colour range");
         dialog.pack();
 
-        autoScaleCheck.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
+        autoScaleCheck.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 boolean enabled = !autoScaleCheck.isSelected();
                 fromLabel.setEnabled(enabled);
                 fromNumberField.setEnabled(enabled);

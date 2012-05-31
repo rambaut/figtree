@@ -6,6 +6,8 @@ import jam.panels.OptionsPanel;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
@@ -61,24 +63,24 @@ public class NodeShapeController extends AbstractController {
         String[] attributes = this.nodeShapePainter.getAttributeNames();
 
         displayAttributeCombo = new JComboBox(attributes);
-        displayAttributeCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
-                String attribute = (String)displayAttributeCombo.getSelectedItem();
+        displayAttributeCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                String attribute = (String) displayAttributeCombo.getSelectedItem();
                 nodeShapePainter.setDisplayAttribute(NodeShapePainter.LOWER_ATTRIBUTE, attribute);
             }
         });
 
         displayLowerAttributeCombo = new JComboBox(attributes);
-        displayLowerAttributeCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
+        displayLowerAttributeCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 String attribute = (String)displayLowerAttributeCombo.getSelectedItem();
                 nodeShapePainter.setDisplayAttribute(NodeShapePainter.LOWER_ATTRIBUTE, attribute);
             }
         });
 
         displayUpperAttributeCombo = new JComboBox(attributes);
-        displayUpperAttributeCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
+        displayUpperAttributeCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 String attribute = (String)displayUpperAttributeCombo.getSelectedItem();
                 nodeShapePainter.setDisplayAttribute(NodeShapePainter.UPPER_ATTRIBUTE, attribute);
             }
@@ -110,8 +112,8 @@ public class NodeShapeController extends AbstractController {
         });
         setupOptions();
 
-        shapeCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
+        shapeCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 setupOptions();
                 optionsPanel.validate();
             }

@@ -76,16 +76,16 @@ public class LabelPainterController extends AbstractController {
 
         String[] attributes = labelPainter.getAttributes();
         displayAttributeCombo = new JComboBox(attributes);
-        displayAttributeCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
+        displayAttributeCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 String attribute = (String)displayAttributeCombo.getSelectedItem();
                 labelPainter.setDisplayAttribute(attribute);
             }
         });
 
         colourAttributeCombo = new JComboBox(new String[] { USER_SELECTION });
-        colourAttributeCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
+        colourAttributeCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 setupLabelDecorator();
             }
         });
@@ -140,8 +140,8 @@ public class LabelPainterController extends AbstractController {
         int digits = format.getMaximumFractionDigits();
 
         numericalFormatCombo = new JComboBox(new String[] { "Decimal", "Scientific", "Percent", "Roman"});
-        numericalFormatCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
+        numericalFormatCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 String formatType = (String)numericalFormatCombo.getSelectedItem();
                 final int digits = (Integer)digitsSpinner.getValue();
                 NumberFormat format = null;

@@ -100,8 +100,8 @@ public class FindPanel extends JPanel {
 
         add(panel2, BorderLayout.EAST);
 
-        targetCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
+        targetCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 Object item = targetCombo.getSelectedItem();
                 if (item != null) {
                     if (item.equals(Target.BRANCH_LENGTH) || item.equals(Target.NODE_AGE)) {

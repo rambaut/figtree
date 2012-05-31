@@ -8,6 +8,8 @@ import jam.panels.OptionsPanel;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
@@ -49,10 +51,9 @@ public class TreesController extends AbstractController {
         rootingCombo = new JComboBox(TreePane.RootingType.values());
         rootingCombo.setOpaque(false);
         rootingCombo.setSelectedItem(treeViewer.getRootingType());
-        rootingCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
-                treeViewer.setRootingType(
-                        (TreePane.RootingType) rootingCombo.getSelectedItem());
+        rootingCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                treeViewer.setRootingType((TreePane.RootingType) rootingCombo.getSelectedItem());
             }
         });
 
@@ -80,8 +81,8 @@ public class TreesController extends AbstractController {
         orderCombo = new JComboBox(SortedRootedTree.BranchOrdering.values());
         orderCombo.setOpaque(false);
         orderCombo.setSelectedItem(treeViewer.getBranchOrdering());
-        orderCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
+        orderCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
                 treeViewer.setBranchOrdering(
                         (SortedRootedTree.BranchOrdering) orderCombo.getSelectedItem());
             }
@@ -111,8 +112,8 @@ public class TreesController extends AbstractController {
         transformCombo = new JComboBox(TransformedRootedTree.Transform.values());
         transformCombo.setOpaque(false);
         transformCombo.setSelectedItem(treeViewer.getBranchTransform());
-        transformCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
+        transformCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
                 treeViewer.setBranchTransform(
                         (TransformedRootedTree.Transform) transformCombo.getSelectedItem());
 

@@ -6,6 +6,8 @@ import jam.panels.OptionsPanel;
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.awt.*;
@@ -44,9 +46,9 @@ public class NodeBarController extends AbstractController {
         String[] attributeNames = this.nodeBarPainter.getAttributeNames();
 
         displayAttributeCombo = new JComboBox(attributeNames);
-        displayAttributeCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
-                String attribute = (String)displayAttributeCombo.getSelectedItem();
+        displayAttributeCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                String attribute = (String) displayAttributeCombo.getSelectedItem();
                 nodeBarPainter.setDisplayAttribute(attribute);
             }
         });
