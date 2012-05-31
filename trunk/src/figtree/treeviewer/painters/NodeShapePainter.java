@@ -49,20 +49,35 @@ public class NodeShapePainter extends NodePainter {
         setupAttributes(null);
     }
 
-    public void setupAttributes(Tree tree) {
-        java.util.List<String> attributeNames = new ArrayList<String>();
-        if (tree != null) {
-            Set<String> nodeAttributes = new TreeSet<String>();
-            for (Node node : tree.getNodes()) {
-                nodeAttributes.addAll(node.getAttributeNames());
+    public void setupAttributes(Collection<? extends Tree> trees) {
+        java.util.Set<String> attributeNames = new TreeSet<String>();
+        if (trees != null) {
+            for (Tree tree : trees) {
+                for (Node node : tree.getNodes()) {
+                    for (String name : node.getAttributeNames()) {
+                        if (!name.startsWith("!")) {
+                            Object attr = node.getAttribute(name);
+                            if (attr instanceof Object[]) {
+                                Object[] array = (Object[])attr;
+                                if (array.length == 2 &&
+                                        array[0] instanceof Double &&
+                                        array[1] instanceof Double) {
+                                    attributeNames.add(name);
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            attributeNames.addAll(nodeAttributes);
+        }
+        if (attributeNames.size() == 0) {
+            attributeNames.add("no attributes");
         }
 
-        this.attributes = new String[attributeNames.size()];
-        attributeNames.toArray(this.attributes);
+        this.attributeNames = new String[attributeNames.size()];
+        attributeNames.toArray(this.attributeNames);
 
-        firePainterSettingsChanged();
+        fireAttributesChanged();
     }
 
     public void setTreePane(TreePane treePane) {
@@ -113,7 +128,7 @@ public class NodeShapePainter extends NodePainter {
     }
 
     public String[] getAttributeNames() {
-        return attributes;
+        return attributeNames;
     }
 
     public void setDisplayAttribute(String display, String attribute) {
@@ -131,7 +146,8 @@ public class NodeShapePainter extends NodePainter {
 
     protected Map<String, String> displayAttributes = new HashMap<String, String>();
     protected Map<String, Number> displayValues = new HashMap<String, Number>();
-    protected String[] attributes;
+    private String displayAttribute = null;
+    private String[] attributeNames;
 
     protected TreePane treePane;
 }
