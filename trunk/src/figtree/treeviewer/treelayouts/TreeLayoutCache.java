@@ -17,6 +17,10 @@ public class TreeLayoutCache {
         return nodePoints.get(node);
     }
 
+    public Map<Node, Point2D> getNodePointMap() {
+        return nodePoints;
+    }
+
     public Shape getBranchPath(Node node) {
         return branchPaths.get(node);
     }
@@ -77,12 +81,12 @@ public class TreeLayoutCache {
         return nodeLabelPaths;
     }
 
-    public Line2D getNodeBarPath(Node node) {
-        return nodeBarPaths.get(node);
+    public Line2D getNodeShapePath(Node node) {
+        return nodeShapePaths.get(node);
     }
 
-    public Map<Node, Line2D> getNodeBarPathMap() {
-        return nodeBarPaths;
+    public Map<Node, Line2D> getNodeShapePathMap() {
+        return nodeShapePaths;
     }
 
     public Shape getCalloutPath(Node node) {
@@ -103,7 +107,7 @@ public class TreeLayoutCache {
         tipLabelPaths.clear();
 		branchLabelPaths.clear();
         nodeLabelPaths.clear();
-        nodeBarPaths.clear();
+        nodeShapePaths.clear();
         calloutPaths.clear();
 }
 
@@ -116,6 +120,6 @@ public class TreeLayoutCache {
     protected Map<Node, Line2D> tipLabelPaths = new HashMap<Node, Line2D>();
     protected Map<Node, Line2D> branchLabelPaths = new HashMap<Node, Line2D>();
     protected Map<Node, Line2D> nodeLabelPaths = new HashMap<Node, Line2D>();
-    protected Map<Node, Line2D> nodeBarPaths = new HashMap<Node, Line2D>();
+    protected Map<Node, Line2D> nodeShapePaths = new HashMap<Node, Line2D>();
     protected Map<Node, Shape> calloutPaths = new HashMap<Node, Shape>();
 }

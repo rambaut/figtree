@@ -273,7 +273,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
                         nodePoint.getX(), ty,
                         nodePoint.getX() - 1.0, ty);
 
-                cache.nodeBarPaths.put(node, nodeBarPath);
+                cache.nodeShapePaths.put(node, nodeBarPath);
             }
         } else {
 
@@ -464,7 +464,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
                 nodePoint.getX(), y0,
                 nodePoint.getX() - 1.0, y0);
 
-        cache.nodeBarPaths.put(node, nodeBarPath);
+        cache.nodeShapePaths.put(node, nodeBarPath);
 
         if (showingCartoonTipLabels) {
             constructCartoonTipLabelPaths(tree, node, maxXPos, new double[] { minYPos }, cache);
@@ -554,7 +554,7 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 
         Line2D nodeBarPath = new Line2D.Double(xPosition, ty, xPosition - 1.0, ty);
 
-        cache.nodeBarPaths.put(node, nodeBarPath);
+        cache.nodeShapePaths.put(node, nodeBarPath);
 
         Line2D tipLabelPath;
 

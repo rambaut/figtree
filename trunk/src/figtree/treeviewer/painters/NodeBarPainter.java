@@ -66,7 +66,7 @@ public class NodeBarPainter extends NodePainter {
 
 		nodeBar = null;
 
-		Line2D barPath = treePane.getTreeLayoutCache().getNodeBarPath(node);
+		Line2D barPath = treePane.getTreeLayoutCache().getNodeShapePath(node);
 		if (barPath != null) {
 
 			double height = tree.getHeight(node);
@@ -190,9 +190,6 @@ public class NodeBarPainter extends NodePainter {
 		this.displayAttribute = displayAttribute;
 		firePainterChanged();
 	}
-
-	private double preferredWidth;
-	private double preferredHeight;
 
 	private String displayAttribute = null;
 	private String[] attributeNames;

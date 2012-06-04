@@ -13,31 +13,27 @@ import java.awt.geom.Point2D;
  * @author Andrew Rambaut
  * @version $Id: ContinuousColorDecorator.java 822 2007-10-26 13:50:26Z rambaut $
  */
-public class ContinuousColorDecorator implements Decorator {
+public class HSBContinuousColorDecorator implements Decorator {
 
-    public ContinuousColorDecorator(ContinousScale continuousScale,
-                                    Color color1, Color color2,
-                                    boolean isGradient) throws NumberFormatException {
+    public HSBContinuousColorDecorator(ContinousScale continuousScale) throws NumberFormatException {
+        this(continuousScale, false);
+    }
+
+    public HSBContinuousColorDecorator(ContinousScale continuousScale,
+                                       boolean isGradient) {
         this.continuousScale = continuousScale;
-        this.color1 = new float[4];
-        color1.getRGBComponents(this.color1);
-        this.color2 = new float[4];
-        color2.getRGBComponents(this.color2);
-        this.color3 = null;
         this.isGradient = isGradient;
     }
 
-    public ContinuousColorDecorator(ContinousScale continuousScale,
-                                    Color color1, Color color2, Color color3,
-                                    boolean isGradient) throws NumberFormatException {
-        this.continuousScale = continuousScale;
-        this.color1 = new float[4];
-        color1.getRGBComponents(this.color1);
-        this.color2 = new float[4];
-        color2.getRGBComponents(this.color2);
-        this.color3 = new float[4];
-        color3.getRGBComponents(this.color3);
-        this.isGradient = isGradient;
+    public void setup(float hueUpper, float hueLower,
+                                       float saturationUpper, float saturationLower,
+                                       float brightnessUpper, float brightnessLower) {
+        this.hueUpper = hueUpper;
+        this.hueLower = hueLower;
+        this.saturationUpper = saturationUpper;
+        this.saturationLower = saturationLower;
+        this.brightnessUpper = brightnessUpper;
+        this.brightnessLower = brightnessLower;
     }
 
     // Decorator INTERFACE
@@ -115,8 +111,6 @@ public class ContinuousColorDecorator implements Decorator {
         if (colour2 != null) {
             fillColour2 = getLighterColour(colour2);
         }
-
-
     }
 
     public ContinousScale getContinuousScale() {
@@ -145,36 +139,7 @@ public class ContinuousColorDecorator implements Decorator {
     // Private methods
     public Color getColour(double value) {
         if (!Double.isNaN(value)) {
-            if (color3 != null) {
-                if (value < 0.5) {
-                    float p = (float)value * 2;
-                    float q = 1.0F - p;
-
-                    return new Color(
-                            color2[0] * p + color1[0] * q,
-                            color2[1] * p + color1[1] * q,
-                            color2[2] * p + color1[2] * q,
-                            color2[3] * p + color1[3] * q);
-                } else {
-                    float p = (float)(value - 0.5) * 2;
-                    float q = 1.0F - p;
-
-                    return new Color(
-                            color3[0] * p + color2[0] * q,
-                            color3[1] * p + color2[1] * q,
-                            color3[2] * p + color2[2] * q,
-                            color3[3] * p + color2[3] * q);
-                }
-            } else {
-                float p = (float)value;
-                float q = 1.0F - p;
-
-                return new Color(
-                        color2[0] * p + color1[0] * q,
-                        color2[1] * p + color1[1] * q,
-                        color2[2] * p + color1[2] * q,
-                        color2[3] * p + color1[3] * q);
-            }
+            return Color.getHSBColor(getHue((float)value), getSaturation((float)value), getBrightness((float)value));
         } else {
             return null;
         }
@@ -184,19 +149,34 @@ public class ContinuousColorDecorator implements Decorator {
         return new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 2);
     }
 
-    private final ContinousScale continuousScale;
 
-    private final float[] color1;
-    private final float[] color2;
-    private final float[] color3;
+    private float getHue(float value) {
+        return ((hueUpper - hueLower) * value) + hueLower;
+    }
+
+    private float getSaturation(float value) {
+        return ((saturationUpper - saturationLower) * value) + saturationLower;
+    }
+
+    private float getBrightness(float value) {
+        return ((brightnessUpper - brightnessLower) * value) + brightnessLower;
+    }
+
+    private final ContinousScale continuousScale;
 
     private Color paint = null;
     private Color fillPaint = null;
-
-    private boolean isGradient;
     private Color colour1 = null;
     private Color colour2 = null;
     private Color fillColour1 = null;
     private Color fillColour2 = null;
+
+    private boolean isGradient;
+    private float hueUpper = 1.0F;
+    private float hueLower = 0.0F;
+    private float saturationUpper = 0.6F;
+    private float saturationLower = 0.6F;
+    private float brightnessUpper = 0.8F;
+    private float brightnessLower = 0.4F;
 
 }

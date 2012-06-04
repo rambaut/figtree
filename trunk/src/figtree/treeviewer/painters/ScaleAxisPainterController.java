@@ -42,7 +42,7 @@ public class ScaleAxisPainterController extends AbstractController {
 	private static final String ORIGIN_KEY = "origin";
 	private static final String LINE_WIDTH_KEY = "lineWidth";
 
-	private static final String SIGNIFICANT_DIGITS_KEY = "significantDigits";
+//	private static final String SIGNIFICANT_DIGITS_KEY = "significantDigits";
 
 	// The defaults if there is nothing in the preferences
 	private static String DEFAULT_FONT_NAME = "sansserif";
@@ -119,19 +119,19 @@ public class ScaleAxisPainterController extends AbstractController {
 			}
 		});
 
-		NumberFormat format = this.scaleAxisPainter.getNumberFormat();
-		int digits = format.getMaximumFractionDigits();
-		digitsSpinner = new JSpinner(new SpinnerNumberModel(digits, 2, 14, 1));
-		final JLabel label5 = optionsPanel.addComponentWithLabel("Sig. Digits:", digitsSpinner);
-
-		digitsSpinner.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
-				final int digits = (Integer)digitsSpinner.getValue();
-				NumberFormat format = scaleAxisPainter.getNumberFormat();
-				format.setMaximumFractionDigits(digits);
-				scaleAxisPainter.setNumberFormat(format);
-			}
-		});
+//		NumberFormat format = this.scaleAxisPainter.getNumberFormat();
+//		int digits = format.getMaximumFractionDigits();
+//		digitsSpinner = new JSpinner(new SpinnerNumberModel(digits, 2, 14, 1));
+//		final JLabel label5 = optionsPanel.addComponentWithLabel("Sig. Digits:", digitsSpinner);
+//
+//		digitsSpinner.addChangeListener(new ChangeListener() {
+//			public void stateChanged(ChangeEvent changeEvent) {
+//				final int digits = (Integer)digitsSpinner.getValue();
+//				NumberFormat format = scaleAxisPainter.getNumberFormat();
+//				format.setMaximumFractionDigits(digits);
+//				scaleAxisPainter.setNumberFormat(format);
+//			}
+//		});
 
 		lineWeightSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.01, 48.0, 1.0));
 
@@ -153,8 +153,8 @@ public class ScaleAxisPainterController extends AbstractController {
 		originText.setEnabled(isSelected1 && !isSelected2);
 		label4.setEnabled(isSelected1);
 		fontSizeSpinner.setEnabled(isSelected1);
-		label5.setEnabled(isSelected1);
-		digitsSpinner.setEnabled(isSelected1);
+//		label5.setEnabled(isSelected1);
+//		digitsSpinner.setEnabled(isSelected1);
 		label6.setEnabled(isSelected1);
 		lineWeightSpinner.setEnabled(isSelected1);
 
@@ -172,8 +172,8 @@ public class ScaleAxisPainterController extends AbstractController {
 				originText.setEnabled(isSelected1 && !isSelected2);
 				label4.setEnabled(isSelected1);
 				fontSizeSpinner.setEnabled(isSelected1);
-				label5.setEnabled(isSelected1);
-				digitsSpinner.setEnabled(isSelected1);
+//				label5.setEnabled(isSelected1);
+//				digitsSpinner.setEnabled(isSelected1);
 				label6.setEnabled(isSelected1);
 				lineWeightSpinner.setEnabled(isSelected1);
 
@@ -282,7 +282,7 @@ public class ScaleAxisPainterController extends AbstractController {
 		autoScaleCheck.setSelected((Boolean)settings.get(SCALE_AXIS_KEY + "." + AUTOMATIC_SCALE_KEY));
 //        scaleAxisPainter.setAutomaticScale(autoScaleCheck.isSelected());
 		fontSizeSpinner.setValue((Double)settings.get(SCALE_AXIS_KEY + "." + FONT_SIZE_KEY));
-		digitsSpinner.setValue((Integer)settings.get(SCALE_AXIS_KEY + "." + SIGNIFICANT_DIGITS_KEY));
+//		digitsSpinner.setValue((Integer)settings.get(SCALE_AXIS_KEY + "." + SIGNIFICANT_DIGITS_KEY));
 		lineWeightSpinner.setValue((Double)settings.get(SCALE_AXIS_KEY + "." + LINE_WIDTH_KEY));
 	}
 
@@ -295,7 +295,7 @@ public class ScaleAxisPainterController extends AbstractController {
 		settings.put(SCALE_AXIS_KEY + "." + MAJOR_TICKS_KEY, majorTicksText.getValue());
 		settings.put(SCALE_AXIS_KEY + "." + ORIGIN_KEY, originText.getValue());
 		settings.put(SCALE_AXIS_KEY + "." + FONT_SIZE_KEY, fontSizeSpinner.getValue());
-		settings.put(SCALE_AXIS_KEY + "." + SIGNIFICANT_DIGITS_KEY, digitsSpinner.getValue());
+//		settings.put(SCALE_AXIS_KEY + "." + SIGNIFICANT_DIGITS_KEY, digitsSpinner.getValue());
 		settings.put(SCALE_AXIS_KEY + "." + LINE_WIDTH_KEY, lineWeightSpinner.getValue());
 	}
 
@@ -309,7 +309,7 @@ public class ScaleAxisPainterController extends AbstractController {
 	private final RealNumberField majorTicksText;
 	private final RealNumberField originText;
 	private final JSpinner fontSizeSpinner;
-	private final JSpinner digitsSpinner;
+//	private final JSpinner digitsSpinner;
 	private final JSpinner lineWeightSpinner;
 
 	public String getTitle() {

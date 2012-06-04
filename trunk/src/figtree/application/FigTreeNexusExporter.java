@@ -31,6 +31,9 @@ public class FigTreeNexusExporter extends NexusExporter {
 	}
 
 	private String createString(Object value) {
+        if (value == null) {
+            return "null";
+        }
 		if (value instanceof Color) {
 			return "#" + ((Color)value).getRGB();
 		}

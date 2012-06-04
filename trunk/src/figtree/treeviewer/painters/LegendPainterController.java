@@ -175,7 +175,7 @@ public class LegendPainterController extends AbstractController {
 
     public void setSettings(Map<String,Object> settings) {
         titleCheckBox.setSelected((Boolean)settings.get(CONTROLLER_KEY + "." + IS_SHOWN));
-        attributeCombo.setSelectedItem((Boolean) settings.get(CONTROLLER_KEY + "." + ATTRIBUTE_KEY));
+        attributeCombo.setSelectedItem((String) settings.get(CONTROLLER_KEY + "." + ATTRIBUTE_KEY));
         fontSizeSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + FONT_SIZE_KEY));
     }
 

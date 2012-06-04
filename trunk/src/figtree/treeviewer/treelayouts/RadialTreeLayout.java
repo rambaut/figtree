@@ -205,7 +205,7 @@ public class RadialTreeLayout extends AbstractTreeLayout {
                     yPosition + ((length - 1.0) * directionY));
             Line2D nodeBarPath = new Line2D.Double(nodePoint, nodeBarPoint);
 
-            cache.nodeBarPaths.put(node, nodeBarPath);
+            cache.nodeShapePaths.put(node, nodeBarPath);
         } else {
 
             Point2D taxonPoint = new Point2D.Double(xPosition + ((length + 1.0) * directionX),

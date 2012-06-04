@@ -99,44 +99,75 @@ public class ContinousScale {
 	}
 
 	public double getValue(Attributable item) {
-		Object value = item.getAttribute(attributeName);
-
-		if (value != null) {
-
-			double number = 0.0;
-			if (value instanceof Number) {
-				number = ((Number)value).doubleValue();
-			} else {
-				number = Double.parseDouble(value.toString());
-			}
-			if (logarithm) {
-				number = Math.log(number);
-			}
-
-			double min = 0.0;
-			double max = 1.0;
-
-			if (!normalize) {
-				min = minValue;
-				max = maxValue;
-			} else {
-				min = lowerRange;
-				max = upperRange;
-				if (maxValue > max) {
-					max = maxValue;
-				}
-				if (minValue < min) {
-					min = minValue;
-				}
-			}
-
-			return ((number - min)/(max - min));
-		}
-
-		return Double.NaN;
+		return getValue(item.getAttribute(attributeName));
 	}
 
-	private final String attributeName;
+    public double getValue(Object value) {
+
+        if (value != null) {
+
+            double number = 0.0;
+            if (value instanceof Number) {
+                number = ((Number)value).doubleValue();
+            } else {
+                number = Double.parseDouble(value.toString());
+            }
+            if (logarithm) {
+                number = Math.log(number);
+            }
+
+            double min = 0.0;
+            double max = 1.0;
+
+            if (!normalize) {
+                min = minValue;
+                max = maxValue;
+            } else {
+                min = lowerRange;
+                max = upperRange;
+                if (maxValue > max) {
+                    max = maxValue;
+                }
+                if (minValue < min) {
+                    min = minValue;
+                }
+            }
+
+            return ((number - min)/(max - min));
+        }
+
+        return Double.NaN;
+    }
+
+    public String getAttributeName() {
+        return attributeName;
+    }
+
+    public boolean isNormalize() {
+        return normalize;
+    }
+
+    public boolean isLogarithm() {
+        return logarithm;
+    }
+
+    public double getLowerRange() {
+        return lowerRange;
+    }
+
+    public double getUpperRange() {
+        return upperRange;
+    }
+
+    public double getMinValue() {
+        return minValue;
+    }
+
+    public double getMaxValue() {
+        return maxValue;
+    }
+
+    private final String attributeName;
 	private final boolean normalize;
 	private final boolean logarithm;
 
