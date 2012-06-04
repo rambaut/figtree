@@ -30,6 +30,9 @@ public class ControllerOptionsPanel extends OptionsPanel {
             comp.setFont(font);
         }
         comp.putClientProperty("JComponent.sizeVariant", "small");
+        if (comp instanceof JSpinner && font != null) {
+            ((JSpinner.NumberEditor)((JSpinner)comp).getEditor()).getTextField().setFont(font);
+        }
         if (comp instanceof JButton) {
             comp.putClientProperty("JButton.buttonType", "roundRect");
         }
