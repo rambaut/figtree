@@ -37,7 +37,7 @@ public class ScaleBarPainterController extends AbstractController {
     public static final String SCALE_RANGE_KEY = "scaleRange";
     public static final String LINE_WIDTH_KEY = "lineWidth";
 
-    public static final String SIGNIFICANT_DIGITS_KEY = "significantDigits";
+//    public static final String SIGNIFICANT_DIGITS_KEY = "significantDigits";
 
     // The defaults if there is nothing in the preferences
     public static String DEFAULT_FONT_NAME = "sansserif";
@@ -91,19 +91,19 @@ public class ScaleBarPainterController extends AbstractController {
             }
         });
 
-        NumberFormat format = this.scaleBarPainter.getNumberFormat();
-        int digits = format.getMaximumFractionDigits();
-        digitsSpinner = new JSpinner(new SpinnerNumberModel(digits, 2, 14, 1));
-        final JLabel label3 = optionsPanel.addComponentWithLabel("Sig. Digits:", digitsSpinner);
-
-        digitsSpinner.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
-                final int digits = (Integer)digitsSpinner.getValue();
-                NumberFormat format = scaleBarPainter.getNumberFormat();
-                format.setMaximumFractionDigits(digits);
-                scaleBarPainter.setNumberFormat(format);
-            }
-        });
+//        NumberFormat format = this.scaleBarPainter.getNumberFormat();
+//        int digits = format.getMaximumFractionDigits();
+//        digitsSpinner = new JSpinner(new SpinnerNumberModel(digits, 2, 14, 1));
+//        final JLabel label3 = optionsPanel.addComponentWithLabel("Sig. Digits:", digitsSpinner);
+//
+//        digitsSpinner.addChangeListener(new ChangeListener() {
+//            public void stateChanged(ChangeEvent changeEvent) {
+//                final int digits = (Integer)digitsSpinner.getValue();
+//                NumberFormat format = scaleBarPainter.getNumberFormat();
+//                format.setMaximumFractionDigits(digits);
+//                scaleBarPainter.setNumberFormat(format);
+//            }
+//        });
 
         lineWeightSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.01, 48.0, 1.0));
 
@@ -121,8 +121,8 @@ public class ScaleBarPainterController extends AbstractController {
         scaleRangeText.setEnabled(isSelected1 && !isSelected2);
         label2.setEnabled(isSelected1);
         fontSizeSpinner.setEnabled(isSelected1);
-        label3.setEnabled(isSelected1);
-        digitsSpinner.setEnabled(isSelected1);
+//        label3.setEnabled(isSelected1);
+//        digitsSpinner.setEnabled(isSelected1);
         label4.setEnabled(isSelected1);
         lineWeightSpinner.setEnabled(isSelected1);
 
@@ -136,8 +136,8 @@ public class ScaleBarPainterController extends AbstractController {
                 scaleRangeText.setEnabled(isSelected1 && !isSelected2);
                 label2.setEnabled(isSelected1);
                 fontSizeSpinner.setEnabled(isSelected1);
-                label3.setEnabled(isSelected1);
-                digitsSpinner.setEnabled(isSelected1);
+//                label3.setEnabled(isSelected1);
+//                digitsSpinner.setEnabled(isSelected1);
                 label4.setEnabled(isSelected1);
                 lineWeightSpinner.setEnabled(isSelected1);
 
@@ -194,7 +194,7 @@ public class ScaleBarPainterController extends AbstractController {
         autoScaleCheck.setSelected((Boolean)settings.get(CONTROLLER_KEY + "." + AUTOMATIC_SCALE_KEY));
         scaleRangeText.setValue((Double)settings.get(CONTROLLER_KEY + "." + SCALE_RANGE_KEY));
         fontSizeSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + FONT_SIZE_KEY));
-        digitsSpinner.setValue((Integer)settings.get(CONTROLLER_KEY + "." + SIGNIFICANT_DIGITS_KEY));
+//        digitsSpinner.setValue((Integer)settings.get(CONTROLLER_KEY + "." + SIGNIFICANT_DIGITS_KEY));
         lineWeightSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + LINE_WIDTH_KEY));
     }
 
@@ -203,7 +203,7 @@ public class ScaleBarPainterController extends AbstractController {
         settings.put(CONTROLLER_KEY + "." + AUTOMATIC_SCALE_KEY, autoScaleCheck.isSelected());
         settings.put(CONTROLLER_KEY + "." + SCALE_RANGE_KEY, scaleRangeText.getValue());
         settings.put(CONTROLLER_KEY + "." + FONT_SIZE_KEY, fontSizeSpinner.getValue());
-        settings.put(CONTROLLER_KEY + "." + SIGNIFICANT_DIGITS_KEY, digitsSpinner.getValue());
+//        settings.put(CONTROLLER_KEY + "." + SIGNIFICANT_DIGITS_KEY, digitsSpinner.getValue());
         settings.put(CONTROLLER_KEY + "." + LINE_WIDTH_KEY, lineWeightSpinner.getValue());
     }
 
@@ -213,7 +213,7 @@ public class ScaleBarPainterController extends AbstractController {
     private final JCheckBox autoScaleCheck;
     private final RealNumberField scaleRangeText;
     private final JSpinner fontSizeSpinner;
-    private final JSpinner digitsSpinner;
+//    private final JSpinner digitsSpinner;
     private final JSpinner lineWeightSpinner;
 
     public String getTitle() {

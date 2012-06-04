@@ -48,7 +48,7 @@ public class TreeViewerController extends AbstractController {
 	// The defaults if there is nothing in the preferences
 	private static String DEFAULT_LAYOUT = TreeLayoutType.RECTILINEAR.name();
 
-	private final static int MAX_ZOOM_SLIDER = 10000;
+	private final static int MAX_ZOOM_SLIDER = 100000;
 	private final static int DELTA_ZOOM_SLIDER = 200;
 
 	public TreeViewerController(final TreeViewer treeViewer) {

@@ -8,8 +8,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Map;
 
 import figtree.treeviewer.ControllerOptionsPanel;
@@ -19,25 +17,6 @@ import figtree.treeviewer.ControllerOptionsPanel;
  * @version $Id: NodeShapeController.java 760 2007-08-21 00:05:45Z rambaut $
  */
 public class NodeShapeController extends AbstractController {
-
-    public enum NodePainterType {
-        BAR("Bar"),
-        SHAPE("Shape");
-
-        NodePainterType(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String toString() {
-            return name;
-        }
-
-        private final String name;
-    }
 
     public NodeShapeController(String title, final NodeShapePainter nodeShapePainter) {
         this.title = title;
@@ -55,34 +34,23 @@ public class NodeShapeController extends AbstractController {
             }
         });
 
-        shapeCombo = new JComboBox(new NodePainterType[] {
-                NodePainterType.BAR,
-                NodePainterType.SHAPE
-        });
+        shapeCombo = new JComboBox(NodeShapePainter.NodeShape.values());
 
         String[] attributes = this.nodeShapePainter.getAttributeNames();
 
-        displayAttributeCombo = new JComboBox(attributes);
-        displayAttributeCombo.addActionListener(new ActionListener() {
+        sizeAttributeCombo = new JComboBox(attributes);
+        sizeAttributeCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                String attribute = (String) displayAttributeCombo.getSelectedItem();
-                nodeShapePainter.setDisplayAttribute(NodeShapePainter.LOWER_ATTRIBUTE, attribute);
+                String attribute = (String) sizeAttributeCombo.getSelectedItem();
+                nodeShapePainter.setSizeAttribute(attribute);
             }
         });
 
-        displayLowerAttributeCombo = new JComboBox(attributes);
-        displayLowerAttributeCombo.addActionListener(new ActionListener() {
+        colourAttributeCombo = new JComboBox(attributes);
+        colourAttributeCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                String attribute = (String)displayLowerAttributeCombo.getSelectedItem();
-                nodeShapePainter.setDisplayAttribute(NodeShapePainter.LOWER_ATTRIBUTE, attribute);
-            }
-        });
-
-        displayUpperAttributeCombo = new JComboBox(attributes);
-        displayUpperAttributeCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                String attribute = (String)displayUpperAttributeCombo.getSelectedItem();
-                nodeShapePainter.setDisplayAttribute(NodeShapePainter.UPPER_ATTRIBUTE, attribute);
+                String attribute = (String) colourAttributeCombo.getSelectedItem();
+                nodeShapePainter.setColourAttribute(attribute);
             }
         });
 
@@ -95,17 +63,13 @@ public class NodeShapeController extends AbstractController {
             }
 
             public void attributesChanged() {
-                Object item1 = displayLowerAttributeCombo.getSelectedItem();
-                Object item2 = displayUpperAttributeCombo.getSelectedItem();
-                displayLowerAttributeCombo.removeAllItems();
-                displayUpperAttributeCombo.removeAllItems();
+                Object item = sizeAttributeCombo.getSelectedItem();
+                sizeAttributeCombo.removeAllItems();
                 for (String name : nodeShapePainter.getAttributeNames()) {
-                    displayLowerAttributeCombo.addItem(name);
-                    displayUpperAttributeCombo.addItem(name);
+                    sizeAttributeCombo.addItem(name);
                 }
 
-                displayLowerAttributeCombo.setSelectedItem(item1);
-                displayUpperAttributeCombo.setSelectedItem(item2);
+                sizeAttributeCombo.setSelectedItem(item);
 
                 optionsPanel.repaint();
             }
@@ -124,17 +88,8 @@ public class NodeShapeController extends AbstractController {
     private void setupOptions() {
         optionsPanel.removeAll();
         optionsPanel.addComponentWithLabel("Shape:", shapeCombo);
-        switch ((NodePainterType) shapeCombo.getSelectedItem()) {
-            case BAR:
-                optionsPanel.addComponentWithLabel("Lower:", displayLowerAttributeCombo);
-                optionsPanel.addComponentWithLabel("Upper:", displayUpperAttributeCombo);
-
-                break;
-
-            case SHAPE:
-                optionsPanel.addComponentWithLabel("Radius:", displayAttributeCombo);
-                break;
-        }
+        optionsPanel.addComponentWithLabel("Size by:", sizeAttributeCombo);
+        optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
         fireControllerChanged();
     }
 
@@ -164,9 +119,8 @@ public class NodeShapeController extends AbstractController {
     private final OptionsPanel optionsPanel;
 
     private JComboBox shapeCombo;
-    private JComboBox displayAttributeCombo;
-    private JComboBox displayLowerAttributeCombo;
-    private JComboBox displayUpperAttributeCombo;
+    private JComboBox sizeAttributeCombo;
+    private JComboBox colourAttributeCombo;
 
     public String getTitle() {
         return title;

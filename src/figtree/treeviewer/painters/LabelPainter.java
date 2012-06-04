@@ -32,7 +32,7 @@ public abstract class LabelPainter<T> extends AbstractPainter<T> {
 
     public abstract Set<Attributable> getAttributableItems();
 
-	// Getters
+    // Getters
 
 	public Paint getForeground() {
 		return foreground;
@@ -62,7 +62,11 @@ public abstract class LabelPainter<T> extends AbstractPainter<T> {
 	    return visible;
 	}
 
-	// Setters
+    public Decorator getColourDecoratorForAttribute(String attribute) {
+        return null;
+    }
+
+    // Setters
 
 	public void setBackground(Paint background) {
 	    this.background = background;
@@ -95,7 +99,12 @@ public abstract class LabelPainter<T> extends AbstractPainter<T> {
 	    firePainterChanged();
 	}
 
-	private Paint foreground = Color.BLACK;
+    public void setColourDecoratorForAttribute(String attribute, Decorator colourDecorator) {
+        // do nothing
+    }
+
+
+    private Paint foreground = Color.BLACK;
 	private Paint background = null;
 	private Paint borderPaint = null;
 	private Stroke borderStroke = null;

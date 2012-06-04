@@ -345,7 +345,7 @@ public class PolarTreeLayout extends AbstractTreeLayout {
                         transform(nodePoint.getX(), yPos),
                         transform(nodePoint.getX() - 1.0, yPos));
 
-                cache.nodeBarPaths.put(node, nodeBarPath);
+                cache.nodeShapePaths.put(node, nodeBarPath);
 
                 // add the node point to the map of node points
                 cache.nodePoints.put(node, transformedNodePoint);
@@ -495,7 +495,7 @@ public class PolarTreeLayout extends AbstractTreeLayout {
                 transform(nodePoint.getX(), yPos),
                 transform(nodePoint.getX() - 1.0, yPos));
 
-        cache.nodeBarPaths.put(node, nodeBarPath);
+        cache.nodeShapePaths.put(node, nodeBarPath);
 
         if (showingCartoonTipLabels) {
             constructCartoonTipLabelPaths(tree, node, maxXPos, new double[] { minYPos }, cache);
@@ -595,7 +595,7 @@ public class PolarTreeLayout extends AbstractTreeLayout {
                 transform(nodePoint.getX(), yPos),
                 transform(nodePoint.getX() - 1.0, yPos));
 
-        cache.nodeBarPaths.put(node, nodeBarPath);
+        cache.nodeShapePaths.put(node, nodeBarPath);
 
         Point2D transformedNodePoint = transform(maxXPos, yPos);
 

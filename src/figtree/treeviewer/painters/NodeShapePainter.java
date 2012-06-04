@@ -6,8 +6,7 @@ import jebl.evolution.trees.RootedTree;
 import jebl.evolution.trees.Tree;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.*;
 import java.util.*;
 
 /**
@@ -16,41 +15,40 @@ import java.util.*;
  */
 public class NodeShapePainter extends NodePainter {
 
-	public static final String AREA_ATTRIBUTE = "area";
-	public static final String RADIUS_ATTRIBUTE = "radius";
 
-	public static final String WIDTH_ATTRIBUTE = "width";
-	public static final String HEIGHT_ATTRIBUTE = "height";
+    public static final String FIXED = "fixed";
+    public static final double SIZE = 10.0;
 
-    public static final String LOWER_ATTRIBUTE = "lower";
-    public static final String UPPER_ATTRIBUTE = "upper";
 
-	public enum NodeShape {
-	    CIRCLE("Circle"),
-	    RECTANGLE("Rectangle");
+    public enum NodeShape {
+        CIRCLE("Circle"),
+        RECTANGLE("Rectangle");
 
-	    NodeShape(String name) {
-	        this.name = name;
-	    }
+        NodeShape(String name) {
+            this.name = name;
+        }
 
-	    public String getName() {
-	        return name;
-	    }
+        public String getName() {
+            return name;
+        }
 
-	    public String toString() {
-	        return name;
-	    }
+        public String toString() {
+            return name;
+        }
 
-	    private final String name;
-	}
+        private final String name;
+    }
 
     public NodeShapePainter() {
 
+        nodeShape = new Ellipse2D.Double(0,0,1,1);
         setupAttributes(null);
     }
 
     public void setupAttributes(Collection<? extends Tree> trees) {
         java.util.Set<String> attributeNames = new TreeSet<String>();
+        attributeNames.add(FIXED);
+
         if (trees != null) {
             for (Tree tree : trees) {
                 for (Node node : tree.getNodes()) {
@@ -70,9 +68,6 @@ public class NodeShapePainter extends NodePainter {
                 }
             }
         }
-        if (attributeNames.size() == 0) {
-            attributeNames.add("no attributes");
-        }
 
         this.attributeNames = new String[attributeNames.size()];
         attributeNames.toArray(this.attributeNames);
@@ -84,70 +79,134 @@ public class NodeShapePainter extends NodePainter {
         this.treePane = treePane;
     }
 
-    public Rectangle2D calibrate(Graphics2D g2, Node item) {
+    public Shape getNodeShape() {
+        return nodeShape;
+    }
+
+    public Rectangle2D calibrate(Graphics2D g2, Node node) {
         RootedTree tree = treePane.getTree();
-        Point2D nodePoint = treePane.getTreeLayoutCache().getNodePoint(item);
 
-        preferredWidth = 20;
-        preferredHeight = 20;
+        nodeShape = null;
 
-        return new Rectangle2D.Double(nodePoint.getX() - 10, nodePoint.getY() - 10, preferredWidth, preferredHeight);
+        Line2D shapePath = treePane.getTreeLayoutCache().getNodeShapePath(node);
+        if (shapePath != null) {
+
+            double size = tree.getHeight(node) * 0.75;
+
+            boolean hasShape = false;
+
+            if (sizeAttribute != null && !sizeAttribute.equals(FIXED)) {
+                Object value = node.getAttribute(sizeAttribute);
+                if (value != null) {
+                    if (value != null ) {
+                        if (value instanceof Number) {
+                            size = ((Number)value).doubleValue();
+                        } else {
+                            size = Double.parseDouble(value.toString());
+                        }
+                        hasShape = true;
+                    } else {
+                        // todo - warn the user somehow?
+                    }
+                }
+
+            } else {
+                hasShape = true;
+            }
+
+            if (hasShape) {
+                // x1,y1 is the node point
+                double x1 = shapePath.getX1();
+                double y1 = shapePath.getY1();
+
+                // x2,y2 is 1.0 units higher than the node
+                double x2 = shapePath.getX2();
+                double y2 = shapePath.getY2();
+
+                nodeShape = new Ellipse2D.Double(x1, y1, size, size);
+
+            }
+        }
+
+        if (nodeShape == null) {
+            return new Rectangle2D.Double(0,0,0,0);
+        }
+
+        return nodeShape.getBounds2D();
     }
 
     public double getPreferredWidth() {
-        return preferredWidth;
+        return 1.0;
     }
 
     public double getPreferredHeight() {
-        return preferredHeight;
+        return 1.0;
     }
 
     public double getHeightBound() {
-        return preferredHeight;
+        return 1.0;
     }
 
     /**
-     * The bounds define the shape of the bar so just draw it
+     * The bounds define the shape of the nodeBar so just draw it
      * @param g2
-     * @param item
+     * @param node
+     */
+    public void paint(Graphics2D g2, Node node, Point2D nodePoint) {
+//        if (nodeShape != null) {
+
+            nodeShape = new Ellipse2D.Double(nodePoint.getX() - (SIZE / 2), nodePoint.getY() - (SIZE / 2), SIZE, SIZE);
+
+            g2.setPaint(Color.blue);
+            g2.fill(nodeShape);
+
+            g2.setPaint(Color.black);
+            g2.setStroke(new BasicStroke(0.5F));
+
+            g2.draw(nodeShape);
+//        }
+
+    }
+
+    /**
+     * The bounds define the shape of the nodeBar so just draw it
+     * @param g2
+     * @param node
      * @param justification
      * @param bounds
      */
-    public void paint(Graphics2D g2, Node item, Justification justification, Rectangle2D bounds) {
-        if (getBackground() != null) {
-            g2.setPaint(getBackground());
-            g2.fill(bounds);
-        }
-
-        if (getBorderPaint() != null && getBorderStroke() != null) {
-            g2.setPaint(getBorderPaint());
-            g2.setStroke(getBorderStroke());
-        }
-
-        g2.draw(bounds);
+    public void paint(Graphics2D g2, Node node, Justification justification, Rectangle2D bounds) {
+        throw new UnsupportedOperationException("This version of paint is not used in NodeShapePainter");
     }
 
     public String[] getAttributeNames() {
         return attributeNames;
     }
 
-    public void setDisplayAttribute(String display, String attribute) {
-        displayAttributes.put(display, attribute);
+    public String getSizeAttribute() {
+        return sizeAttribute;
+    }
+
+    public void setSizeAttribute(String sizeAttribute) {
+        this.sizeAttribute = sizeAttribute;
         firePainterChanged();
     }
 
-    public void setDisplayValues(String display, double value) {
-        displayValues.put(display, new Double(value));
+    public String getColourAttribute() {
+        return colourAttribute;
+    }
+
+    public void setColourAttribute(String colourAttribute) {
+        this.colourAttribute = colourAttribute;
         firePainterChanged();
     }
 
-    private double preferredWidth;
-    private double preferredHeight;
+    private Shape nodeShape;
 
-    protected Map<String, String> displayAttributes = new HashMap<String, String>();
-    protected Map<String, Number> displayValues = new HashMap<String, Number>();
-    private String displayAttribute = null;
+    private String sizeAttribute = null;
+
+    private String colourAttribute = null;
     private String[] attributeNames;
 
-    protected TreePane treePane;
+    private TreePane treePane;
 }

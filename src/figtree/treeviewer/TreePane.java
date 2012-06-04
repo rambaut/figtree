@@ -1407,13 +1407,14 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         }
 
         // Paint node shapes
-//        if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
-//            for (Node node : nodeShapes.keySet() ) {
+        if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
+            for (Node node : treeLayoutCache.getNodePointMap().keySet() ) {
 //                Shape nodeShape = nodeShapes.get(node);
-//                nodeShape = transform.createTransformedShape(nodeShape);
-//                nodeShapePainter.paint(g2, node, NodePainter.Justification.CENTER, nodeShape);
-//            }
-//        }
+                Point2D point = treeLayoutCache.getNodePoint(node);
+                point = transform.transform(point, null);
+                nodeShapePainter.paint(g2, node, point);
+            }
+        }
 
         // Paint tip labels
         if (tipLabelPainter != null && tipLabelPainter.isVisible()) {
@@ -1552,6 +1553,18 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                 nodeBars.put(node, nodeBarPainter.getNodeBar());
             }
         }
+
+        // bounds on nodeShapes
+//        if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
+//            nodeShapes.clear();
+//            // Iterate though the nodes
+//            for (Node node : tree.getNodes()) {
+//
+////                Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
+////                treeBounds.add(shapeBounds);
+//                nodeShapes.put(node, nodeShapePainter.getNodeShape());
+//            }
+//        }
 
         // adjust the bounds so that the origin is at 0,0
         //treeBounds = new Rectangle2D.Double(0.0, 0.0, treeBounds.getWidth(), treeBounds.getHeight());
@@ -2035,6 +2048,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     private Map<Node, Painter.Justification> branchLabelJustifications = new HashMap<Node, Painter.Justification>();
 
     private Map<Node, Shape> nodeBars = new HashMap<Node, Shape>();
+    private Map<Node, Shape> nodeShapes = new HashMap<Node, Shape>();
 
     private Map<Node, Shape> calloutPaths = new HashMap<Node, Shape>();
 

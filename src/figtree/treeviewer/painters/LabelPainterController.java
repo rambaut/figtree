@@ -99,16 +99,35 @@ public class LabelPainterController extends AbstractController {
         colourSettings.toColour = new Color(192, 16, 0);
         colourSettings.middleColour = new Color(0, 0, 0);
 
-        final JButton setupColourButton = new JButton(new AbstractAction("Colours") {
+        final JButton setupColourButton = new JButton(new AbstractAction("Setup") {
             public void actionPerformed(ActionEvent e) {
-                if (continuousColourScaleDialog == null) {
-                    continuousColourScaleDialog = new ContinuousColourScaleDialog(frame, colourSettings);
+                Decorator decorator = null;
+                if (colourAttributeCombo.getSelectedIndex() > 0) {
+                    String attribute = (String) colourAttributeCombo.getSelectedItem();
+                    decorator = labelPainter.getColourDecoratorForAttribute(attribute);
                 }
-                int result = continuousColourScaleDialog.showDialog();
-                if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-                    continuousColourScaleDialog.getSettings(colourSettings);
-                    setupLabelDecorator();
+
+                if (decorator instanceof HSBDiscreteColorDecorator) {
+                    if (discreteColourScaleDialog == null) {
+                        discreteColourScaleDialog = new DiscreteColourScaleDialog(frame);
+                    }
+                    discreteColourScaleDialog.setDecorator((HSBDiscreteColorDecorator)decorator);
+                    int result = discreteColourScaleDialog.showDialog();
+                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
+                        discreteColourScaleDialog.setupDecorator((HSBDiscreteColorDecorator)decorator);
+                        setupLabelDecorator();
+                    }
+                } else {
+                    if (continuousColourScaleDialog == null) {
+                        continuousColourScaleDialog = new ContinuousColourScaleDialog(frame, colourSettings);
+                    }
+                    int result = continuousColourScaleDialog.showDialog();
+                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
+                        continuousColourScaleDialog.getSettings(colourSettings);
+                        setupLabelDecorator();
+                    }
                 }
+
             }
         });
 
@@ -226,26 +245,59 @@ public class LabelPainterController extends AbstractController {
         }
         displayAttributeCombo.setSelectedItem(item1);
 
-        List<String> names = new ArrayList<String>();
-        Set<Attributable> items = labelPainter.getAttributableItems();
-        for (Attributable item : items) {
-            for (String name : item.getAttributeNames()) {
-                if (!names.contains(name)) {
-                    names.add(name);
-                }
-            }
-        }
+        String[] names = getAttributeNames(labelPainter.getAttributableItems());
         Object item2 = colourAttributeCombo.getSelectedItem();
         colourAttributeCombo.removeAllItems();
         colourAttributeCombo.addItem(USER_SELECTION);
         for (String name : names) {
-            if (!name.startsWith("!")) {
                 colourAttributeCombo.addItem(name);
-            }
         }
         colourAttributeCombo.setSelectedItem(item2);
 
         optionsPanel.repaint();
+    }
+
+    private String[] getAttributeNames(Collection<? extends Attributable> items) {
+        java.util.Set<String> attributeNames = new TreeSet<String>();
+
+        for (Attributable item : items) {
+            for (String name : item.getAttributeNames()) {
+                if (!name.startsWith("!")) {
+                    Object attr = item.getAttribute(name);
+                    if (!(attr instanceof Object[])) {
+                        attributeNames.add(name);
+                    } else {
+                        boolean isColouring = true;
+
+                        Object[] array = (Object[])attr;
+                        boolean isIndex = true;
+                        for (Object element : array) {
+                            if (isIndex && !(element instanceof Integer) ||
+                                    !isIndex && !(element instanceof Double)) {
+                                isColouring = false;
+                                break;
+                            }
+                            isIndex = !isIndex;
+                        }
+
+                        if (isIndex) {
+                            // a colouring should finish on an index (which means isIndex should be false)...
+                            isColouring = false;
+                        }
+
+                        if (isColouring) {
+                            attributeNames.add(name + " *");
+                        }
+
+                    }
+                }
+            }
+        }
+
+        String[] attributeNameArray = new String[attributeNames.size()];
+        attributeNames.toArray(attributeNameArray);
+
+        return attributeNameArray;
     }
 
     private void setupLabelDecorator() {
@@ -254,26 +306,29 @@ public class LabelPainterController extends AbstractController {
         String attribute = (String)colourAttributeCombo.getSelectedItem();
 
         textDecorator = userLabelDecorator;
+        Decorator colourDecorator = null;
 
         if (attribute != null && attribute.length() > 0) {
             if (!attribute.equalsIgnoreCase(USER_SELECTION)) {
-                Decorator colourDecorator = null;
-                Set<Attributable> items = labelPainter.getAttributableItems();
+                colourDecorator = labelPainter.getColourDecoratorForAttribute(attribute);
+                if (colourDecorator == null) {
+                    Set<Attributable> items = labelPainter.getAttributableItems();
 
-                if (DiscreteColorDecorator.isDiscrete(attribute, items)) {
-                    colourDecorator = new HSBDiscreteColorDecorator(attribute, items, false);
-                } else {
-                    ContinousScale scale;
-                    if (colourSettings.autoRange) {
-                        scale = new ContinousScale(attribute, items);
+                    if (DiscreteColorDecorator.isDiscrete(attribute, items)) {
+                        colourDecorator = new HSBDiscreteColorDecorator(attribute, items, false);
                     } else {
-                        scale = new ContinousScale(attribute, items, colourSettings.fromValue, colourSettings.toValue);
-                    }
+                        ContinousScale scale;
+                        if (colourSettings.autoRange) {
+                            scale = new ContinousScale(attribute, items);
+                        } else {
+                            scale = new ContinousScale(attribute, items, colourSettings.fromValue, colourSettings.toValue);
+                        }
 
-                    if (colourSettings.middleColour == null) {
-                        colourDecorator = new ContinuousColorDecorator(scale, colourSettings.fromColour, colourSettings.toColour, false);
-                    } else {
-                        colourDecorator = new ContinuousColorDecorator(scale, colourSettings.fromColour, colourSettings.middleColour, colourSettings.toColour, false);
+                        if (colourSettings.middleColour == null) {
+                            colourDecorator = new ContinuousColorDecorator(scale, colourSettings.fromColour, colourSettings.toColour, false);
+                        } else {
+                            colourDecorator = new ContinuousColorDecorator(scale, colourSettings.fromColour, colourSettings.middleColour, colourSettings.toColour, false);
+                        }
                     }
                 }
 
@@ -284,6 +339,9 @@ public class LabelPainterController extends AbstractController {
                 compoundDecorator.addDecorator(fontDecorator);
 
                 textDecorator = compoundDecorator;
+
+                labelPainter.setColourDecoratorForAttribute(attribute, colourDecorator);
+
             }
         }
 
@@ -333,7 +391,6 @@ public class LabelPainterController extends AbstractController {
     }
 
 
-
     private final JCheckBox titleCheckBox;
     private final OptionsPanel optionsPanel;
 
@@ -354,6 +411,7 @@ public class LabelPainterController extends AbstractController {
     private final JComboBox colourAttributeCombo;
 
     private ContinuousColourScaleDialog continuousColourScaleDialog = null;
+    private DiscreteColourScaleDialog discreteColourScaleDialog = null;
 
     ContinuousColourScaleDialog.ColourSettings colourSettings = new ContinuousColourScaleDialog.ColourSettings();
 

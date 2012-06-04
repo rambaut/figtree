@@ -300,6 +300,7 @@ public class TreeAppearanceController extends AbstractController {
                         }
 
                     }
+                    treeViewer.setDecoratorForAttribute(attribute, colourDecorator);
                 }
                 if (colourDecorator instanceof DiscreteColorDecorator) {
                     ((DiscreteColorDecorator)colourDecorator).setGradient(branchColourIsGradient);

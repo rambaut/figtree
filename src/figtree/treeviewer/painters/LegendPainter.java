@@ -2,6 +2,8 @@ package figtree.treeviewer.painters;
 
 import figtree.treeviewer.ScaleAxis;
 import figtree.treeviewer.TreePane;
+import figtree.treeviewer.decorators.ContinousScale;
+import figtree.treeviewer.decorators.ContinuousColorDecorator;
 import figtree.treeviewer.decorators.Decorator;
 import figtree.treeviewer.decorators.DiscreteColorDecorator;
 import jam.controlpalettes.ControlPalette;
@@ -10,6 +12,7 @@ import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.RootedTree;
 import jebl.evolution.trees.Tree;
 import jebl.util.Attributable;
+import jebl.util.NumberFormatter;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -46,6 +49,10 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
     public void paint(Graphics2D g2, TreePane treePane, Justification justification, Rectangle2D bounds) {
         Decorator decorator = treePane.getDecoratorForAttribute(displayAttribute);
 
+        if (decorator == null) {
+            return;
+        }
+
         Font oldFont = g2.getFont();
         Paint oldPaint = g2.getPaint();
         Stroke oldStroke = g2.getStroke();
@@ -64,7 +71,6 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
         g2.setFont(getFont());
 
         if (decorator instanceof DiscreteColorDecorator) {
-            // we don't need accuracy but a nice short number
             final String label = ((DiscreteColorDecorator)decorator).getValues().get(0).toString();
 
             Rectangle2D labelBounds = g2.getFontMetrics().getStringBounds(label, g2);
@@ -85,6 +91,31 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
             }
         } else {
             // draw a continuous legend
+
+            ContinousScale scale = ((ContinuousColorDecorator)decorator).getContinuousScale();
+
+            double min = scale.getMinValue();
+            double max = scale.getMaxValue();
+            double delta = (max - min) / 100;
+
+            NumberFormatter formatter = new NumberFormatter(4);
+            final String label = formatter.getFormattedValue(min);
+
+            Rectangle2D labelBounds = g2.getFontMetrics().getStringBounds(label, g2);
+
+            float xOffset1 = (float)(labelBounds.getHeight() * 0.5);
+            float y = (float)(labelBounds.getHeight() * 0.5);
+
+            double v = min;
+            for (int i = 0; i < 100; i++) {
+                g2.setPaint(((ContinuousColorDecorator)decorator).getColour(scale.getValue((Double)v)));
+                Rectangle2D rect = new Rectangle2D.Double(xOffset1, y, labelBounds.getHeight(), 1);
+                 g2.fill(rect);
+
+                y += 1;
+                v += delta;
+            }
+
         }
         g2.setFont(oldFont);
         g2.setPaint(oldPaint);

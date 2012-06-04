@@ -30,8 +30,8 @@ import java.util.regex.PatternSyntaxException;
  * @version $Id: DefaultTreeViewer.java 822 2007-10-26 13:50:26Z rambaut $
  */
 public class DefaultTreeViewer extends TreeViewer {
-    private final static double MAX_ZOOM = 20;
-    private final static double MAX_VERTICAL_EXPANSION = 20;
+    private final static double MAX_ZOOM = 100;
+    private final static double MAX_VERTICAL_EXPANSION = 100;
 
     public DefaultTreeViewer() {
         this(null);
