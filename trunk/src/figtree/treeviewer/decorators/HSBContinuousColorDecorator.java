@@ -15,11 +15,11 @@ import java.awt.geom.Point2D;
  */
 public class HSBContinuousColorDecorator implements Decorator {
 
-    public HSBContinuousColorDecorator(ContinousScale continuousScale) throws NumberFormatException {
+    public HSBContinuousColorDecorator(ContinuousScale continuousScale) throws NumberFormatException {
         this(continuousScale, false);
     }
 
-    public HSBContinuousColorDecorator(ContinousScale continuousScale,
+    public HSBContinuousColorDecorator(ContinuousScale continuousScale,
                                        boolean isGradient) {
         this.continuousScale = continuousScale;
         this.isGradient = isGradient;
@@ -113,7 +113,7 @@ public class HSBContinuousColorDecorator implements Decorator {
         }
     }
 
-    public ContinousScale getContinuousScale() {
+    public ContinuousScale getContinuousScale() {
         return continuousScale;
     }
 
@@ -151,18 +151,66 @@ public class HSBContinuousColorDecorator implements Decorator {
 
 
     private float getHue(float value) {
-        return ((hueUpper - hueLower) * value) + hueLower;
+        return ((hueUpper - hueLower) * (float)continuousScale.scaleValue(value)) + hueLower;
     }
 
     private float getSaturation(float value) {
-        return ((saturationUpper - saturationLower) * value) + saturationLower;
+        return ((saturationUpper - saturationLower) * (float)continuousScale.scaleValue(value)) + saturationLower;
     }
 
     private float getBrightness(float value) {
-        return ((brightnessUpper - brightnessLower) * value) + brightnessLower;
+        return ((brightnessUpper - brightnessLower) * (float)continuousScale.scaleValue(value)) + brightnessLower;
     }
 
-    private final ContinousScale continuousScale;
+    public float getHueUpper() {
+        return hueUpper;
+    }
+
+    public void setHueUpper(float hueUpper) {
+        this.hueUpper = hueUpper;
+    }
+
+    public float getHueLower() {
+        return hueLower;
+    }
+
+    public void setHueLower(float hueLower) {
+        this.hueLower = hueLower;
+    }
+
+    public float getSaturationUpper() {
+        return saturationUpper;
+    }
+
+    public void setSaturationUpper(float saturationUpper) {
+        this.saturationUpper = saturationUpper;
+    }
+
+    public float getSaturationLower() {
+        return saturationLower;
+    }
+
+    public void setSaturationLower(float saturationLower) {
+        this.saturationLower = saturationLower;
+    }
+
+    public float getBrightnessUpper() {
+        return brightnessUpper;
+    }
+
+    public void setBrightnessUpper(float brightnessUpper) {
+        this.brightnessUpper = brightnessUpper;
+    }
+
+    public float getBrightnessLower() {
+        return brightnessLower;
+    }
+
+    public void setBrightnessLower(float brightnessLower) {
+        this.brightnessLower = brightnessLower;
+    }
+
+    private final ContinuousScale continuousScale;
 
     private Color paint = null;
     private Color fillPaint = null;

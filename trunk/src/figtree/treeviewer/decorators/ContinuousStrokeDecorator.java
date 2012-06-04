@@ -15,7 +15,7 @@ import java.awt.geom.Point2D;
  */
 public class ContinuousStrokeDecorator implements Decorator {
 
-	public ContinuousStrokeDecorator(ContinousScale continuousScale,
+	public ContinuousStrokeDecorator(ContinuousScale continuousScale,
 	                                float minWidth, float maxWidth) throws NumberFormatException {
 		this.continuousScale = continuousScale;
 		this.minWidth = minWidth;
@@ -76,11 +76,11 @@ public class ContinuousStrokeDecorator implements Decorator {
 		}
 	}
 
-	public ContinousScale getContinuousScale() {
+	public ContinuousScale getContinuousScale() {
 		return continuousScale;
 	}
 
-	private final ContinousScale continuousScale;
+	private final ContinuousScale continuousScale;
 
 	private final float minWidth;
 	private final float maxWidth;

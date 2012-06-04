@@ -11,7 +11,6 @@ import java.awt.event.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.List;
 import java.util.prefs.Preferences;
 
 import figtree.treeviewer.*;
@@ -78,7 +77,7 @@ public class LabelPainterController extends AbstractController {
         displayAttributeCombo = new JComboBox(attributes);
         displayAttributeCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                String attribute = (String)displayAttributeCombo.getSelectedItem();
+                String attribute = (String) displayAttributeCombo.getSelectedItem();
                 labelPainter.setDisplayAttribute(attribute);
             }
         });
@@ -99,7 +98,7 @@ public class LabelPainterController extends AbstractController {
         colourSettings.toColour = new Color(192, 16, 0);
         colourSettings.middleColour = new Color(0, 0, 0);
 
-        final JButton setupColourButton = new JButton(new AbstractAction("Setup") {
+        final JButton setupColourButton = new JButton(new AbstractAction("Colour") {
             public void actionPerformed(ActionEvent e) {
                 Decorator decorator = null;
                 if (colourAttributeCombo.getSelectedIndex() > 0) {
@@ -117,15 +116,26 @@ public class LabelPainterController extends AbstractController {
                         discreteColourScaleDialog.setupDecorator((HSBDiscreteColorDecorator)decorator);
                         setupLabelDecorator();
                     }
-                } else {
+                } else  if (decorator instanceof HSBContinuousColorDecorator) {
                     if (continuousColourScaleDialog == null) {
-                        continuousColourScaleDialog = new ContinuousColourScaleDialog(frame, colourSettings);
+                        continuousColourScaleDialog = new ContinuousColourScaleDialog(frame);
                     }
+                    continuousColourScaleDialog.setDecorator((HSBContinuousColorDecorator)decorator);
                     int result = continuousColourScaleDialog.showDialog();
                     if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-                        continuousColourScaleDialog.getSettings(colourSettings);
+                        continuousColourScaleDialog.setupDecorator((HSBContinuousColorDecorator)decorator);
                         setupLabelDecorator();
                     }
+                } else {
+                    throw new IllegalArgumentException("Unsupported decorator type");
+//                    if (continuousColourScaleDialog == null) {
+//                        continuousColourScaleDialog = new OldContinuousColourScaleDialog(frame, colourSettings);
+//                    }
+//                    int result = continuousColourScaleDialog.showDialog();
+//                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
+//                        continuousColourScaleDialog.getSettings(colourSettings);
+//                        setupLabelDecorator();
+//                    }
                 }
 
             }
@@ -153,7 +163,7 @@ public class LabelPainterController extends AbstractController {
         ControllerOptionsPanel.setComponentLook(fontButton);
         panel.add(setupColourButton);
         panel.add(fontButton);
-        final JLabel label3 = optionsPanel.addComponentWithLabel("Set:", panel);
+        final JLabel label3 = optionsPanel.addComponentWithLabel("Setup:", panel);
 
         NumberFormat format = labelPainter.getNumberFormat();
         int digits = format.getMaximumFractionDigits();
@@ -161,14 +171,14 @@ public class LabelPainterController extends AbstractController {
         numericalFormatCombo = new JComboBox(new String[] { "Decimal", "Scientific", "Percent", "Roman"});
         numericalFormatCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                String formatType = (String)numericalFormatCombo.getSelectedItem();
-                final int digits = (Integer)digitsSpinner.getValue();
+                String formatType = (String) numericalFormatCombo.getSelectedItem();
+                final int digits = (Integer) digitsSpinner.getValue();
                 NumberFormat format = null;
                 if (formatType.equals("Decimal")) {
                     format = new DecimalFormat(DECIMAL_NUMBER_FORMATTING);
                 } else if (formatType.equals("Scientific")) {
                     format = new DecimalFormat(SCIENTIFIC_NUMBER_FORMATTING);
-                }  else if (formatType.equals("Percent")) {
+                } else if (formatType.equals("Percent")) {
                     format = new PercentFormat();
                 } else if (formatType.equals("Roman")) {
                     format = new Roman();
@@ -317,18 +327,19 @@ public class LabelPainterController extends AbstractController {
                     if (DiscreteColorDecorator.isDiscrete(attribute, items)) {
                         colourDecorator = new HSBDiscreteColorDecorator(attribute, items, false);
                     } else {
-                        ContinousScale scale;
+                        ContinuousScale scale;
                         if (colourSettings.autoRange) {
-                            scale = new ContinousScale(attribute, items);
+                            scale = new ContinuousScale(attribute, items);
                         } else {
-                            scale = new ContinousScale(attribute, items, colourSettings.fromValue, colourSettings.toValue);
+                            scale = new ContinuousScale(attribute, items, colourSettings.fromValue, colourSettings.toValue);
                         }
 
-                        if (colourSettings.middleColour == null) {
-                            colourDecorator = new ContinuousColorDecorator(scale, colourSettings.fromColour, colourSettings.toColour, false);
-                        } else {
-                            colourDecorator = new ContinuousColorDecorator(scale, colourSettings.fromColour, colourSettings.middleColour, colourSettings.toColour, false);
-                        }
+                        colourDecorator = new HSBContinuousColorDecorator(scale, false);
+//                        if (colourSettings.middleColour == null) {
+//                            colourDecorator = new ContinuousColorDecorator(scale, colourSettings.fromColour, colourSettings.toColour, false);
+//                        } else {
+//                            colourDecorator = new ContinuousColorDecorator(scale, colourSettings.fromColour, colourSettings.middleColour, colourSettings.toColour, false);
+//                        }
                     }
                 }
 
@@ -365,14 +376,14 @@ public class LabelPainterController extends AbstractController {
     }
 
     public void setSettings(Map<String,Object> settings) {
-        titleCheckBox.setSelected((Boolean)settings.get(key+"."+IS_SHOWN));
-        displayAttributeCombo.setSelectedItem(settings.get(key+"."+DISPLAY_ATTRIBUTE_KEY));
-        colourAttributeCombo.setSelectedItem(settings.get(key+"."+COLOR_ATTRIBUTE_KEY));
+        titleCheckBox.setSelected((Boolean) settings.get(key + "." + IS_SHOWN));
+        displayAttributeCombo.setSelectedItem(settings.get(key + "." + DISPLAY_ATTRIBUTE_KEY));
+        colourAttributeCombo.setSelectedItem(settings.get(key + "." + COLOR_ATTRIBUTE_KEY));
         String name = (String)settings.get(key + "." + FONT_NAME_KEY);
         int size = ((Number)settings.get(key + "." + FONT_SIZE_KEY)).intValue();
         int style = (Integer)settings.get(key + "." + FONT_STYLE_KEY);
         labelPainter.setFont(new Font(name, style, size));
-        digitsSpinner.setValue((Integer)settings.get(key+"."+SIGNIFICANT_DIGITS_KEY));
+        digitsSpinner.setValue((Integer) settings.get(key + "." + SIGNIFICANT_DIGITS_KEY));
     }
 
     public void getSettings(Map<String, Object> settings) {
@@ -413,6 +424,6 @@ public class LabelPainterController extends AbstractController {
     private ContinuousColourScaleDialog continuousColourScaleDialog = null;
     private DiscreteColourScaleDialog discreteColourScaleDialog = null;
 
-    ContinuousColourScaleDialog.ColourSettings colourSettings = new ContinuousColourScaleDialog.ColourSettings();
+    OldContinuousColourScaleDialog.ColourSettings colourSettings = new OldContinuousColourScaleDialog.ColourSettings();
 
 }
