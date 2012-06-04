@@ -107,15 +107,26 @@ public class TreeAppearanceController extends AbstractController {
                         discreteColourScaleDialog.setupDecorator((HSBDiscreteColorDecorator)decorator);
                         setupBranchDecorators();
                     }
-                } else {
+                } else if (decorator instanceof HSBContinuousColorDecorator) {
                     if (continuousColourScaleDialog == null) {
-                        continuousColourScaleDialog = new ContinuousColourScaleDialog(frame, branchColourSettings);
+                        continuousColourScaleDialog = new ContinuousColourScaleDialog(frame);
                     }
+                    continuousColourScaleDialog.setDecorator((HSBContinuousColorDecorator)decorator);
                     int result = continuousColourScaleDialog.showDialog();
                     if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-                        continuousColourScaleDialog.getSettings(branchColourSettings);
+                        continuousColourScaleDialog.setupDecorator((HSBContinuousColorDecorator)decorator);
                         setupBranchDecorators();
                     }
+                } else {
+                    throw new IllegalArgumentException("Unsupported decorator type");
+//                    if (continuousColourScaleDialog == null) {
+//                        continuousColourScaleDialog = new OldContinuousColourScaleDialog(frame, branchColourSettings);
+//                    }
+//                    int result = continuousColourScaleDialog.showDialog();
+//                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
+//                        continuousColourScaleDialog.getSettings(branchColourSettings);
+//                        setupBranchDecorators();
+//                    }
                 }
 
             }
@@ -188,15 +199,26 @@ public class TreeAppearanceController extends AbstractController {
                         bgDiscreteColourScaleDialog.setupDecorator((HSBDiscreteColorDecorator)decorator);
                         setupBranchDecorators();
                     }
-                } else {
+                } else if (decorator instanceof HSBContinuousColorDecorator) {
                     if (bgContinuousColourScaleDialog == null) {
-                        bgContinuousColourScaleDialog = new ContinuousColourScaleDialog(frame, backgroundColourSettings);
+                        bgContinuousColourScaleDialog = new ContinuousColourScaleDialog(frame);
                     }
+                    bgContinuousColourScaleDialog.setDecorator((HSBContinuousColorDecorator)decorator);
                     int result = bgContinuousColourScaleDialog.showDialog();
                     if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-                        bgContinuousColourScaleDialog.getSettings(backgroundColourSettings);
+                        bgContinuousColourScaleDialog.setupDecorator((HSBContinuousColorDecorator)decorator);
                         setupBranchDecorators();
                     }
+                } else {
+                    throw new IllegalArgumentException("Unsupported decorator type");
+//                    if (bgContinuousColourScaleDialog == null) {
+//                        bgContinuousColourScaleDialog = new ContinuousColourScaleDialog(frame, backgroundColourSettings);
+//                    }
+//                    int result = bgContinuousColourScaleDialog.showDialog();
+//                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
+//                        bgContinuousColourScaleDialog.getSettings(backgroundColourSettings);
+//                        setupBranchDecorators();
+//                    }
                 }
 
             }
@@ -247,18 +269,20 @@ public class TreeAppearanceController extends AbstractController {
                     if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
                         colourDecorator = new HSBDiscreteColorDecorator(attribute, nodes, false);
                     } else {
-                        ContinousScale scale;
+                        ContinuousScale scale;
                         if (branchColourSettings.autoRange) {
-                            scale = new ContinousScale(attribute, nodes);
+                            scale = new ContinuousScale(attribute, nodes);
                         } else {
-                            scale = new ContinousScale(attribute, nodes, backgroundColourSettings.fromValue, backgroundColourSettings.toValue);
+                            scale = new ContinuousScale(attribute, nodes, backgroundColourSettings.fromValue, backgroundColourSettings.toValue);
                         }
 
-                        if (backgroundColourSettings.middleColour == null) {
-                            colourDecorator = new ContinuousColorDecorator(scale, backgroundColourSettings.fromColour, backgroundColourSettings.toColour, false);
-                        } else {
-                            colourDecorator = new ContinuousColorDecorator(scale, backgroundColourSettings.fromColour, backgroundColourSettings.middleColour, backgroundColourSettings.toColour, false);
-                        }
+                        colourDecorator = new HSBContinuousColorDecorator(scale, false);
+
+//                        if (backgroundColourSettings.middleColour == null) {
+//                            colourDecorator = new ContinuousColorDecorator(scale, backgroundColourSettings.fromColour, backgroundColourSettings.toColour, false);
+//                        } else {
+//                            colourDecorator = new ContinuousColorDecorator(scale, backgroundColourSettings.fromColour, backgroundColourSettings.middleColour, backgroundColourSettings.toColour, false);
+//                        }
                     }
                 }
 
@@ -286,18 +310,20 @@ public class TreeAppearanceController extends AbstractController {
                     } else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
                         colourDecorator = new HSBDiscreteColorDecorator(attribute, nodes, branchColourIsGradient);
                     } else {
-                        ContinousScale scale;
+                        ContinuousScale scale;
                         if (branchColourSettings.autoRange) {
-                            scale = new ContinousScale(attribute, nodes);
+                            scale = new ContinuousScale(attribute, nodes);
                         } else {
-                            scale = new ContinousScale(attribute, nodes, branchColourSettings.fromValue, branchColourSettings.toValue);
+                            scale = new ContinuousScale(attribute, nodes, branchColourSettings.fromValue, branchColourSettings.toValue);
                         }
 
-                        if (branchColourSettings.middleColour == null) {
-                            colourDecorator = new ContinuousColorDecorator(scale, branchColourSettings.fromColour, branchColourSettings.toColour, branchColourIsGradient);
-                        } else {
-                            colourDecorator = new ContinuousColorDecorator(scale, branchColourSettings.fromColour, branchColourSettings.middleColour, branchColourSettings.toColour, branchColourIsGradient);
-                        }
+                        colourDecorator = new HSBContinuousColorDecorator(scale);
+
+//                        if (branchColourSettings.middleColour == null) {
+//                            colourDecorator = new ContinuousColorDecorator(scale, branchColourSettings.fromColour, branchColourSettings.toColour, branchColourIsGradient);
+//                        } else {
+//                            colourDecorator = new ContinuousColorDecorator(scale, branchColourSettings.fromColour, branchColourSettings.middleColour, branchColourSettings.toColour, branchColourIsGradient);
+//                        }
 
                     }
                     treeViewer.setDecoratorForAttribute(attribute, colourDecorator);
@@ -331,11 +357,11 @@ public class TreeAppearanceController extends AbstractController {
             String attribute = (String) branchWidthAttributeCombo.getSelectedItem();
             if (attribute != null && attribute.length() > 0) {
                 if (!DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
-                    ContinousScale scale;
+                    ContinuousScale scale;
                     if (widthAutoRange) {
-                        scale = new ContinousScale(attribute, nodes);
+                        scale = new ContinuousScale(attribute, nodes);
                     } else {
-                        scale = new ContinousScale(attribute, nodes, widthFromValue, widthToValue);
+                        scale = new ContinuousScale(attribute, nodes, widthFromValue, widthToValue);
                     }
                     compoundDecorator.addDecorator(new ContinuousStrokeDecorator(
                             scale, (float)fromWidth, (float)toWidth)
@@ -488,8 +514,8 @@ public class TreeAppearanceController extends AbstractController {
 
     private boolean branchColourIsGradient = false;
 
-    private ContinuousColourScaleDialog.ColourSettings branchColourSettings = new ContinuousColourScaleDialog.ColourSettings();
-    private ContinuousColourScaleDialog.ColourSettings backgroundColourSettings = new ContinuousColourScaleDialog.ColourSettings();
+    private OldContinuousColourScaleDialog.ColourSettings branchColourSettings = new OldContinuousColourScaleDialog.ColourSettings();
+    private OldContinuousColourScaleDialog.ColourSettings backgroundColourSettings = new OldContinuousColourScaleDialog.ColourSettings();
 
     private boolean widthAutoRange = true;
     private double widthFromValue = 0.0;

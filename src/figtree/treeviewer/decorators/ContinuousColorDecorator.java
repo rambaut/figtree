@@ -15,7 +15,7 @@ import java.awt.geom.Point2D;
  */
 public class ContinuousColorDecorator implements Decorator {
 
-    public ContinuousColorDecorator(ContinousScale continuousScale,
+    public ContinuousColorDecorator(ContinuousScale continuousScale,
                                     Color color1, Color color2,
                                     boolean isGradient) throws NumberFormatException {
         this.continuousScale = continuousScale;
@@ -27,7 +27,7 @@ public class ContinuousColorDecorator implements Decorator {
         this.isGradient = isGradient;
     }
 
-    public ContinuousColorDecorator(ContinousScale continuousScale,
+    public ContinuousColorDecorator(ContinuousScale continuousScale,
                                     Color color1, Color color2, Color color3,
                                     boolean isGradient) throws NumberFormatException {
         this.continuousScale = continuousScale;
@@ -119,7 +119,7 @@ public class ContinuousColorDecorator implements Decorator {
 
     }
 
-    public ContinousScale getContinuousScale() {
+    public ContinuousScale getContinuousScale() {
         return continuousScale;
     }
 
@@ -184,7 +184,7 @@ public class ContinuousColorDecorator implements Decorator {
         return new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 2);
     }
 
-    private final ContinousScale continuousScale;
+    private final ContinuousScale continuousScale;
 
     private final float[] color1;
     private final float[] color2;

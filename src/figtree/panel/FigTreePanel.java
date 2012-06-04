@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import figtree.treeviewer.painters.ScaleBarPainter;
 import figtree.treeviewer.decorators.*;
 import figtree.treeviewer.TreeViewer;
-import figtree.treeviewer.TreePaneSelector;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.trees.Tree;
 
@@ -185,7 +184,7 @@ public class FigTreePanel extends JPanel {
                 } else {
 
                     Decorator decorator = new ContinuousColorDecorator(
-                            new ContinousScale(attribute, nodes),
+                            new ContinuousScale(attribute, nodes),
                             new Color(192, 16, 0), new Color(0, 0, 0), new Color(0, 16, 192), false);
 
                     treeViewer.setBranchColouringDecorator(null, null);

@@ -1,21 +1,15 @@
 package figtree.treeviewer.painters;
 
-import figtree.treeviewer.ScaleAxis;
 import figtree.treeviewer.TreePane;
-import figtree.treeviewer.decorators.ContinousScale;
-import figtree.treeviewer.decorators.ContinuousColorDecorator;
-import figtree.treeviewer.decorators.Decorator;
-import figtree.treeviewer.decorators.DiscreteColorDecorator;
+import figtree.treeviewer.decorators.*;
 import jam.controlpalettes.ControlPalette;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.taxa.Taxon;
-import jebl.evolution.trees.RootedTree;
 import jebl.evolution.trees.Tree;
 import jebl.util.Attributable;
 import jebl.util.NumberFormatter;
 
 import java.awt.*;
-import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
 
@@ -25,6 +19,8 @@ import java.util.*;
  * @version $Id: ScaleBarPainter.java 769 2007-08-30 12:14:37Z rambaut $
  */
 public class LegendPainter extends LabelPainter<TreePane> implements ScalePainter {
+
+    public final static int CONTINUOUS_LENGTH = 320;
 
     public LegendPainter() {
         setupAttributes(null);
@@ -92,23 +88,23 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
         } else {
             // draw a continuous legend
 
-            ContinousScale scale = ((ContinuousColorDecorator)decorator).getContinuousScale();
+
+            ContinuousScale scale = ((HSBContinuousColorDecorator)decorator).getContinuousScale();
 
             double min = scale.getMinValue();
             double max = scale.getMaxValue();
-            double delta = (max - min) / 100;
+            double delta = (max - min) / CONTINUOUS_LENGTH;
 
             NumberFormatter formatter = new NumberFormatter(4);
-            final String label = formatter.getFormattedValue(min);
-
+            final String label = "0.0";
             Rectangle2D labelBounds = g2.getFontMetrics().getStringBounds(label, g2);
 
             float xOffset1 = (float)(labelBounds.getHeight() * 0.5);
             float y = (float)(labelBounds.getHeight() * 0.5);
 
             double v = min;
-            for (int i = 0; i < 100; i++) {
-                g2.setPaint(((ContinuousColorDecorator)decorator).getColour(scale.getValue((Double)v)));
+            for (int i = 0; i < CONTINUOUS_LENGTH; i++) {
+                g2.setPaint(((HSBContinuousColorDecorator)decorator).getColour(v));
                 Rectangle2D rect = new Rectangle2D.Double(xOffset1, y, labelBounds.getHeight(), 1);
                  g2.fill(rect);
 
