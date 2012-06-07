@@ -79,12 +79,8 @@ public class DiscreteColorDecorator implements Decorator {
             }
         }
 
-        if (unsortedValues.size() > 0) {
-            values = unsortedValues;
-            values.addAll(sortedValues);
-        } else {
-            values = sortedValues;
-        }
+        values = new ArrayList<Object>(sortedValues);
+        values.addAll(unsortedValues);
 
         setValues(values, DEFAULT_PAINTS);
 
@@ -92,21 +88,21 @@ public class DiscreteColorDecorator implements Decorator {
     }
 
     public List<Object> getValues() {
-        return new ArrayList<Object>(colourMap.keySet());
+        return values;
     }
 
     public Color getColor(Object value) {
-        return (Color)colourMap.get(value);
+        return (Color)paints[orderMap.get(value)];
     }
 
     public void setValues(Collection<? extends Object> values, Color[] paints) {
-        colourMap = new TreeMap<Object, Paint>();
+        orderMap = new TreeMap<Object, Integer>();
         this.paints = paints;
 
         // now create a paint map for these values
         int i = 0;
         for (Object value : values) {
-            colourMap.put(value, paints[i]);
+            orderMap.put(value, i);
             i = (i + 1) % paints.length;
         }
 
@@ -154,7 +150,7 @@ public class DiscreteColorDecorator implements Decorator {
         if (item instanceof Attributable) {
             setAttributableItem((Attributable)item);
         } else {
-            setValue(item);
+            paint = getPaintForValue(item);
         }
     }
 
@@ -212,7 +208,6 @@ public class DiscreteColorDecorator implements Decorator {
 
     }
 
-
     public static boolean isDiscrete(String attributeName, Set<? extends Attributable> items) {
         // First collect the set of all attribute values
         Set<Object> values = new HashSet<Object>();
@@ -246,22 +241,22 @@ public class DiscreteColorDecorator implements Decorator {
         paint = null;
         Object value = item.getAttribute(attributeName);
         if (value != null) {
-            setValue(value);
+            paint = getPaintForValue(value);
         }
-    }
-
-    private void setValue(Object value) {
-        paint = getPaintForValue(value);
     }
 
     private Paint getPaintForValue(Object value) {
-        if (colourMap != null) {
-            return colourMap.get(value);
+        int index = -1;
+
+        if (orderMap != null) {
+            index = orderMap.get(value);
         } else if (value instanceof Number) {
-            int index = ((Number)value).intValue() % paints.length;
-            return paints[index];
+            index = ((Number)value).intValue() % paints.length;
         }
-        return null;
+        if (index == -1) {
+            return null;
+        }
+        return paints[index];
     }
 
     private Color getLighterColour(Color color) {
@@ -270,9 +265,8 @@ public class DiscreteColorDecorator implements Decorator {
 
     private String attributeName = null;
 
-    Set<Object> values;
-
-    private Map<Object, Paint> colourMap = null;
+    private List<Object> values = new ArrayList<Object>();
+    private Map<Object, Integer> orderMap = null;
     private Paint[] paints = null;
     private Paint paint = null;
 

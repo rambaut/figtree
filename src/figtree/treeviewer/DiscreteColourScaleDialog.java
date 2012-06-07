@@ -1,13 +1,10 @@
 package figtree.treeviewer;
 
-import figtree.treeviewer.decorators.Decorator;
-import figtree.treeviewer.decorators.DiscreteColorDecorator;
 import figtree.treeviewer.decorators.HSBDiscreteColorDecorator;
-import figtree.ui.components.ColorWellButton;
 import figtree.ui.components.RangeSlider;
-import figtree.ui.components.RealNumberField;
 import jam.panels.OptionsPanel;
 
+import javax.activation.DataHandler;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -16,16 +13,17 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DragSource;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  * DiscreteColourScaleDialog.java
  *
  * @author			Andrew Rambaut
- * @version			$Id$
+ * @version			$Id:$
  */
 public class DiscreteColourScaleDialog {
     private static final int SLIDER_RANGE = 1000;
@@ -33,6 +31,8 @@ public class DiscreteColourScaleDialog {
     private JFrame frame;
 
     private HSBDiscreteColorDecorator decorator;
+
+    private JTable table;
 
     private JComboBox primaryAxisCombo = new JComboBox(HSBDiscreteColorDecorator.Axis.values());
     private SpinnerNumberModel secondaryCountSpinnerModel = new SpinnerNumberModel(2, 1, 100, 1);
@@ -51,16 +51,29 @@ public class DiscreteColourScaleDialog {
         saturationSlider = new RangeSlider(0, SLIDER_RANGE);
         brightnessSlider = new RangeSlider(0, SLIDER_RANGE);
 
+
         tableModel = new ColourTableModel();
+
+        table = new JTable(tableModel);
+        table.setDefaultRenderer(Color.class, new ColorRenderer(true));
+        table.setDefaultRenderer(Paint.class, new ColorRenderer(true));
+        table.setDragEnabled(true);
+        table.setDropMode(DropMode.INSERT_ROWS);
+        table.setTransferHandler(new TableRowTransferHandler(table));
+
+        table.setRowSelectionAllowed(true);
+        table.setColumnSelectionAllowed(false);
+
+        table.getColumnModel().getColumn(1).setWidth(80);
+        table.getColumnModel().getColumn(1).setMinWidth(80);
+        table.getColumnModel().getColumn(1).setMaxWidth(80);
+        table.getColumnModel().getColumn(1).setResizable(false);
     }
 
     public int showDialog() {
 
         final OptionsPanel options = new OptionsPanel(6, 6);
 
-        JTable table = new JTable(tableModel);
-        table.setDefaultRenderer(Color.class, new ColorRenderer(true));
-        table.setDefaultRenderer(Paint.class, new ColorRenderer(true));
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setMinimumSize(new Dimension(240, 320));
@@ -146,7 +159,11 @@ public class DiscreteColourScaleDialog {
         decorator.setBrightnessUpper(((float) brightnessSlider.getUpperValue()) / SLIDER_RANGE);
     }
 
-    class ColourTableModel extends DefaultTableModel {
+    interface Reorderable {
+        public void reorder(int fromIndex, int toIndex);
+    };
+
+    class ColourTableModel extends DefaultTableModel implements Reorderable {
         private final String[] COLUMN_NAMES = { "Value", "Colour" };
 
         @Override
@@ -192,6 +209,18 @@ public class DiscreteColourScaleDialog {
         @Override
         public void setValueAt(Object o, int row, int column) {
         }
+
+        @Override
+        public void reorder(int fromIndex, int toIndex) {
+            java.util.List<Object> values = decorator.getValues();
+            Object value = values.remove(fromIndex);
+            if (toIndex > fromIndex) {
+                toIndex -= 1;
+            }
+            values.add(toIndex, value);
+            decorator.setupColours();
+            fireTableDataChanged();
+        }
     }
 
     public class ColorRenderer extends JLabel
@@ -233,4 +262,68 @@ public class DiscreteColourScaleDialog {
             return this;
         }
     }
+
+    /**
+     * Handles drag & drop row reordering
+     */
+    public class TableRowTransferHandler extends TransferHandler {
+        //        private final DataFlavor localObjectFlavor = new ActivationDataFlavor(Integer.class, DataFlavor.javaJVMLocalObjectMimeType, "Integer Row Index");
+        private final DataFlavor localObjectFlavor = new DataFlavor(Integer.class, "Integer Row Index");
+        private JTable table = null;
+
+        public TableRowTransferHandler(JTable table) {
+            this.table = table;
+        }
+
+        @Override
+        protected Transferable createTransferable(JComponent c) {
+            assert (c == table);
+            return new DataHandler(new Integer(table.getSelectedRow()), localObjectFlavor.getMimeType());
+        }
+
+        @Override
+        public boolean canImport(TransferHandler.TransferSupport info) {
+            boolean b = info.getComponent() == table && info.isDrop() && info.isDataFlavorSupported(localObjectFlavor);
+            table.setCursor(b ? DragSource.DefaultMoveDrop : DragSource.DefaultMoveNoDrop);
+            return b;
+        }
+
+        @Override
+        public int getSourceActions(JComponent c) {
+            return TransferHandler.COPY_OR_MOVE;
+        }
+
+        @Override
+        public boolean importData(TransferHandler.TransferSupport info) {
+            JTable target = (JTable) info.getComponent();
+            JTable.DropLocation dl = (JTable.DropLocation) info.getDropLocation();
+            int index = dl.getRow();
+            int max = table.getModel().getRowCount();
+            if (index < 0 || index > max)
+                index = max;
+            target.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            try {
+                Integer rowFrom = (Integer) info.getTransferable().getTransferData(localObjectFlavor);
+                if (rowFrom != -1 && rowFrom != index) {
+                    ((Reorderable)table.getModel()).reorder(rowFrom, index);
+                    if (index > rowFrom)
+                        index--;
+                    target.getSelectionModel().addSelectionInterval(index, index);
+                    return true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        @Override
+        protected void exportDone(JComponent c, Transferable t, int act) {
+            if (act == TransferHandler.MOVE) {
+                table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
+        }
+
+    }
+
 }

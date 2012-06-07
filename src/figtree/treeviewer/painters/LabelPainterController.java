@@ -260,7 +260,7 @@ public class LabelPainterController extends AbstractController {
         colourAttributeCombo.removeAllItems();
         colourAttributeCombo.addItem(USER_SELECTION);
         for (String name : names) {
-                colourAttributeCombo.addItem(name);
+            colourAttributeCombo.addItem(name);
         }
         colourAttributeCombo.setSelectedItem(item2);
 
