@@ -45,7 +45,7 @@ public class HSBDiscreteColorDecorator extends DiscreteColorDecorator {
         setupColours();
     }
 
-    private void setupColours() {
+    public void setupColours() {
         int valueCount = getValues().size();
         int primaryCount = valueCount / secondaryCount;
         if (valueCount % secondaryCount > 0) {
