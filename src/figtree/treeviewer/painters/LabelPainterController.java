@@ -91,55 +91,59 @@ public class LabelPainterController extends AbstractController {
 
         final JLabel label1 = optionsPanel.addComponentWithLabel("Display:", displayAttributeCombo);
 
-        colourSettings.autoRange = true;
-        colourSettings.fromValue = 0.0;
-        colourSettings.toValue = 1.0;
-        colourSettings.fromColour = new Color(0, 16, 192);
-        colourSettings.toColour = new Color(192, 16, 0);
-        colourSettings.middleColour = new Color(0, 0, 0);
+        final JButton setupColourButton = new JButton("Colour");
 
-        final JButton setupColourButton = new JButton(new AbstractAction("Colour") {
-            public void actionPerformed(ActionEvent e) {
-                Decorator decorator = null;
-                if (colourAttributeCombo.getSelectedIndex() > 0) {
-                    String attribute = (String) colourAttributeCombo.getSelectedItem();
+        ColourControllerHelper helper = new ColourControllerHelper(frame, userLabelDecorator, colourAttributeCombo, setupColourButton);
+
+//        colourSettings.autoRange = true;
+//        colourSettings.fromValue = 0.0;
+//        colourSettings.toValue = 1.0;
+//        colourSettings.fromColour = new Color(0, 16, 192);
+//        colourSettings.toColour = new Color(192, 16, 0);
+//        colourSettings.middleColour = new Color(0, 0, 0);
+//
+//        final JButton setupColourButton = new JButton(new AbstractAction("Colour") {
+//            public void actionPerformed(ActionEvent e) {
+//                Decorator decorator = null;
+//                if (colourAttributeCombo.getSelectedIndex() > 0) {
+//                    String attribute = (String) colourAttributeCombo.getSelectedItem();
                     decorator = labelPainter.getColourDecoratorForAttribute(attribute);
-                }
-
-                if (decorator instanceof HSBDiscreteColorDecorator) {
-                    if (discreteColourScaleDialog == null) {
-                        discreteColourScaleDialog = new DiscreteColourScaleDialog(frame);
-                    }
-                    discreteColourScaleDialog.setDecorator((HSBDiscreteColorDecorator)decorator);
-                    int result = discreteColourScaleDialog.showDialog();
-                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-                        discreteColourScaleDialog.setupDecorator((HSBDiscreteColorDecorator)decorator);
-                        setupLabelDecorator();
-                    }
-                } else  if (decorator instanceof HSBContinuousColorDecorator) {
-                    if (continuousColourScaleDialog == null) {
-                        continuousColourScaleDialog = new ContinuousColourScaleDialog(frame);
-                    }
-                    continuousColourScaleDialog.setDecorator((HSBContinuousColorDecorator)decorator);
-                    int result = continuousColourScaleDialog.showDialog();
-                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-                        continuousColourScaleDialog.setupDecorator((HSBContinuousColorDecorator)decorator);
-                        setupLabelDecorator();
-                    }
-                } else {
-                    throw new IllegalArgumentException("Unsupported decorator type");
-//                    if (continuousColourScaleDialog == null) {
-//                        continuousColourScaleDialog = new OldContinuousColourScaleDialog(frame, colourSettings);
+//                }
+//
+//                if (decorator instanceof HSBDiscreteColorDecorator) {
+//                    if (discreteColourScaleDialog == null) {
+//                        discreteColourScaleDialog = new DiscreteColourScaleDialog(frame);
 //                    }
-//                    int result = continuousColourScaleDialog.showDialog();
+//                    discreteColourScaleDialog.setDecorator((HSBDiscreteColorDecorator)decorator);
+//                    int result = discreteColourScaleDialog.showDialog();
 //                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-//                        continuousColourScaleDialog.getSettings(colourSettings);
+//                        discreteColourScaleDialog.setupDecorator((HSBDiscreteColorDecorator)decorator);
 //                        setupLabelDecorator();
 //                    }
-                }
-
-            }
-        });
+//                } else  if (decorator instanceof HSBContinuousColorDecorator) {
+//                    if (continuousColourScaleDialog == null) {
+//                        continuousColourScaleDialog = new ContinuousColourScaleDialog(frame);
+//                    }
+//                    continuousColourScaleDialog.setDecorator((HSBContinuousColorDecorator)decorator);
+//                    int result = continuousColourScaleDialog.showDialog();
+//                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
+//                        continuousColourScaleDialog.setupDecorator((HSBContinuousColorDecorator)decorator);
+//                        setupLabelDecorator();
+//                    }
+//                } else {
+//                    throw new IllegalArgumentException("Unsupported decorator type");
+////                    if (continuousColourScaleDialog == null) {
+////                        continuousColourScaleDialog = new OldContinuousColourScaleDialog(frame, colourSettings);
+////                    }
+////                    int result = continuousColourScaleDialog.showDialog();
+////                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
+////                        continuousColourScaleDialog.getSettings(colourSettings);
+////                        setupLabelDecorator();
+////                    }
+//                }
+//
+//            }
+//        });
 
         final JLabel label2 = optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
 

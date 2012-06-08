@@ -469,7 +469,7 @@ public class TreeAppearanceController extends AbstractController {
         // nothing to do
     }
 
-    public void setSettings(Map<String,Object> settings) {
+    public void setSettings(Map<String, Object> settings) {
         // These settings don't have controls yet but they will!
         treeViewer.setForeground((Color)settings.get(CONTROLLER_KEY + "." + FOREGROUND_COLOUR_KEY));
         treeViewer.setBackground((Color)settings.get(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY));
@@ -478,6 +478,7 @@ public class TreeAppearanceController extends AbstractController {
         branchColourAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BRANCH_COLOR_ATTRIBUTE_KEY));
         backgroundColourAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BACKGROUND_COLOR_ATTRIBUTE_KEY));
         branchLineWidthSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY));
+        branchWidthAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BRANCH_WIDTH_ATTRIBUTE_KEY));
     }
 
     public void getSettings(Map<String, Object> settings) {
@@ -489,6 +490,7 @@ public class TreeAppearanceController extends AbstractController {
         settings.put(CONTROLLER_KEY + "." + BRANCH_COLOR_ATTRIBUTE_KEY, branchColourAttributeCombo.getSelectedItem().toString());
         settings.put(CONTROLLER_KEY + "." + BACKGROUND_COLOR_ATTRIBUTE_KEY, backgroundColourAttributeCombo.getSelectedItem().toString());
         settings.put(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY, branchLineWidthSpinner.getValue());
+        settings.put(CONTROLLER_KEY + "." + BRANCH_WIDTH_ATTRIBUTE_KEY, branchWidthAttributeCombo.getSelectedItem().toString());
     }
 
     private final AttributableDecorator userBranchColourDecorator;
