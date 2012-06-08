@@ -21,79 +21,23 @@ import figtree.treeviewer.decorators.*;
  * @author Andrew Rambaut
  * @version $Id: TreeAppearanceController.java 822 2007-10-26 13:50:26Z rambaut $
  */
-public class TreeAppearanceController extends AbstractController {
+public class ColourControllerHelper {
 
-    private static final String CONTROLLER_TITLE = "Appearance";
+    public ColourControllerHelper(final JFrame frame, final Decorator defaultDecorator,
+                                  final JComboBox colourAttributeCombo,
+                                  final JButton colourSetupButton) {
+        this.defaultDecorator = defaultDecorator;
+        this.colourAttributeCombo = colourAttributeCombo;
+        this.colourSetupButton = colourSetupButton;
 
-    public static Preferences PREFS = Preferences.userNodeForPackage(TreeViewer.class);
-
-    public static final String CONTROLLER_KEY = "appearance";
-
-    public static final String FOREGROUND_COLOUR_KEY = "foregroundColour";
-    public static final String BACKGROUND_COLOUR_KEY = "backgroundColour";
-    public static final String SELECTION_COLOUR_KEY = "selectionColour";
-    public static final String BRANCH_COLOR_ATTRIBUTE_KEY = "branchColorAttribute";
-    public static final String BACKGROUND_COLOR_ATTRIBUTE_KEY = "backgroundColorAttribute";
-    public static final String BRANCH_LINE_WIDTH_KEY = "branchLineWidth";
-    public static final String BRANCH_WIDTH_ATTRIBUTE_KEY = "branchWidthAttribute";
-
-    // The defaults if there is nothing in the preferences
-    public static Color DEFAULT_FOREGROUND_COLOUR = Color.BLACK;
-    public static Color DEFAULT_BACKGROUND_COLOUR = Color.WHITE;
-    public static Color DEFAULT_SELECTION_COLOUR = new Color(45, 54, 128);
-    public static float DEFAULT_BRANCH_LINE_WIDTH = 1.0f;
-
-    public TreeAppearanceController(final TreeViewer treeViewer, final JFrame frame) {
-        this.treeViewer = treeViewer;
-
-        userBranchColourDecorator = new AttributableDecorator();
-        userBranchColourDecorator.setPaintAttributeName("!color");
-        userBranchColourDecorator.setStrokeAttributeName("!stroke");
-        treeViewer.setBranchDecorator(userBranchColourDecorator);
-
-        int foregroundRGB = TreeAppearanceController.PREFS.getInt(CONTROLLER_KEY + "." + FOREGROUND_COLOUR_KEY, DEFAULT_FOREGROUND_COLOUR.getRGB());
-        int backgroundRGB = TreeAppearanceController.PREFS.getInt(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY, DEFAULT_BACKGROUND_COLOUR.getRGB());
-        int selectionRGB = TreeAppearanceController.PREFS.getInt(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY, DEFAULT_SELECTION_COLOUR.getRGB());
-        float branchLineWidth = TreeAppearanceController.PREFS.getFloat(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY, DEFAULT_BRANCH_LINE_WIDTH);
-
-        treeViewer.setForeground(new Color(foregroundRGB));
-        treeViewer.setBackground(new Color(backgroundRGB));
-        treeViewer.setSelectionColor(new Color(selectionRGB));
-        treeViewer.setBranchStroke(new BasicStroke(branchLineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-
-        titleLabel = new JLabel(CONTROLLER_TITLE);
-
-        optionsPanel = new ControllerOptionsPanel(2, 0);
-
-        branchLineWidthSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.01, 48.0, 1.0));
-
-        branchLineWidthSpinner.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
-                float lineWidth = ((Double) branchLineWidthSpinner.getValue()).floatValue();
-                treeViewer.setBranchStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
-            }
-        });
-        optionsPanel.addComponentWithLabel("Line Weight:", branchLineWidthSpinner);
-
-        branchWidthAttributeCombo = new JComboBox(new String[] { "No attributes" });
-        branchColourAttributeCombo = new JComboBox(new String[] { "No attributes" });
-        backgroundColourAttributeCombo = new JComboBox(new String[] { "No attributes" });
         setupAttributes(treeViewer.getTrees());
 
-        branchColourSettings.autoRange  = true;
-        branchColourSettings.fromValue = 0.0;
-        branchColourSettings.toValue = 1.0;
-        branchColourSettings.fromColour = new Color(0, 16, 192);
-        branchColourSettings.toColour = new Color(192, 16, 0);
-        branchColourSettings.middleColour = new Color(0, 0, 0);
-
-        branchColourIsGradient = false;
-
-        JButton setupColourButton = new JButton(new AbstractAction("Setup") {
-            public void actionPerformed(ActionEvent e) {
+        colourSetupButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 Decorator decorator = null;
-                if (branchColourAttributeCombo.getSelectedIndex() > 0) {
-                    String attribute = (String) branchColourAttributeCombo.getSelectedItem();
+                if (colourAttributeCombo.getSelectedIndex() > 0) {
+                    String attribute = (String) colourAttributeCombo.getSelectedItem();
                     decorator = treeViewer.getDecoratorForAttribute(attribute);
                 }
 
@@ -131,101 +75,9 @@ public class TreeAppearanceController extends AbstractController {
 
             }
         });
-        final JCheckBox useGradientCheck = new JCheckBox("Gradient");
-        useGradientCheck.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent event) {
-                branchColourIsGradient = useGradientCheck.isSelected();
-                setupBranchDecorators();
-            }
-        });
-        optionsPanel.addComponentWithLabel("Colour by:", branchColourAttributeCombo);
+        optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
         optionsPanel.addComponent(setupColourButton);
-        optionsPanel.addComponent(useGradientCheck);
         optionsPanel.addSeparator();
-
-        widthAutoRange = true;
-        widthFromValue = 0.0;
-        widthToValue = 1.0;
-        fromWidth = 1.0;
-        toWidth = 10.0;
-
-        JButton setupWidthButton = new JButton(new AbstractAction("Setup") {
-            public void actionPerformed(ActionEvent e) {
-                if (widthScaleDialog == null) {
-                    widthScaleDialog = new WidthScaleDialog(frame, widthAutoRange,
-                            widthFromValue, widthToValue,
-                            fromWidth, toWidth);
-                }
-                int result = widthScaleDialog.showDialog();
-                if (result != JOptionPane.CANCEL_OPTION) {
-                    widthAutoRange = widthScaleDialog.getAutoRange();
-                    widthFromValue = widthScaleDialog.getFromValue().doubleValue();
-                    widthToValue = widthScaleDialog.getToValue().doubleValue();
-                    fromWidth = widthScaleDialog.getFromWidth().doubleValue();
-                    toWidth = widthScaleDialog.getToWidth().doubleValue();
-                    setupBranchDecorators();
-                }
-            }
-        });
-        optionsPanel.addComponentWithLabel("Width by:", branchWidthAttributeCombo);
-        optionsPanel.addComponent(setupWidthButton);
-        optionsPanel.addSeparator();
-
-        backgroundColourSettings.autoRange  = true;
-        backgroundColourSettings.fromValue = 0.0;
-        backgroundColourSettings.toValue = 1.0;
-        backgroundColourSettings.fromColour = new Color(255, 255, 255);
-        backgroundColourSettings.toColour = new Color(192, 16, 0);
-        backgroundColourSettings.middleColour = null;
-
-        branchColourIsGradient = false;
-
-        JButton bgSetupColourButton = new JButton(new AbstractAction("Setup") {
-            public void actionPerformed(ActionEvent e) {
-
-                Decorator decorator = null;
-                if (backgroundColourAttributeCombo.getSelectedIndex() > 0) {
-                    String attribute = (String) backgroundColourAttributeCombo.getSelectedItem();
-                    decorator = treeViewer.getDecoratorForAttribute(attribute);
-                }
-
-                if (decorator instanceof HSBDiscreteColorDecorator) {
-                    if (bgDiscreteColourScaleDialog == null) {
-                        bgDiscreteColourScaleDialog = new DiscreteColourScaleDialog(frame);
-                    }
-                    bgDiscreteColourScaleDialog.setDecorator((HSBDiscreteColorDecorator)decorator);
-                    int result = bgDiscreteColourScaleDialog.showDialog();
-                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-                        bgDiscreteColourScaleDialog.setupDecorator((HSBDiscreteColorDecorator)decorator);
-                        setupBranchDecorators();
-                    }
-                } else if (decorator instanceof HSBContinuousColorDecorator) {
-                    if (bgContinuousColourScaleDialog == null) {
-                        bgContinuousColourScaleDialog = new ContinuousColourScaleDialog(frame);
-                    }
-                    bgContinuousColourScaleDialog.setDecorator((HSBContinuousColorDecorator)decorator);
-                    int result = bgContinuousColourScaleDialog.showDialog();
-                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-                        bgContinuousColourScaleDialog.setupDecorator((HSBContinuousColorDecorator)decorator);
-                        setupBranchDecorators();
-                    }
-                } else {
-                    throw new IllegalArgumentException("Unsupported decorator type");
-//                    if (bgContinuousColourScaleDialog == null) {
-//                        bgContinuousColourScaleDialog = new ContinuousColourScaleDialog(frame, backgroundColourSettings);
-//                    }
-//                    int result = bgContinuousColourScaleDialog.showDialog();
-//                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-//                        bgContinuousColourScaleDialog.getSettings(backgroundColourSettings);
-//                        setupBranchDecorators();
-//                    }
-                }
-
-            }
-        });
-
-        optionsPanel.addComponentWithLabel("Background:", backgroundColourAttributeCombo);
-        optionsPanel.addComponent(bgSetupColourButton);
 
         ActionListener listener = new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -233,9 +85,7 @@ public class TreeAppearanceController extends AbstractController {
             }
         };
 
-        branchColourAttributeCombo.addActionListener(listener);
-        branchWidthAttributeCombo.addActionListener(listener);
-        backgroundColourAttributeCombo.addActionListener(listener);
+        colourAttributeCombo.addActionListener(listener);
 
         treeViewer.addTreeViewerListener(new TreeViewerListener() {
             public void treeChanged() {
@@ -249,7 +99,7 @@ public class TreeAppearanceController extends AbstractController {
         });
     }
 
-    private void setupBranchDecorators() {
+    public Decorator getColourDecorator() {
 
         Set<Node> nodes = new HashSet<Node>();
         for (Tree tree : treeViewer.getTrees()) {
@@ -260,43 +110,10 @@ public class TreeAppearanceController extends AbstractController {
 
         Decorator colourDecorator = null;
 
-        if (backgroundColourAttributeCombo.getSelectedIndex() > 0) {
-            String attribute = (String) backgroundColourAttributeCombo.getSelectedItem();
-            if (attribute != null && attribute.length() > 0) {
-                colourDecorator = treeViewer.getDecoratorForAttribute(attribute);
-
-                if (colourDecorator == null) {
-                    if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
-                        colourDecorator = new HSBDiscreteColorDecorator(attribute, nodes, false);
-                    } else {
-                        ContinuousScale scale;
-                        if (branchColourSettings.autoRange) {
-                            scale = new ContinuousScale(attribute, nodes);
-                        } else {
-                            scale = new ContinuousScale(attribute, nodes, backgroundColourSettings.fromValue, backgroundColourSettings.toValue);
-                        }
-
-                        colourDecorator = new HSBContinuousColorDecorator(scale, false);
-
-//                        if (backgroundColourSettings.middleColour == null) {
-//                            colourDecorator = new ContinuousColorDecorator(scale, backgroundColourSettings.fromColour, backgroundColourSettings.toColour, false);
-//                        } else {
-//                            colourDecorator = new ContinuousColorDecorator(scale, backgroundColourSettings.fromColour, backgroundColourSettings.middleColour, backgroundColourSettings.toColour, false);
-//                        }
-                    }
-                }
-
-                treeViewer.setDecoratorForAttribute(attribute, colourDecorator);
-            }
-        }
-
-        treeViewer.setNodeBackgroundDecorator(colourDecorator);
-
-        if (branchColourAttributeCombo.getSelectedIndex() == 0) {
-            colourDecorator = userBranchColourDecorator;
-            userBranchColourDecorator.setGradient(branchColourIsGradient);
+        if (colourAttributeCombo.getSelectedIndex() == 0) {
+            colourDecorator = defaultDecorator;
         } else {
-            String attribute = (String) branchColourAttributeCombo.getSelectedItem();
+            String attribute = (String) colourAttributeCombo.getSelectedItem();
             if (attribute != null && attribute.length() > 0) {
                 colourDecorator = treeViewer.getDecoratorForAttribute(attribute);
                 if (colourDecorator == null) {
@@ -311,10 +128,10 @@ public class TreeAppearanceController extends AbstractController {
                         colourDecorator = new HSBDiscreteColorDecorator(attribute, nodes, branchColourIsGradient);
                     } else {
                         ContinuousScale scale;
-                        if (branchColourSettings.autoRange) {
+                        if (colourSettings.autoRange) {
                             scale = new ContinuousScale(attribute, nodes);
                         } else {
-                            scale = new ContinuousScale(attribute, nodes, branchColourSettings.fromValue, branchColourSettings.toValue);
+                            scale = new ContinuousScale(attribute, nodes, colourSettings.fromValue, colourSettings.toValue);
                         }
 
                         colourDecorator = new HSBContinuousColorDecorator(scale);
@@ -338,55 +155,16 @@ public class TreeAppearanceController extends AbstractController {
             }
         }
 
-
-        if (colourDecorator != null && colourDecorator.isGradient()) {
-            // At present using a gradient precludes the use of the compoundDecorator
-            // and thus the branch width..
-            treeViewer.setBranchDecorator(colourDecorator);
-            return;
-        }
-
-        CompoundDecorator compoundDecorator = new CompoundDecorator();
-
-        if (colourDecorator != null) {
-            treeViewer.setBranchColouringDecorator(null, null);
-            compoundDecorator.addDecorator(colourDecorator);
-        }
-
-        if (branchWidthAttributeCombo.getSelectedIndex() > 0) {
-            String attribute = (String) branchWidthAttributeCombo.getSelectedItem();
-            if (attribute != null && attribute.length() > 0) {
-                if (!DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
-                    ContinuousScale scale;
-                    if (widthAutoRange) {
-                        scale = new ContinuousScale(attribute, nodes);
-                    } else {
-                        scale = new ContinuousScale(attribute, nodes, widthFromValue, widthToValue);
-                    }
-                    compoundDecorator.addDecorator(new ContinuousStrokeDecorator(
-                            scale, (float)fromWidth, (float)toWidth)
-                    );
-
-                }
-            }
-        }
-        treeViewer.setBranchDecorator(compoundDecorator);
-
+        return colourDecorator;
     }
 
 
     private void setupAttributes(Collection<? extends Tree> trees) {
-        Object selected1 = branchColourAttributeCombo.getSelectedItem();
-        Object selected2 = branchWidthAttributeCombo.getSelectedItem();
-        Object selected3 = backgroundColourAttributeCombo.getSelectedItem();
+        Object selected = colourAttributeCombo.getSelectedItem();
 
-        branchColourAttributeCombo.removeAllItems();
-        branchWidthAttributeCombo.removeAllItems();
-        backgroundColourAttributeCombo.removeAllItems();
+        colourAttributeCombo.removeAllItems();
 
-        branchColourAttributeCombo.addItem("User Selection");
-        branchWidthAttributeCombo.addItem("User Selection");
-        backgroundColourAttributeCombo.addItem("User Selection");
+        colourAttributeCombo.addItem("User Selection");
         if (trees == null) {
             return;
         }
@@ -400,14 +178,10 @@ public class TreeAppearanceController extends AbstractController {
         }
 
         for (String name : names) {
-            branchColourAttributeCombo.addItem(name);
-            branchWidthAttributeCombo.addItem(name);
-            backgroundColourAttributeCombo.addItem(name);
+            colourAttributeCombo.addItem(name);
         }
 
-        branchColourAttributeCombo.setSelectedItem(selected1);
-        branchWidthAttributeCombo.setSelectedItem(selected2);
-        backgroundColourAttributeCombo.setSelectedItem(selected3);
+        colourAttributeCombo.setSelectedItem(selected);
     }
 
     private String[] getAttributeNames(Collection<? extends Attributable> items) {
@@ -453,75 +227,13 @@ public class TreeAppearanceController extends AbstractController {
         return attributeNameArray;
     }
 
-    public JComponent getTitleComponent() {
-        return titleLabel;
-    }
-
-    public JPanel getPanel() {
-        return optionsPanel;
-    }
-
-    public boolean isInitiallyVisible() {
-        return false;
-    }
-
-    public void initialize() {
-        // nothing to do
-    }
-
-    public void setSettings(Map<String,Object> settings) {
-        // These settings don't have controls yet but they will!
-        treeViewer.setForeground((Color)settings.get(CONTROLLER_KEY + "." + FOREGROUND_COLOUR_KEY));
-        treeViewer.setBackground((Color)settings.get(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY));
-        treeViewer.setSelectionColor((Color)settings.get(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY));
-
-        branchColourAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BRANCH_COLOR_ATTRIBUTE_KEY));
-        backgroundColourAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BACKGROUND_COLOR_ATTRIBUTE_KEY));
-        branchLineWidthSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY));
-    }
-
-    public void getSettings(Map<String, Object> settings) {
-        // These settings don't have controls yet but they will!
-        settings.put(CONTROLLER_KEY + "." + FOREGROUND_COLOUR_KEY, treeViewer.getForeground());
-        settings.put(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY, treeViewer.getBackground());
-        settings.put(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY, treeViewer.getSelectionPaint());
-
-        settings.put(CONTROLLER_KEY + "." + BRANCH_COLOR_ATTRIBUTE_KEY, branchColourAttributeCombo.getSelectedItem().toString());
-        settings.put(CONTROLLER_KEY + "." + BACKGROUND_COLOR_ATTRIBUTE_KEY, backgroundColourAttributeCombo.getSelectedItem().toString());
-        settings.put(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY, branchLineWidthSpinner.getValue());
-    }
-
-    private final AttributableDecorator userBranchColourDecorator;
-
-    private final JLabel titleLabel;
-    private final OptionsPanel optionsPanel;
-
-    private final JComboBox branchColourAttributeCombo;
-    private final JComboBox backgroundColourAttributeCombo;
-    private final JSpinner branchLineWidthSpinner;
-
-    private final JComboBox branchWidthAttributeCombo;
-
-    private final TreeViewer treeViewer;
+    private final Decorator defaultDecorator;
+    private final JComboBox colourAttributeCombo;
+    private final JButton colourSetupButton;
 
     private ContinuousColourScaleDialog continuousColourScaleDialog = null;
-    private ContinuousColourScaleDialog bgContinuousColourScaleDialog = null;
-
     private DiscreteColourScaleDialog discreteColourScaleDialog = null;
-    private DiscreteColourScaleDialog bgDiscreteColourScaleDialog = null;
 
-    private WidthScaleDialog widthScaleDialog = null;
-
-    private boolean branchColourIsGradient = false;
-
-    private OldContinuousColourScaleDialog.ColourSettings branchColourSettings = new OldContinuousColourScaleDialog.ColourSettings();
-    private OldContinuousColourScaleDialog.ColourSettings backgroundColourSettings = new OldContinuousColourScaleDialog.ColourSettings();
-
-    private boolean widthAutoRange = true;
-    private double widthFromValue = 0.0;
-    private double widthToValue = 1.0;
-    private double fromWidth;
-    private double toWidth;
-
+    private OldContinuousColourScaleDialog.ColourSettings colourSettings = new OldContinuousColourScaleDialog.ColourSettings();
 
 }

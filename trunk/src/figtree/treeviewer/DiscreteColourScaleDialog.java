@@ -23,7 +23,7 @@ import java.awt.event.ActionListener;
  * DiscreteColourScaleDialog.java
  *
  * @author			Andrew Rambaut
- * @version			$Id:$
+ * @version			$Id$
  */
 public class DiscreteColourScaleDialog {
     private static final int SLIDER_RANGE = 1000;
