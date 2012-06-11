@@ -34,6 +34,10 @@ public class FigTreePanel extends JPanel {
 
         controlPalette.addController(new TreeAppearanceController(treeViewer, frame));
 
+        // This controller handles reading/writing of attribute colour schemes but doesn't presently
+        // show any UI
+        controlPalette.addController(new AttributeColourController());
+
         treesController = new TreesController(treeViewer);
         controlPalette.addController(treesController);
 

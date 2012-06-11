@@ -11,28 +11,46 @@ import java.util.TreeSet;
  */
 public class ContinuousScale {
 
-    public ContinuousScale(String attributeName,
-                           Set<? extends Attributable> items) {
-        this(attributeName, items, false, 0.0, 0.0, false);
+    /**
+     * constructor that sets options from a string
+     * @param settings
+     */
+    public ContinuousScale(String settings) {
+        if (!settings.startsWith("{") || !settings.endsWith("}")) {
+            throw new IllegalArgumentException("ContinousScale settings string not in correct format");
+        }
+
+        String[] parts = settings.substring(1, settings.length() - 1).split("[, ]+");
+        if (parts.length != 4) {
+            throw new IllegalArgumentException("ContinousScale settings string not in correct format");
+        }
+
+        try {
+            normalize = Boolean.parseBoolean(parts[0]);
+            logarithm = Boolean.parseBoolean(parts[1]);
+            lowerRange = Double.parseDouble(parts[2]);
+            upperRange = Double.parseDouble(parts[3]);
+        } catch (NumberFormatException nfe) {
+            throw new IllegalArgumentException("ContinousScale settings string not in correct format");
+        }
     }
 
-    public ContinuousScale(String attributeName,
-                           Set<? extends Attributable> items,
-                           double lowerRange, double upperRange) {
-        this(attributeName, items, true, lowerRange, upperRange, false);
+    public ContinuousScale() {
+        this(false, 0.0, 0.0, false);
     }
 
-    public ContinuousScale(String attributeName,
-                           Set<? extends Attributable> items,
-                           boolean normalize,
+    public ContinuousScale(boolean normalize,
                            double lowerRange,
                            double upperRange,
                            boolean logarithm) {
-        this.attributeName = attributeName;
         this.normalize = normalize;
         this.lowerRange = lowerRange;
         this.upperRange = upperRange;
         this.logarithm = logarithm;
+    }
+
+    public void calibrate(String attributeName, Set<? extends Attributable> items) {
+        this.attributeName = attributeName;
 
         // First collect the set of all attribute values
         Set<Object> values = new TreeSet<Object>();
@@ -118,6 +136,11 @@ public class ContinuousScale {
         return Double.NaN;
     }
 
+    /**
+     * Scales the value to a range 0,1 based on the current settings
+     * @param value
+     * @return
+     */
     public double scaleValue(double value) {
 
         if (logarithm) {
@@ -171,13 +194,28 @@ public class ContinuousScale {
         return maxValue;
     }
 
-    private final String attributeName;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append(normalize);
+        sb.append(",");
+        sb.append(logarithm);
+        sb.append(",");
+        sb.append(lowerRange);
+        sb.append(",");
+        sb.append(upperRange);
+        sb.append("}");
+        return sb.toString();
+    }
+
     private final boolean normalize;
     private final boolean logarithm;
 
     private final double lowerRange;
     private final double upperRange;
 
+    private String attributeName = null;
     private double minValue = Double.MAX_VALUE;
     private double maxValue = Double.MIN_VALUE;
 

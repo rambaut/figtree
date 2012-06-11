@@ -11,8 +11,6 @@ import java.awt.geom.Point2D;
  */
 public interface Decorator {
 
-    boolean isGradient();
-    
     void setItem(Object item);
     void setItems(Object item1, Object item2);
 
