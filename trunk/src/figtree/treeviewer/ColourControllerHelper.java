@@ -21,7 +21,7 @@ import figtree.treeviewer.decorators.*;
  * @author Andrew Rambaut
  * @version $Id: TreeAppearanceController.java 822 2007-10-26 13:50:26Z rambaut $
  */
-public class ColourControllerHelper extends AbstractController {
+public class ColourControllerHelper {
 
     public static final String CONTROLLER_KEY = "colour";
 
@@ -34,69 +34,62 @@ public class ColourControllerHelper extends AbstractController {
         this.colourSetupButton = colourSetupButton;
 
 //        setupAttributes(treeViewer.getTrees());
-//
-//        colourSetupButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent actionEvent) {
-//                Decorator decorator = null;
-//                if (colourAttributeCombo.getSelectedIndex() > 0) {
-//                    String attribute = (String) colourAttributeCombo.getSelectedItem();
-//                    decorator = colourController.getDecoratorForAttribute(attribute);
-//                }
-//
-//                if (decorator instanceof HSBDiscreteColorDecorator) {
-//                    if (discreteColourScaleDialog == null) {
-//                        discreteColourScaleDialog = new DiscreteColourScaleDialog(frame);
-//                    }
-//                    discreteColourScaleDialog.setDecorator((HSBDiscreteColorDecorator)decorator);
-//                    int result = discreteColourScaleDialog.showDialog();
-//                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-//                        discreteColourScaleDialog.setupDecorator((HSBDiscreteColorDecorator)decorator);
-//                        setupBranchDecorators();
-//                    }
-//                } else if (decorator instanceof HSBContinuousColorDecorator) {
+
+        colourSetupButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Decorator decorator = null;
+                if (colourAttributeCombo.getSelectedIndex() > 0) {
+                    String attribute = (String) colourAttributeCombo.getSelectedItem();
+                    decorator = colourController.getDecoratorForAttribute(attribute);
+                }
+
+                if (decorator instanceof HSBDiscreteColorDecorator) {
+                    if (discreteColourScaleDialog == null) {
+                        discreteColourScaleDialog = new DiscreteColourScaleDialog(frame);
+                    }
+                    discreteColourScaleDialog.setDecorator((HSBDiscreteColorDecorator)decorator);
+                    int result = discreteColourScaleDialog.showDialog();
+                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
+                        discreteColourScaleDialog.setupDecorator((HSBDiscreteColorDecorator)decorator);
+                        setupBranchDecorators();
+                    }
+                } else if (decorator instanceof HSBContinuousColorDecorator) {
+                    if (continuousColourScaleDialog == null) {
+                        continuousColourScaleDialog = new ContinuousColourScaleDialog(frame);
+                    }
+                    continuousColourScaleDialog.setDecorator((HSBContinuousColorDecorator)decorator);
+                    int result = continuousColourScaleDialog.showDialog();
+                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
+                        continuousColourScaleDialog.setupDecorator((HSBContinuousColorDecorator)decorator);
+                        setupBranchDecorators();
+                    }
+                } else {
+                    throw new IllegalArgumentException("Unsupported decorator type");
 //                    if (continuousColourScaleDialog == null) {
-//                        continuousColourScaleDialog = new ContinuousColourScaleDialog(frame);
+//                        continuousColourScaleDialog = new OldContinuousColourScaleDialog(frame, branchColourSettings);
 //                    }
-//                    continuousColourScaleDialog.setDecorator((HSBContinuousColorDecorator)decorator);
 //                    int result = continuousColourScaleDialog.showDialog();
 //                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-//                        continuousColourScaleDialog.setupDecorator((HSBContinuousColorDecorator)decorator);
+//                        continuousColourScaleDialog.getSettings(branchColourSettings);
 //                        setupBranchDecorators();
 //                    }
-//                } else {
-//                    throw new IllegalArgumentException("Unsupported decorator type");
-////                    if (continuousColourScaleDialog == null) {
-////                        continuousColourScaleDialog = new OldContinuousColourScaleDialog(frame, branchColourSettings);
-////                    }
-////                    int result = continuousColourScaleDialog.showDialog();
-////                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-////                        continuousColourScaleDialog.getSettings(branchColourSettings);
-////                        setupBranchDecorators();
-////                    }
-//                }
-//
-//            }
-//        });
-//
-//        ActionListener listener = new ActionListener() {
-//            public void actionPerformed(ActionEvent event) {
-//                setupBranchDecorators();
-//            }
-//        };
-//
-//        colourAttributeCombo.addActionListener(listener);
-//
-//        treeViewer.addTreeViewerListener(new TreeViewerListener() {
-//            public void treeChanged() {
-//                setupAttributes(treeViewer.getTrees());
-//                optionsPanel.repaint();
-//            }
-//
-//            public void treeSettingsChanged() {
-//                // nothing to do
-//            }
-//        });
+                }
+
+            }
+        });
+
+        ActionListener listener = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                setup();
+            }
+        };
+
+        colourAttributeCombo.addActionListener(listener);
+    }
+
+    private void setup() {
+
     }
 
     public Decorator getColourDecorator() {
@@ -158,132 +151,11 @@ public class ColourControllerHelper extends AbstractController {
         return colourDecorator;
     }
 
-
-    private void setupAttributes(Collection<? extends Tree> trees) {
-        Object selected = colourAttributeCombo.getSelectedItem();
-
-        colourAttributeCombo.removeAllItems();
-
-        colourAttributeCombo.addItem("User Selection");
-        if (trees == null) {
-            return;
-        }
-        List<String> names = new ArrayList<String>();
-        for (Tree tree : trees) {
-            for (String name : getAttributeNames(tree.getNodes())) {
-                if (!names.contains(name)) {
-                    names.add(name);
-                }
-            }
-        }
-
-        for (String name : names) {
-            colourAttributeCombo.addItem(name);
-        }
-
-        colourAttributeCombo.setSelectedItem(selected);
-    }
-
-    private String[] getAttributeNames(Collection<? extends Attributable> items) {
-        java.util.Set<String> attributeNames = new TreeSet<String>();
-
-        for (Attributable item : items) {
-            for (String name : item.getAttributeNames()) {
-                if (!name.startsWith("!")) {
-                    Object attr = item.getAttribute(name);
-                    if (!(attr instanceof Object[])) {
-                        attributeNames.add(name);
-                    } else {
-                        boolean isColouring = true;
-
-                        Object[] array = (Object[])attr;
-                        boolean isIndex = true;
-                        for (Object element : array) {
-                            if (isIndex && !(element instanceof Integer) ||
-                                    !isIndex && !(element instanceof Double)) {
-                                isColouring = false;
-                                break;
-                            }
-                            isIndex = !isIndex;
-                        }
-
-                        if (isIndex) {
-                            // a colouring should finish on an index (which means isIndex should be false)...
-                            isColouring = false;
-                        }
-
-                        if (isColouring) {
-                            attributeNames.add(name + " *");
-                        }
-
-                    }
-                }
-            }
-        }
-
-        String[] attributeNameArray = new String[attributeNames.size()];
-        attributeNames.toArray(attributeNameArray);
-
-        return attributeNameArray;
-    }
-
-    @Override
-    public JComponent getTitleComponent() {
-        return null;
-    }
-
-    @Override
-    public JPanel getPanel() {
-        return null;
-    }
-
-    @Override
-    public boolean isInitiallyVisible() {
-        return false;
-    }
-
-    @Override
-    public void initialize() {
-    }
-
-    @Override
-    public void getSettings(Map<String, Object> settings) {
-        for (String key : settings.keySet()) {
-            if (key.startsWith(CONTROLLER_KEY + ".")) {
-                Decorator decorator = null;
-
-                String attribute = key.substring(CONTROLLER_KEY.length() + 1);
-                String colourSettings = (String)settings.get(key);
-                if (colourSettings.startsWith("HSBDiscrete")) {
-                    decorator = new HSBDiscreteColorDecorator(colourSettings.substring("HSBDiscrete".length()));
-                } else if (colourSettings.startsWith("HSBContinuous")) {
-                    decorator = new HSBContinuousColorDecorator(colourSettings.substring("HSBContinuous".length()));
-                } else {
-                    throw new IllegalArgumentException("Unrecognized colour decorator type");
-                }
-
-                attributeDecoratorMap.put(attribute, decorator);
-            }
-        }
-    }
-
-    @Override
-    public void setSettings(Map<String, Object> settings) {
-        for (String attribute : attributeDecoratorMap.keySet()) {
-            Decorator decorator = attributeDecoratorMap.get(attribute);
-            String colourSettings = decorator.toString();
-            settings.put(CONTROLLER_KEY + "." + attribute, colourSettings);
-        }
-    }
-
     private final Decorator defaultDecorator;
     private final JComboBox colourAttributeCombo;
     private final JButton colourSetupButton;
 
     private ContinuousColourScaleDialog continuousColourScaleDialog = null;
     private DiscreteColourScaleDialog discreteColourScaleDialog = null;
-
-
-    private Map<String, Decorator> attributeDecoratorMap = new HashMap<String, Decorator>();
 
 }
