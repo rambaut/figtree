@@ -15,19 +15,39 @@ import java.awt.geom.Point2D;
  */
 public class HSBContinuousColorDecorator implements Decorator {
 
-    public HSBContinuousColorDecorator(ContinuousScale continuousScale) throws NumberFormatException {
-        this(continuousScale, false);
+    public HSBContinuousColorDecorator(String settings) {
+        if (!settings.startsWith("{") || !settings.endsWith("}")) {
+            throw new IllegalArgumentException("HSBContinuousColorDecorator settings string not in correct format");
+        }
+
+        String[] parts = settings.substring(1, settings.length() - 1).split("[, ]+");
+        if (parts.length != 7) {
+            throw new IllegalArgumentException("HSBContinuousColorDecorator settings string not in correct format");
+        }
+
+        try {
+            continuousScale = new ContinuousScale(parts[0]);
+            hueUpper = Float.parseFloat(parts[1]);
+            hueLower = Float.parseFloat(parts[2]);
+            saturationUpper = Float.parseFloat(parts[3]);
+            saturationLower = Float.parseFloat(parts[4]);
+            brightnessUpper = Float.parseFloat(parts[5]);
+            brightnessLower = Float.parseFloat(parts[6]);
+        } catch (NumberFormatException nfe) {
+            throw new IllegalArgumentException("HSBContinuousColorDecorator settings string not in correct format");
+        } catch (IllegalArgumentException iae) {
+            throw new IllegalArgumentException("HSBContinuousColorDecorator settings string not in correct format");
+        }
+
     }
 
-    public HSBContinuousColorDecorator(ContinuousScale continuousScale,
-                                       boolean isGradient) {
+    public HSBContinuousColorDecorator(ContinuousScale continuousScale) throws NumberFormatException {
         this.continuousScale = continuousScale;
-        this.isGradient = isGradient;
     }
 
     public void setup(float hueUpper, float hueLower,
-                                       float saturationUpper, float saturationLower,
-                                       float brightnessUpper, float brightnessLower) {
+                      float saturationUpper, float saturationLower,
+                      float brightnessUpper, float brightnessLower) {
         this.hueUpper = hueUpper;
         this.hueLower = hueLower;
         this.saturationUpper = saturationUpper;
@@ -69,14 +89,6 @@ public class HSBContinuousColorDecorator implements Decorator {
 
     public Font getFont(Font font) {
         return font;
-    }
-
-    public boolean isGradient() {
-        return isGradient;
-    }
-
-    public void setGradient(final boolean gradient) {
-        isGradient = gradient;
     }
 
     public void setItem(Object item) {
@@ -210,6 +222,31 @@ public class HSBContinuousColorDecorator implements Decorator {
         this.brightnessLower = brightnessLower;
     }
 
+    /**
+     * Create a string representation suitable for writing to a text file
+     * @return the string
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append(continuousScale.toString());
+        sb.append(",");
+        sb.append(hueLower);
+        sb.append(",");
+        sb.append(hueUpper);
+        sb.append(",");
+        sb.append(saturationLower);
+        sb.append(",");
+        sb.append(saturationUpper);
+        sb.append(",");
+        sb.append(brightnessLower);
+        sb.append(",");
+        sb.append(brightnessUpper);
+        sb.append("}");
+        return sb.toString();
+    }
+
     private final ContinuousScale continuousScale;
 
     private Color paint = null;
@@ -219,7 +256,6 @@ public class HSBContinuousColorDecorator implements Decorator {
     private Color fillColour1 = null;
     private Color fillColour2 = null;
 
-    private boolean isGradient;
     private float hueUpper = 1.0F;
     private float hueLower = 0.0F;
     private float saturationUpper = 0.6F;

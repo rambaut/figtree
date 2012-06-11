@@ -2,7 +2,6 @@ package figtree.treeviewer;
 
 import figtree.treeviewer.decorators.ContinuousScale;
 import figtree.treeviewer.decorators.HSBContinuousColorDecorator;
-import figtree.treeviewer.decorators.HSBDiscreteColorDecorator;
 import figtree.ui.components.RangeSlider;
 import jam.panels.OptionsPanel;
 
@@ -29,10 +28,6 @@ public class ContinuousColourScaleDialog {
     private JFrame frame;
 
     private HSBContinuousColorDecorator decorator;
-
-    private JComboBox primaryAxisCombo = new JComboBox(HSBDiscreteColorDecorator.Axis.values());
-    private SpinnerNumberModel secondaryCountSpinnerModel = new SpinnerNumberModel(2, 1, 100, 1);
-    private JSpinner secondaryCountSpinner = new JSpinner(secondaryCountSpinnerModel);
 
     private RangeSlider hueSlider;
     private RangeSlider saturationSlider;

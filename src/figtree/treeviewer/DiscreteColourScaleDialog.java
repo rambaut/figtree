@@ -135,14 +135,14 @@ public class DiscreteColourScaleDialog {
         primaryAxisCombo.setSelectedItem(decorator.getPrimaryAxis());
         secondaryCountSpinnerModel.setValue(decorator.getSecondaryCount());
 
-        hueSlider.setValue((int)(decorator.getHueLower() * SLIDER_RANGE));
+        hueSlider.setValue((int) (decorator.getHueLower() * SLIDER_RANGE));
         hueSlider.setUpperValue((int) (decorator.getHueUpper() * SLIDER_RANGE));
 
-        saturationSlider.setValue((int)(decorator.getSaturationLower() * SLIDER_RANGE));
-        saturationSlider.setUpperValue((int)(decorator.getSaturationUpper() * SLIDER_RANGE));
+        saturationSlider.setValue((int) (decorator.getSaturationLower() * SLIDER_RANGE));
+        saturationSlider.setUpperValue((int) (decorator.getSaturationUpper() * SLIDER_RANGE));
 
-        brightnessSlider.setValue((int)(decorator.getBrightnessLower() * SLIDER_RANGE));
-        brightnessSlider.setUpperValue((int)(decorator.getBrightnessUpper() * SLIDER_RANGE));
+        brightnessSlider.setValue((int) (decorator.getBrightnessLower() * SLIDER_RANGE));
+        brightnessSlider.setUpperValue((int) (decorator.getBrightnessUpper() * SLIDER_RANGE));
     }
 
     public void setupDecorator(HSBDiscreteColorDecorator decorator) {

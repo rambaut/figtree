@@ -58,10 +58,6 @@ public class DiscreteColorDecorator implements Decorator {
     }
 
     public DiscreteColorDecorator(String attributeName, Set<? extends Attributable> items) {
-        this(attributeName, items, false);
-    }
-
-    public DiscreteColorDecorator(String attributeName, Set<? extends Attributable> items, boolean isGradient) {
         this.attributeName = attributeName;
 
         // First collect the set of all attribute values
@@ -83,8 +79,6 @@ public class DiscreteColorDecorator implements Decorator {
         values.addAll(unsortedValues);
 
         setValues(values, DEFAULT_PAINTS);
-
-        this.isGradient = isGradient;
     }
 
     public List<Object> getValues() {
@@ -152,14 +146,6 @@ public class DiscreteColorDecorator implements Decorator {
         } else {
             paint = getPaintForValue(item);
         }
-    }
-
-    public boolean isGradient() {
-        return isGradient;
-    }
-
-    public void setGradient(final boolean gradient) {
-        isGradient = gradient;
     }
 
     public void setItems(Object item1, Object item2) {
@@ -269,8 +255,6 @@ public class DiscreteColorDecorator implements Decorator {
     private Map<Object, Integer> orderMap = null;
     private Paint[] paints = null;
     private Paint paint = null;
-
-    private boolean isGradient = false;
 
     private Color colour1 = null;
     private Color colour2 = null;

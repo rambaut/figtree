@@ -21,13 +21,34 @@ public class HSBDiscreteColorDecorator extends DiscreteColorDecorator {
         }
     }
 
-    public HSBDiscreteColorDecorator(String attributeName, Set<? extends Attributable> items) {
-        super(attributeName, items);
-        setupColours();
+    public HSBDiscreteColorDecorator(String settings) {
+        if (!settings.startsWith("{") || !settings.endsWith("}")) {
+            throw new IllegalArgumentException("HSBDiscreteColorDecorator settings string not in correct format");
+        }
+
+        String[] parts = settings.substring(1, settings.length() - 1).split("[, ]+");
+        if (parts.length != 8) {
+            throw new IllegalArgumentException("HSBDiscreteColorDecorator settings string not in correct format");
+        }
+
+        try {
+            primaryAxis = Axis.valueOf(parts[0]);
+            secondaryCount = Integer.parseInt(parts[1]);
+            hueUpper = Float.parseFloat(parts[2]);
+            hueLower = Float.parseFloat(parts[3]);
+            saturationUpper = Float.parseFloat(parts[4]);
+            saturationLower = Float.parseFloat(parts[5]);
+            brightnessUpper = Float.parseFloat(parts[6]);
+            brightnessLower = Float.parseFloat(parts[7]);
+        } catch (NumberFormatException nfe) {
+            throw new IllegalArgumentException("HSBDiscreteColorDecorator settings string not in correct format");
+        } catch (IllegalArgumentException iae) {
+            throw new IllegalArgumentException("HSBDiscreteColorDecorator settings string not in correct format");
+        }
     }
 
-    public HSBDiscreteColorDecorator(String attributeName, Set<? extends Attributable> items, boolean isGradient) {
-        super(attributeName, items, isGradient);
+    public HSBDiscreteColorDecorator(String attributeName, Set<? extends Attributable> items) {
+        super(attributeName, items);
         setupColours();
     }
 
@@ -183,6 +204,34 @@ public class HSBDiscreteColorDecorator extends DiscreteColorDecorator {
         return primaryAxis;
     }
 
+    /**
+     * Create a string representation suitable for writing to a text file
+     * @return the string
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append(primaryAxis);
+        sb.append(",");
+        sb.append(secondaryCount);
+        sb.append(",");
+        sb.append(hueLower);
+        sb.append(",");
+        sb.append(hueUpper);
+        sb.append(",");
+        sb.append(saturationLower);
+        sb.append(",");
+        sb.append(saturationUpper);
+        sb.append(",");
+        sb.append(brightnessLower);
+        sb.append(",");
+        sb.append(brightnessUpper);
+        sb.append("}");
+        return sb.toString();
+    }
+
+    private Axis primaryAxis = Axis.HUE;
     private int secondaryCount = 2;
     private float hueUpper = 1.0F;
     private float hueLower = 0.0F;
@@ -190,5 +239,4 @@ public class HSBDiscreteColorDecorator extends DiscreteColorDecorator {
     private float saturationLower = 0.6F;
     private float brightnessUpper = 0.8F;
     private float brightnessLower = 0.4F;
-    private Axis primaryAxis = Axis.HUE;
 }
