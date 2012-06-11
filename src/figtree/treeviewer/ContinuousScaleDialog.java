@@ -1,41 +1,33 @@
 package figtree.treeviewer;
 
 import figtree.treeviewer.decorators.Decorator;
-import figtree.treeviewer.decorators.DiscreteColorDecorator;
+import figtree.ui.components.ColorWellButton;
+import figtree.ui.components.RealNumberField;
 import jam.panels.OptionsPanel;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import java.awt.event.*;
 import java.awt.*;
-
-import figtree.ui.components.RealNumberField;
-import figtree.ui.components.ColorWellButton;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
- * OldContinuousColourScaleDialog.java
+ * ContinuousScaleDialog.java
  *
  * @author			Andrew Rambaut
  * @version			$Id$
  */
-public class OldContinuousColourScaleDialog {
+public class ContinuousScaleDialog {
 
-    public static class ColourSettings {
+    public static class ScaleSettings {
         // continuous colour settings:
         public boolean autoRange = true;
         public double fromValue = 0.0;
         public double toValue = 1.0;
-        public Color fromColour;
-        public Color toColour;
-        public Color middleColour;
+        public boolean logarithm = false;
     }
 
     private JFrame frame;
-
-    private Decorator decorator;
 
     private JCheckBox autoScaleCheck;
     private JLabel fromLabel;
@@ -43,13 +35,7 @@ public class OldContinuousColourScaleDialog {
     private JLabel toLabel;
     private RealNumberField toNumberField;
 
-    private ColorWellButton fromColourButton;
-    private ColorWellButton toColourButton;
-
-    private JCheckBox middleColourCheck;
-    private ColorWellButton middleColourButton;
-
-    public OldContinuousColourScaleDialog(final JFrame frame, final ColourSettings settings) {
+    public ContinuousScaleDialog(final JFrame frame, final ScaleSettings settings) {
         this.frame = frame;
 
         autoScaleCheck = new JCheckBox("Auto-scale range between min and max values");
@@ -70,12 +56,6 @@ public class OldContinuousColourScaleDialog {
         toLabel.setEnabled(false);
         toNumberField.setEnabled(false);
 
-        middleColourCheck = new JCheckBox("through:");
-
-        fromColourButton = new ColorWellButton(settings.fromColour, "Choose Start Colour");
-        toColourButton = new ColorWellButton(settings.toColour, "Choose End Colour");
-        middleColourButton = new ColorWellButton(settings.middleColour, "Choose Middle Colour");
-
         autoScaleCheck.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 boolean enabled = !autoScaleCheck.isSelected();
@@ -85,14 +65,6 @@ public class OldContinuousColourScaleDialog {
                 toNumberField.setEnabled(enabled);
             }
         });
-
-        middleColourCheck.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                middleColourButton.setEnabled(middleColourCheck.isSelected());
-            }
-        });
-        middleColourCheck.setSelected(settings.middleColour != null);
-        middleColourButton.setEnabled(settings.middleColour != null);
     }
 
     public int showDialog() {
@@ -101,29 +73,15 @@ public class OldContinuousColourScaleDialog {
 
         boolean isResizable = false;
 
-            options.addComponent(autoScaleCheck);
+        options.addComponent(autoScaleCheck);
 
-            JPanel panel = new JPanel();
-            panel.setLayout(new FlowLayout());
-            panel.add(fromLabel);
-            panel.add(fromNumberField);
-            panel.add(toLabel);
-            panel.add(toNumberField);
-            options.addComponent(panel);
-
-            JPanel panel1 = new JPanel();
-            panel1.setLayout(new FlowLayout());
-            panel1.add(new JLabel("Colour gradient from:"));
-            panel1.add(fromColourButton);
-            panel1.add(new JLabel("to:"));
-            panel1.add(toColourButton);
-            options.addComponent(panel1);
-
-            JPanel panel2 = new JPanel();
-            panel1.setLayout(new FlowLayout());
-            panel1.add(middleColourCheck);
-            panel1.add(middleColourButton);
-            options.addComponent(panel2);
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout());
+        panel.add(fromLabel);
+        panel.add(fromNumberField);
+        panel.add(toLabel);
+        panel.add(toNumberField);
+        options.addComponent(panel);
 
         JOptionPane optionPane = new JOptionPane(options,
                 JOptionPane.QUESTION_MESSAGE,
@@ -147,17 +105,10 @@ public class OldContinuousColourScaleDialog {
         return result;
     }
 
-    public void getSettings(ColourSettings settings) {
+    public void getSettings(ScaleSettings settings) {
         settings.autoRange = autoScaleCheck.isSelected();
         settings.fromValue =  fromNumberField.getValue();
         settings.toValue = toNumberField.getValue();
-        settings.fromColour = fromColourButton.getSelectedColor();
-        settings.toColour = toColourButton.getSelectedColor();
-        if (middleColourCheck.isSelected()) {
-            settings.middleColour = middleColourButton.getSelectedColor();
-        } else {
-            settings.middleColour = null;
-        }
     }
 
 }
