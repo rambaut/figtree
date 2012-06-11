@@ -4,6 +4,8 @@ import figtree.treeviewer.decorators.Decorator;
 import figtree.treeviewer.decorators.HSBContinuousColorDecorator;
 import figtree.treeviewer.decorators.HSBDiscreteColorDecorator;
 import jam.controlpalettes.AbstractController;
+import jebl.evolution.trees.Tree;
+import jebl.util.Attributable;
 
 import javax.swing.*;
 import java.util.*;
@@ -16,7 +18,84 @@ public class AttributeColourController extends AbstractController {
 
     public static final String CONTROLLER_KEY = "colour";
 
-    public AttributeColourController() {
+    public AttributeColourController(final TreeViewer treeViewer) {
+        treeViewer.addTreeViewerListener(new TreeViewerListener() {
+            public void treeChanged() {
+                setupAttributes(treeViewer.getTrees());
+            }
+
+            public void treeSettingsChanged() {
+                // nothing to do
+            }
+        });
+    }
+
+    private void setupAttributes(Collection<? extends Tree> trees) {
+        Object selected = colourAttributeCombo.getSelectedItem();
+
+        colourAttributeCombo.removeAllItems();
+
+        colourAttributeCombo.addItem("User Selection");
+        if (trees == null) {
+            return;
+        }
+        List<String> names = new ArrayList<String>();
+        for (Tree tree : trees) {
+            for (String name : getAttributeNames(tree.getNodes())) {
+                if (!names.contains(name)) {
+                    names.add(name);
+                }
+            }
+        }
+
+        for (String name : names) {
+            colourAttributeCombo.addItem(name);
+        }
+
+        colourAttributeCombo.setSelectedItem(selected);
+    }
+
+    private String[] getAttributeNames(Collection<? extends Attributable> items) {
+        java.util.Set<String> attributeNames = new TreeSet<String>();
+
+        for (Attributable item : items) {
+            for (String name : item.getAttributeNames()) {
+                if (!name.startsWith("!")) {
+                    Object attr = item.getAttribute(name);
+                    if (!(attr instanceof Object[])) {
+                        attributeNames.add(name);
+                    } else {
+                        boolean isColouring = true;
+
+                        Object[] array = (Object[])attr;
+                        boolean isIndex = true;
+                        for (Object element : array) {
+                            if (isIndex && !(element instanceof Integer) ||
+                                    !isIndex && !(element instanceof Double)) {
+                                isColouring = false;
+                                break;
+                            }
+                            isIndex = !isIndex;
+                        }
+
+                        if (isIndex) {
+                            // a colouring should finish on an index (which means isIndex should be false)...
+                            isColouring = false;
+                        }
+
+                        if (isColouring) {
+                            attributeNames.add(name + " *");
+                        }
+
+                    }
+                }
+            }
+        }
+
+        String[] attributeNameArray = new String[attributeNames.size()];
+        attributeNames.toArray(attributeNameArray);
+
+        return attributeNameArray;
     }
 
     public Decorator getDecoratorForAttribute(String attribute) {

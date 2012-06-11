@@ -1,6 +1,5 @@
 package figtree.application;
 
-import figtree.treeviewer.decorators.AttributableDecorator;
 import jam.controlpalettes.ControlPalette;
 import jam.disclosure.SlideOpenPanel;
 import figtree.treeviewer.*;

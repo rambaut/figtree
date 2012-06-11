@@ -107,7 +107,7 @@ public class LabelPainterController extends AbstractController {
 //                Decorator decorator = null;
 //                if (colourAttributeCombo.getSelectedIndex() > 0) {
 //                    String attribute = (String) colourAttributeCombo.getSelectedItem();
-                    decorator = labelPainter.getColourDecoratorForAttribute(attribute);
+//                    decorator = labelPainter.getColourDecoratorForAttribute(attribute);
 //                }
 //
 //                if (decorator instanceof HSBDiscreteColorDecorator) {
