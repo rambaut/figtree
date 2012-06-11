@@ -267,16 +267,16 @@ public class TreeAppearanceController extends AbstractController {
 
                 if (colourDecorator == null) {
                     if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
-                        colourDecorator = new HSBDiscreteColorDecorator(attribute, nodes, false);
+                        colourDecorator = new HSBDiscreteColorDecorator(attribute, nodes);
                     } else {
                         ContinuousScale scale;
                         if (branchColourSettings.autoRange) {
-                            scale = new ContinuousScale(attribute, nodes);
+                            scale = new ContinuousScale();
                         } else {
-                            scale = new ContinuousScale(attribute, nodes, backgroundColourSettings.fromValue, backgroundColourSettings.toValue);
+//                            scale = new ContinuousScale(backgroundColourSettings.fromValue, backgroundColourSettings.toValue);
                         }
-
-                        colourDecorator = new HSBContinuousColorDecorator(scale, false);
+                        scale.calibrate(attribute, nodes);
+                        colourDecorator = new HSBContinuousColorDecorator(scale);
 
 //                        if (backgroundColourSettings.middleColour == null) {
 //                            colourDecorator = new ContinuousColorDecorator(scale, backgroundColourSettings.fromColour, backgroundColourSettings.toColour, false);
@@ -506,6 +506,7 @@ public class TreeAppearanceController extends AbstractController {
 
     private final TreeViewer treeViewer;
 
+    private ContinuousScaleDialog continuousScaleDialog = null;
     private ContinuousColourScaleDialog continuousColourScaleDialog = null;
     private ContinuousColourScaleDialog bgContinuousColourScaleDialog = null;
 
