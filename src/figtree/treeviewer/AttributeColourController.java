@@ -1,9 +1,8 @@
 package figtree.treeviewer;
 
-import figtree.treeviewer.decorators.Decorator;
-import figtree.treeviewer.decorators.HSBContinuousColorDecorator;
-import figtree.treeviewer.decorators.HSBDiscreteColorDecorator;
+import figtree.treeviewer.decorators.*;
 import jam.controlpalettes.AbstractController;
+import jebl.evolution.graphs.Node;
 import jebl.evolution.trees.Tree;
 import jebl.util.Attributable;
 
@@ -19,9 +18,13 @@ public class AttributeColourController extends AbstractController {
     public static final String CONTROLLER_KEY = "colour";
 
     public AttributeColourController(final TreeViewer treeViewer) {
+        this.treeViewer = treeViewer;
+
+        setupAttributeNames(treeViewer.getTrees());
+
         treeViewer.addTreeViewerListener(new TreeViewerListener() {
             public void treeChanged() {
-                setupAttributes(treeViewer.getTrees());
+                setupAttributeNames(treeViewer.getTrees());
             }
 
             public void treeSettingsChanged() {
@@ -30,29 +33,19 @@ public class AttributeColourController extends AbstractController {
         });
     }
 
-    private void setupAttributes(Collection<? extends Tree> trees) {
-        Object selected = colourAttributeCombo.getSelectedItem();
-
-        colourAttributeCombo.removeAllItems();
-
-        colourAttributeCombo.addItem("User Selection");
+    private void setupAttributeNames(Collection<? extends Tree> trees) {
         if (trees == null) {
             return;
         }
-        List<String> names = new ArrayList<String>();
+        attributeNames = new ArrayList<String>();
         for (Tree tree : trees) {
             for (String name : getAttributeNames(tree.getNodes())) {
-                if (!names.contains(name)) {
-                    names.add(name);
+                if (!attributeNames.contains(name)) {
+                    attributeNames.add(name);
                 }
             }
         }
-
-        for (String name : names) {
-            colourAttributeCombo.addItem(name);
-        }
-
-        colourAttributeCombo.setSelectedItem(selected);
+        fireControllerChanged();
     }
 
     private String[] getAttributeNames(Collection<? extends Attributable> items) {
@@ -98,7 +91,45 @@ public class AttributeColourController extends AbstractController {
         return attributeNameArray;
     }
 
+    public List<String> getAttributeNames() {
+        return attributeNames;
+    }
+
     public Decorator getDecoratorForAttribute(String attribute) {
+        Decorator colourDecorator = null;
+
+        Set<Node> nodes = new HashSet<Node>();
+        for (Tree tree : treeViewer.getTrees()) {
+            for (Node node : tree.getNodes()) {
+                nodes.add(node);
+            }
+        }
+
+        if (colourDecorator == null) {
+            if (attribute.endsWith("*")) {
+                // todo reinstate branch colouring
+                return null;
+            } else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
+                colourDecorator = new HSBDiscreteColorDecorator(attribute, nodes);
+            } else {
+                ContinuousScale scale;
+                if (colourSettings.autoRange) {
+                    scale = new ContinuousScale(attribute, nodes);
+                } else {
+                    scale = new ContinuousScale(attribute, nodes, colourSettings.fromValue, colourSettings.toValue);
+                }
+
+                colourDecorator = new HSBContinuousColorDecorator(scale);
+
+//                        if (branchColourSettings.middleColour == null) {
+//                            colourDecorator = new ContinuousColorDecorator(scale, branchColourSettings.fromColour, branchColourSettings.toColour, branchColourIsGradient);
+//                        } else {
+//                            colourDecorator = new ContinuousColorDecorator(scale, branchColourSettings.fromColour, branchColourSettings.middleColour, branchColourSettings.toColour, branchColourIsGradient);
+//                        }
+
+            }
+            setDecoratorForAttribute(attribute, colourDecorator);
+        }
         return attributeDecoratorMap.get(attribute);
     }
 
@@ -155,6 +186,9 @@ public class AttributeColourController extends AbstractController {
         }
     }
 
+    private final TreeViewer treeViewer;
+
     private Map<String, Decorator> attributeDecoratorMap = new HashMap<String, Decorator>();
 
+    private List<String> attributeNames = new ArrayList<String>();
 }
