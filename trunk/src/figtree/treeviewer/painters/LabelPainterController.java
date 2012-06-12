@@ -48,7 +48,9 @@ public class LabelPainterController extends AbstractController {
     public static String DECIMAL_NUMBER_FORMATTING = "#.####";
     public static String SCIENTIFIC_NUMBER_FORMATTING = "0.###E0";
 
-    public LabelPainterController(String title, String key, final LabelPainter labelPainter, final JFrame frame) {
+    public LabelPainterController(String title, String key, final LabelPainter labelPainter,
+                                  final JFrame frame,
+                                  final AttributeColourController colourController) {
 
         this.title = title;
         this.key = key;
@@ -93,7 +95,7 @@ public class LabelPainterController extends AbstractController {
 
         final JButton setupColourButton = new JButton("Colour");
 
-        ColourControllerHelper helper = new ColourControllerHelper(frame, userLabelDecorator, colourAttributeCombo, setupColourButton);
+        colourHelper = new ColourControllerHelper(frame, userLabelDecorator, colourAttributeCombo, setupColourButton, colourController);
 
 //        colourSettings.autoRange = true;
 //        colourSettings.fromValue = 0.0;
@@ -317,47 +319,18 @@ public class LabelPainterController extends AbstractController {
     private void setupLabelDecorator() {
 
         Decorator textDecorator = null;
-        String attribute = (String)colourAttributeCombo.getSelectedItem();
 
         textDecorator = userLabelDecorator;
-        Decorator colourDecorator = null;
+        Decorator colourDecorator = colourHelper.getColourDecorator();
 
-        if (attribute != null && attribute.length() > 0) {
-            if (!attribute.equalsIgnoreCase(USER_SELECTION)) {
-                colourDecorator = labelPainter.getColourDecoratorForAttribute(attribute);
-                if (colourDecorator == null) {
-                    Set<Attributable> items = labelPainter.getAttributableItems();
+        if (colourDecorator != null) {
+            CompoundDecorator compoundDecorator = new CompoundDecorator();
+            compoundDecorator.addDecorator(colourDecorator);
+            AttributableDecorator fontDecorator = new AttributableDecorator();
+            userLabelDecorator.setFontAttributeName("!font");
+            compoundDecorator.addDecorator(fontDecorator);
 
-                    if (DiscreteColorDecorator.isDiscrete(attribute, items)) {
-                        colourDecorator = new HSBDiscreteColorDecorator(attribute, items, false);
-                    } else {
-                        ContinuousScale scale;
-                        if (colourSettings.autoRange) {
-                            scale = new ContinuousScale(attribute, items);
-                        } else {
-                            scale = new ContinuousScale(attribute, items, colourSettings.fromValue, colourSettings.toValue);
-                        }
-
-                        colourDecorator = new HSBContinuousColorDecorator(scale, false);
-//                        if (colourSettings.middleColour == null) {
-//                            colourDecorator = new ContinuousColorDecorator(scale, colourSettings.fromColour, colourSettings.toColour, false);
-//                        } else {
-//                            colourDecorator = new ContinuousColorDecorator(scale, colourSettings.fromColour, colourSettings.middleColour, colourSettings.toColour, false);
-//                        }
-                    }
-                }
-
-                CompoundDecorator compoundDecorator = new CompoundDecorator();
-                compoundDecorator.addDecorator(colourDecorator);
-                AttributableDecorator fontDecorator = new AttributableDecorator();
-                userLabelDecorator.setFontAttributeName("!font");
-                compoundDecorator.addDecorator(fontDecorator);
-
-                textDecorator = compoundDecorator;
-
-                labelPainter.setColourDecoratorForAttribute(attribute, colourDecorator);
-
-            }
+            textDecorator = compoundDecorator;
         }
 
         labelPainter.setTextDecorator(textDecorator);
@@ -405,6 +378,8 @@ public class LabelPainterController extends AbstractController {
         return title;
     }
 
+
+    private final ColourControllerHelper colourHelper;
 
     private final JCheckBox titleCheckBox;
     private final OptionsPanel optionsPanel;

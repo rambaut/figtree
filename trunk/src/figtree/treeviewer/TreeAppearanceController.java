@@ -286,6 +286,7 @@ public class TreeAppearanceController extends AbstractController {
                     }
                 }
 
+
                 treeViewer.setDecoratorForAttribute(attribute, colourDecorator);
             }
         }
