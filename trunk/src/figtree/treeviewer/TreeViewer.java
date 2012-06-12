@@ -97,15 +97,12 @@ public abstract class TreeViewer extends JPanel implements Printable {
 
     public abstract void setLegendPainter(LegendPainter legendPainter);
 
-    public abstract void setBranchDecorator(Decorator branchDecorator);
+    public abstract void setBranchDecorator(Decorator branchDecorator, boolean isGradient);
 
     public abstract void setBranchColouringDecorator(String branchColouringAttribute, Decorator branchColouringDecorator);
 
     public abstract void setNodeBackgroundDecorator(Decorator nodeBackgroundDecorator);
 
-    public abstract Decorator getDecoratorForAttribute(String attribute);
-
-    public abstract void setDecoratorForAttribute(String attribute, Decorator decorator);
     public abstract void setSelectionColor(Color selectionColor);
 
     public abstract Paint getSelectionPaint();

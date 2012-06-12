@@ -38,19 +38,24 @@ public class TreeViewerPanel extends JPanel {
 
         controlPalette.addController(new TreeViewerController(treeViewer));
 
-        controlPalette.addController(new TreeAppearanceController(treeViewer, frame));
+        // This controller handles reading/writing of attribute colour schemes but doesn't presently
+        // show any UI
+        AttributeColourController attributeColourController = new AttributeColourController(treeViewer);
+        controlPalette.addController(attributeColourController);
+
+        controlPalette.addController(new TreeAppearanceController(treeViewer, frame, attributeColourController));
 
         controlPalette.addController(new TreesController(treeViewer));
 
         // Create a tip label painter and its controller
         BasicLabelPainter tipLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.TIP);
-        controlPalette.addController(new LabelPainterController("Tip Labels", "tipLabels", tipLabelPainter, frame));
+        controlPalette.addController(new LabelPainterController("Tip Labels", "tipLabels", tipLabelPainter, frame, attributeColourController));
         treeViewer.setTipLabelPainter(tipLabelPainter);
 
         // Create a node label painter and its controller
         BasicLabelPainter nodeLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.NODE);
         nodeLabelPainter.setVisible(false);
-        controlPalette.addController(new LabelPainterController("Node Labels", "nodeLabels", nodeLabelPainter, frame));
+        controlPalette.addController(new LabelPainterController("Node Labels", "nodeLabels", nodeLabelPainter, frame, attributeColourController));
         treeViewer.setNodeLabelPainter(nodeLabelPainter);
 
         // Create a node shape painter and its controller
@@ -63,7 +68,7 @@ public class TreeViewerPanel extends JPanel {
         // Create a branch label painter and its controller
         BasicLabelPainter branchLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.BRANCH);
         branchLabelPainter.setVisible(false);
-        controlPalette.addController(new LabelPainterController("Branch Labels", "branchLabels", branchLabelPainter, frame));
+        controlPalette.addController(new LabelPainterController("Branch Labels", "branchLabels", branchLabelPainter, frame, attributeColourController));
         treeViewer.setBranchLabelPainter(branchLabelPainter);
 
         // Create a scale bar painter and its controller

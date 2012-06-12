@@ -54,7 +54,7 @@ public class ExtendedTreeViewer extends DefaultTreeViewer implements StatusProvi
         if (pattern != null) {
             //           setBranchDecorator(new ParsimonyBranchDecorator(pattern));
         } else {
-            setBranchDecorator(null);
+            setBranchDecorator(null, false);
         }
     }
 

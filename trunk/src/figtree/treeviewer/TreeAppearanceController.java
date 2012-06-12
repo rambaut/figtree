@@ -43,13 +43,13 @@ public class TreeAppearanceController extends AbstractController {
     public static Color DEFAULT_SELECTION_COLOUR = new Color(45, 54, 128);
     public static float DEFAULT_BRANCH_LINE_WIDTH = 1.0f;
 
-    public TreeAppearanceController(final TreeViewer treeViewer, final JFrame frame) {
+    public TreeAppearanceController(final TreeViewer treeViewer, final JFrame frame, final AttributeColourController attributeColourController) {
         this.treeViewer = treeViewer;
 
         userBranchColourDecorator = new AttributableDecorator();
         userBranchColourDecorator.setPaintAttributeName("!color");
         userBranchColourDecorator.setStrokeAttributeName("!stroke");
-        treeViewer.setBranchDecorator(userBranchColourDecorator);
+        treeViewer.setBranchDecorator(userBranchColourDecorator, false);
 
         int foregroundRGB = TreeAppearanceController.PREFS.getInt(CONTROLLER_KEY + "." + FOREGROUND_COLOUR_KEY, DEFAULT_FOREGROUND_COLOUR.getRGB());
         int backgroundRGB = TreeAppearanceController.PREFS.getInt(CONTROLLER_KEY + "." + BACKGROUND_COLOUR_KEY, DEFAULT_BACKGROUND_COLOUR.getRGB());
@@ -94,7 +94,7 @@ public class TreeAppearanceController extends AbstractController {
                 Decorator decorator = null;
                 if (branchColourAttributeCombo.getSelectedIndex() > 0) {
                     String attribute = (String) branchColourAttributeCombo.getSelectedItem();
-                    decorator = treeViewer.getDecoratorForAttribute(attribute);
+                    decorator = attributeColourController.getDecoratorForAttribute(attribute);
                 }
 
                 if (decorator instanceof HSBDiscreteColorDecorator) {
@@ -186,7 +186,7 @@ public class TreeAppearanceController extends AbstractController {
                 Decorator decorator = null;
                 if (backgroundColourAttributeCombo.getSelectedIndex() > 0) {
                     String attribute = (String) backgroundColourAttributeCombo.getSelectedItem();
-                    decorator = treeViewer.getDecoratorForAttribute(attribute);
+                    decorator = attributeColourController.getDecoratorForAttribute(attribute);
                 }
 
                 if (decorator instanceof HSBDiscreteColorDecorator) {
@@ -260,92 +260,93 @@ public class TreeAppearanceController extends AbstractController {
 
         Decorator colourDecorator = null;
 
-        if (backgroundColourAttributeCombo.getSelectedIndex() > 0) {
-            String attribute = (String) backgroundColourAttributeCombo.getSelectedItem();
-            if (attribute != null && attribute.length() > 0) {
-                colourDecorator = treeViewer.getDecoratorForAttribute(attribute);
-
-                if (colourDecorator == null) {
-                    if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
-                        colourDecorator = new HSBDiscreteColorDecorator(attribute, nodes);
-                    } else {
-                        ContinuousScale scale;
-                        if (branchColourSettings.autoRange) {
-                            scale = new ContinuousScale();
-                        } else {
-//                            scale = new ContinuousScale(backgroundColourSettings.fromValue, backgroundColourSettings.toValue);
-                        }
-                        scale.calibrate(attribute, nodes);
-                        colourDecorator = new HSBContinuousColorDecorator(scale);
-
-//                        if (backgroundColourSettings.middleColour == null) {
-//                            colourDecorator = new ContinuousColorDecorator(scale, backgroundColourSettings.fromColour, backgroundColourSettings.toColour, false);
+        boolean isGradient = false;
+//        if (backgroundColourAttributeCombo.getSelectedIndex() > 0) {
+//            String attribute = (String) backgroundColourAttributeCombo.getSelectedItem();
+//            if (attribute != null && attribute.length() > 0) {
+//                colourDecorator = treeViewer.getDecoratorForAttribute(attribute);
+//
+//                if (colourDecorator == null) {
+//                    if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
+//                        colourDecorator = new HSBDiscreteColorDecorator(attribute, nodes);
+//                    } else {
+//                        ContinuousScale scale;
+//                        if (branchColourSettings.autoRange) {
+//                            scale = new ContinuousScale();
 //                        } else {
-//                            colourDecorator = new ContinuousColorDecorator(scale, backgroundColourSettings.fromColour, backgroundColourSettings.middleColour, backgroundColourSettings.toColour, false);
+////                            scale = new ContinuousScale(backgroundColourSettings.fromValue, backgroundColourSettings.toValue);
 //                        }
-                    }
-                }
-
-
-                treeViewer.setDecoratorForAttribute(attribute, colourDecorator);
-            }
-        }
+//                        scale.calibrate(attribute, nodes);
+//                        colourDecorator = new HSBContinuousColorDecorator(scale);
+//
+////                        if (backgroundColourSettings.middleColour == null) {
+////                            colourDecorator = new ContinuousColorDecorator(scale, backgroundColourSettings.fromColour, backgroundColourSettings.toColour, false);
+////                        } else {
+////                            colourDecorator = new ContinuousColorDecorator(scale, backgroundColourSettings.fromColour, backgroundColourSettings.middleColour, backgroundColourSettings.toColour, false);
+////                        }
+//                    }
+//                }
+//
+//
+//                treeViewer.setDecoratorForAttribute(attribute, colourDecorator);
+//            }
+//        }
 
         treeViewer.setNodeBackgroundDecorator(colourDecorator);
 
-        if (branchColourAttributeCombo.getSelectedIndex() == 0) {
-            colourDecorator = userBranchColourDecorator;
-            userBranchColourDecorator.setGradient(branchColourIsGradient);
-        } else {
-            String attribute = (String) branchColourAttributeCombo.getSelectedItem();
-            if (attribute != null && attribute.length() > 0) {
-                colourDecorator = treeViewer.getDecoratorForAttribute(attribute);
-                if (colourDecorator == null) {
-                    if (attribute.endsWith("*")) {
-                        // This is a branch colouring (i.e., the colour can change
-                        // along the length of the branch...
-                        treeViewer.setBranchColouringDecorator(
-                                attribute.substring(0, attribute.length() - 2),
-                                new DiscreteColorDecorator());
-                        return;
-                    } else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
-                        colourDecorator = new HSBDiscreteColorDecorator(attribute, nodes, branchColourIsGradient);
-                    } else {
-                        ContinuousScale scale;
-                        if (branchColourSettings.autoRange) {
-                            scale = new ContinuousScale(attribute, nodes);
-                        } else {
-                            scale = new ContinuousScale(attribute, nodes, branchColourSettings.fromValue, branchColourSettings.toValue);
-                        }
-
-                        colourDecorator = new HSBContinuousColorDecorator(scale);
-
-//                        if (branchColourSettings.middleColour == null) {
-//                            colourDecorator = new ContinuousColorDecorator(scale, branchColourSettings.fromColour, branchColourSettings.toColour, branchColourIsGradient);
+//        if (branchColourAttributeCombo.getSelectedIndex() == 0) {
+//            colourDecorator = userBranchColourDecorator;
+//            userBranchColourDecorator.setGradient(branchColourIsGradient);
+//        } else {
+//            String attribute = (String) branchColourAttributeCombo.getSelectedItem();
+//            if (attribute != null && attribute.length() > 0) {
+//                colourDecorator = treeViewer.getDecoratorForAttribute(attribute);
+//                if (colourDecorator == null) {
+//                    if (attribute.endsWith("*")) {
+//                        // This is a branch colouring (i.e., the colour can change
+//                        // along the length of the branch...
+//                        treeViewer.setBranchColouringDecorator(
+//                                attribute.substring(0, attribute.length() - 2),
+//                                new DiscreteColorDecorator());
+//                        return;
+//                    } else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
+//                        colourDecorator = new HSBDiscreteColorDecorator(attribute, nodes, branchColourIsGradient);
+//                    } else {
+//                        ContinuousScale scale;
+//                        if (branchColourSettings.autoRange) {
+//                            scale = new ContinuousScale(attribute, nodes);
 //                        } else {
-//                            colourDecorator = new ContinuousColorDecorator(scale, branchColourSettings.fromColour, branchColourSettings.middleColour, branchColourSettings.toColour, branchColourIsGradient);
+//                            scale = new ContinuousScale(attribute, nodes, branchColourSettings.fromValue, branchColourSettings.toValue);
 //                        }
+//
+//                        colourDecorator = new HSBContinuousColorDecorator(scale);
+//
+////                        if (branchColourSettings.middleColour == null) {
+////                            colourDecorator = new ContinuousColorDecorator(scale, branchColourSettings.fromColour, branchColourSettings.toColour, branchColourIsGradient);
+////                        } else {
+////                            colourDecorator = new ContinuousColorDecorator(scale, branchColourSettings.fromColour, branchColourSettings.middleColour, branchColourSettings.toColour, branchColourIsGradient);
+////                        }
+//
+//                    }
+//                    treeViewer.setDecoratorForAttribute(attribute, colourDecorator);
+//                }
+//                if (colourDecorator instanceof DiscreteColorDecorator) {
+//                    ((DiscreteColorDecorator)colourDecorator).setGradient(branchColourIsGradient);
+//                } else if (colourDecorator instanceof ContinuousColorDecorator) {
+//                    ((ContinuousColorDecorator)colourDecorator).setGradient(branchColourIsGradient);
+//                }
+//
+//                treeViewer.setDecoratorForAttribute(attribute, colourDecorator);
+//            }
+//        }
 
-                    }
-                    treeViewer.setDecoratorForAttribute(attribute, colourDecorator);
-                }
-                if (colourDecorator instanceof DiscreteColorDecorator) {
-                    ((DiscreteColorDecorator)colourDecorator).setGradient(branchColourIsGradient);
-                } else if (colourDecorator instanceof ContinuousColorDecorator) {
-                    ((ContinuousColorDecorator)colourDecorator).setGradient(branchColourIsGradient);
-                }
 
-                treeViewer.setDecoratorForAttribute(attribute, colourDecorator);
-            }
-        }
-
-
-        if (colourDecorator != null && colourDecorator.isGradient()) {
-            // At present using a gradient precludes the use of the compoundDecorator
-            // and thus the branch width..
-            treeViewer.setBranchDecorator(colourDecorator);
-            return;
-        }
+//        if (colourDecorator != null && colourDecorator.isGradient()) {
+//            // At present using a gradient precludes the use of the compoundDecorator
+//            // and thus the branch width..
+//            treeViewer.setBranchDecorator(colourDecorator);
+//            return;
+//        }
 
         CompoundDecorator compoundDecorator = new CompoundDecorator();
 
@@ -354,24 +355,24 @@ public class TreeAppearanceController extends AbstractController {
             compoundDecorator.addDecorator(colourDecorator);
         }
 
-        if (branchWidthAttributeCombo.getSelectedIndex() > 0) {
-            String attribute = (String) branchWidthAttributeCombo.getSelectedItem();
-            if (attribute != null && attribute.length() > 0) {
-                if (!DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
-                    ContinuousScale scale;
-                    if (widthAutoRange) {
-                        scale = new ContinuousScale(attribute, nodes);
-                    } else {
-                        scale = new ContinuousScale(attribute, nodes, widthFromValue, widthToValue);
-                    }
-                    compoundDecorator.addDecorator(new ContinuousStrokeDecorator(
-                            scale, (float)fromWidth, (float)toWidth)
-                    );
-
-                }
-            }
-        }
-        treeViewer.setBranchDecorator(compoundDecorator);
+//        if (branchWidthAttributeCombo.getSelectedIndex() > 0) {
+//            String attribute = (String) branchWidthAttributeCombo.getSelectedItem();
+//            if (attribute != null && attribute.length() > 0) {
+//                if (!DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
+//                    ContinuousScale scale;
+//                    if (widthAutoRange) {
+//                        scale = new ContinuousScale(attribute, nodes);
+//                    } else {
+//                        scale = new ContinuousScale(attribute, nodes, widthFromValue, widthToValue);
+//                    }
+//                    compoundDecorator.addDecorator(new ContinuousStrokeDecorator(
+//                            scale, (float)fromWidth, (float)toWidth)
+//                    );
+//
+//                }
+//            }
+//        }
+        treeViewer.setBranchDecorator(compoundDecorator, isGradient);
 
     }
 

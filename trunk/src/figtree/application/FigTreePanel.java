@@ -31,11 +31,12 @@ public class FigTreePanel extends JPanel {
 
         controlPalette.addController(new MultipleTreesController(treeViewer));
 
-        controlPalette.addController(new TreeAppearanceController(treeViewer, frame));
-
         // This controller handles reading/writing of attribute colour schemes but doesn't presently
         // show any UI
-        controlPalette.addController(new AttributeColourController());
+        AttributeColourController attributeColourController = new AttributeColourController(treeViewer);
+        controlPalette.addController(attributeColourController);
+
+        controlPalette.addController(new TreeAppearanceController(treeViewer, frame, attributeColourController));
 
         treesController = new TreesController(treeViewer);
         controlPalette.addController(treesController);
@@ -44,13 +45,13 @@ public class FigTreePanel extends JPanel {
 
         // Create a tip label painter and its controller
         final BasicLabelPainter tipLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.TIP);
-        controlPalette.addController(new LabelPainterController("Tip Labels", "tipLabels", tipLabelPainter, frame));
+        controlPalette.addController(new LabelPainterController("Tip Labels", "tipLabels", tipLabelPainter, frame, attributeColourController));
         treeViewer.setTipLabelPainter(tipLabelPainter);
 
         // Create a node label painter and its controller
         final BasicLabelPainter nodeLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.NODE);
         nodeLabelPainter.setVisible(false);
-        controlPalette.addController(new LabelPainterController("Node Labels", "nodeLabels", nodeLabelPainter, frame));
+        controlPalette.addController(new LabelPainterController("Node Labels", "nodeLabels", nodeLabelPainter, frame, attributeColourController));
         treeViewer.setNodeLabelPainter(nodeLabelPainter);
 
         // Create a node bar painter and its controller
@@ -69,7 +70,7 @@ public class FigTreePanel extends JPanel {
         // Create a branch label painter and its controller
         final BasicLabelPainter branchLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.BRANCH);
         branchLabelPainter.setVisible(false);
-        controlPalette.addController(new LabelPainterController("Branch Labels", "branchLabels", branchLabelPainter, frame));
+        controlPalette.addController(new LabelPainterController("Branch Labels", "branchLabels", branchLabelPainter, frame, attributeColourController));
         treeViewer.setBranchLabelPainter(branchLabelPainter);
 
         // Create a scale controller
@@ -88,7 +89,7 @@ public class FigTreePanel extends JPanel {
         treeViewer.setScaleGridPainter(scaleGridPainter);
 
         // Create a legend controller
-        final LegendPainter legendPainter = new LegendPainter();
+        final LegendPainter legendPainter = new LegendPainter(attributeColourController);
         legendPainter.setVisible(false);
         controlPalette.addController(new LegendPainterController(legendPainter));
         treeViewer.setLegendPainter(legendPainter);
