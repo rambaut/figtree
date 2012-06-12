@@ -162,7 +162,7 @@ public class FigTreePanel extends JPanel {
     public void setColourBy(String attribute) {
         if (attribute == null) {
             treeViewer.setBranchColouringDecorator(null, null);
-            treeViewer.setBranchDecorator(null);
+            treeViewer.setBranchDecorator(null, false);
         } else {
             Set<Node> nodes = new HashSet<Node>();
             for (Tree tree : treeViewer.getTrees()) {
@@ -175,12 +175,12 @@ public class FigTreePanel extends JPanel {
                     Decorator decorator = new DiscreteColorDecorator();
 
                     treeViewer.setBranchColouringDecorator(attribute.substring(0, attribute.length() - 2), decorator);
-                    treeViewer.setBranchDecorator(null);
+                    treeViewer.setBranchDecorator(null, false);
                 } else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
                     Decorator decorator = new HSBDiscreteColorDecorator(attribute, nodes);
 
                     treeViewer.setBranchColouringDecorator(null, null);
-                    treeViewer.setBranchDecorator(decorator);
+                    treeViewer.setBranchDecorator(decorator, false);
                 } else {
 
                     Decorator decorator = new ContinuousColorDecorator(
@@ -188,7 +188,7 @@ public class FigTreePanel extends JPanel {
                             new Color(192, 16, 0), new Color(0, 0, 0), new Color(0, 16, 192), false);
 
                     treeViewer.setBranchColouringDecorator(null, null);
-                    treeViewer.setBranchDecorator(decorator);
+                    treeViewer.setBranchDecorator(decorator, false);
                 }
             }
         }

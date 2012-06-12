@@ -112,20 +112,13 @@ public class AttributeColourController extends AbstractController {
             } else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
                 colourDecorator = new HSBDiscreteColorDecorator(attribute, nodes);
             } else {
-                ContinuousScale scale;
-                if (colourSettings.autoRange) {
-                    scale = new ContinuousScale(attribute, nodes);
-                } else {
-                    scale = new ContinuousScale(attribute, nodes, colourSettings.fromValue, colourSettings.toValue);
+                ContinuousScale scale = attributeScaleMap.get(attribute);
+                if (scale == null) {
+                    scale = new ContinuousScale();
+                    attributeScaleMap.put(attribute, scale);
                 }
 
                 colourDecorator = new HSBContinuousColorDecorator(scale);
-
-//                        if (branchColourSettings.middleColour == null) {
-//                            colourDecorator = new ContinuousColorDecorator(scale, branchColourSettings.fromColour, branchColourSettings.toColour, branchColourIsGradient);
-//                        } else {
-//                            colourDecorator = new ContinuousColorDecorator(scale, branchColourSettings.fromColour, branchColourSettings.middleColour, branchColourSettings.toColour, branchColourIsGradient);
-//                        }
 
             }
             setDecoratorForAttribute(attribute, colourDecorator);
@@ -189,6 +182,7 @@ public class AttributeColourController extends AbstractController {
     private final TreeViewer treeViewer;
 
     private Map<String, Decorator> attributeDecoratorMap = new HashMap<String, Decorator>();
+    private Map<String, ContinuousScale> attributeScaleMap = new HashMap<String, ContinuousScale>();
 
     private List<String> attributeNames = new ArrayList<String>();
 }

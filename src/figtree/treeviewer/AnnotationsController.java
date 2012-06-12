@@ -36,7 +36,7 @@ public class AnnotationsController extends AbstractController {
                 if (item instanceof AnnotationDefinition) {
 //                    treePane.setBranchDecorator(new AnnotationBranchDecorator((AnnotationDefinition)item));
                 } else {
-                    treePane.setBranchDecorator(null);
+                    treePane.setBranchDecorator(null, false);
                 }
             }
         });

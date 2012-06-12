@@ -1,5 +1,6 @@
 package figtree.treeviewer.painters;
 
+import figtree.treeviewer.AttributeColourController;
 import figtree.treeviewer.TreePane;
 import figtree.treeviewer.decorators.*;
 import jam.controlpalettes.ControlPalette;
@@ -22,7 +23,9 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
 
     public final static int CONTINUOUS_LENGTH = 320;
 
-    public LegendPainter() {
+    public LegendPainter(AttributeColourController attributeColourController) {
+        this.attributeColourController = attributeColourController;
+
         setupAttributes(null);
 
         if (this.displayAttribute == null) {
@@ -43,7 +46,7 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
     }
 
     public void paint(Graphics2D g2, TreePane treePane, Justification justification, Rectangle2D bounds) {
-        Decorator decorator = treePane.getDecoratorForAttribute(displayAttribute);
+        Decorator decorator = attributeColourController.getDecoratorForAttribute(displayAttribute);
 
         if (decorator == null) {
             return;
@@ -198,5 +201,8 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
     private double preferredHeight;
     private double preferredWidth;
 
+    protected final AttributeColourController attributeColourController;
+
     protected TreePane treePane;
+
 }

@@ -34,7 +34,7 @@ public class TreeColouringController extends AbstractController {
 		final AttributableDecorator branchDecorator = new AttributableDecorator();
 		branchDecorator.setPaintAttributeName("!color");
 		branchDecorator.setStrokeAttributeName("!stroke");
-		treeViewer.setBranchDecorator(branchDecorator);
+		treeViewer.setBranchDecorator(branchDecorator, false);
 
 		optionsPanel = new OptionsPanel();
 
@@ -54,12 +54,12 @@ public class TreeColouringController extends AbstractController {
 						Decorator decorator = new DiscreteColorDecorator();
 
 						treeViewer.setBranchColouringDecorator(attribute.substring(0, attribute.length() - 2), decorator);
-						treeViewer.setBranchDecorator(null);
+						treeViewer.setBranchDecorator(null, false);
 					} else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
 						Decorator decorator = new HSBDiscreteColorDecorator(attribute, nodes);
 
 						treeViewer.setBranchColouringDecorator(null, null);
-						treeViewer.setBranchDecorator(decorator);
+						treeViewer.setBranchDecorator(decorator, false);
 					} else {
 
 						Decorator decorator = new ContinuousColorDecorator(
@@ -68,7 +68,7 @@ public class TreeColouringController extends AbstractController {
                                 false);
 
 						treeViewer.setBranchColouringDecorator(null, null);
-						treeViewer.setBranchDecorator(decorator);
+						treeViewer.setBranchDecorator(decorator, false);
 					}
 				}
 			}

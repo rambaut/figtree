@@ -155,14 +155,6 @@ public class BasicLabelPainter extends LabelPainter<Node> {
         return treePane.getTree();
     }
 
-    public Decorator getColourDecoratorForAttribute(String attribute) {
-        return treePane.getDecoratorForAttribute(attribute);
-    }
-
-    public void setColourDecoratorForAttribute(String attribute, Decorator decorator) {
-        treePane.setDecoratorForAttribute(attribute, decorator);
-    }
-
     protected String getLabel(Tree tree, Node node) {
         if (displayAttribute.equalsIgnoreCase(NAMES)) {
             if (intent == PainterIntent.TIP) {

@@ -410,9 +410,9 @@ public class MultiPaneTreeViewer extends TreeViewer {
         fireTreeSettingsChanged();
     }
 
-    public void setBranchDecorator(Decorator branchDecorator) {
+    public void setBranchDecorator(Decorator branchDecorator, boolean isGradient) {
 		for (TreePane treePane : treePanes) {
-			treePane.setBranchDecorator(branchDecorator);
+			treePane.setBranchDecorator(branchDecorator, isGradient);
 		}
 		fireTreeSettingsChanged();
 	}
@@ -430,18 +430,6 @@ public class MultiPaneTreeViewer extends TreeViewer {
         }
         fireTreeSettingsChanged();
     }
-
-    public Decorator getDecoratorForAttribute(String attribute) {
-        return treePanes.get(0).getDecoratorForAttribute(attribute);
-    }
-
-    public void setDecoratorForAttribute(String attribute, Decorator decorator) {
-        for (TreePane treePane : treePanes) {
-            treePane.setDecoratorForAttribute(attribute, decorator);
-        }
-        fireTreeSettingsChanged();
-    }
-
 
     public void setSelectionColor(Color selectionColor) {
 		for (TreePane treePane : treePanes) {

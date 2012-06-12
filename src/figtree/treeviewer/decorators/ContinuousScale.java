@@ -49,6 +49,11 @@ public class ContinuousScale {
         this.logarithm = logarithm;
     }
 
+    public ContinuousScale(String attributeName, Set<? extends Attributable> items) {
+        this();
+        calibrate(attributeName, items);
+    }
+
     public void calibrate(String attributeName, Set<? extends Attributable> items) {
         this.attributeName = attributeName;
 

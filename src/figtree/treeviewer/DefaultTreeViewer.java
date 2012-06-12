@@ -608,8 +608,8 @@ public class DefaultTreeViewer extends TreeViewer {
         legendPainter.setupAttributes(trees);
     }
 
-    public void setBranchDecorator(Decorator branchDecorator) {
-        treePane.setBranchDecorator(branchDecorator);
+    public void setBranchDecorator(Decorator branchDecorator, boolean isGradient) {
+        treePane.setBranchDecorator(branchDecorator, isGradient);
     }
 
     public void setBranchColouringDecorator(String branchColouringAttribute, Decorator branchColouringDecorator) {
@@ -618,14 +618,6 @@ public class DefaultTreeViewer extends TreeViewer {
 
     public void setNodeBackgroundDecorator(Decorator nodeBackgroundDecorator) {
         treePane.setNodeBackgroundDecorator(nodeBackgroundDecorator);
-    }
-
-    public Decorator getDecoratorForAttribute(String attribute) {
-        return treePane.getDecoratorForAttribute(attribute);
-    }
-
-    public void setDecoratorForAttribute(String attribute, Decorator decorator) {
-        treePane.setDecoratorForAttribute(attribute, decorator);
     }
 
     public void setSelectionColor(Color selectionColor) {
