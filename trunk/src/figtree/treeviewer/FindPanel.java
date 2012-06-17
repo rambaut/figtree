@@ -56,6 +56,10 @@ public class FindPanel extends JPanel {
     public FindPanel(Action findAllAction, Action findNextAction) {
         setLayout(new BorderLayout(0,0));
 
+        Font font = UIManager.getFont("SmallSystemFont");
+        if (font != null) {
+            searchText.setFont(font);
+        }
         searchText.setColumns(18);
 
         final JPanel panel = new JPanel();
