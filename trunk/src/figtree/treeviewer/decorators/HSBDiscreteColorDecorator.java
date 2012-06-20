@@ -21,7 +21,9 @@ public class HSBDiscreteColorDecorator extends DiscreteColorDecorator {
         }
     }
 
-    public HSBDiscreteColorDecorator(String settings) {
+    public HSBDiscreteColorDecorator(String attributeName, String settings) {
+        super(attributeName);
+
         if (!settings.startsWith("{") || !settings.endsWith("}")) {
             throw new IllegalArgumentException("HSBDiscreteColorDecorator settings string not in correct format");
         }
@@ -32,7 +34,7 @@ public class HSBDiscreteColorDecorator extends DiscreteColorDecorator {
         }
 
         try {
-            primaryAxis = Axis.valueOf(parts[0]);
+            primaryAxis = Axis.valueOf(parts[0].toUpperCase());
             secondaryCount = Integer.parseInt(parts[1]);
             hueUpper = Float.parseFloat(parts[2]);
             hueLower = Float.parseFloat(parts[3]);

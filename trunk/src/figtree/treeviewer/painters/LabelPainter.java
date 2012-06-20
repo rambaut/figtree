@@ -15,7 +15,6 @@ import figtree.treeviewer.decorators.Decorator;
  * @version $Id: LabelPainter.java 536 2006-11-21 16:10:24Z rambaut $
  */
 public abstract class LabelPainter<T> extends AbstractPainter<T> {
-    private Set<? extends Attributable> attributableItems;
 
     protected LabelPainter() {
 	}
@@ -62,10 +61,6 @@ public abstract class LabelPainter<T> extends AbstractPainter<T> {
 	    return visible;
 	}
 
-    public Decorator getColourDecoratorForAttribute(String attribute) {
-        return null;
-    }
-
     // Setters
 
 	public void setBackground(Paint background) {
@@ -98,11 +93,6 @@ public abstract class LabelPainter<T> extends AbstractPainter<T> {
 	    this.visible = visible;
 	    firePainterChanged();
 	}
-
-    public void setColourDecoratorForAttribute(String attribute, Decorator colourDecorator) {
-        // do nothing
-    }
-
 
     private Paint foreground = Color.BLACK;
 	private Paint background = null;

@@ -1,6 +1,7 @@
 package figtree.treeviewer.painters;
 
 import jam.controlpalettes.AbstractController;
+import jam.controlpalettes.ControllerListener;
 import jam.panels.OptionsPanel;
 
 import javax.swing.*;
@@ -95,57 +96,14 @@ public class LabelPainterController extends AbstractController {
 
         final JButton setupColourButton = new JButton("Colour");
 
-        colourHelper = new ColourControllerHelper(frame, userLabelDecorator, colourAttributeCombo, setupColourButton, colourController);
-
-//        colourSettings.autoRange = true;
-//        colourSettings.fromValue = 0.0;
-//        colourSettings.toValue = 1.0;
-//        colourSettings.fromColour = new Color(0, 16, 192);
-//        colourSettings.toColour = new Color(192, 16, 0);
-//        colourSettings.middleColour = new Color(0, 0, 0);
-//
-//        final JButton setupColourButton = new JButton(new AbstractAction("Colour") {
-//            public void actionPerformed(ActionEvent e) {
-//                Decorator decorator = null;
-//                if (colourAttributeCombo.getSelectedIndex() > 0) {
-//                    String attribute = (String) colourAttributeCombo.getSelectedItem();
-//                    decorator = labelPainter.getColourDecoratorForAttribute(attribute);
-//                }
-//
-//                if (decorator instanceof HSBDiscreteColorDecorator) {
-//                    if (discreteColourScaleDialog == null) {
-//                        discreteColourScaleDialog = new DiscreteColourScaleDialog(frame);
-//                    }
-//                    discreteColourScaleDialog.setDecorator((HSBDiscreteColorDecorator)decorator);
-//                    int result = discreteColourScaleDialog.showDialog();
-//                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-//                        discreteColourScaleDialog.setupDecorator((HSBDiscreteColorDecorator)decorator);
-//                        setupLabelDecorator();
-//                    }
-//                } else  if (decorator instanceof HSBContinuousColorDecorator) {
-//                    if (continuousColourScaleDialog == null) {
-//                        continuousColourScaleDialog = new ContinuousColourScaleDialog(frame);
-//                    }
-//                    continuousColourScaleDialog.setDecorator((HSBContinuousColorDecorator)decorator);
-//                    int result = continuousColourScaleDialog.showDialog();
-//                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-//                        continuousColourScaleDialog.setupDecorator((HSBContinuousColorDecorator)decorator);
-//                        setupLabelDecorator();
-//                    }
-//                } else {
-//                    throw new IllegalArgumentException("Unsupported decorator type");
-////                    if (continuousColourScaleDialog == null) {
-////                        continuousColourScaleDialog = new OldContinuousColourScaleDialog(frame, colourSettings);
-////                    }
-////                    int result = continuousColourScaleDialog.showDialog();
-////                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-////                        continuousColourScaleDialog.getSettings(colourSettings);
-////                        setupLabelDecorator();
-////                    }
-//                }
-//
-//            }
-//        });
+        this.colourController = colourController;
+        colourController.setupControls(colourAttributeCombo, setupColourButton);
+        colourController.addControllerListener(new ControllerListener() {
+            @Override
+            public void controlsChanged() {
+                setupLabelDecorator();
+            }
+        });
 
         final JLabel label2 = optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
 
@@ -162,6 +120,19 @@ public class LabelPainterController extends AbstractController {
             }
         });
 
+        Font font = labelPainter.getFont();
+        fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 48, 1));
+
+        final JLabel label3 = optionsPanel.addComponentWithLabel("Font Size:", fontSizeSpinner);
+
+        fontSizeSpinner.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
+                final float size = ((Double) fontSizeSpinner.getValue()).floatValue();
+                Font font = labelPainter.getFont().deriveFont(size);
+                labelPainter.setFont(font);
+            }
+        });
+
         JPanel panel = new JPanel();
         panel.setOpaque(false);
         panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
@@ -169,7 +140,7 @@ public class LabelPainterController extends AbstractController {
         ControllerOptionsPanel.setComponentLook(fontButton);
         panel.add(setupColourButton);
         panel.add(fontButton);
-        final JLabel label3 = optionsPanel.addComponentWithLabel("Setup:", panel);
+        final JLabel label4 = optionsPanel.addComponentWithLabel("Setup:", panel);
 
         NumberFormat format = labelPainter.getNumberFormat();
         int digits = format.getMaximumFractionDigits();
@@ -194,11 +165,11 @@ public class LabelPainterController extends AbstractController {
             }
         });
 
-        final JLabel label4 = optionsPanel.addComponentWithLabel("Format:", numericalFormatCombo);
+        final JLabel label5 = optionsPanel.addComponentWithLabel("Format:", numericalFormatCombo);
 
         digitsSpinner = new JSpinner(new SpinnerNumberModel(digits, 2, 14, 1));
 
-        final JLabel label5 = optionsPanel.addComponentWithLabel("Sig. Digits:", digitsSpinner);
+        final JLabel label6 = optionsPanel.addComponentWithLabel("Sig. Digits:", digitsSpinner);
 
         digitsSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
@@ -229,8 +200,10 @@ public class LabelPainterController extends AbstractController {
         setupColourButton.setEnabled(isSelected);
         fontButton.setEnabled(isSelected);
         label4.setEnabled(isSelected);
-        numericalFormatCombo.setEnabled(isSelected);
+        fontSizeSpinner.setEnabled(isSelected);
         label5.setEnabled(isSelected);
+        numericalFormatCombo.setEnabled(isSelected);
+        label6.setEnabled(isSelected);
         digitsSpinner.setEnabled(isSelected);
 
         titleCheckBox.addChangeListener(new ChangeListener() {
@@ -244,8 +217,10 @@ public class LabelPainterController extends AbstractController {
                 setupColourButton.setEnabled(isSelected);
                 fontButton.setEnabled(isSelected);
                 label4.setEnabled(isSelected);
-                numericalFormatCombo.setEnabled(isSelected);
+                fontSizeSpinner.setEnabled(isSelected);
                 label5.setEnabled(isSelected);
+                numericalFormatCombo.setEnabled(isSelected);
+                label6.setEnabled(isSelected);
                 digitsSpinner.setEnabled(isSelected);
                 labelPainter.setVisible(isSelected);
             }
@@ -254,6 +229,7 @@ public class LabelPainterController extends AbstractController {
     }
 
     private void setupAttributes() {
+        //todo - make this controlled by a generic helper class for attribute list combo boxes
         Object item1 = displayAttributeCombo.getSelectedItem();
         displayAttributeCombo.removeAllItems();
         for (String name : labelPainter.getAttributes()) {
@@ -261,14 +237,14 @@ public class LabelPainterController extends AbstractController {
         }
         displayAttributeCombo.setSelectedItem(item1);
 
-        String[] names = getAttributeNames(labelPainter.getAttributableItems());
-        Object item2 = colourAttributeCombo.getSelectedItem();
-        colourAttributeCombo.removeAllItems();
-        colourAttributeCombo.addItem(USER_SELECTION);
-        for (String name : names) {
-            colourAttributeCombo.addItem(name);
-        }
-        colourAttributeCombo.setSelectedItem(item2);
+//        String[] names = getAttributeNames(labelPainter.getAttributableItems());
+//        Object item2 = colourAttributeCombo.getSelectedItem();
+//        colourAttributeCombo.removeAllItems();
+//        colourAttributeCombo.addItem(USER_SELECTION);
+//        for (String name : names) {
+//            colourAttributeCombo.addItem(name);
+//        }
+//        colourAttributeCombo.setSelectedItem(item2);
 
         optionsPanel.repaint();
     }
@@ -321,7 +297,7 @@ public class LabelPainterController extends AbstractController {
         Decorator textDecorator = null;
 
         textDecorator = userLabelDecorator;
-        Decorator colourDecorator = colourHelper.getColourDecorator();
+        Decorator colourDecorator = colourController.getColourDecorator(colourAttributeCombo, null);
 
         if (colourDecorator != null) {
             CompoundDecorator compoundDecorator = new CompoundDecorator();
@@ -379,13 +355,13 @@ public class LabelPainterController extends AbstractController {
     }
 
 
-    private final ColourControllerHelper colourHelper;
+    private final AttributeColourController colourController;
 
     private final JCheckBox titleCheckBox;
     private final OptionsPanel optionsPanel;
 
     private final JComboBox displayAttributeCombo;
-    //    private final JSpinner fontSizeSpinner;
+    private final JSpinner fontSizeSpinner;
     private FontDialog fontDialog = null;
 
     private final JComboBox numericalFormatCombo;

@@ -70,7 +70,10 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
         g2.setFont(getFont());
 
         if (decorator instanceof DiscreteColorDecorator) {
-            final String label = ((DiscreteColorDecorator)decorator).getValues().get(0).toString();
+            final String label = "Empty";
+            if (((DiscreteColorDecorator)decorator).getValues().size() > 0) {
+                ((DiscreteColorDecorator)decorator).getValues().get(0).toString();
+            }
 
             Rectangle2D labelBounds = g2.getFontMetrics().getStringBounds(label, g2);
             float yOffset = (float)g2.getFontMetrics().getAscent();

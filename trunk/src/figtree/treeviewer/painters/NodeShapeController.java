@@ -1,6 +1,9 @@
 package figtree.treeviewer.painters;
 
+import figtree.treeviewer.AttributeColourController;
+import figtree.treeviewer.decorators.Decorator;
 import jam.controlpalettes.AbstractController;
+import jam.controlpalettes.ControllerListener;
 import jam.panels.OptionsPanel;
 
 import javax.swing.*;
@@ -18,8 +21,10 @@ import figtree.treeviewer.ControllerOptionsPanel;
  */
 public class NodeShapeController extends AbstractController {
 
-    public NodeShapeController(String title, final NodeShapePainter nodeShapePainter) {
+    public NodeShapeController(String title, final NodeShapePainter nodeShapePainter,
+                               final AttributeColourController colourController) {
         this.title = title;
+        this.colourController = colourController;
         this.nodeShapePainter = nodeShapePainter;
 
 	    optionsPanel = new ControllerOptionsPanel(2, 2);
@@ -47,13 +52,15 @@ public class NodeShapeController extends AbstractController {
         });
 
         colourAttributeCombo = new JComboBox(attributes);
-        colourAttributeCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                String attribute = (String) colourAttributeCombo.getSelectedItem();
-                nodeShapePainter.setColourAttribute(attribute);
+        setupColourButton = new JButton("Setup");
+
+        colourController.setupControls(colourAttributeCombo, setupColourButton);
+        colourController.addControllerListener(new ControllerListener() {
+            @Override
+            public void controlsChanged() {
+                setupNodeShapePainter();
             }
         });
-
         this.nodeShapePainter.addPainterListener(new PainterListener() {
             public void painterChanged() {
 
@@ -76,13 +83,20 @@ public class NodeShapeController extends AbstractController {
         });
         setupOptions();
 
-        shapeCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                setupOptions();
-                optionsPanel.validate();
-            }
-        });
+        // only needed if we want to change the options depending on
+        // the choice of shapeCombo
+//        shapeCombo.addActionListener(new ActionListener() {
+//            public void actionPerformed(ActionEvent event) {
+//                setupOptions();
+//                optionsPanel.validate();
+//            }
+//        });
 
+    }
+
+    private void setupNodeShapePainter() {
+        Decorator colourDecorator = colourController.getColourDecorator(colourAttributeCombo, null);
+        nodeShapePainter.setColourDecorator(colourDecorator);
     }
 
     private void setupOptions() {
@@ -90,6 +104,7 @@ public class NodeShapeController extends AbstractController {
         optionsPanel.addComponentWithLabel("Shape:", shapeCombo);
         optionsPanel.addComponentWithLabel("Size by:", sizeAttributeCombo);
         optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
+        optionsPanel.addComponent(setupColourButton);
         fireControllerChanged();
     }
 
@@ -121,12 +136,13 @@ public class NodeShapeController extends AbstractController {
     private JComboBox shapeCombo;
     private JComboBox sizeAttributeCombo;
     private JComboBox colourAttributeCombo;
+    private JButton setupColourButton;
 
     public String getTitle() {
         return title;
     }
 
     private final String title;
-
+    private final AttributeColourController colourController;
     private final NodeShapePainter nodeShapePainter;
 }

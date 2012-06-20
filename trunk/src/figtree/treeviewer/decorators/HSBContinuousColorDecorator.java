@@ -15,7 +15,8 @@ import java.awt.geom.Point2D;
  */
 public class HSBContinuousColorDecorator implements Decorator {
 
-    public HSBContinuousColorDecorator(String settings) {
+    public HSBContinuousColorDecorator(String attribute, String settings) {
+
         if (!settings.startsWith("{") || !settings.endsWith("}")) {
             throw new IllegalArgumentException("HSBContinuousColorDecorator settings string not in correct format");
         }

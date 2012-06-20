@@ -40,7 +40,7 @@ public class TreeViewerPanel extends JPanel {
 
         // This controller handles reading/writing of attribute colour schemes but doesn't presently
         // show any UI
-        AttributeColourController attributeColourController = new AttributeColourController(treeViewer);
+        AttributeColourController attributeColourController = new AttributeColourController(treeViewer, frame);
         controlPalette.addController(attributeColourController);
 
         controlPalette.addController(new TreeAppearanceController(treeViewer, frame, attributeColourController));
