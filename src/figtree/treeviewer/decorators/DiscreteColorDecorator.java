@@ -57,7 +57,15 @@ public class DiscreteColorDecorator implements Decorator {
         this.paints = paints;
     }
 
+    public DiscreteColorDecorator(String attributeName) {
+        this.attributeName = attributeName;
+    }
+
     public DiscreteColorDecorator(String attributeName, Set<? extends Attributable> items) {
+        setAttributes(attributeName, items);
+    }
+
+    public void setAttributes(String attributeName, Set<? extends Attributable> items) {
         this.attributeName = attributeName;
 
         // First collect the set of all attribute values
@@ -78,11 +86,15 @@ public class DiscreteColorDecorator implements Decorator {
         values = new ArrayList<Object>(sortedValues);
         values.addAll(unsortedValues);
 
-        setValues(values, DEFAULT_PAINTS);
+        setupColours();
     }
 
     public List<Object> getValues() {
         return values;
+    }
+
+    protected void setupColours() {
+        setValues(values, DEFAULT_PAINTS);
     }
 
     public Color getColor(Object value) {

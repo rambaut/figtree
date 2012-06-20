@@ -1,6 +1,7 @@
 package figtree.treeviewer.painters;
 
 import figtree.treeviewer.TreePane;
+import figtree.treeviewer.decorators.Decorator;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.trees.RootedTree;
 import jebl.evolution.trees.Tree;
@@ -18,7 +19,6 @@ public class NodeShapePainter extends NodePainter {
 
     public static final String FIXED = "fixed";
     public static final double SIZE = 10.0;
-
 
     public enum NodeShape {
         CIRCLE("Circle"),
@@ -155,15 +155,20 @@ public class NodeShapePainter extends NodePainter {
     public void paint(Graphics2D g2, Node node, Point2D nodePoint) {
 //        if (nodeShape != null) {
 
-            nodeShape = new Ellipse2D.Double(nodePoint.getX() - (SIZE / 2), nodePoint.getY() - (SIZE / 2), SIZE, SIZE);
+        nodeShape = new Ellipse2D.Double(nodePoint.getX() - (SIZE / 2), nodePoint.getY() - (SIZE / 2), SIZE, SIZE);
 
-            g2.setPaint(Color.blue);
-            g2.fill(nodeShape);
+        Paint paint = Color.BLUE;
+        if (colourDecorator != null) {
+            colourDecorator.setItem(node);
+            paint = colourDecorator.getPaint(paint);
+        }
+        g2.setPaint(paint);
+        g2.fill(nodeShape);
 
-            g2.setPaint(Color.black);
-            g2.setStroke(new BasicStroke(0.5F));
+        g2.setPaint(Color.black);
+        g2.setStroke(new BasicStroke(0.5F));
 
-            g2.draw(nodeShape);
+        g2.draw(nodeShape);
 //        }
 
     }
@@ -192,12 +197,8 @@ public class NodeShapePainter extends NodePainter {
         firePainterChanged();
     }
 
-    public String getColourAttribute() {
-        return colourAttribute;
-    }
-
-    public void setColourAttribute(String colourAttribute) {
-        this.colourAttribute = colourAttribute;
+    public void setColourDecorator(Decorator colourDecorator) {
+        this.colourDecorator = colourDecorator;
         firePainterChanged();
     }
 
@@ -205,7 +206,7 @@ public class NodeShapePainter extends NodePainter {
 
     private String sizeAttribute = null;
 
-    private String colourAttribute = null;
+    private Decorator colourDecorator = null;
     private String[] attributeNames;
 
     private TreePane treePane;

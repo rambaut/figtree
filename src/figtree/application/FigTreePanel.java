@@ -33,7 +33,7 @@ public class FigTreePanel extends JPanel {
 
         // This controller handles reading/writing of attribute colour schemes but doesn't presently
         // show any UI
-        AttributeColourController attributeColourController = new AttributeColourController(treeViewer);
+        AttributeColourController attributeColourController = new AttributeColourController(treeViewer, frame);
         controlPalette.addController(attributeColourController);
 
         controlPalette.addController(new TreeAppearanceController(treeViewer, frame, attributeColourController));
@@ -64,7 +64,7 @@ public class FigTreePanel extends JPanel {
         // Create a node shape painter and its controller
         final NodeShapePainter nodeShapePainter = new NodeShapePainter();
         nodeShapePainter.setVisible(false);
-        controlPalette.addController(new NodeShapeController("Node Shapes", nodeShapePainter));
+        controlPalette.addController(new NodeShapeController("Node Shapes", nodeShapePainter, attributeColourController));
         treeViewer.setNodeShapePainter(nodeShapePainter);
 
         // Create a branch label painter and its controller
