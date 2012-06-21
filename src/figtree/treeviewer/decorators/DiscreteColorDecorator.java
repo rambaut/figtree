@@ -16,7 +16,7 @@ import java.util.List;
  * @author Andrew Rambaut
  * @version $Id: DiscreteColorDecorator.java 639 2007-02-15 10:05:28Z rambaut $
  */
-public class DiscreteColorDecorator implements Decorator {
+public class DiscreteColorDecorator extends ColourDecorator {
 
     public static Color[] DEFAULT_PAINTS = new Color[] {
             new Color(64,35,225),
@@ -50,23 +50,20 @@ public class DiscreteColorDecorator implements Decorator {
     };
 
     public DiscreteColorDecorator() {
-        this(DEFAULT_PAINTS);
-    }
-
-    public DiscreteColorDecorator(Color[] paints) {
-        this.paints = paints;
+        super(null);
+        colours = DEFAULT_PAINTS;
     }
 
     public DiscreteColorDecorator(String attributeName) {
-        this.attributeName = attributeName;
+        super(attributeName);
     }
 
     public DiscreteColorDecorator(String attributeName, Set<? extends Attributable> items) {
-        setAttributes(attributeName, items);
+        super(attributeName, items);
     }
 
     public void setAttributes(String attributeName, Set<? extends Attributable> items) {
-        this.attributeName = attributeName;
+        super.setAttributes(attributeName, items);
 
         // First collect the set of all attribute values
         Set<Object> sortedValues = new TreeSet<Object>();
@@ -98,179 +95,39 @@ public class DiscreteColorDecorator implements Decorator {
     }
 
     public Color getColor(Object value) {
-        return (Color)paints[orderMap.get(value)];
+        return (Color)colours[orderMap.get(value)];
     }
 
-    public void setValues(Collection<? extends Object> values, Color[] paints) {
+    public void setValues(Collection<? extends Object> values, Color[] colours) {
         orderMap = new TreeMap<Object, Integer>();
-        this.paints = paints;
+        this.colours = colours;
 
         // now create a paint map for these values
         int i = 0;
         for (Object value : values) {
             orderMap.put(value, i);
-            i = (i + 1) % paints.length;
+            i = (i + 1) % colours.length;
         }
 
     }
 
-    // Decorator INTERFACE
-    public Paint getPaint(Paint paint) {
-        if (this.paint == null) return paint;
-        return this.paint;
-    }
-
-    public Paint getPaint(Paint paint, Point2D point1, Point2D point2) {
-        if (colour1 != null && colour2 != null) {
-            return new GradientPaint(point1, colour1, point2, colour2, false);
-        } else {
-            return getPaint(paint);
-        }
-    }
-
-    public Paint getFillPaint(Paint paint, Point2D point1, Point2D point2) {
-        if (fillColour1 != null && fillColour2 != null) {
-            return new GradientPaint(point1, fillColour1, point2, fillColour2, false);
-        } else {
-            return getFillPaint(paint);
-        }
-    }
-
-    public String getAttributeName() {
-        return attributeName;
-    }
-
-    public Paint getFillPaint(Paint paint) {
-        return paint;
-    }
-
-    public Stroke getStroke(Stroke stroke) {
-        return stroke;
-    }
-
-    public Font getFont(Font font) {
-        return font;
-    }
-
-    public void setItem(Object item) {
-        if (item instanceof Attributable) {
-            setAttributableItem((Attributable)item);
-        } else {
-            paint = getPaintForValue(item);
-        }
-    }
-
-    public void setItems(Object item1, Object item2) {
-        colour1 = null;
-        colour2 = null;
-
-        if (item2 == null) {
-            setItem(item1);
-            return;
-        }
-
-        if (item1 == null) {
-            setItem(item2);
-            return;
-        }
-
-        Object value1 = item1;
-        if (item1 instanceof Attributable) {
-            value1 = ((Attributable)item1).getAttribute(getAttributeName());
-        }
-        if (value1 != null) {
-            colour1 = (Color)getPaintForValue(value1);
-            paint = colour1;
-        }
-
-        Object value2 = item2;
-        if (item2 instanceof Attributable) {
-            value2 = ((Attributable)item2).getAttribute(getAttributeName());
-        }
-        if (value2 != null) {
-            colour2 = (Color)getPaintForValue(value2);
-            paint = colour2;
-        }
-
-        fillColour1 = null;
-        if (colour1 != null) {
-            fillColour1 = getLighterColour(colour1);
-
-        }
-
-        fillColour2 = null;
-        if (colour2 != null) {
-            fillColour2 = getLighterColour(colour2);
-        }
-
-
-    }
-
-    public static boolean isDiscrete(String attributeName, Set<? extends Attributable> items) {
-        // First collect the set of all attribute values
-        Set<Object> values = new HashSet<Object>();
-        for (Attributable item : items) {
-            Object value = item.getAttribute(attributeName);
-            if (value != null) {
-                values.add(value);
-            }
-        }
-
-        boolean isNumber = true;
-        boolean isInteger = true;
-
-        for (Object value : values) {
-            if (value instanceof Number) {
-                if (((Number)value).doubleValue() != ((Number)value).intValue()) {
-                    isInteger = false;
-                }
-            } else {
-                isNumber = false;
-            }
-        }
-
-        if (isNumber && !isInteger) return false;
-
-        return true;
-    }
-
-    // Private methods
-    private void setAttributableItem(Attributable item) {
-        paint = null;
-        Object value = item.getAttribute(attributeName);
-        if (value != null) {
-            paint = getPaintForValue(value);
-        }
-    }
-
-    private Paint getPaintForValue(Object value) {
+    protected Color getColourForValue(Object value) {
         int index = -1;
 
-        if (orderMap != null) {
-            index = orderMap.get(value);
-        } else if (value instanceof Number) {
-            index = ((Number)value).intValue() % paints.length;
+        if (value != null) {
+            if (orderMap != null && orderMap.size() > 0) {
+                index = orderMap.get(value);
+            } else if (value instanceof Number) {
+                index = ((Number)value).intValue() % colours.length;
+            }
         }
         if (index == -1) {
             return null;
         }
-        return paints[index];
+        return colours[index];
     }
-
-    private Color getLighterColour(Color color) {
-        return new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 2);
-    }
-
-    private String attributeName = null;
 
     private List<Object> values = new ArrayList<Object>();
     private Map<Object, Integer> orderMap = null;
-    private Paint[] paints = null;
-    private Paint paint = null;
-
-    private Color colour1 = null;
-    private Color colour2 = null;
-    private Color fillColour1 = null;
-    private Color fillColour2 = null;
-
+    private Color[] colours = null;
 }

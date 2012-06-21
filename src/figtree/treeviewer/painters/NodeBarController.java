@@ -53,8 +53,6 @@ public class NodeBarController extends AbstractController {
             }
         });
 
-        final JLabel label1 = optionsPanel.addComponentWithLabel("Display:", displayAttributeCombo);
-
         this.nodeBarPainter.addPainterListener(new PainterListener() {
             public void painterChanged() {
             }
@@ -74,24 +72,21 @@ public class NodeBarController extends AbstractController {
                 nodeBarPainter.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
             }
         });
-        final JLabel label2 = optionsPanel.addComponentWithLabel("Bar Width:", barWidthSpinner);
 
         nodeBarPainter.setStroke(new BasicStroke(defaultBarWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
 
-        final boolean isSelected = titleCheckBox.isSelected();
-        label1.setEnabled(isSelected);
-        displayAttributeCombo.setEnabled(isSelected);
-        label2.setEnabled(isSelected);
-        barWidthSpinner.setEnabled(isSelected);
+        final JLabel label1 = optionsPanel.addComponentWithLabel("Display:", displayAttributeCombo);
+        final JLabel label2 = optionsPanel.addComponentWithLabel("Bar Width:", barWidthSpinner);
+        addComponent(label1);
+        addComponent(displayAttributeCombo);
+        addComponent(label2);
+        addComponent(barWidthSpinner);
+        enableComponents(titleCheckBox.isSelected());
 
         titleCheckBox.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
-                final boolean isSelected = titleCheckBox.isSelected();
-                label1.setEnabled(isSelected);
-                displayAttributeCombo.setEnabled(isSelected);
-                label2.setEnabled(isSelected);
-                barWidthSpinner.setEnabled(isSelected);
-                nodeBarPainter.setVisible(isSelected);
+                enableComponents(titleCheckBox.isSelected());
+                nodeBarPainter.setVisible(titleCheckBox.isSelected());
             }
         });
     }

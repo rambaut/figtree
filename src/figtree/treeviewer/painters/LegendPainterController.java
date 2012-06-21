@@ -1,9 +1,13 @@
 package figtree.treeviewer.painters;
 
+import figtree.treeviewer.AttributeColourController;
 import figtree.treeviewer.ControllerOptionsPanel;
 import figtree.treeviewer.TreeViewer;
+import figtree.treeviewer.decorators.ColourDecorator;
+import figtree.treeviewer.decorators.Decorator;
 import figtree.ui.components.RealNumberField;
 import jam.controlpalettes.AbstractController;
+import jam.controlpalettes.ControllerListener;
 import jam.panels.OptionsPanel;
 import jebl.util.Attributable;
 
@@ -43,7 +47,8 @@ public class LegendPainterController extends AbstractController {
 
     public static String DEFAULT_ATTRIBUTE_KEY = "";
 
-    public LegendPainterController(final LegendPainter legendPainter) {
+    public LegendPainterController(final LegendPainter legendPainter,
+                                   final AttributeColourController colourController) {
         this.legendPainter = legendPainter;
 
         final String defaultFontName = PREFS.get(CONTROLLER_KEY + "." + FONT_NAME_KEY, DEFAULT_FONT_NAME);
@@ -60,7 +65,6 @@ public class LegendPainterController extends AbstractController {
         titleCheckBox = new JCheckBox(getTitle());
         titleCheckBox.setSelected(legendPainter.isVisible());
 
-        String[] attributes = legendPainter.getAttributes();
         attributeCombo = new JComboBox();
         attributeCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -69,7 +73,15 @@ public class LegendPainterController extends AbstractController {
             }
         });
 
-        final JLabel label1 = optionsPanel.addComponentWithLabel("Attribute:", attributeCombo);
+        this.colourController = colourController;
+        colourController.setupControls(attributeCombo, null);
+        colourController.addControllerListener(new ControllerListener() {
+            @Override
+            public void controlsChanged() {
+                ColourDecorator colourDecorator = (ColourDecorator)colourController.getColourDecorator(attributeCombo, null);
+                legendPainter.setColourDecorator(colourDecorator);
+            }
+        });
 
         attributeCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -79,8 +91,6 @@ public class LegendPainterController extends AbstractController {
 
         Font font = legendPainter.getFont();
         fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 48, 1));
-
-        final JLabel label2 = optionsPanel.addComponentWithLabel("Font Size:", fontSizeSpinner);
 
         fontSizeSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
@@ -101,21 +111,19 @@ public class LegendPainterController extends AbstractController {
             }
         });
 
-        final boolean isSelected = titleCheckBox.isSelected();
-        label1.setEnabled(isSelected);
-        attributeCombo.setEnabled(isSelected);
-        label2.setEnabled(isSelected);
-        fontSizeSpinner.setEnabled(isSelected);
+        final JLabel label1 = optionsPanel.addComponentWithLabel("Attribute:", attributeCombo);
+        final JLabel label2 = optionsPanel.addComponentWithLabel("Font Size:", fontSizeSpinner);
+
+        addComponent(label1);
+        addComponent(attributeCombo);
+        addComponent(label2);
+        addComponent(fontSizeSpinner);
+        enableComponents(titleCheckBox.isSelected());
 
         titleCheckBox.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
-                final boolean isSelected = titleCheckBox.isSelected();
-                label1.setEnabled(isSelected);
-                attributeCombo.setEnabled(isSelected);
-                label2.setEnabled(isSelected);
-                fontSizeSpinner.setEnabled(isSelected);
-
-                legendPainter.setVisible(isSelected);
+                enableComponents(titleCheckBox.isSelected());
+                legendPainter.setVisible(titleCheckBox.isSelected());
             }
         });
 
@@ -185,6 +193,7 @@ public class LegendPainterController extends AbstractController {
         settings.put(CONTROLLER_KEY + "." + FONT_SIZE_KEY, fontSizeSpinner.getValue());
     }
 
+    private final AttributeColourController colourController;
     private final JCheckBox titleCheckBox;
     private final OptionsPanel optionsPanel;
 

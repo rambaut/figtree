@@ -11,6 +11,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import figtree.treeviewer.ControllerOptionsPanel;
@@ -52,13 +54,14 @@ public class NodeShapeController extends AbstractController {
         });
 
         colourAttributeCombo = new JComboBox(attributes);
-        setupColourButton = new JButton("Setup");
+        setupColourButton = new JButton("Colour");
 
         colourController.setupControls(colourAttributeCombo, setupColourButton);
         colourController.addControllerListener(new ControllerListener() {
             @Override
             public void controlsChanged() {
-                setupNodeShapePainter();
+                Decorator colourDecorator = colourController.getColourDecorator(colourAttributeCombo, null);
+                nodeShapePainter.setColourDecorator(colourDecorator);
             }
         });
         this.nodeShapePainter.addPainterListener(new PainterListener() {
@@ -81,7 +84,11 @@ public class NodeShapeController extends AbstractController {
                 optionsPanel.repaint();
             }
         });
-        setupOptions();
+
+        JLabel label1 = optionsPanel.addComponentWithLabel("Shape:", shapeCombo);
+        JLabel label2 = optionsPanel.addComponentWithLabel("Size by:", sizeAttributeCombo);
+        JLabel label3 = optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
+        JLabel label4 =  optionsPanel.addComponentWithLabel("Setup:", setupColourButton);
 
         // only needed if we want to change the options depending on
         // the choice of shapeCombo
@@ -92,19 +99,26 @@ public class NodeShapeController extends AbstractController {
 //            }
 //        });
 
+        addComponent(label1);
+        addComponent(shapeCombo);
+        addComponent(label2);
+        addComponent(sizeAttributeCombo);
+        addComponent(label3);
+        addComponent(colourAttributeCombo);
+        addComponent(label4);
+        addComponent(setupColourButton);
+        enableComponents(titleCheckBox.isSelected());
+
+        titleCheckBox.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
+                enableComponents(titleCheckBox.isSelected());
+            }
+        });
     }
 
-    private void setupNodeShapePainter() {
-        Decorator colourDecorator = colourController.getColourDecorator(colourAttributeCombo, null);
-        nodeShapePainter.setColourDecorator(colourDecorator);
-    }
 
     private void setupOptions() {
         optionsPanel.removeAll();
-        optionsPanel.addComponentWithLabel("Shape:", shapeCombo);
-        optionsPanel.addComponentWithLabel("Size by:", sizeAttributeCombo);
-        optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
-        optionsPanel.addComponent(setupColourButton);
         fireControllerChanged();
     }
 

@@ -9,7 +9,7 @@ import java.util.Set;
  * @author Andrew Rambaut
  * @version $Id$
  */
-public class HSBDiscreteColorDecorator extends DiscreteColorDecorator {
+public class HSBDiscreteColourDecorator extends DiscreteColorDecorator {
     public enum Axis {
         HUE,
         SATURATION,
@@ -21,16 +21,16 @@ public class HSBDiscreteColorDecorator extends DiscreteColorDecorator {
         }
     }
 
-    public HSBDiscreteColorDecorator(String attributeName, String settings) {
+    public HSBDiscreteColourDecorator(String attributeName, String settings) {
         super(attributeName);
 
         if (!settings.startsWith("{") || !settings.endsWith("}")) {
-            throw new IllegalArgumentException("HSBDiscreteColorDecorator settings string not in correct format");
+            throw new IllegalArgumentException("HSBDiscreteColourDecorator settings string not in correct format");
         }
 
         String[] parts = settings.substring(1, settings.length() - 1).split("[, ]+");
         if (parts.length != 8) {
-            throw new IllegalArgumentException("HSBDiscreteColorDecorator settings string not in correct format");
+            throw new IllegalArgumentException("HSBDiscreteColourDecorator settings string not in correct format");
         }
 
         try {
@@ -43,13 +43,13 @@ public class HSBDiscreteColorDecorator extends DiscreteColorDecorator {
             brightnessUpper = Float.parseFloat(parts[6]);
             brightnessLower = Float.parseFloat(parts[7]);
         } catch (NumberFormatException nfe) {
-            throw new IllegalArgumentException("HSBDiscreteColorDecorator settings string not in correct format");
+            throw new IllegalArgumentException("HSBDiscreteColourDecorator settings string not in correct format");
         } catch (IllegalArgumentException iae) {
-            throw new IllegalArgumentException("HSBDiscreteColorDecorator settings string not in correct format");
+            throw new IllegalArgumentException("HSBDiscreteColourDecorator settings string not in correct format");
         }
     }
 
-    public HSBDiscreteColorDecorator(String attributeName, Set<? extends Attributable> items) {
+    public HSBDiscreteColourDecorator(String attributeName, Set<? extends Attributable> items) {
         super(attributeName, items);
         setupColours();
     }
@@ -69,6 +69,9 @@ public class HSBDiscreteColorDecorator extends DiscreteColorDecorator {
     }
 
     public void setupColours() {
+        if (secondaryCount == 0) {
+            return;
+        }
         int valueCount = getValues().size();
         int primaryCount = valueCount / secondaryCount;
         if (valueCount % secondaryCount > 0) {

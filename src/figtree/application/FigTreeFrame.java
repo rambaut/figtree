@@ -7,7 +7,7 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
 import figtree.treeviewer.decorators.DiscreteColorDecorator;
-import figtree.treeviewer.decorators.HSBDiscreteColorDecorator;
+import figtree.treeviewer.decorators.HSBDiscreteColourDecorator;
 import figtree.treeviewer.painters.StatesPainter;
 import jebl.evolution.alignments.Alignment;
 import jebl.evolution.alignments.BasicAlignment;
@@ -908,7 +908,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                 for (AnnotationDefinition definition: annotations.keySet()) {
                     Map<Taxon, Object> annotation = annotations.get(definition);
                     annotationNames[i] = definition.getName();
-                    decorators[i] = new HSBDiscreteColorDecorator(annotationNames[i], annotation.keySet());
+                    decorators[i] = new HSBDiscreteColourDecorator(annotationNames[i], annotation.keySet());
                     i++;
                 }
                 treeViewer.setTipLabelPainter(new StatesPainter(annotationNames, decorators));

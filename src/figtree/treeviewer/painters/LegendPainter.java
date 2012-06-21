@@ -4,15 +4,15 @@ import figtree.treeviewer.AttributeColourController;
 import figtree.treeviewer.TreePane;
 import figtree.treeviewer.decorators.*;
 import jam.controlpalettes.ControlPalette;
-import jebl.evolution.graphs.Node;
-import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.Tree;
 import jebl.util.Attributable;
 import jebl.util.NumberFormatter;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Andrew Rambaut
@@ -25,14 +25,6 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
 
     public LegendPainter(AttributeColourController attributeColourController) {
         this.attributeColourController = attributeColourController;
-
-        setupAttributes(null);
-
-        if (this.displayAttribute == null) {
-            this.displayAttribute = attributes[0];
-        } else {
-            this.displayAttribute = "";
-        }
     }
 
     public void setTreePane(TreePane treePane) {
@@ -46,11 +38,10 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
     }
 
     public void paint(Graphics2D g2, TreePane treePane, Justification justification, Rectangle2D bounds) {
-        Decorator decorator = attributeColourController.getDecoratorForAttribute(displayAttribute);
-
-        if (decorator == null) {
+        if (colourDecorator == null) {
             return;
         }
+        String attribute = colourDecorator.getAttributeName();
 
         Font oldFont = g2.getFont();
         Paint oldPaint = g2.getPaint();
@@ -69,33 +60,38 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
 
         g2.setFont(getFont());
 
-        if (decorator instanceof DiscreteColorDecorator) {
-            final String label = "Empty";
-            if (((DiscreteColorDecorator)decorator).getValues().size() > 0) {
-                ((DiscreteColorDecorator)decorator).getValues().get(0).toString();
+        Rectangle2D labelBounds = g2.getFontMetrics().getStringBounds("ty", g2);
+
+        // vertical inset
+        float y = (float)(labelBounds.getHeight() * 0.5);
+
+        float yOffset = (float)g2.getFontMetrics().getAscent();
+        float xOffset1 = (float)(labelBounds.getHeight() * 0.5);
+        float yDelta = (float)labelBounds.getHeight() * 1.5F;
+        float xOffset2 = (float)(labelBounds.getHeight() * 2);
+
+        g2.setPaint(Color.BLACK);
+        g2.drawString(attribute, xOffset1, y + yOffset);
+
+        y += yDelta;
+
+        if (colourDecorator instanceof DiscreteColorDecorator) {
+            if (((DiscreteColorDecorator)colourDecorator).getValues().size() > 0) {
+                ((DiscreteColorDecorator)colourDecorator).getValues().get(0).toString();
             }
 
-            Rectangle2D labelBounds = g2.getFontMetrics().getStringBounds(label, g2);
-            float yOffset = (float)g2.getFontMetrics().getAscent();
 
-            float xOffset1 = (float)(labelBounds.getHeight() * 0.5);
-            float xOffset2 = (float)(labelBounds.getHeight() * 2);
-            float y = (float)(labelBounds.getHeight() * 0.5);
-
-
-            for (Object value : ((DiscreteColorDecorator)decorator).getValues()) {
-                g2.setPaint(((DiscreteColorDecorator)decorator).getColor(value));
+            for (Object value : ((DiscreteColorDecorator)colourDecorator).getValues()) {
+                g2.setPaint(((DiscreteColorDecorator)colourDecorator).getColor(value));
                 Rectangle2D rect = new Rectangle2D.Double(xOffset1, y, labelBounds.getHeight(), labelBounds.getHeight());
                 g2.fill(rect);
                 g2.drawString(value.toString(), xOffset2, y + yOffset);
 
-                y += labelBounds.getHeight() * 1.5F;
+                y += yDelta;
             }
-        } else {
+        } else if (colourDecorator instanceof ContinuousColourDecorator){
             // draw a continuous legend
-
-
-            ContinuousScale scale = ((HSBContinuousColorDecorator)decorator).getContinuousScale();
+            ContinuousScale scale = ((ContinuousColourDecorator)colourDecorator).getContinuousScale();
 
             double min = scale.getMinValue();
             double max = scale.getMaxValue();
@@ -103,21 +99,35 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
 
             NumberFormatter formatter = new NumberFormatter(4);
             final String label = "0.0";
-            Rectangle2D labelBounds = g2.getFontMetrics().getStringBounds(label, g2);
+            labelBounds = g2.getFontMetrics().getStringBounds(label, g2);
 
-            float xOffset1 = (float)(labelBounds.getHeight() * 0.5);
-            float y = (float)(labelBounds.getHeight() * 0.5);
+                    float y0 = y;
 
-            double v = min;
+            double v = max;
             for (int i = 0; i < CONTINUOUS_LENGTH; i++) {
-                g2.setPaint(((HSBContinuousColorDecorator)decorator).getColour(v));
+                g2.setPaint(((HSBContinuousColourDecorator)colourDecorator).getColour(v));
                 Rectangle2D rect = new Rectangle2D.Double(xOffset1, y, labelBounds.getHeight(), 1);
-                 g2.fill(rect);
+                g2.fill(rect);
 
                 y += 1;
-                v += delta;
+                v -= delta;
             }
 
+            g2.setPaint(Color.BLACK);
+            g2.drawString(formatter.getFormattedValue(max), xOffset2, y0 + (yOffset / 2));
+            g2.drawString(formatter.getFormattedValue(min), xOffset2, y + (yOffset / 2));
+
+            Line2D line = new Line2D.Double(xOffset1, y0, xOffset1 + labelBounds.getHeight() * 1.25, y0);
+            g2.draw(line);
+
+            line = new Line2D.Double(xOffset1, y, xOffset1 + labelBounds.getHeight() * 1.25, y);
+            g2.draw(line);
+
+            line = new Line2D.Double(xOffset1, y0, xOffset1, y);
+            g2.draw(line);
+
+        } else {
+            throw new IllegalArgumentException("Unrecognized ColourDecorator class");
         }
         g2.setFont(oldFont);
         g2.setPaint(oldPaint);
@@ -136,12 +146,9 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
         return preferredHeight;
     }
 
-    public String getDisplayAttribute() {
-        return displayAttribute;
-    }
-
-    public void setDisplayAttribute(String displayAttribute) {
-        this.displayAttribute = displayAttribute;
+    public void setColourDecorator(ColourDecorator colourDecorator) {
+        this.colourDecorator = colourDecorator;
+        setVisible(colourDecorator == null);
         firePainterChanged();
     }
 
@@ -149,57 +156,7 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
         // nothing to do
     }
 
-    public String[] getAttributes() {
-        return attributes;
-    }
-
-    public void setupAttributes(Collection<? extends Tree> trees) {
-
-        java.util.List<String> attributeNames = new ArrayList<String>();
-
-        attributableItems.clear();
-
-        Set<String> nodeAttributes = new TreeSet<String>();
-        if (trees != null) {
-            for (Tree tree : trees) {
-                for (Node node : tree.getNodes()) {
-                    attributableItems.add(node);
-                    nodeAttributes.addAll(node.getAttributeNames());
-                }
-                for (Taxon taxon : tree.getTaxa()) {
-                    attributableItems.add(taxon);
-                    nodeAttributes.addAll(taxon.getAttributeNames());
-                }
-            }
-        }
-
-        attributeNames.add(BasicLabelPainter.NODE_AGES);
-        attributeNames.add(BasicLabelPainter.NODE_HEIGHTS);
-        attributeNames.add(BasicLabelPainter.BRANCH_TIMES);
-        attributeNames.add(BasicLabelPainter.BRANCH_LENGTHS);
-
-        for (String attributeName : nodeAttributes) {
-            if (!attributeName.startsWith("!")) {
-                attributeNames.add(attributeName);
-            }
-        }
-
-        this.attributes = new String[attributeNames.size()];
-        attributeNames.toArray(this.attributes);
-
-        fireAttributesChanged();
-    }
-
-    public void setTextDecorator(Decorator textDecorator) {
-    }
-
-    public Set<Attributable> getAttributableItems() {
-        return attributableItems;
-    }
-
-    protected String displayAttribute;
-    protected String[] attributes;
-    private Set<Attributable> attributableItems = new HashSet<Attributable>();
+    protected ColourDecorator colourDecorator;
 
     private double preferredHeight;
     private double preferredWidth;
@@ -208,4 +165,25 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
 
     protected TreePane treePane;
 
+    @Override
+    public String[] getAttributes() {
+        return new String[0];
+    }
+
+    @Override
+    public void setupAttributes(Collection<? extends Tree> trees) {
+    }
+
+    @Override
+    public void setDisplayAttribute(String displayAttribute) {
+    }
+
+    @Override
+    public void setTextDecorator(Decorator textDecorator) {
+    }
+
+    @Override
+    public Set<Attributable> getAttributableItems() {
+        return null;
+    }
 }

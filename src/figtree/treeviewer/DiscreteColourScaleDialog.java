@@ -1,6 +1,6 @@
 package figtree.treeviewer;
 
-import figtree.treeviewer.decorators.HSBDiscreteColorDecorator;
+import figtree.treeviewer.decorators.HSBDiscreteColourDecorator;
 import figtree.ui.components.RangeSlider;
 import jam.panels.OptionsPanel;
 
@@ -30,11 +30,11 @@ public class DiscreteColourScaleDialog {
 
     private JFrame frame;
 
-    private HSBDiscreteColorDecorator decorator;
+    private HSBDiscreteColourDecorator decorator;
 
     private JTable table;
 
-    private JComboBox primaryAxisCombo = new JComboBox(HSBDiscreteColorDecorator.Axis.values());
+    private JComboBox primaryAxisCombo = new JComboBox(HSBDiscreteColourDecorator.Axis.values());
     private SpinnerNumberModel secondaryCountSpinnerModel = new SpinnerNumberModel(2, 1, 100, 1);
     private JSpinner secondaryCountSpinner = new JSpinner(secondaryCountSpinnerModel);
 
@@ -129,7 +129,7 @@ public class DiscreteColourScaleDialog {
         return result;
     }
 
-    public void setDecorator(HSBDiscreteColorDecorator decorator) {
+    public void setDecorator(HSBDiscreteColourDecorator decorator) {
         this.decorator = decorator;
 
         primaryAxisCombo.setSelectedItem(decorator.getPrimaryAxis());
@@ -145,8 +145,8 @@ public class DiscreteColourScaleDialog {
         brightnessSlider.setUpperValue((int) (decorator.getBrightnessUpper() * SLIDER_RANGE));
     }
 
-    public void setupDecorator(HSBDiscreteColorDecorator decorator) {
-        decorator.setPrimaryAxis((HSBDiscreteColorDecorator.Axis) primaryAxisCombo.getSelectedItem());
+    public void setupDecorator(HSBDiscreteColourDecorator decorator) {
+        decorator.setPrimaryAxis((HSBDiscreteColourDecorator.Axis) primaryAxisCombo.getSelectedItem());
         decorator.setSecondaryCount(secondaryCountSpinnerModel.getNumber().intValue());
 
         decorator.setHueLower(((float) hueSlider.getValue()) / SLIDER_RANGE);

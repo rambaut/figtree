@@ -92,7 +92,7 @@ public class TreeAppearanceController extends AbstractController {
 
         branchColourIsGradient = false;
 
-        JButton setupColourButton = new JButton("Setup");
+        JButton setupColourButton = new JButton("Colours");
 
         colourController.setupControls(branchColourAttributeCombo, setupColourButton);
         colourController.addControllerListener(new ControllerListener() {
@@ -110,10 +110,9 @@ public class TreeAppearanceController extends AbstractController {
             }
         });
         optionsPanel.addComponentWithLabel("Colour by:", branchColourAttributeCombo);
-        optionsPanel.addComponent(setupColourButton);
+        optionsPanel.addComponentWithLabel("Setup:", setupColourButton);
         optionsPanel.addComponent(useGradientCheck);
         optionsPanel.addSeparator();
-
 
         widthAutoRange = true;
         widthFromValue = 0.0;
@@ -121,7 +120,7 @@ public class TreeAppearanceController extends AbstractController {
         fromWidth = 1.0;
         toWidth = 10.0;
 
-        JButton setupWidthButton = new JButton(new AbstractAction("Setup") {
+        JButton setupWidthButton = new JButton(new AbstractAction("Scale") {
             public void actionPerformed(ActionEvent e) {
                 if (widthScaleDialog == null) {
                     widthScaleDialog = new WidthScaleDialog(frame, widthAutoRange,
@@ -140,7 +139,7 @@ public class TreeAppearanceController extends AbstractController {
             }
         });
         optionsPanel.addComponentWithLabel("Width by:", branchWidthAttributeCombo);
-        optionsPanel.addComponent(setupWidthButton);
+        optionsPanel.addComponentWithLabel("Setup:", setupWidthButton);
         optionsPanel.addSeparator();
 
 //        backgroundColourSettings.autoRange  = true;
@@ -150,7 +149,7 @@ public class TreeAppearanceController extends AbstractController {
 //        backgroundColourSettings.toColour = new Color(192, 16, 0);
 //        backgroundColourSettings.middleColour = null;
 
-        JButton bgSetupColourButton = new JButton("Setup");
+        JButton bgSetupColourButton = new JButton("Colours");
         colourController.setupControls(backgroundColourAttributeCombo, bgSetupColourButton);
         colourController.addControllerListener(new ControllerListener() {
             @Override
@@ -159,9 +158,8 @@ public class TreeAppearanceController extends AbstractController {
             }
         });
 
-
         optionsPanel.addComponentWithLabel("Background:", backgroundColourAttributeCombo);
-        optionsPanel.addComponent(bgSetupColourButton);
+        optionsPanel.addComponentWithLabel("Setup:", bgSetupColourButton);
 
         ActionListener listener = new ActionListener() {
             public void actionPerformed(ActionEvent event) {

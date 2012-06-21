@@ -75,7 +75,6 @@ public class ScaleAxisPainterController extends AbstractController {
 
         reverseAxisCheck = new JCheckBox("Reverse axis");
         reverseAxisCheck.setSelected(false);
-        optionsPanel.addSpanningComponent(reverseAxisCheck);
 
         showGridCheck = new JCheckBox("Show grid");
         showGridCheck.setSelected(true);
@@ -83,33 +82,18 @@ public class ScaleAxisPainterController extends AbstractController {
 
 		autoScaleCheck = new JCheckBox("Automatic scale");
 		autoScaleCheck.setSelected(true);
-		optionsPanel.addSpanningComponent(autoScaleCheck);
 
 		majorTicksText = new RealNumberField();
 		majorTicksText.setValue(1.0);
 
-		final JLabel label1 = optionsPanel.addComponentWithLabel("Label spacing:", majorTicksText, true);
-		label1.setEnabled(false);
-		majorTicksText.setEnabled(false);
-
 		minorTicksText = new RealNumberField();
 		minorTicksText.setValue(0.5);
-
-		final JLabel label2 = optionsPanel.addComponentWithLabel("Tick spacing:", minorTicksText, true);
-		label2.setEnabled(false);
-		minorTicksText.setEnabled(false);
 
 		originText = new RealNumberField();
 		originText.setValue(0.0);
 
-		final JLabel label3 = optionsPanel.addComponentWithLabel("Origin value:", originText, true);
-		label3.setEnabled(false);
-		originText.setEnabled(false);
-
 		Font font = scaleAxisPainter.getFont();
 		fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 48, 1));
-
-		final JLabel label4 = optionsPanel.addComponentWithLabel("Font Size:", fontSizeSpinner);
 
 		fontSizeSpinner.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent changeEvent) {
@@ -143,7 +127,14 @@ public class ScaleAxisPainterController extends AbstractController {
 		});
 		final JLabel label6 = optionsPanel.addComponentWithLabel("Line Weight:", lineWeightSpinner);
 
-		final boolean isSelected1 = titleCheckBox.isSelected();
+        optionsPanel.addSpanningComponent(reverseAxisCheck);
+        optionsPanel.addSpanningComponent(autoScaleCheck);
+        final JLabel label1 = optionsPanel.addComponentWithLabel("Label spacing:", majorTicksText, true);
+        final JLabel label2 = optionsPanel.addComponentWithLabel("Tick spacing:", minorTicksText, true);
+        final JLabel label3 = optionsPanel.addComponentWithLabel("Origin value:", originText, true);
+        final JLabel label4 = optionsPanel.addComponentWithLabel("Font Size:", fontSizeSpinner);
+
+        final boolean isSelected1 = titleCheckBox.isSelected();
 		final boolean isSelected2 = autoScaleCheck.isSelected();
 		label1.setEnabled(isSelected1 && !isSelected2);
 		majorTicksText.setEnabled(isSelected1 && !isSelected2);
