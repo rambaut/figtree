@@ -1,20 +1,15 @@
 package figtree.treeviewer;
 
 import figtree.treeviewer.decorators.ContinuousScale;
-import figtree.treeviewer.decorators.HSBContinuousColorDecorator;
+import figtree.treeviewer.decorators.HSBContinuousColourDecorator;
 import figtree.ui.components.RangeSlider;
 import jam.panels.OptionsPanel;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * DiscreteColourScaleDialog.java
@@ -27,7 +22,7 @@ public class ContinuousColourScaleDialog {
 
     private JFrame frame;
 
-    private HSBContinuousColorDecorator decorator;
+    private HSBContinuousColourDecorator decorator;
 
     private RangeSlider hueSlider;
     private RangeSlider saturationSlider;
@@ -122,7 +117,7 @@ public class ContinuousColourScaleDialog {
         return result;
     }
 
-    public void setDecorator(HSBContinuousColorDecorator decorator) {
+    public void setDecorator(HSBContinuousColourDecorator decorator) {
         this.decorator = decorator;
 
         hueSlider.setValue((int)(decorator.getHueLower() * SLIDER_RANGE));
@@ -135,7 +130,7 @@ public class ContinuousColourScaleDialog {
         brightnessSlider.setUpperValue((int)(decorator.getBrightnessUpper() * SLIDER_RANGE));
     }
 
-    public void setupDecorator(HSBContinuousColorDecorator decorator) {
+    public void setupDecorator(HSBContinuousColourDecorator decorator) {
         decorator.setHueLower(((float) hueSlider.getValue()) / SLIDER_RANGE);
         decorator.setHueUpper(((float) hueSlider.getUpperValue()) / SLIDER_RANGE);
 

@@ -51,10 +51,10 @@ public class ContinuousScale {
 
     public ContinuousScale(String attributeName, Set<? extends Attributable> items) {
         this();
-        calibrate(attributeName, items);
+        setAttributes(attributeName, items);
     }
 
-    public void calibrate(String attributeName, Set<? extends Attributable> items) {
+    public void setAttributes(String attributeName, Set<? extends Attributable> items) {
         this.attributeName = attributeName;
 
         // First collect the set of all attribute values

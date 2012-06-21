@@ -56,16 +56,15 @@ public class TreeColouringController extends AbstractController {
 						treeViewer.setBranchColouringDecorator(attribute.substring(0, attribute.length() - 2), decorator);
 						treeViewer.setBranchDecorator(null, false);
 					} else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
-						Decorator decorator = new HSBDiscreteColorDecorator(attribute, nodes);
+						Decorator decorator = new HSBDiscreteColourDecorator(attribute, nodes);
 
 						treeViewer.setBranchColouringDecorator(null, null);
 						treeViewer.setBranchDecorator(decorator, false);
 					} else {
 
-						Decorator decorator = new ContinuousColorDecorator(
+						Decorator decorator = new InterpolatingContinuousColourDecorator(
 								new ContinuousScale(attribute, nodes),
-								new Color(192, 16, 0), new Color(0, 16, 192),
-                                false);
+								new Color(192, 16, 0), new Color(0, 16, 192));
 
 						treeViewer.setBranchColouringDecorator(null, null);
 						treeViewer.setBranchDecorator(decorator, false);

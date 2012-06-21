@@ -91,7 +91,7 @@ public class FigTreePanel extends JPanel {
         // Create a legend controller
         final LegendPainter legendPainter = new LegendPainter(attributeColourController);
         legendPainter.setVisible(false);
-        controlPalette.addController(new LegendPainterController(legendPainter));
+        controlPalette.addController(new LegendPainterController(legendPainter, attributeColourController));
         treeViewer.setLegendPainter(legendPainter);
 
         slideOpenPanel = new SlideOpenPanel(treeViewer);
