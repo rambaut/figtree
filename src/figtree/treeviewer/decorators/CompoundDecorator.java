@@ -15,10 +15,6 @@ public class CompoundDecorator implements Decorator {
 		decorators.add(decorator);
 	}
 
-    public boolean isGradient() {
-        return false;
-    }
-
     public void setItem(Object item) {
 		for (Decorator decorator : decorators) {
 			decorator.setItem(item);
