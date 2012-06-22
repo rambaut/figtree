@@ -48,9 +48,8 @@ public class LegendPainterController extends AbstractController {
     public static String DEFAULT_ATTRIBUTE_KEY = "";
 
     public LegendPainterController(final LegendPainter legendPainter,
-                                   final AttributeColourController colourController) {
-        this.legendPainter = legendPainter;
-
+                                   final AttributeColourController colourController,
+                                   final TreeViewer treeViewer) {
         final String defaultFontName = PREFS.get(CONTROLLER_KEY + "." + FONT_NAME_KEY, DEFAULT_FONT_NAME);
         final int defaultFontStyle = PREFS.getInt(CONTROLLER_KEY + "." + FONT_STYLE_KEY, DEFAULT_FONT_STYLE);
         final int defaultFontSize = PREFS.getInt(CONTROLLER_KEY + "." + FONT_SIZE_KEY, DEFAULT_FONT_SIZE);
@@ -72,8 +71,8 @@ public class LegendPainterController extends AbstractController {
                 legendPainter.setDisplayAttribute(attribute);
             }
         });
+        new AttributeComboHelper(attributeCombo, treeViewer);
 
-        this.colourController = colourController;
         colourController.setupControls(attributeCombo, null);
         colourController.addControllerListener(new ControllerListener() {
             @Override
@@ -100,16 +99,6 @@ public class LegendPainterController extends AbstractController {
             }
         });
 
-        legendPainter.addPainterListener(new PainterListener() {
-            public void painterChanged() {
-
-            }
-            public void painterSettingsChanged() {
-            }
-            public void attributesChanged() {
-                setupAttributes();
-            }
-        });
 
         final JLabel label1 = optionsPanel.addComponentWithLabel("Attribute:", attributeCombo);
         final JLabel label2 = optionsPanel.addComponentWithLabel("Font Size:", fontSizeSpinner);
@@ -145,27 +134,6 @@ public class LegendPainterController extends AbstractController {
 
     }
 
-    private void setupAttributes() {
-        Object item1 = attributeCombo.getSelectedItem();
-        attributeCombo.removeAllItems();
-        for (String name : legendPainter.getAttributes()) {
-            attributeCombo.addItem(name);
-        }
-        attributeCombo.setSelectedItem(item1);
-
-        java.util.List<String> names = new ArrayList<String>();
-        Set<Attributable> items = legendPainter.getAttributableItems();
-        for (Attributable item : items) {
-            for (String name : item.getAttributeNames()) {
-                if (!names.contains(name)) {
-                    names.add(name);
-                }
-            }
-        }
-
-        optionsPanel.repaint();
-    }
-
     public JComponent getTitleComponent() {
         return titleCheckBox;
     }
@@ -193,7 +161,6 @@ public class LegendPainterController extends AbstractController {
         settings.put(CONTROLLER_KEY + "." + FONT_SIZE_KEY, fontSizeSpinner.getValue());
     }
 
-    private final AttributeColourController colourController;
     private final JCheckBox titleCheckBox;
     private final OptionsPanel optionsPanel;
 
@@ -203,6 +170,4 @@ public class LegendPainterController extends AbstractController {
     public String getTitle() {
         return "Legend";
     }
-
-    private final LegendPainter legendPainter;
 }

@@ -1,6 +1,7 @@
 package figtree.treeviewer.painters;
 
 import figtree.treeviewer.AttributeColourController;
+import figtree.treeviewer.TreeViewer;
 import figtree.treeviewer.decorators.Decorator;
 import jam.controlpalettes.AbstractController;
 import jam.controlpalettes.ControllerListener;
@@ -24,7 +25,8 @@ import figtree.treeviewer.ControllerOptionsPanel;
 public class NodeShapeController extends AbstractController {
 
     public NodeShapeController(String title, final NodeShapePainter nodeShapePainter,
-                               final AttributeColourController colourController) {
+                               final AttributeColourController colourController,
+                               final TreeViewer treeViewer) {
         this.title = title;
         this.colourController = colourController;
         this.nodeShapePainter = nodeShapePainter;
@@ -52,6 +54,7 @@ public class NodeShapeController extends AbstractController {
                 nodeShapePainter.setSizeAttribute(attribute);
             }
         });
+        new AttributeComboHelper(sizeAttributeCombo, treeViewer);
 
         colourAttributeCombo = new JComboBox(attributes);
         setupColourButton = new JButton("Colour");
