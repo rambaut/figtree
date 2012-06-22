@@ -13,10 +13,10 @@ import java.util.Set;
  * @author Andrew Rambaut
  * @version $Id: ContinuousColourDecorator.java 822 2007-10-26 13:50:26Z rambaut $
  */
-public class InterpolatingContinuousColourDecorator extends ContinuousColourDecorator {
+public class InterpolatingColourDecorator extends ContinuousColourDecorator {
 
-    public InterpolatingContinuousColourDecorator(ContinuousScale continuousScale,
-                                                  Color color1, Color color2) throws NumberFormatException {
+    public InterpolatingColourDecorator(ContinuousScale continuousScale,
+                                        Color color1, Color color2) throws NumberFormatException {
         super(continuousScale);
         this.color1 = new float[4];
         color1.getRGBComponents(this.color1);
@@ -25,8 +25,8 @@ public class InterpolatingContinuousColourDecorator extends ContinuousColourDeco
         this.color3 = null;
     }
 
-    public InterpolatingContinuousColourDecorator(ContinuousScale continuousScale,
-                                                  Color color1, Color color2, Color color3) throws NumberFormatException {
+    public InterpolatingColourDecorator(ContinuousScale continuousScale,
+                                        Color color1, Color color2, Color color3) throws NumberFormatException {
         super(continuousScale);
         this.color1 = new float[4];
         color1.getRGBComponents(this.color1);
