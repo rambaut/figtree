@@ -91,7 +91,7 @@ public class NodeShapeController extends AbstractController {
         JLabel label1 = optionsPanel.addComponentWithLabel("Shape:", shapeCombo);
         JLabel label2 = optionsPanel.addComponentWithLabel("Size by:", sizeAttributeCombo);
         JLabel label3 = optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
-        JLabel label4 =  optionsPanel.addComponentWithLabel("Setup:", setupColourButton);
+        JLabel label4 = optionsPanel.addComponentWithLabel("Setup:", setupColourButton);
 
         // only needed if we want to change the options depending on
         // the choice of shapeCombo

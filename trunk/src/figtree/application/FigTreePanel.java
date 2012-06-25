@@ -64,7 +64,7 @@ public class FigTreePanel extends JPanel {
         // Create a node shape painter and its controller
         final NodeShapePainter nodeShapePainter = new NodeShapePainter();
         nodeShapePainter.setVisible(false);
-        controlPalette.addController(new NodeShapeController("Node Shapes", nodeShapePainter, attributeColourController));
+        controlPalette.addController(new NodeShapeController("Node Shapes", nodeShapePainter, attributeColourController, treeViewer));
         treeViewer.setNodeShapePainter(nodeShapePainter);
 
         // Create a branch label painter and its controller
@@ -91,7 +91,7 @@ public class FigTreePanel extends JPanel {
         // Create a legend controller
         final LegendPainter legendPainter = new LegendPainter(attributeColourController);
         legendPainter.setVisible(false);
-        controlPalette.addController(new LegendPainterController(legendPainter, attributeColourController));
+        controlPalette.addController(new LegendPainterController(legendPainter, attributeColourController, treeViewer));
         treeViewer.setLegendPainter(legendPainter);
 
         slideOpenPanel = new SlideOpenPanel(treeViewer);
