@@ -30,6 +30,7 @@ public class ScaleBarPainter extends LabelPainter<TreePane> implements ScalePain
     }
 
     public ScaleBarPainter(double scaleRange) {
+        super(null);
         this.scaleRange = scaleRange;
         type = ScaleBarType.BAR;
     }

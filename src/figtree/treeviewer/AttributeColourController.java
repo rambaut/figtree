@@ -22,106 +22,12 @@ public class AttributeColourController extends AbstractController {
     public AttributeColourController(final TreeViewer treeViewer, final JFrame frame) {
         this.treeViewer = treeViewer;
         this.frame = frame;
-
-        setupAttributeNames(treeViewer.getTrees());
-
-        treeViewer.addTreeViewerListener(new TreeViewerListener() {
-            public void treeChanged() {
-                setupAttributeNames(treeViewer.getTrees());
-            }
-
-            public void treeSettingsChanged() {
-                // nothing to do
-            }
-        });
     }
 
-    private void setupAttributeNames(Collection<? extends Tree> trees) {
-        if (trees == null) {
-            return;
-        }
-        attributeNames = new ArrayList<String>();
-        for (Tree tree : trees) {
-            for (String name : getAttributeNames(tree.getNodes())) {
-                if (!attributeNames.contains(name)) {
-                    attributeNames.add(name);
-                }
-            }
-        }
-        fireAttributesChanged();
-    }
-
-    private String[] getAttributeNames(Collection<? extends Attributable> items) {
-        java.util.Set<String> attributeNames = new TreeSet<String>();
-
-        for (Attributable item : items) {
-            for (String name : item.getAttributeNames()) {
-                if (!name.startsWith("!")) {
-                    Object attr = item.getAttribute(name);
-                    if (!(attr instanceof Object[])) {
-                        attributeNames.add(name);
-                    } else {
-                        boolean isColouring = true;
-
-                        Object[] array = (Object[])attr;
-                        boolean isIndex = true;
-                        for (Object element : array) {
-                            if (isIndex && !(element instanceof Integer) ||
-                                    !isIndex && !(element instanceof Double)) {
-                                isColouring = false;
-                                break;
-                            }
-                            isIndex = !isIndex;
-                        }
-
-                        if (isIndex) {
-                            // a colouring should finish on an index (which means isIndex should be false)...
-                            isColouring = false;
-                        }
-
-                        if (isColouring) {
-                            attributeNames.add(name + " *");
-                        }
-
-                    }
-                }
-            }
-        }
-
-        String[] attributeNameArray = new String[attributeNames.size()];
-        attributeNames.toArray(attributeNameArray);
-
-        return attributeNameArray;
-    }
-
-    public List<String> getAttributeNames() {
-        return attributeNames;
-    }
 
     public void setupControls(
             final JComboBox colourAttributeCombo,
             final JButton colourSetupButton) {
-
-        addListener(new Listener() {
-            @Override
-            public void attributesChanged() {
-                Object selected = colourAttributeCombo.getSelectedItem();
-
-                editingComboBox = true;
-
-                colourAttributeCombo.removeAllItems();
-
-                colourAttributeCombo.addItem("User Selection");
-
-                for (String name : getAttributeNames()) {
-                    colourAttributeCombo.addItem(name);
-                }
-
-                editingComboBox = false;
-
-                colourAttributeCombo.setSelectedItem(selected);
-            }
-        });
 
         if (colourSetupButton != null) {
             colourSetupButton.addActionListener(new ActionListener() {
@@ -131,6 +37,10 @@ public class AttributeColourController extends AbstractController {
                     if (colourAttributeCombo.getSelectedIndex() > 0) {
                         String attribute = (String) colourAttributeCombo.getSelectedItem();
                         decorator = getDecoratorForAttribute(attribute);
+                    }
+
+                    if (decorator == null) {
+                        return;
                     }
 
                     boolean update = false;
@@ -156,14 +66,6 @@ public class AttributeColourController extends AbstractController {
                         }
                     } else {
                         throw new IllegalArgumentException("Unsupported decorator type");
-//                    if (continuousColourScaleDialog == null) {
-//                        continuousColourScaleDialog = new OldContinuousColourScaleDialog(frame, branchColourSettings);
-//                    }
-//                    int result = continuousColourScaleDialog.showDialog();
-//                    if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-//                        continuousColourScaleDialog.getSettings(branchColourSettings);
-//                        setupBranchDecorators();
-//                    }
                     }
 
                     if (update) {
@@ -179,9 +81,7 @@ public class AttributeColourController extends AbstractController {
 
         colourAttributeCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if (!editingComboBox) {
-                    fireControllerChanged();
-                }
+                fireControllerChanged();
             }
         });
     }
@@ -299,28 +199,28 @@ public class AttributeColourController extends AbstractController {
     private Map<String, ColourDecorator> attributeDecoratorMap = new HashMap<String, ColourDecorator>();
     private Map<String, ContinuousScale> attributeScaleMap = new HashMap<String, ContinuousScale>();
 
-    private List<String> attributeNames = new ArrayList<String>();
+//    private List<String> attributeNames = new ArrayList<String>();
 
-    private boolean editingComboBox = false;
+//    private boolean editingComboBox = false;
 
     private ContinuousColourScaleDialog continuousColourScaleDialog = null;
     private DiscreteColourScaleDialog discreteColourScaleDialog = null;
 
-    // an internal listener interface
-    private interface Listener {
-        void attributesChanged();
-    }
-
-    private void addListener(Listener listener) {
-        listeners.add(listener);
-    }
-
-    private void fireAttributesChanged() {
-        for (Listener listener : listeners) {
-            listener.attributesChanged();
-        }
-
-    }
-    private final List<Listener> listeners = new ArrayList<Listener>();
+//    // an internal listener interface
+//    private interface Listener {
+//        void attributesChanged();
+//    }
+//
+//    private void addListener(Listener listener) {
+//        listeners.add(listener);
+//    }
+//
+//    private void fireAttributesChanged() {
+//        for (Listener listener : listeners) {
+//            listener.attributesChanged();
+//        }
+//
+//    }
+//    private final List<Listener> listeners = new ArrayList<Listener>();
 
 }

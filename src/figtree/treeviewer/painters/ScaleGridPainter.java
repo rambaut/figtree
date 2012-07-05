@@ -21,6 +21,7 @@ import java.util.Set;
 public class ScaleGridPainter extends LabelPainter<TreePane> implements ScalePainter {
 
 	public ScaleGridPainter() {
+        super(null);
 	}
 
 	public void setTreePane(TreePane treePane) {

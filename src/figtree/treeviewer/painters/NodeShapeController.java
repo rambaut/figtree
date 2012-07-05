@@ -28,7 +28,6 @@ public class NodeShapeController extends AbstractController {
                                final AttributeColourController colourController,
                                final TreeViewer treeViewer) {
         this.title = title;
-        this.colourController = colourController;
         this.nodeShapePainter = nodeShapePainter;
 
 	    optionsPanel = new ControllerOptionsPanel(2, 2);
@@ -59,6 +58,7 @@ public class NodeShapeController extends AbstractController {
         colourAttributeCombo = new JComboBox(attributes);
         setupColourButton = new JButton("Colour");
 
+        new AttributeComboHelper(colourAttributeCombo, treeViewer, "User selection");
         colourController.setupControls(colourAttributeCombo, setupColourButton);
         colourController.addControllerListener(new ControllerListener() {
             @Override
@@ -160,6 +160,5 @@ public class NodeShapeController extends AbstractController {
     }
 
     private final String title;
-    private final AttributeColourController colourController;
     private final NodeShapePainter nodeShapePainter;
 }

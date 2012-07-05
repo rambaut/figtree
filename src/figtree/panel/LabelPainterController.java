@@ -1,5 +1,7 @@
 package figtree.panel;
 
+import figtree.treeviewer.TreeViewer;
+import figtree.treeviewer.painters.AttributeComboHelper;
 import jam.controlpalettes.AbstractController;
 import jam.panels.OptionsPanel;
 
@@ -9,6 +11,7 @@ import java.awt.event.ItemListener;
 import java.util.Map;
 
 import figtree.treeviewer.painters.LabelPainter;
+import sun.jvm.hotspot.tools.FinalizerInfo;
 
 /**
  * @author Andrew Rambaut
@@ -23,46 +26,45 @@ public class LabelPainterController extends AbstractController {
                                   String nodeKey,
                                   final LabelPainter nodeLabelPainter,
                                   String branchKey,
-		                                  final LabelPainter branchLabelPainter) {
+                                  final LabelPainter branchLabelPainter,
+                                  final TreeViewer treeViewer) {
 
         this.tipKey = tipKey;
-	    this.nodeKey = nodeKey;
-	    this.branchKey = branchKey;
+        this.nodeKey = nodeKey;
+        this.branchKey = branchKey;
 
         optionsPanel = new OptionsPanel();
 
-	    tipComboBox = setupComboBox("Tips: ", tipLabelPainter);
+        tipComboBox = setupComboBox("Tips: ", tipLabelPainter, treeViewer);
         tipComboBox.setSelectedIndex(1);
-        nodeComboBox = setupComboBox("Nodes: ", nodeLabelPainter);
-	    branchComboBox = setupComboBox("Branches: ", branchLabelPainter);
+        nodeComboBox = setupComboBox("Nodes: ", nodeLabelPainter, treeViewer);
+        branchComboBox = setupComboBox("Branches: ", branchLabelPainter, treeViewer);
 
-   }
+    }
 
-	private JComboBox setupComboBox(String title, final LabelPainter labelPainter) {
-		String[] attributes = labelPainter.getAttributes();
-		final JComboBox displayAttributeCombo = new JComboBox();
-		displayAttributeCombo.addItem("None");
-		for (String attr : attributes) {
-			displayAttributeCombo.addItem(attr);
-		}
-		optionsPanel.addComponentWithLabel(title, displayAttributeCombo);
+    private JComboBox setupComboBox(String title, final LabelPainter labelPainter, final TreeViewer treeViewer) {
+//		String[] attributes = labelPainter.getAttributes();
+        final JComboBox displayAttributeCombo = new JComboBox();
+        displayAttributeCombo.addItem("None");
+        new AttributeComboHelper(displayAttributeCombo, treeViewer, "None");
+        optionsPanel.addComponentWithLabel(title, displayAttributeCombo);
 
-		displayAttributeCombo.addItemListener(new ItemListener() {
-		    public void itemStateChanged(ItemEvent itemEvent) {
-		        String attribute = (String)displayAttributeCombo.getSelectedItem();
-			    if (attribute.equals("none")) {
-				    labelPainter.setVisible(false);
-			    } else {
-		            labelPainter.setDisplayAttribute(attribute);
-				    labelPainter.setVisible(true);
-			    }
-		    }
-		});
+        displayAttributeCombo.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent itemEvent) {
+                String attribute = (String)displayAttributeCombo.getSelectedItem();
+                if (attribute.equals("none")) {
+                    labelPainter.setVisible(false);
+                } else {
+                    labelPainter.setDisplayAttribute(attribute);
+                    labelPainter.setVisible(true);
+                }
+            }
+        });
 
-		return displayAttributeCombo;
-	}
+        return displayAttributeCombo;
+    }
 
-	public JComponent getTitleComponent() {
+    public JComponent getTitleComponent() {
         return null;
     }
 
@@ -80,8 +82,8 @@ public class LabelPainterController extends AbstractController {
 
     public void setSettings(Map<String,Object> settings) {
         tipComboBox.setSelectedItem(settings.get(tipKey+"."+DISPLAY_ATTRIBUTE_KEY));
-	    nodeComboBox.setSelectedItem(settings.get(nodeKey+"."+DISPLAY_ATTRIBUTE_KEY));
-	    branchComboBox.setSelectedItem(settings.get(branchKey+"."+DISPLAY_ATTRIBUTE_KEY));
+        nodeComboBox.setSelectedItem(settings.get(nodeKey+"."+DISPLAY_ATTRIBUTE_KEY));
+        branchComboBox.setSelectedItem(settings.get(branchKey+"."+DISPLAY_ATTRIBUTE_KEY));
     }
 
     public void getSettings(Map<String, Object> settings) {
@@ -96,11 +98,11 @@ public class LabelPainterController extends AbstractController {
 
     private final OptionsPanel optionsPanel;
 
-	private final JComboBox tipComboBox;
-	private final JComboBox nodeComboBox;
-	private final JComboBox branchComboBox;
+    private final JComboBox tipComboBox;
+    private final JComboBox nodeComboBox;
+    private final JComboBox branchComboBox;
 
     private final String tipKey;
-	private final String nodeKey;
-	private final String branchKey;
+    private final String nodeKey;
+    private final String branchKey;
 }

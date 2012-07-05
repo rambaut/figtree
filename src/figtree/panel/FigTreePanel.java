@@ -82,7 +82,8 @@ public class FigTreePanel extends JPanel {
                 controlPalette1.addController(new LabelPainterController(
                         "tipLabels", tipLabelPainter,
                         "nodeLabels", nodeLabelPainter,
-                        "branchLabels", branchLabelPainter));
+                        "branchLabels", branchLabelPainter,
+                        treeViewer));
                 break;
             case SIMPLE:
                 if (controlPalette1 == null) {
@@ -99,7 +100,8 @@ public class FigTreePanel extends JPanel {
                 controlPalette1.addController(new LabelPainterController(
                         "tipLabels", tipLabelPainter,
                         "nodeLabels", nodeLabelPainter,
-                        "branchLabels", branchLabelPainter));
+                        "branchLabels", branchLabelPainter,
+                        treeViewer));
                 break;
             case MINIMAL:
                 break;
@@ -116,7 +118,8 @@ public class FigTreePanel extends JPanel {
                 controlPalette1.addController(new LabelPainterController(
                         "tipLabels", tipLabelPainter,
                         "nodeLabels", nodeLabelPainter,
-                        "branchLabels", branchLabelPainter));
+                        "branchLabels", branchLabelPainter,
+                        treeViewer));
 
                 controlPalette1.addController(new TreesController(treeViewer));
 

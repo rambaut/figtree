@@ -61,27 +61,6 @@ public class MultiPaneTreeViewer extends TreeViewer {
 	protected void addTree(Tree tree) {
 		this.trees.add(tree);
 		showTree(trees.size() - 1);
-
-		TreePane treePane = treePanes.get(0);
-		if (treePane.getTipLabelPainter() != null) {
-			treePane.getTipLabelPainter().setupAttributes(trees);
-		}
-
-		if (treePane.getBranchLabelPainter() != null) {
-			treePane.getBranchLabelPainter().setupAttributes(trees);
-		}
-
-		if (treePane.getNodeLabelPainter() != null) {
-			treePane.getNodeLabelPainter().setupAttributes(trees);
-		}
-
-		if (treePane.getNodeBarPainter() != null) {
-			treePane.getNodeBarPainter().setupAttributes(trees);
-		}
-
-        if (treePane.getLegendPainter() != null) {
-            treePane.getLegendPainter().setupAttributes(trees);
-        }
     }
 
 	public void addTrees(Collection<? extends Tree> trees) {
@@ -345,7 +324,7 @@ public class MultiPaneTreeViewer extends TreeViewer {
 		for (TreePane treePane : treePanes) {
 			treePane.setTipLabelPainter(tipLabelPainter);
 		}
-		tipLabelPainter.setupAttributes(trees);
+//		tipLabelPainter.setupAttributes(trees);
 		fireTreeSettingsChanged();
 	}
 
@@ -353,7 +332,7 @@ public class MultiPaneTreeViewer extends TreeViewer {
 		for (TreePane treePane : treePanes) {
 			treePane.setNodeLabelPainter(nodeLabelPainter);
 		}
-		nodeLabelPainter.setupAttributes(trees);
+//		nodeLabelPainter.setupAttributes(trees);
 		fireTreeSettingsChanged();
 	}
 
@@ -377,7 +356,7 @@ public class MultiPaneTreeViewer extends TreeViewer {
 		for (TreePane treePane : treePanes) {
 			treePane.setBranchLabelPainter(branchLabelPainter);
 		}
-		branchLabelPainter.setupAttributes(trees);
+//		branchLabelPainter.setupAttributes(trees);
 		fireTreeSettingsChanged();
 	}
 
@@ -406,7 +385,7 @@ public class MultiPaneTreeViewer extends TreeViewer {
         for (TreePane treePane : treePanes) {
             treePane.setLegendPainter(legendPainter);
         }
-        legendPainter.setupAttributes(trees);
+//        legendPainter.setupAttributes(trees);
         fireTreeSettingsChanged();
     }
 

@@ -1,5 +1,6 @@
 package figtree.treeviewer.painters;
 
+import com.sun.tools.corba.se.idl.InterfaceEntry;
 import jebl.evolution.trees.Tree;
 import jebl.util.Attributable;
 
@@ -15,21 +16,27 @@ import figtree.treeviewer.decorators.Decorator;
  * @version $Id: LabelPainter.java 536 2006-11-21 16:10:24Z rambaut $
  */
 public abstract class LabelPainter<T> extends AbstractPainter<T> {
+    public static final String NAMES = "Names";
+    public static final String NODE_AGES = "Node ages";
+    public static final String NODE_HEIGHTS = "Node heights (raw)";
+    public static final String BRANCH_TIMES = "Branch times";
+    public static final String BRANCH_LENGTHS = "Branch lengths (raw)";
 
-    protected LabelPainter() {
+    public enum PainterIntent {
+        NODE,
+        BRANCH,
+        TIP
+    };
+
+    protected LabelPainter(PainterIntent intent) {
+        this.intent = intent;
 	}
 
 	// Abstract
 
-	public abstract String[] getAttributes();
-
-    public abstract void setupAttributes(Collection<? extends Tree> trees);
-
     public abstract void setDisplayAttribute(String displayAttribute);
 
     public abstract void setTextDecorator(Decorator textDecorator);
-
-    public abstract Set<Attributable> getAttributableItems();
 
     // Getters
 
@@ -94,6 +101,10 @@ public abstract class LabelPainter<T> extends AbstractPainter<T> {
 	    firePainterChanged();
 	}
 
+    public PainterIntent getIntent() {
+        return intent;
+    }
+
     private Paint foreground = Color.BLACK;
 	private Paint background = null;
 	private Paint borderPaint = null;
@@ -103,5 +114,7 @@ public abstract class LabelPainter<T> extends AbstractPainter<T> {
 	private boolean visible = true;
 
 	private NumberFormat numberFormat = null;
+
+    private final PainterIntent intent;
 
 }
