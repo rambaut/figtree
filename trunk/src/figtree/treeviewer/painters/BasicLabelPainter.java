@@ -24,109 +24,10 @@ import java.util.List;
  */
 public class BasicLabelPainter extends LabelPainter<Node> {
 
-    public static final String NAMES = "Names";
-    public static final String NODE_AGES = "Node ages";
-    public static final String NODE_HEIGHTS = "Node heights (raw)";
-    public static final String BRANCH_TIMES = "Branch times";
-    public static final String BRANCH_LENGTHS = "Branch lengths (raw)";
-
-
-    public enum PainterIntent {
-        NODE,
-        BRANCH,
-        TIP
-    };
-
     public BasicLabelPainter(PainterIntent intent) {
-        this.intent = intent;
+        super(intent);
 
-        setupAttributes(null);
-
-        if (this.displayAttribute == null) {
-            this.displayAttribute = attributes[0];
-        } else {
-            this.displayAttribute = "";
-        }
-
-    }
-
-    public void setupAttributes(Collection<? extends Tree> trees) {
-
-        List<String> attributeNames = new ArrayList<String>();
-
-        attributableItems.clear();
-
-        Set<String> nodeAttributes = new TreeSet<String>();
-        if (trees != null) {
-            for (Tree tree : trees) {
-                if (intent == PainterIntent.TIP) {
-                    for (Node node : tree.getExternalNodes()) {
-                        attributableItems.add(node);
-                        nodeAttributes.addAll(node.getAttributeNames());
-                    }
-                    for (Taxon taxon : tree.getTaxa()) {
-                        attributableItems.add(taxon);
-                        nodeAttributes.addAll(taxon.getAttributeNames());
-                    }
-                } else if (intent == PainterIntent.NODE) {
-                    for (Node node : tree.getInternalNodes()) {
-                        attributableItems.add(node);
-                        nodeAttributes.addAll(node.getAttributeNames());
-                    }
-                } else {
-                    for (Node node : tree.getNodes()) {
-                        attributableItems.add(node);
-                        nodeAttributes.addAll(node.getAttributeNames());
-                    }
-                }
-            }
-        }
-
-        switch( intent ) {
-            case TIP: {
-                attributeNames.add(NAMES);
-                attributeNames.add(NODE_AGES);
-                attributeNames.add(NODE_HEIGHTS);
-                attributeNames.add(BRANCH_TIMES);
-                attributeNames.add(BRANCH_LENGTHS);
-                break;
-            }
-            case NODE: {
-                if (nodeAttributes.contains("!name")) {
-                    attributeNames.add(NAMES);
-                }
-                attributeNames.add(NODE_AGES);
-                attributeNames.add(NODE_HEIGHTS);
-                attributeNames.add(BRANCH_TIMES);
-                attributeNames.add(BRANCH_LENGTHS);
-                break;
-            }
-            case BRANCH: {
-                if (nodeAttributes.contains("!name")) {
-                    attributeNames.add(NAMES);
-                }
-                attributeNames.add(BRANCH_TIMES);
-                attributeNames.add(BRANCH_LENGTHS);
-                attributeNames.add(NODE_AGES);
-                attributeNames.add(NODE_HEIGHTS);
-                break;
-            }
-        }
-
-        for (String attributeName : nodeAttributes) {
-            if (!attributeName.startsWith("!")) {
-                attributeNames.add(attributeName);
-            }
-        }
-
-        this.attributes = new String[attributeNames.size()];
-        attributeNames.toArray(this.attributes);
-
-        fireAttributesChanged();
-    }
-
-    public Set<Attributable> getAttributableItems() {
-        return attributableItems;
+        this.displayAttribute = "";
     }
 
     public void setTreePane(TreePane treePane) {
@@ -157,7 +58,7 @@ public class BasicLabelPainter extends LabelPainter<Node> {
 
     protected String getLabel(Tree tree, Node node) {
         if (displayAttribute.equalsIgnoreCase(NAMES)) {
-            if (intent == PainterIntent.TIP) {
+            if (getIntent() == PainterIntent.TIP) {
                 Taxon taxon = tree.getTaxon(node);
                 if (taxon != null) {
                     if (textDecorator != null) {
@@ -209,7 +110,7 @@ public class BasicLabelPainter extends LabelPainter<Node> {
 
         Object value = null;
 
-        if (intent == PainterIntent.TIP) {
+        if (getIntent() == PainterIntent.TIP) {
             Taxon taxon = tree.getTaxon(node);
             if (taxon != null) {
                 value = taxon.getAttribute(displayAttribute);
@@ -367,24 +268,16 @@ public class BasicLabelPainter extends LabelPainter<Node> {
         g2.setFont(oldFont);
     }
 
-    public String[] getAttributes() {
-        return attributes;
-    }
-
     public void setDisplayAttribute(String displayAttribute) {
         this.displayAttribute = displayAttribute;
         firePainterChanged();
     }
-
-    private PainterIntent intent;
 
     private double preferredWidth;
     private double preferredHeight;
     private float yOffset;
 
     protected String displayAttribute;
-    protected String[] attributes;
-    private Set<Attributable> attributableItems = new HashSet<Attributable>();
 
     protected TreePane treePane;
 

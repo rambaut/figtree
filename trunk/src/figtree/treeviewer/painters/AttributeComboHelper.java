@@ -17,21 +17,39 @@ import java.util.*;
  * @author rambaut
  */
 public class AttributeComboHelper {
-    public static final String NAMES = "Names";
-    public static final String NODE_AGES = "Node ages";
-    public static final String NODE_HEIGHTS = "Node heights (raw)";
-    public static final String BRANCH_TIMES = "Branch times";
-    public static final String BRANCH_LENGTHS = "Branch lengths (raw)";
-
-
-    public enum Intent {
-        NODE,
-        BRANCH,
-        TIP
-    };
-
 
     public AttributeComboHelper(final JComboBox attributeComboBox, final TreeViewer treeViewer) {
+
+        this(attributeComboBox, treeViewer, null, null, false);
+
+    }
+
+    public AttributeComboHelper(final JComboBox attributeComboBox, final TreeViewer treeViewer,
+                                final String defaultOption) {
+
+        this(attributeComboBox, treeViewer, defaultOption, null, false);
+
+    }
+
+    public AttributeComboHelper(final JComboBox attributeComboBox, final TreeViewer treeViewer,
+                                final String defaultOption,
+                                final boolean includeLineageColourings) {
+
+        this(attributeComboBox, treeViewer, defaultOption, null, includeLineageColourings);
+
+    }
+
+    public AttributeComboHelper(final JComboBox attributeComboBox, final TreeViewer treeViewer,
+                                final LabelPainter.PainterIntent intent) {
+
+        this(attributeComboBox, treeViewer, null, intent, false);
+    }
+
+    public AttributeComboHelper(final JComboBox attributeComboBox, final TreeViewer treeViewer,
+                                final String defaultOption,
+                                final LabelPainter.PainterIntent intent,
+                                final boolean includeLineageColourings) {
+
         treeViewer.addTreeViewerListener(new TreeViewerListener() {
             public void treeChanged() {
                 List<Tree> trees = treeViewer.getTrees();
@@ -40,17 +58,18 @@ public class AttributeComboHelper {
 
                 attributeComboBox.removeAllItems();
 
-                attributeComboBox.addItem("User Selection");
+                if (defaultOption != null) {
+                    attributeComboBox.addItem(defaultOption);
+                }
+
                 if (trees == null) {
                     return;
                 }
                 List<String> names = new ArrayList<String>();
-                for (Tree tree : trees) {
-                    for (String name : getAttributeNames(tree.getNodes())) {
-                        if (!names.contains(name)) {
-                            names.add(name);
-                        }
-                    }
+                if (intent != null) {
+                    getAttributeNames(names, trees, intent);
+                } else {
+                    getAttributeNames(names, trees, includeLineageColourings);
                 }
 
                 for (String name : names) {
@@ -67,113 +86,108 @@ public class AttributeComboHelper {
 
     }
 
-//    public List<String> setupAttributes(Collection<? extends Tree> trees, Intent intent) {
-//
-//        List<String> attributeNames = new ArrayList<String>();
-//
-//        Set<String> nodeAttributes = new TreeSet<String>();
-//        if (trees != null) {
-//            for (Tree tree : trees) {
-//                if (intent == Intent.TIP) {
-//                    for (Node node : tree.getExternalNodes()) {
-//                        nodeAttributes.addAll(node.getAttributeNames());
-//                    }
-//                    for (Taxon taxon : tree.getTaxa()) {
-//                        nodeAttributes.addAll(taxon.getAttributeNames());
-//                    }
-//                } else if (intent == Intent.NODE) {
-//                    for (Node node : tree.getInternalNodes()) {
-//                        nodeAttributes.addAll(node.getAttributeNames());
-//                    }
-//                } else {
-//                    for (Node node : tree.getNodes()) {
-//                        nodeAttributes.addAll(node.getAttributeNames());
-//                    }
-//                }
-//            }
-//        }
-//
-//        switch( intent ) {
-//            case TIP: {
-//                attributeNames.add(NAMES);
-//                attributeNames.add(NODE_AGES);
-//                attributeNames.add(NODE_HEIGHTS);
-//                attributeNames.add(BRANCH_TIMES);
-//                attributeNames.add(BRANCH_LENGTHS);
-//                break;
-//            }
-//            case NODE: {
-//                if (nodeAttributes.contains("!name")) {
-//                    attributeNames.add(NAMES);
-//                }
-//                attributeNames.add(NODE_AGES);
-//                attributeNames.add(NODE_HEIGHTS);
-//                attributeNames.add(BRANCH_TIMES);
-//                attributeNames.add(BRANCH_LENGTHS);
-//                break;
-//            }
-//            case BRANCH: {
-//                if (nodeAttributes.contains("!name")) {
-//                    attributeNames.add(NAMES);
-//                }
-//                attributeNames.add(BRANCH_TIMES);
-//                attributeNames.add(BRANCH_LENGTHS);
-//                attributeNames.add(NODE_AGES);
-//                attributeNames.add(NODE_HEIGHTS);
-//                break;
-//            }
-//        }
-//
-//        for (String attributeName : nodeAttributes) {
-//            if (!attributeName.startsWith("!")) {
-//                attributeNames.add(attributeName);
-//            }
-//        }
-//
-//       return attributeNames;
-//    }
+    public void getAttributeNames(List<String> attributeNames, Collection<? extends Tree> trees, LabelPainter.PainterIntent intent) {
 
-    private static String[] getAttributeNames(Collection<? extends Attributable> items) {
-        java.util.Set<String> attributeNames = new TreeSet<String>();
-
-        for (Attributable item : items) {
-            for (String name : item.getAttributeNames()) {
-                if (!name.startsWith("!")) {
-                    Object attr = item.getAttribute(name);
-                    if (!(attr instanceof Object[])) {
-                        attributeNames.add(name);
-                    } else {
-                        boolean isColouring = true;
-
-                        Object[] array = (Object[])attr;
-                        boolean isIndex = true;
-                        for (Object element : array) {
-                            if (isIndex && !(element instanceof Integer) ||
-                                    !isIndex && !(element instanceof Double)) {
-                                isColouring = false;
-                                break;
-                            }
-                            isIndex = !isIndex;
-                        }
-
-                        if (isIndex) {
-                            // a colouring should finish on an index (which means isIndex should be false)...
-                            isColouring = false;
-                        }
-
-                        if (isColouring) {
-                            attributeNames.add(name + " *");
-                        }
-
+        Set<String> nodeAttributes = new TreeSet<String>();
+        if (trees != null) {
+            for (Tree tree : trees) {
+                if (intent == LabelPainter.PainterIntent.TIP) {
+                    for (Node node : tree.getExternalNodes()) {
+                        nodeAttributes.addAll(node.getAttributeNames());
+                    }
+                    for (Taxon taxon : tree.getTaxa()) {
+                        nodeAttributes.addAll(taxon.getAttributeNames());
+                    }
+                } else if (intent == LabelPainter.PainterIntent.NODE) {
+                    for (Node node : tree.getInternalNodes()) {
+                        nodeAttributes.addAll(node.getAttributeNames());
+                    }
+                } else {
+                    for (Node node : tree.getNodes()) {
+                        nodeAttributes.addAll(node.getAttributeNames());
                     }
                 }
             }
         }
 
-        String[] attributeNameArray = new String[attributeNames.size()];
-        attributeNames.toArray(attributeNameArray);
+        switch( intent ) {
+            case TIP: {
+                attributeNames.add(LabelPainter.NAMES);
+                attributeNames.add(LabelPainter.NODE_AGES);
+                attributeNames.add(LabelPainter.NODE_HEIGHTS);
+                attributeNames.add(LabelPainter.BRANCH_TIMES);
+                attributeNames.add(LabelPainter.BRANCH_LENGTHS);
+                break;
+            }
+            case NODE: {
+                if (nodeAttributes.contains("!name")) {
+                    attributeNames.add(LabelPainter.NAMES);
+                }
+                attributeNames.add(LabelPainter.NODE_AGES);
+                attributeNames.add(LabelPainter.NODE_HEIGHTS);
+                attributeNames.add(LabelPainter.BRANCH_TIMES);
+                attributeNames.add(LabelPainter.BRANCH_LENGTHS);
+                break;
+            }
+            case BRANCH: {
+                if (nodeAttributes.contains("!name")) {
+                    attributeNames.add(LabelPainter.NAMES);
+                }
+                attributeNames.add(LabelPainter.BRANCH_TIMES);
+                attributeNames.add(LabelPainter.BRANCH_LENGTHS);
+                attributeNames.add(LabelPainter.NODE_AGES);
+                attributeNames.add(LabelPainter.NODE_HEIGHTS);
+                break;
+            }
+        }
 
-        return attributeNameArray;
+        for (String attributeName : nodeAttributes) {
+            if (!attributeName.startsWith("!")) {
+                attributeNames.add(attributeName);
+            }
+        }
+    }
+
+    private static void getAttributeNames(List<String> attributeNames, Collection<? extends Tree> trees, final boolean includeLineageColourings) {
+        for (Tree tree : trees) {
+            Set<String> attributes = new TreeSet<String>();
+
+            for (Attributable item : tree.getNodes()) {
+                for (String name : item.getAttributeNames()) {
+                    if (!name.startsWith("!")) {
+                        Object attr = item.getAttribute(name);
+                        if (!(attr instanceof Object[])) {
+                            attributes.add(name);
+                        } else {
+                            boolean isColouring = true;
+
+                            Object[] array = (Object[])attr;
+                            boolean isIndex = true;
+                            for (Object element : array) {
+                                if (isIndex && !(element instanceof Integer) ||
+                                        !isIndex && !(element instanceof Double)) {
+                                    isColouring = false;
+                                    break;
+                                }
+                                isIndex = !isIndex;
+                            }
+
+                            if (isIndex) {
+                                // a colouring should finish on an index (which means isIndex should be false)...
+                                isColouring = false;
+                            }
+
+                            if (isColouring && includeLineageColourings) {
+                                attributes.add(name + " *");
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            attributeNames.addAll(attributes);
+        }
     }
 
 }

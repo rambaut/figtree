@@ -25,6 +25,7 @@ public class ScaleAxisPainter extends LabelPainter<TreePane> implements ScalePai
     private double minorTickSpacing = 0.5;
 
     public ScaleAxisPainter() {
+        super(null);
 	}
 
 	public void setTreePane(TreePane treePane) {

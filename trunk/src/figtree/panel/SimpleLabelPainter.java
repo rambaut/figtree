@@ -28,14 +28,8 @@ public class SimpleLabelPainter extends LabelPainter<Node> {
 	public static final String NODE_AGES = "Node ages";
 	public static final String BRANCH_LENGTHS = "Branch lengths";
 
-    public enum PainterIntent {
-		NODE,
-		BRANCH,
-		TIP
-	};
-
 	public SimpleLabelPainter(PainterIntent intent) {
-		this.intent = intent;
+        super(intent);
 
 		setupAttributes(null);
 

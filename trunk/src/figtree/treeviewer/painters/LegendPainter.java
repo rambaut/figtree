@@ -24,6 +24,7 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
     public final static int CONTINUOUS_LENGTH = 320;
 
     public LegendPainter(AttributeColourController attributeColourController) {
+        super(null);
         this.attributeColourController = attributeColourController;
     }
 
@@ -166,24 +167,10 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
     protected TreePane treePane;
 
     @Override
-    public String[] getAttributes() {
-        return new String[0];
-    }
-
-    @Override
-    public void setupAttributes(Collection<? extends Tree> trees) {
-    }
-
-    @Override
     public void setDisplayAttribute(String displayAttribute) {
     }
 
     @Override
     public void setTextDecorator(Decorator textDecorator) {
-    }
-
-    @Override
-    public Set<Attributable> getAttributableItems() {
-        return null;
     }
 }

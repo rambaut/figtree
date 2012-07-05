@@ -1,5 +1,6 @@
 package figtree.treeviewer;
 
+import figtree.treeviewer.painters.AttributeComboHelper;
 import jam.controlpalettes.ControllerListener;
 import jebl.evolution.trees.Tree;
 import jebl.evolution.graphs.Node;
@@ -81,7 +82,12 @@ public class TreeAppearanceController extends AbstractController {
         branchWidthAttributeCombo = new JComboBox(new String[] { "No attributes" });
         branchColourAttributeCombo = new JComboBox(new String[] { "No attributes" });
         backgroundColourAttributeCombo = new JComboBox(new String[] { "No attributes" });
-        setupAttributes(treeViewer.getTrees());
+
+        new AttributeComboHelper(branchWidthAttributeCombo, treeViewer, "Default");
+        new AttributeComboHelper(branchColourAttributeCombo, treeViewer, "User selection");
+        new AttributeComboHelper(backgroundColourAttributeCombo, treeViewer, "Default");
+
+//        setupAttributes(treeViewer.getTrees());
 
 //        branchColourSettings.autoRange  = true;
 //        branchColourSettings.fromValue = 0.0;
@@ -171,16 +177,16 @@ public class TreeAppearanceController extends AbstractController {
         branchWidthAttributeCombo.addActionListener(listener);
         backgroundColourAttributeCombo.addActionListener(listener);
 
-        treeViewer.addTreeViewerListener(new TreeViewerListener() {
-            public void treeChanged() {
-                setupAttributes(treeViewer.getTrees());
-                optionsPanel.repaint();
-            }
-
-            public void treeSettingsChanged() {
-                // nothing to do
-            }
-        });
+//        treeViewer.addTreeViewerListener(new TreeViewerListener() {
+//            public void treeChanged() {
+//                setupAttributes(treeViewer.getTrees());
+//                optionsPanel.repaint();
+//            }
+//
+//            public void treeSettingsChanged() {
+//                // nothing to do
+//            }
+//        });
     }
 
     private void setupBranchDecorators() {
@@ -236,73 +242,73 @@ public class TreeAppearanceController extends AbstractController {
     }
 
 
-    private void setupAttributes(Collection<? extends Tree> trees) {
-        Object selected2 = branchWidthAttributeCombo.getSelectedItem();
-
-        branchWidthAttributeCombo.removeAllItems();
-
-        branchWidthAttributeCombo.addItem("User Selection");
-        if (trees == null) {
-            return;
-        }
-        List<String> names = new ArrayList<String>();
-        for (Tree tree : trees) {
-            for (String name : getAttributeNames(tree.getNodes())) {
-                if (!names.contains(name)) {
-                    names.add(name);
-                }
-            }
-        }
-
-        for (String name : names) {
-            branchWidthAttributeCombo.addItem(name);
-        }
-
-        branchWidthAttributeCombo.setSelectedItem(selected2);
-    }
-
-    private String[] getAttributeNames(Collection<? extends Attributable> items) {
-        java.util.Set<String> attributeNames = new TreeSet<String>();
-
-        for (Attributable item : items) {
-            for (String name : item.getAttributeNames()) {
-                if (!name.startsWith("!")) {
-                    Object attr = item.getAttribute(name);
-                    if (!(attr instanceof Object[])) {
-                        attributeNames.add(name);
-                    } else {
-                        boolean isColouring = true;
-
-                        Object[] array = (Object[])attr;
-                        boolean isIndex = true;
-                        for (Object element : array) {
-                            if (isIndex && !(element instanceof Integer) ||
-                                    !isIndex && !(element instanceof Double)) {
-                                isColouring = false;
-                                break;
-                            }
-                            isIndex = !isIndex;
-                        }
-
-                        if (isIndex) {
-                            // a colouring should finish on an index (which means isIndex should be false)...
-                            isColouring = false;
-                        }
-
-                        if (isColouring) {
-                            attributeNames.add(name + " *");
-                        }
-
-                    }
-                }
-            }
-        }
-
-        String[] attributeNameArray = new String[attributeNames.size()];
-        attributeNames.toArray(attributeNameArray);
-
-        return attributeNameArray;
-    }
+//    private void setupAttributes(Collection<? extends Tree> trees) {
+//        Object selected2 = branchWidthAttributeCombo.getSelectedItem();
+//
+//        branchWidthAttributeCombo.removeAllItems();
+//
+//        branchWidthAttributeCombo.addItem("User Selection");
+//        if (trees == null) {
+//            return;
+//        }
+//        List<String> names = new ArrayList<String>();
+//        for (Tree tree : trees) {
+//            for (String name : getAttributeNames(tree.getNodes())) {
+//                if (!names.contains(name)) {
+//                    names.add(name);
+//                }
+//            }
+//        }
+//
+//        for (String name : names) {
+//            branchWidthAttributeCombo.addItem(name);
+//        }
+//
+//        branchWidthAttributeCombo.setSelectedItem(selected2);
+//    }
+//
+//    private String[] getAttributeNames(Collection<? extends Attributable> items) {
+//        java.util.Set<String> attributeNames = new TreeSet<String>();
+//
+//        for (Attributable item : items) {
+//            for (String name : item.getAttributeNames()) {
+//                if (!name.startsWith("!")) {
+//                    Object attr = item.getAttribute(name);
+//                    if (!(attr instanceof Object[])) {
+//                        attributeNames.add(name);
+//                    } else {
+//                        boolean isColouring = true;
+//
+//                        Object[] array = (Object[])attr;
+//                        boolean isIndex = true;
+//                        for (Object element : array) {
+//                            if (isIndex && !(element instanceof Integer) ||
+//                                    !isIndex && !(element instanceof Double)) {
+//                                isColouring = false;
+//                                break;
+//                            }
+//                            isIndex = !isIndex;
+//                        }
+//
+//                        if (isIndex) {
+//                            // a colouring should finish on an index (which means isIndex should be false)...
+//                            isColouring = false;
+//                        }
+//
+//                        if (isColouring) {
+//                            attributeNames.add(name + " *");
+//                        }
+//
+//                    }
+//                }
+//            }
+//        }
+//
+//        String[] attributeNameArray = new String[attributeNames.size()];
+//        attributeNames.toArray(attributeNameArray);
+//
+//        return attributeNameArray;
+//    }
 
     public JComponent getTitleComponent() {
         return titleLabel;
@@ -362,9 +368,6 @@ public class TreeAppearanceController extends AbstractController {
     private WidthScaleDialog widthScaleDialog = null;
 
     private boolean branchColourIsGradient = false;
-
-    private OldContinuousColourScaleDialog.ColourSettings branchColourSettings = new OldContinuousColourScaleDialog.ColourSettings();
-    private OldContinuousColourScaleDialog.ColourSettings backgroundColourSettings = new OldContinuousColourScaleDialog.ColourSettings();
 
     private boolean widthAutoRange = true;
     private double widthFromValue = 0.0;

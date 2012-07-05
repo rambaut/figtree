@@ -45,13 +45,13 @@ public class FigTreePanel extends JPanel {
 
         // Create a tip label painter and its controller
         final BasicLabelPainter tipLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.TIP);
-        controlPalette.addController(new LabelPainterController("Tip Labels", "tipLabels", tipLabelPainter, frame, attributeColourController));
+        controlPalette.addController(new LabelPainterController("Tip Labels", "tipLabels", tipLabelPainter, frame, attributeColourController, treeViewer));
         treeViewer.setTipLabelPainter(tipLabelPainter);
 
         // Create a node label painter and its controller
         final BasicLabelPainter nodeLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.NODE);
         nodeLabelPainter.setVisible(false);
-        controlPalette.addController(new LabelPainterController("Node Labels", "nodeLabels", nodeLabelPainter, frame, attributeColourController));
+        controlPalette.addController(new LabelPainterController("Node Labels", "nodeLabels", nodeLabelPainter, frame, attributeColourController, treeViewer));
         treeViewer.setNodeLabelPainter(nodeLabelPainter);
 
         // Create a node bar painter and its controller
@@ -70,7 +70,7 @@ public class FigTreePanel extends JPanel {
         // Create a branch label painter and its controller
         final BasicLabelPainter branchLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.BRANCH);
         branchLabelPainter.setVisible(false);
-        controlPalette.addController(new LabelPainterController("Branch Labels", "branchLabels", branchLabelPainter, frame, attributeColourController));
+        controlPalette.addController(new LabelPainterController("Branch Labels", "branchLabels", branchLabelPainter, frame, attributeColourController, treeViewer));
         treeViewer.setBranchLabelPainter(branchLabelPainter);
 
         // Create a scale controller
@@ -100,16 +100,16 @@ public class FigTreePanel extends JPanel {
         add(slideOpenPanel, BorderLayout.CENTER);
         add(controlPalette.getPanel(), BorderLayout.WEST);
 
-        treeViewer.addAnnotationsListener(new AnnotationsListener() {
-            public void annotationsChanged() {
-
-                tipLabelPainter.setupAttributes(treeViewer.getTrees());
-                nodeLabelPainter.setupAttributes(treeViewer.getTrees());
-                nodeBarPainter.setupAttributes(treeViewer.getTrees());
-                branchLabelPainter.setupAttributes(treeViewer.getTrees());
-                legendPainter.setupAttributes(treeViewer.getTrees());
-            }
-        });
+//        treeViewer.addAnnotationsListener(new AnnotationsListener() {
+//            public void annotationsChanged() {
+//
+//                tipLabelPainter.setupAttributes(treeViewer.getTrees());
+//                nodeLabelPainter.setupAttributes(treeViewer.getTrees());
+//                nodeBarPainter.setupAttributes(treeViewer.getTrees());
+//                branchLabelPainter.setupAttributes(treeViewer.getTrees());
+//                legendPainter.setupAttributes(treeViewer.getTrees());
+//            }
+//        });
     }
 
     public TreeViewer getTreeViewer() {

@@ -120,6 +120,8 @@ public class ContinuousColourScaleDialog {
     public void setDecorator(HSBContinuousColourDecorator decorator) {
         this.decorator = decorator;
 
+        ContinuousScale scale = decorator.getContinuousScale();
+
         hueSlider.setValue((int)(decorator.getHueLower() * SLIDER_RANGE));
         hueSlider.setUpperValue((int) (decorator.getHueUpper() * SLIDER_RANGE));
 

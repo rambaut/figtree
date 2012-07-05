@@ -51,11 +51,14 @@ public class LabelPainterController extends AbstractController {
 
     public LabelPainterController(String title, String key, final LabelPainter labelPainter,
                                   final JFrame frame,
-                                  final AttributeColourController colourController) {
+                                  final AttributeColourController colourController,
+                                  final TreeViewer treeViewer) {
 
         this.title = title;
         this.key = key;
         this.labelPainter = labelPainter;
+
+        LabelPainter.PainterIntent intent = labelPainter.getIntent();
 
         userLabelDecorator = new AttributableDecorator();
         userLabelDecorator.setPaintAttributeName("!color");
@@ -76,21 +79,22 @@ public class LabelPainterController extends AbstractController {
 
         titleCheckBox.setSelected(labelPainter.isVisible());
 
-        String[] attributes = labelPainter.getAttributes();
-        displayAttributeCombo = new JComboBox(attributes);
+        displayAttributeCombo = new JComboBox(new String[] { "No attributes" });
         displayAttributeCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 String attribute = (String) displayAttributeCombo.getSelectedItem();
                 labelPainter.setDisplayAttribute(attribute);
             }
         });
+        new AttributeComboHelper(displayAttributeCombo, treeViewer, intent);
 
-        colourAttributeCombo = new JComboBox(new String[] { USER_SELECTION });
+        colourAttributeCombo = new JComboBox(new String[] { "No attributes" });
         colourAttributeCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 setupLabelDecorator();
             }
         });
+        new AttributeComboHelper(colourAttributeCombo, treeViewer, "User selection");
 
         final JButton setupColourButton = new JButton("Colour");
 
@@ -168,16 +172,16 @@ public class LabelPainterController extends AbstractController {
             }
         });
 
-        labelPainter.addPainterListener(new PainterListener() {
-            public void painterChanged() {
-
-            }
-            public void painterSettingsChanged() {
-            }
-            public void attributesChanged() {
-                setupAttributes();
-            }
-        });
+//        labelPainter.addPainterListener(new PainterListener() {
+//            public void painterChanged() {
+//
+//            }
+//            public void painterSettingsChanged() {
+//            }
+//            public void attributesChanged() {
+//                setupAttributes();
+//            }
+//        });
 
         final JLabel label1 = optionsPanel.addComponentWithLabel("Display:", displayAttributeCombo);
         final JLabel label2 = optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
@@ -204,73 +208,74 @@ public class LabelPainterController extends AbstractController {
         titleCheckBox.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
                 enableComponents(titleCheckBox.isSelected());
+                labelPainter.setVisible(titleCheckBox.isSelected());
             }
         });
     }
 
-    private void setupAttributes() {
-        //todo - make this controlled by a generic helper class for attribute list combo boxes
-        Object item1 = displayAttributeCombo.getSelectedItem();
-        displayAttributeCombo.removeAllItems();
-        for (String name : labelPainter.getAttributes()) {
-            displayAttributeCombo.addItem(name);
-        }
-        displayAttributeCombo.setSelectedItem(item1);
-
-//        String[] names = getAttributeNames(labelPainter.getAttributableItems());
-//        Object item2 = colourAttributeCombo.getSelectedItem();
-//        colourAttributeCombo.removeAllItems();
-//        colourAttributeCombo.addItem(USER_SELECTION);
-//        for (String name : names) {
-//            colourAttributeCombo.addItem(name);
+//    private void setupAttributes() {
+//        //todo - make this controlled by a generic helper class for attribute list combo boxes
+//        Object item1 = displayAttributeCombo.getSelectedItem();
+//        displayAttributeCombo.removeAllItems();
+//        for (String name : labelPainter.getAttributes()) {
+//            displayAttributeCombo.addItem(name);
 //        }
-//        colourAttributeCombo.setSelectedItem(item2);
+//        displayAttributeCombo.setSelectedItem(item1);
+//
+////        String[] names = getAttributeNames(labelPainter.getAttributableItems());
+////        Object item2 = colourAttributeCombo.getSelectedItem();
+////        colourAttributeCombo.removeAllItems();
+////        colourAttributeCombo.addItem(USER_SELECTION);
+////        for (String name : names) {
+////            colourAttributeCombo.addItem(name);
+////        }
+////        colourAttributeCombo.setSelectedItem(item2);
+//
+//        optionsPanel.repaint();
+//    }
 
-        optionsPanel.repaint();
-    }
-
-    private String[] getAttributeNames(Collection<? extends Attributable> items) {
-        java.util.Set<String> attributeNames = new TreeSet<String>();
-
-        for (Attributable item : items) {
-            for (String name : item.getAttributeNames()) {
-                if (!name.startsWith("!")) {
-                    Object attr = item.getAttribute(name);
-                    if (!(attr instanceof Object[])) {
-                        attributeNames.add(name);
-                    } else {
-                        boolean isColouring = true;
-
-                        Object[] array = (Object[])attr;
-                        boolean isIndex = true;
-                        for (Object element : array) {
-                            if (isIndex && !(element instanceof Integer) ||
-                                    !isIndex && !(element instanceof Double)) {
-                                isColouring = false;
-                                break;
-                            }
-                            isIndex = !isIndex;
-                        }
-
-                        if (isIndex) {
-                            // a colouring should finish on an index (which means isIndex should be false)...
-                            isColouring = false;
-                        }
-
-                        if (isColouring) {
-                            attributeNames.add(name + " *");
-                        }
-
-                    }
-                }
-            }
-        }
-
-        String[] attributeNameArray = new String[attributeNames.size()];
-        attributeNames.toArray(attributeNameArray);
-
-        return attributeNameArray;
-    }
+//    private String[] getAttributeNames(Collection<? extends Attributable> items) {
+//        java.util.Set<String> attributeNames = new TreeSet<String>();
+//
+//        for (Attributable item : items) {
+//            for (String name : item.getAttributeNames()) {
+//                if (!name.startsWith("!")) {
+//                    Object attr = item.getAttribute(name);
+//                    if (!(attr instanceof Object[])) {
+//                        attributeNames.add(name);
+//                    } else {
+//                        boolean isColouring = true;
+//
+//                        Object[] array = (Object[])attr;
+//                        boolean isIndex = true;
+//                        for (Object element : array) {
+//                            if (isIndex && !(element instanceof Integer) ||
+//                                    !isIndex && !(element instanceof Double)) {
+//                                isColouring = false;
+//                                break;
+//                            }
+//                            isIndex = !isIndex;
+//                        }
+//
+//                        if (isIndex) {
+//                            // a colouring should finish on an index (which means isIndex should be false)...
+//                            isColouring = false;
+//                        }
+//
+//                        if (isColouring) {
+//                            attributeNames.add(name + " *");
+//                        }
+//
+//                    }
+//                }
+//            }
+//        }
+//
+//        String[] attributeNameArray = new String[attributeNames.size()];
+//        attributeNames.toArray(attributeNameArray);
+//
+//        return attributeNameArray;
+//    }
 
     private void setupLabelDecorator() {
 
@@ -355,10 +360,4 @@ public class LabelPainterController extends AbstractController {
     private final AttributableDecorator userLabelDecorator;
 
     private final JComboBox colourAttributeCombo;
-
-    private ContinuousColourScaleDialog continuousColourScaleDialog = null;
-    private DiscreteColourScaleDialog discreteColourScaleDialog = null;
-
-    OldContinuousColourScaleDialog.ColourSettings colourSettings = new OldContinuousColourScaleDialog.ColourSettings();
-
 }

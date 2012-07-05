@@ -88,25 +88,25 @@ public class DefaultTreeViewer extends TreeViewer {
     public void addTree(Tree tree) {
         this.trees.add(tree);
 
-        if (treePane.getTipLabelPainter() != null) {
-            treePane.getTipLabelPainter().setupAttributes(trees);
-        }
-
-        if (treePane.getBranchLabelPainter() != null) {
-            treePane.getBranchLabelPainter().setupAttributes(trees);
-        }
-
-        if (treePane.getNodeLabelPainter() != null) {
-            treePane.getNodeLabelPainter().setupAttributes(trees);
-        }
-
-        if (treePane.getNodeBarPainter() != null) {
-            treePane.getNodeBarPainter().setupAttributes(trees);
-        }
-
-        if (treePane.getLegendPainter() != null) {
-            treePane.getLegendPainter().setupAttributes(trees);
-        }
+//        if (treePane.getTipLabelPainter() != null) {
+//            treePane.getTipLabelPainter().setupAttributes(trees);
+//        }
+//
+//        if (treePane.getBranchLabelPainter() != null) {
+//            treePane.getBranchLabelPainter().setupAttributes(trees);
+//        }
+//
+//        if (treePane.getNodeLabelPainter() != null) {
+//            treePane.getNodeLabelPainter().setupAttributes(trees);
+//        }
+//
+//        if (treePane.getNodeBarPainter() != null) {
+//            treePane.getNodeBarPainter().setupAttributes(trees);
+//        }
+//
+//        if (treePane.getLegendPainter() != null) {
+//            treePane.getLegendPainter().setupAttributes(trees);
+//        }
     }
 
     public void addTrees(Collection<? extends Tree> trees) {
@@ -567,13 +567,13 @@ public class DefaultTreeViewer extends TreeViewer {
     // A load of delegated method calls through to treePane (which is now hidden outside the package).
     public void setTipLabelPainter(LabelPainter<Node> tipLabelPainter) {
         treePane.setTipLabelPainter(tipLabelPainter);
-        tipLabelPainter.setupAttributes(trees);
+//        tipLabelPainter.setupAttributes(trees);
 
     }
 
     public void setNodeLabelPainter(LabelPainter<Node> nodeLabelPainter) {
         treePane.setNodeLabelPainter(nodeLabelPainter);
-        nodeLabelPainter.setupAttributes(trees);
+//        nodeLabelPainter.setupAttributes(trees);
     }
 
     public void setNodeBarPainter(NodeBarPainter nodeBarPainter) {
@@ -588,7 +588,7 @@ public class DefaultTreeViewer extends TreeViewer {
 
     public void setBranchLabelPainter(LabelPainter<Node> branchLabelPainter) {
         treePane.setBranchLabelPainter(branchLabelPainter);
-        branchLabelPainter.setupAttributes(trees);
+//        branchLabelPainter.setupAttributes(trees);
     }
 
     public void addScalePainter(ScalePainter scalePainter) {
@@ -605,7 +605,7 @@ public class DefaultTreeViewer extends TreeViewer {
 
     public void setLegendPainter(LegendPainter legendPainter) {
         treePane.setLegendPainter(legendPainter);
-        legendPainter.setupAttributes(trees);
+//        legendPainter.setupAttributes(trees);
     }
 
     public void setBranchDecorator(Decorator branchDecorator, boolean isGradient) {
