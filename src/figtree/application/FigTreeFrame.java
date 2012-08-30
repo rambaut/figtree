@@ -54,7 +54,6 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
         setTitle(title);
 
-
         setImportAction(importAction);
         //       setImportAction(importCharactersAction);
         setExportAction(exportTreesAction);

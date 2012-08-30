@@ -182,10 +182,12 @@ public class TreesController extends AbstractController {
 		if (!rootingCheck.isSelected() || rootingCombo.getSelectedItem() != TreePane.RootingType.MID_POINT) {
 			rootingCheck.setSelected(true);
 			rootingCombo.setSelectedItem(TreePane.RootingType.MID_POINT);
-		} else {
+        } else {
 			rootingCombo.setSelectedItem(TreePane.RootingType.USER_ROOTING);
-		}
-	}
+        }
+        treeViewer.setRootingType((TreePane.RootingType) rootingCombo.getSelectedItem());
+        treeViewer.setRootingOn(rootingCheck.isSelected());
+    }
 
 	public void toggleIncreasingNodeOrder() {
 		if (!orderCheck.isSelected() || orderCombo.getSelectedItem() != SortedRootedTree.BranchOrdering.INCREASING_NODE_DENSITY) {
@@ -194,7 +196,9 @@ public class TreesController extends AbstractController {
 		} else {
 			orderCheck.setSelected(false);
 		}
-	}
+        treeViewer.setBranchOrdering((SortedRootedTree.BranchOrdering) orderCombo.getSelectedItem());
+        treeViewer.setOrderBranchesOn(orderCheck.isSelected());
+    }
 
 	public void toggleDecreasingNodeOrder() {
 		if (!orderCheck.isSelected() || orderCombo.getSelectedItem() != SortedRootedTree.BranchOrdering.DECREASING_NODE_DENSITY) {
@@ -203,7 +207,9 @@ public class TreesController extends AbstractController {
 		} else {
 			orderCheck.setSelected(false);
 		}
-	}
+        treeViewer.setBranchOrdering((SortedRootedTree.BranchOrdering) orderCombo.getSelectedItem());
+        treeViewer.setOrderBranchesOn(orderCheck.isSelected());
+    }
 
     public void setSettings(Map<String,Object> settings) {
         transformCheck.setSelected((Boolean) settings.get(CONTROLLER_KEY + "." + TRANSFORM_KEY));
