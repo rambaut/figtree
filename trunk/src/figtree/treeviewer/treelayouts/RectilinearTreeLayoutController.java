@@ -64,9 +64,8 @@ public class RectilinearTreeLayoutController extends AbstractController {
         alignTipLabelsCheck.setOpaque(false);
 
         alignTipLabelsCheck.setSelected(treeLayout.isAlignTipLabels());
-        alignTipLabelsCheck.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+        alignTipLabelsCheck.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 treeLayout.setAlignTipLabels(alignTipLabelsCheck.isSelected());
             }
         });

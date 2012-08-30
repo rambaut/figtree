@@ -128,9 +128,8 @@ public class ScaleBarPainterController extends AbstractController {
         label4.setEnabled(isSelected1);
         lineWeightSpinner.setEnabled(isSelected1);
 
-        titleCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+        titleCheckBox.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 final boolean isSelected1 = titleCheckBox.isSelected();
                 final boolean isSelected2 = autoScaleCheck.isSelected();
 
@@ -148,9 +147,8 @@ public class ScaleBarPainterController extends AbstractController {
             }
         });
 
-        autoScaleCheck.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+        autoScaleCheck.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 if (autoScaleCheck.isSelected()) {
                     scaleBarPainter.setAutomaticScale(true);
                     double range = scaleBarPainter.getScaleRange();
@@ -165,9 +163,8 @@ public class ScaleBarPainterController extends AbstractController {
             }
         });
 
-        scaleRangeText.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+        scaleRangeText.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 Double value = scaleRangeText.getValue();
                 if (value != null) {
                     scaleBarPainter.setScaleRange(value);

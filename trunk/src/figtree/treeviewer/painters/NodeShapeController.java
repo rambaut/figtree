@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.prefs.Preferences;
 
 import figtree.treeviewer.ControllerOptionsPanel;
 
@@ -24,20 +25,30 @@ import figtree.treeviewer.ControllerOptionsPanel;
  */
 public class NodeShapeController extends AbstractController {
 
+    private static Preferences PREFS = Preferences.userNodeForPackage(NodeBarController.class);
+
+    private static final String NODE_SHAPE_KEY = "nodeShape";
+    public static final String SIZE_ATTRIBUTE_KEY = "sizeAttribute";
+    public static final String COLOUR_ATTRIBUTE_KEY = "colourAttribute";
+    private static final String SHAPE_SIZE_KEY = "size";
+
+    private static float DEFAULT_SHAPE_SIZE = 4.0f;
+
     public NodeShapeController(String title, final NodeShapePainter nodeShapePainter,
                                final AttributeColourController colourController,
                                final TreeViewer treeViewer) {
         this.title = title;
         this.nodeShapePainter = nodeShapePainter;
 
-	    optionsPanel = new ControllerOptionsPanel(2, 2);
+        final float defaultShapeSize = PREFS.getFloat(SHAPE_SIZE_KEY, DEFAULT_SHAPE_SIZE);
+
+        optionsPanel = new ControllerOptionsPanel(2, 2);
 
         titleCheckBox = new JCheckBox(getTitle());
         titleCheckBox.setSelected(this.nodeShapePainter.isVisible());
 
-        titleCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+        titleCheckBox.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 final boolean selected = titleCheckBox.isSelected();
                 nodeShapePainter.setVisible(selected);
             }
@@ -113,9 +124,8 @@ public class NodeShapeController extends AbstractController {
         addComponent(setupColourButton);
         enableComponents(titleCheckBox.isSelected());
 
-        titleCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+        titleCheckBox.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 enableComponents(titleCheckBox.isSelected());
             }
         });
@@ -143,10 +153,16 @@ public class NodeShapeController extends AbstractController {
         // nothing to do
     }
 
-    public void getSettings(Map<String, Object> settings) {
+    public void setSettings(Map<String,Object> settings) {
+//        titleCheckBox.setSelected((Boolean)settings.get(NODE_BARS_KEY + "." + IS_SHOWN));
+//        displayAttributeCombo.setSelectedItem((String) settings.get(NODE_BARS_KEY + "." + DISPLAY_ATTRIBUTE_KEY));
+//        barWidthSpinner.setValue((Double)settings.get(NODE_BARS_KEY + "." + BAR_WIDTH_KEY));
     }
 
-    public void setSettings(Map<String,Object> settings) {
+    public void getSettings(Map<String, Object> settings) {
+//        settings.put(NODE_BARS_KEY + "." + IS_SHOWN, titleCheckBox.isSelected());
+//        settings.put(NODE_BARS_KEY + "." + DISPLAY_ATTRIBUTE_KEY, displayAttributeCombo.getSelectedItem());
+//        settings.put(NODE_BARS_KEY + "." + BAR_WIDTH_KEY, barWidthSpinner.getValue());
     }
 
     private final JCheckBox titleCheckBox;

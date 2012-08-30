@@ -75,8 +75,8 @@ public class TimeScaleController extends AbstractController {
 		group.add(scaleFactorRadio);
 		group.add(scaleRootRadio);
 
-		scaleFactorRadio.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+		scaleFactorRadio.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 boolean selected = scaleFactorRadio.isSelected();
                 label1.setEnabled(selected);
                 offsetAgeText.setEnabled(selected);
@@ -90,15 +90,14 @@ public class TimeScaleController extends AbstractController {
             }
         });
 
-        ActionListener listener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+        ChangeListener listener = new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 setTimeScale();
             }
         };
-		offsetAgeText.addActionListener(listener);
-		scaleFactorText.addActionListener(listener);
-		rootAgeText.addActionListener(listener);
+		offsetAgeText.addChangeListener(listener);
+		scaleFactorText.addChangeListener(listener);
+		rootAgeText.addChangeListener(listener);
 
 	}
 

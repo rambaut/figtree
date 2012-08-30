@@ -26,7 +26,7 @@ public class NodeBarController extends AbstractController {
     private static Preferences PREFS = Preferences.userNodeForPackage(NodeBarController.class);
 
     private static final String NODE_BARS_KEY = "nodeBars";
-
+    public static final String DISPLAY_ATTRIBUTE_KEY = "displayAttribute";
     private static final String BAR_WIDTH_KEY = "barWidth";
 
     private static float DEFAULT_BAR_WIDTH = 4.0f;
@@ -83,9 +83,8 @@ public class NodeBarController extends AbstractController {
         addComponent(barWidthSpinner);
         enableComponents(titleCheckBox.isSelected());
 
-        titleCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+        titleCheckBox.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 enableComponents(titleCheckBox.isSelected());
                 nodeBarPainter.setVisible(titleCheckBox.isSelected());
             }
@@ -118,15 +117,17 @@ public class NodeBarController extends AbstractController {
     public void initialize() {
         // nothing to do
     }
-
     public void setSettings(Map<String,Object> settings) {
+        titleCheckBox.setSelected((Boolean)settings.get(NODE_BARS_KEY + "." + IS_SHOWN));
+        displayAttributeCombo.setSelectedItem((String) settings.get(NODE_BARS_KEY + "." + DISPLAY_ATTRIBUTE_KEY));
         barWidthSpinner.setValue((Double)settings.get(NODE_BARS_KEY + "." + BAR_WIDTH_KEY));
     }
 
     public void getSettings(Map<String, Object> settings) {
+        settings.put(NODE_BARS_KEY + "." + IS_SHOWN, titleCheckBox.isSelected());
+        settings.put(NODE_BARS_KEY + "." + DISPLAY_ATTRIBUTE_KEY, displayAttributeCombo.getSelectedItem());
         settings.put(NODE_BARS_KEY + "." + BAR_WIDTH_KEY, barWidthSpinner.getValue());
     }
-
 
     private final JCheckBox titleCheckBox;
     private final OptionsPanel optionsPanel;

@@ -159,9 +159,9 @@ public class LegendPainterController extends AbstractController {
         addComponent(digitsSpinner);
         enableComponents(titleCheckBox.isSelected());
 
-        titleCheckBox.addActionListener(new ActionListener() {
+        titleCheckBox.addChangeListener(new ChangeListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void stateChanged(ChangeEvent changeEvent) {
                 enableComponents(titleCheckBox.isSelected());
                 legendPainter.setVisible(titleCheckBox.isSelected());
             }
@@ -203,7 +203,7 @@ public class LegendPainterController extends AbstractController {
     }
 
     public void setSettings(Map<String,Object> settings) {
-        titleCheckBox.setSelected((Boolean)settings.get(CONTROLLER_KEY + "." + IS_SHOWN));
+        titleCheckBox.setSelected((Boolean) settings.get(CONTROLLER_KEY + "." + IS_SHOWN));
         attributeCombo.setSelectedItem((String) settings.get(CONTROLLER_KEY + "." + ATTRIBUTE_KEY));
         fontSizeSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + FONT_SIZE_KEY));
         digitsSpinner.setValue((Integer) settings.get(CONTROLLER_KEY + "." + SIGNIFICANT_DIGITS_KEY));

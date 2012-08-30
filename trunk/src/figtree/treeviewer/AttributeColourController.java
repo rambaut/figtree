@@ -88,7 +88,7 @@ public class AttributeColourController extends AbstractController {
 
     public Decorator getColourDecorator(JComboBox colourAttributeCombo, Decorator defaultDecorator) {
         Decorator decorator = defaultDecorator;
-        if (colourAttributeCombo.getSelectedIndex() > 0) {
+        if (defaultDecorator == null || colourAttributeCombo.getSelectedIndex() > 0) {
             String attribute = (String) colourAttributeCombo.getSelectedItem();
             if (attribute != null && attribute.length() > 0) {
                 decorator = getDecoratorForAttribute(attribute);

@@ -7,6 +7,8 @@ import jam.panels.OptionsPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -56,15 +58,17 @@ public class ContinuousScaleDialog {
         toLabel.setEnabled(false);
         toNumberField.setEnabled(false);
 
-        autoScaleCheck.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        autoScaleCheck.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 boolean enabled = !autoScaleCheck.isSelected();
                 fromLabel.setEnabled(enabled);
                 fromNumberField.setEnabled(enabled);
                 toLabel.setEnabled(enabled);
                 toNumberField.setEnabled(enabled);
             }
-        });
+        }
+
+        );
     }
 
     public int showDialog() {
