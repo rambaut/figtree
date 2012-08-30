@@ -44,10 +44,11 @@ public class LabelPainterController extends AbstractController {
     public static int DEFAULT_FONT_SIZE = 8;
     public static int DEFAULT_FONT_STYLE = Font.PLAIN;
 
-    public static String DEFAULT_NUMBER_FORMATTING = "#.####";
-
     public static String DECIMAL_NUMBER_FORMATTING = "#.####";
     public static String SCIENTIFIC_NUMBER_FORMATTING = "0.###E0";
+
+    public static int DEFAULT_SIGNIFICANT_DIGITS = 2;
+    public static String DEFAULT_NUMBER_FORMATTING = DECIMAL_NUMBER_FORMATTING;
 
     public LabelPainterController(String title, String key, final LabelPainter labelPainter,
                                   final JFrame frame,
@@ -68,6 +69,7 @@ public class LabelPainterController extends AbstractController {
         final String defaultFontName = PREFS.get(key + "." + FONT_NAME_KEY, DEFAULT_FONT_NAME);
         final int defaultFontStyle = PREFS.getInt(key + "." + FONT_STYLE_KEY, DEFAULT_FONT_STYLE);
         final int defaultFontSize = PREFS.getInt(key + "." + FONT_SIZE_KEY, DEFAULT_FONT_SIZE);
+        final int defaultSignificantDigits = PREFS.getInt(key + "." + SIGNIFICANT_DIGITS_KEY, DEFAULT_SIGNIFICANT_DIGITS);
         final String defaultNumberFormatting = PREFS.get(key + "." + NUMBER_FORMATTING_KEY, DEFAULT_NUMBER_FORMATTING);
 
         labelPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
@@ -162,7 +164,7 @@ public class LabelPainterController extends AbstractController {
             }
         });
 
-        digitsSpinner = new JSpinner(new SpinnerNumberModel(digits, 2, 14, 1));
+        digitsSpinner = new JSpinner(new SpinnerNumberModel(digits, defaultSignificantDigits, 14, 1));
         digitsSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
                 final int digits = (Integer)digitsSpinner.getValue();
@@ -205,8 +207,9 @@ public class LabelPainterController extends AbstractController {
         addComponent(digitsSpinner);
         enableComponents(titleCheckBox.isSelected());
 
-        titleCheckBox.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        titleCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 enableComponents(titleCheckBox.isSelected());
                 labelPainter.setVisible(titleCheckBox.isSelected());
             }

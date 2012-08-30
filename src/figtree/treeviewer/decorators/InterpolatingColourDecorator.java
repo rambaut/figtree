@@ -37,7 +37,7 @@ public class InterpolatingColourDecorator extends ContinuousColourDecorator {
     }
 
     // Private methods
-    public Color getColour(double value) {
+    public Color getColourForScaledValue(double value) {
         if (!Double.isNaN(value)) {
             if (color3 != null) {
                 if (value < 0.5) {

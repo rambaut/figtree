@@ -61,8 +61,9 @@ public class TreesController extends AbstractController {
         label1.setEnabled(rootingCheck.isSelected());
         rootingCombo.setEnabled(rootingCheck.isSelected());
 
-        rootingCheck.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        rootingCheck.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 label1.setEnabled(rootingCheck.isSelected());
                 rootingCombo.setEnabled(rootingCheck.isSelected());
 
@@ -92,8 +93,9 @@ public class TreesController extends AbstractController {
         label2.setEnabled(orderCheck.isSelected());
         orderCombo.setEnabled(orderCheck.isSelected());
 
-        orderCheck.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        orderCheck.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 label2.setEnabled(orderCheck.isSelected());
                 orderCombo.setEnabled(orderCheck.isSelected());
 
@@ -123,8 +125,9 @@ public class TreesController extends AbstractController {
          label3.setEnabled(transformCheck.isSelected());
         transformCombo.setEnabled(transformCheck.isSelected());
 
-        transformCheck.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        transformCheck.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 final boolean selected = transformCheck.isSelected();
                  label3.setEnabled(selected);
                 transformCombo.setEnabled(selected);

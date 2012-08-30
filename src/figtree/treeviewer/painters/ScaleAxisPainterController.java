@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Map;
@@ -149,44 +151,48 @@ public class ScaleAxisPainterController extends AbstractController {
 		label6.setEnabled(isSelected1);
 		lineWeightSpinner.setEnabled(isSelected1);
 
-		titleCheckBox.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
-				final boolean isSelected1 = titleCheckBox.isSelected();
-				final boolean isSelected2 = autoScaleCheck.isSelected();
+		titleCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                final boolean isSelected1 = titleCheckBox.isSelected();
+                final boolean isSelected2 = autoScaleCheck.isSelected();
 
-				autoScaleCheck.setEnabled(isSelected1);
-				label1.setEnabled(isSelected1 && !isSelected2);
-				majorTicksText.setEnabled(isSelected1 && !isSelected2);
-				label2.setEnabled(isSelected1 && !isSelected2);
-				minorTicksText.setEnabled(isSelected1 && !isSelected2);
-				label3.setEnabled(isSelected1 && !isSelected2);
-				originText.setEnabled(isSelected1 && !isSelected2);
-				label4.setEnabled(isSelected1);
-				fontSizeSpinner.setEnabled(isSelected1);
+                autoScaleCheck.setEnabled(isSelected1);
+                label1.setEnabled(isSelected1 && !isSelected2);
+                majorTicksText.setEnabled(isSelected1 && !isSelected2);
+                label2.setEnabled(isSelected1 && !isSelected2);
+                minorTicksText.setEnabled(isSelected1 && !isSelected2);
+                label3.setEnabled(isSelected1 && !isSelected2);
+                originText.setEnabled(isSelected1 && !isSelected2);
+                label4.setEnabled(isSelected1);
+                fontSizeSpinner.setEnabled(isSelected1);
 //				label5.setEnabled(isSelected1);
 //				digitsSpinner.setEnabled(isSelected1);
-				label6.setEnabled(isSelected1);
-				lineWeightSpinner.setEnabled(isSelected1);
+                label6.setEnabled(isSelected1);
+                lineWeightSpinner.setEnabled(isSelected1);
 
-				scaleAxisPainter.setVisible(isSelected1);
-				scaleGridPainter.setVisible(isSelected1);
-			}
-		});
+                scaleAxisPainter.setVisible(isSelected1);
+                scaleGridPainter.setVisible(isSelected1);
+            }
+        });
 
-        reverseAxisCheck.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        reverseAxisCheck.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 scaleAxisPainter.setAxisReversed(reverseAxisCheck.isSelected());
             }
         });
 
-        showGridCheck.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        showGridCheck.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 scaleGridPainter.setVisible(showGridCheck.isSelected());
             }
         });
 
-        autoScaleCheck.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
+        autoScaleCheck.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
 				if (autoScaleCheck.isSelected()) {
 					scaleAxisPainter.setAutomatic(true);
 					majorTicksText.setValue(scaleAxisPainter.getMajorTickSpacing());
@@ -215,8 +221,9 @@ public class ScaleAxisPainterController extends AbstractController {
 			}
 		});
 
-		ChangeListener listener = new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
+        ActionListener listener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
 				if (!autoScaleCheck.isSelected()) {
 					double majorTickSpacing = getValue(majorTicksText, 1.0);
 					double minorTickSpacing = getValue(minorTicksText, 0.5);
@@ -224,13 +231,13 @@ public class ScaleAxisPainterController extends AbstractController {
 				}
 			}
 		};
+		minorTicksText.addActionListener(listener);
 
-		minorTicksText.addChangeListener(listener);
+		majorTicksText.addActionListener(listener);
 
-		majorTicksText.addChangeListener(listener);
-
-		originText.addChangeListener( new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
+		originText.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
 				if (!autoScaleCheck.isSelected()) {
 					double originValue = getValue(originText, 0.0);
 					scaleAxisPainter.setAxisOrigin(originValue);

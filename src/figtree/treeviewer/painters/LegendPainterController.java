@@ -40,6 +40,9 @@ public class LegendPainterController extends AbstractController {
 
     public static final String ATTRIBUTE_KEY = "attribute";
 
+    public static final String NUMBER_FORMATTING_KEY = "numberFormatting";
+    public static final String SIGNIFICANT_DIGITS_KEY = "significantDigits";
+
     // The defaults if there is nothing in the preferences
     public static String DEFAULT_FONT_NAME = "sansserif";
     public static int DEFAULT_FONT_SIZE = 10;
@@ -47,17 +50,26 @@ public class LegendPainterController extends AbstractController {
 
     public static String DEFAULT_ATTRIBUTE_KEY = "";
 
+    public static String DECIMAL_NUMBER_FORMATTING = "#.####";
+    public static String SCIENTIFIC_NUMBER_FORMATTING = "0.###E0";
+
+    public static int DEFAULT_SIGNIFICANT_DIGITS = 2;
+    public static String DEFAULT_NUMBER_FORMATTING = DECIMAL_NUMBER_FORMATTING;
+
     public LegendPainterController(final LegendPainter legendPainter,
                                    final AttributeColourController colourController,
                                    final TreeViewer treeViewer) {
         final String defaultFontName = PREFS.get(CONTROLLER_KEY + "." + FONT_NAME_KEY, DEFAULT_FONT_NAME);
         final int defaultFontStyle = PREFS.getInt(CONTROLLER_KEY + "." + FONT_STYLE_KEY, DEFAULT_FONT_STYLE);
         final int defaultFontSize = PREFS.getInt(CONTROLLER_KEY + "." + FONT_SIZE_KEY, DEFAULT_FONT_SIZE);
+        final int defaultSignificantDigits = PREFS.getInt(CONTROLLER_KEY + "." + SIGNIFICANT_DIGITS_KEY, DEFAULT_SIGNIFICANT_DIGITS);
+        final String defaultNumberFormatting = PREFS.get(CONTROLLER_KEY + "." + NUMBER_FORMATTING_KEY, DEFAULT_NUMBER_FORMATTING);
 
         final String attribute = PREFS.get(CONTROLLER_KEY + "." + ATTRIBUTE_KEY, DEFAULT_ATTRIBUTE_KEY);
 
         legendPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
         legendPainter.setDisplayAttribute(attribute);
+        legendPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
 
         optionsPanel = new ControllerOptionsPanel(2, 2);
 
@@ -99,24 +111,65 @@ public class LegendPainterController extends AbstractController {
             }
         });
 
+        NumberFormat format = legendPainter.getNumberFormat();
+        int digits = format.getMaximumFractionDigits();
+
+        numericalFormatCombo = new JComboBox(new String[] { "Decimal", "Scientific", "Percent", "Roman"});
+        numericalFormatCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                String formatType = (String) numericalFormatCombo.getSelectedItem();
+                final int digits = (Integer) digitsSpinner.getValue();
+                NumberFormat format = null;
+                if (formatType.equals("Decimal")) {
+                    format = new DecimalFormat(DECIMAL_NUMBER_FORMATTING);
+                } else if (formatType.equals("Scientific")) {
+                    format = new DecimalFormat(SCIENTIFIC_NUMBER_FORMATTING);
+                } else if (formatType.equals("Percent")) {
+                    format = new PercentFormat();
+                } else if (formatType.equals("Roman")) {
+                    format = new Roman();
+                }
+                format.setMaximumFractionDigits(digits);
+                legendPainter.setNumberFormat(format);
+            }
+        });
+
+        digitsSpinner = new JSpinner(new SpinnerNumberModel(digits, defaultSignificantDigits, 14, 1));
+        digitsSpinner.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
+                final int digits = (Integer)digitsSpinner.getValue();
+                NumberFormat format = legendPainter.getNumberFormat();
+                format.setMaximumFractionDigits(digits);
+                legendPainter.setNumberFormat(format);
+            }
+        });
 
         final JLabel label1 = optionsPanel.addComponentWithLabel("Attribute:", attributeCombo);
         final JLabel label2 = optionsPanel.addComponentWithLabel("Font Size:", fontSizeSpinner);
+        final JLabel label3 = optionsPanel.addComponentWithLabel("Format:", numericalFormatCombo);
+        final JLabel label4 = optionsPanel.addComponentWithLabel("Sig. Digits:", digitsSpinner);
 
         addComponent(label1);
         addComponent(attributeCombo);
         addComponent(label2);
         addComponent(fontSizeSpinner);
+        addComponent(label3);
+        addComponent(numericalFormatCombo);
+        addComponent(label4);
+        addComponent(digitsSpinner);
         enableComponents(titleCheckBox.isSelected());
 
-        titleCheckBox.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        titleCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 enableComponents(titleCheckBox.isSelected());
                 legendPainter.setVisible(titleCheckBox.isSelected());
             }
         });
 
-//        autoScaleCheck.addChangeListener(new ChangeListener() {
+//        autoScaleCheck.addActionListener(new ActionListener() {
+//        @Override
+//        public void actionPerformed(ActionEvent actionEvent) {
 //            public void stateChanged(ChangeEvent changeEvent) {
 //                if (autoScaleCheck.isSelected()) {
 //                    scaleBarPainter.setAutomaticScale(true);
@@ -153,12 +206,14 @@ public class LegendPainterController extends AbstractController {
         titleCheckBox.setSelected((Boolean)settings.get(CONTROLLER_KEY + "." + IS_SHOWN));
         attributeCombo.setSelectedItem((String) settings.get(CONTROLLER_KEY + "." + ATTRIBUTE_KEY));
         fontSizeSpinner.setValue((Double)settings.get(CONTROLLER_KEY + "." + FONT_SIZE_KEY));
+        digitsSpinner.setValue((Integer) settings.get(CONTROLLER_KEY + "." + SIGNIFICANT_DIGITS_KEY));
     }
 
     public void getSettings(Map<String, Object> settings) {
         settings.put(CONTROLLER_KEY + "." + IS_SHOWN, titleCheckBox.isSelected());
         settings.put(CONTROLLER_KEY + "." + ATTRIBUTE_KEY, attributeCombo.getSelectedItem());
         settings.put(CONTROLLER_KEY + "." + FONT_SIZE_KEY, fontSizeSpinner.getValue());
+        settings.put(CONTROLLER_KEY + "." + SIGNIFICANT_DIGITS_KEY, digitsSpinner.getValue());
     }
 
     private final JCheckBox titleCheckBox;
@@ -166,6 +221,9 @@ public class LegendPainterController extends AbstractController {
 
     private final JComboBox attributeCombo;
     private final JSpinner fontSizeSpinner;
+
+    private final JComboBox numericalFormatCombo;
+    private final JSpinner digitsSpinner;
 
     public String getTitle() {
         return "Legend";

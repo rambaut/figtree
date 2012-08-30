@@ -53,7 +53,7 @@ public class ContinuousColourScaleDialog {
                 double v = scale.getMinValue();
                 double d = (scale.getMaxValue() - v) / width;
                 for (int i = 0; i < width; i ++) {
-                    g.setColor(decorator.getColour(v));
+                    g.setColor(decorator.getColourForValue(v));
                     g.fill(r);
                     r.x ++;
                     v += d;

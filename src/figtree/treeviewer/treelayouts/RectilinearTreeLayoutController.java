@@ -6,6 +6,8 @@ import jam.panels.OptionsPanel;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Map;
 
 import figtree.treeviewer.ControllerOptionsPanel;
@@ -62,8 +64,9 @@ public class RectilinearTreeLayoutController extends AbstractController {
         alignTipLabelsCheck.setOpaque(false);
 
         alignTipLabelsCheck.setSelected(treeLayout.isAlignTipLabels());
-        alignTipLabelsCheck.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        alignTipLabelsCheck.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 treeLayout.setAlignTipLabels(alignTipLabelsCheck.isSelected());
             }
         });

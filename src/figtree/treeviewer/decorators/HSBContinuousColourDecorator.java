@@ -29,12 +29,12 @@ public class HSBContinuousColourDecorator extends ContinuousColourDecorator {
 
         try {
             setContinuousScale(new ContinuousScale(parts[0]));
-            hueUpper = Float.parseFloat(parts[1]);
-            hueLower = Float.parseFloat(parts[2]);
-            saturationUpper = Float.parseFloat(parts[3]);
-            saturationLower = Float.parseFloat(parts[4]);
-            brightnessUpper = Float.parseFloat(parts[5]);
-            brightnessLower = Float.parseFloat(parts[6]);
+            hueLower = Float.parseFloat(parts[1]);
+            hueUpper = Float.parseFloat(parts[2]);
+            saturationLower = Float.parseFloat(parts[3]);
+            saturationUpper = Float.parseFloat(parts[4]);
+            brightnessLower = Float.parseFloat(parts[5]);
+            brightnessUpper = Float.parseFloat(parts[6]);
         } catch (NumberFormatException nfe) {
             throw new IllegalArgumentException("HSBContinuousColourDecorator settings string not in correct format");
         } catch (IllegalArgumentException iae) {
@@ -59,11 +59,9 @@ public class HSBContinuousColourDecorator extends ContinuousColourDecorator {
         this.brightnessLower = brightnessLower;
     }
 
-    public Color getColour(double value) {
-        double scaledValue = getContinuousScale().getValue(value);
-
+    protected Color getColourForScaledValue(double value) {
         if (!Double.isNaN(value)) {
-            return Color.getHSBColor(getHue((float)scaledValue), getSaturation((float)scaledValue), getBrightness((float)scaledValue));
+            return Color.getHSBColor(getHue((float)value), getSaturation((float)value), getBrightness((float)value));
         } else {
             return null;
         }

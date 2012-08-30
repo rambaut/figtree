@@ -90,23 +90,15 @@ public class TimeScaleController extends AbstractController {
             }
         });
 
-		offsetAgeText.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
-				setTimeScale();
-			}
-		});
-
-		scaleFactorText.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
-				setTimeScale();
-			}
-		});
-
-		rootAgeText.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
-				setTimeScale();
-			}
-		});
+        ActionListener listener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                setTimeScale();
+            }
+        };
+		offsetAgeText.addActionListener(listener);
+		scaleFactorText.addActionListener(listener);
+		rootAgeText.addActionListener(listener);
 
 	}
 

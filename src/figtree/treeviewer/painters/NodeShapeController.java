@@ -35,8 +35,9 @@ public class NodeShapeController extends AbstractController {
         titleCheckBox = new JCheckBox(getTitle());
         titleCheckBox.setSelected(this.nodeShapePainter.isVisible());
 
-        titleCheckBox.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        titleCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 final boolean selected = titleCheckBox.isSelected();
                 nodeShapePainter.setVisible(selected);
             }
@@ -112,8 +113,9 @@ public class NodeShapeController extends AbstractController {
         addComponent(setupColourButton);
         enableComponents(titleCheckBox.isSelected());
 
-        titleCheckBox.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        titleCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 enableComponents(titleCheckBox.isSelected());
             }
         });

@@ -83,8 +83,9 @@ public class NodeBarController extends AbstractController {
         addComponent(barWidthSpinner);
         enableComponents(titleCheckBox.isSelected());
 
-        titleCheckBox.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        titleCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 enableComponents(titleCheckBox.isSelected());
                 nodeBarPainter.setVisible(titleCheckBox.isSelected());
             }

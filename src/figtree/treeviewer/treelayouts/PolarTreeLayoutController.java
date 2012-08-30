@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Map;
 
 import figtree.treeviewer.ControllerOptionsPanel;
@@ -80,8 +81,9 @@ public class PolarTreeLayoutController extends AbstractController {
         optionsPanel.addComponent(showRootCheck);
 
         showRootCheck.setSelected(treeLayout.isShowingRootBranch());
-        showRootCheck.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        showRootCheck.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 treeLayout.setShowingRootBranch(showRootCheck.isSelected());
             }
         });
@@ -105,8 +107,9 @@ public class PolarTreeLayoutController extends AbstractController {
         alignTipLabelsCheck.setOpaque(false);
 
         alignTipLabelsCheck.setSelected(treeLayout.getTipLabelPosition() == PolarTreeLayout.TipLabelPosition.RADIAL);
-        alignTipLabelsCheck.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        alignTipLabelsCheck.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 treeLayout.setTipLabelPosition(alignTipLabelsCheck.isSelected() ? PolarTreeLayout.TipLabelPosition.RADIAL : PolarTreeLayout.TipLabelPosition.FLUSH);
             }
         });

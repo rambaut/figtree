@@ -36,12 +36,12 @@ public class HSBDiscreteColourDecorator extends DiscreteColorDecorator {
         try {
             primaryAxis = Axis.valueOf(parts[0].toUpperCase());
             secondaryCount = Integer.parseInt(parts[1]);
-            hueUpper = Float.parseFloat(parts[2]);
-            hueLower = Float.parseFloat(parts[3]);
-            saturationUpper = Float.parseFloat(parts[4]);
-            saturationLower = Float.parseFloat(parts[5]);
-            brightnessUpper = Float.parseFloat(parts[6]);
-            brightnessLower = Float.parseFloat(parts[7]);
+            hueLower = Float.parseFloat(parts[2]);
+            hueUpper = Float.parseFloat(parts[3]);
+            saturationLower = Float.parseFloat(parts[4]);
+            saturationUpper = Float.parseFloat(parts[5]);
+            brightnessLower = Float.parseFloat(parts[6]);
+            brightnessUpper = Float.parseFloat(parts[7]);
         } catch (NumberFormatException nfe) {
             throw new IllegalArgumentException("HSBDiscreteColourDecorator settings string not in correct format");
         } catch (IllegalArgumentException iae) {
