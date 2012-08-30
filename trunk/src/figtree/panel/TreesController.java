@@ -9,6 +9,8 @@ import jam.panels.OptionsPanel;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
@@ -44,8 +46,9 @@ public class TreesController extends AbstractController {
 
         rootingCheck.setSelected(treeViewer.isRootingOn());
 
-        rootingCheck.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        rootingCheck.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 if (rootingCheck.isSelected()) {
                     treeViewer.setRootingOn(true);
                     treeViewer.setRootingType(TreePane.RootingType.MID_POINT);

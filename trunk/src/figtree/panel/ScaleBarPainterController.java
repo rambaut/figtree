@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
 import java.util.Map;
@@ -122,8 +124,9 @@ public class ScaleBarPainterController extends AbstractController {
         label4.setEnabled(isSelected1);
         lineWeightSpinner.setEnabled(isSelected1);
 
-        titleCheckBox.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        titleCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 final boolean isSelected1 = titleCheckBox.isSelected();
                 final boolean isSelected2 = autoScaleCheck.isSelected();
 
@@ -141,8 +144,9 @@ public class ScaleBarPainterController extends AbstractController {
             }
         });
 
-        autoScaleCheck.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        autoScaleCheck.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 if (autoScaleCheck.isSelected()) {
                     scaleBarPainter.setAutomaticScale(true);
                     double range = scaleBarPainter.getScaleRange();
@@ -157,8 +161,9 @@ public class ScaleBarPainterController extends AbstractController {
             }
         });
 
-        scaleRangeText.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent) {
+        scaleRangeText.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 Double value = scaleRangeText.getValue();
                 if (value != null) {
                     scaleBarPainter.setScaleRange(value);

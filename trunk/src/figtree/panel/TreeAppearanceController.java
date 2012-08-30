@@ -114,7 +114,7 @@ public class TreeAppearanceController extends AbstractController {
 		branchLabelPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
 		branchLabelPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
 
-		optionsPanel = new OptionsPanel();
+        optionsPanel = new OptionsPanel();
 
 		if (!hideColouring) {
 			branchColourAttributeCombo = new JComboBox(new String[] { "No attributes" });

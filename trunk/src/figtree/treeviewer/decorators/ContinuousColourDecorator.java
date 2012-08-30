@@ -39,12 +39,12 @@ public abstract class ContinuousColourDecorator extends ColourDecorator {
     }
 
     @Override
-    protected Color getColourForValue(Object value) {
-        return getColour(continuousScale.getValue(value));
+    public Color getColourForValue(Object value) {
+        return getColourForScaledValue(continuousScale.getValue(value));
     }
 
     // Private methods
-    public abstract Color getColour(double value);
+    protected abstract Color getColourForScaledValue(double value);
 
     private ContinuousScale continuousScale;
 }

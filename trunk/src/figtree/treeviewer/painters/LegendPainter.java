@@ -98,15 +98,14 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
             double max = scale.getMaxValue();
             double delta = (max - min) / CONTINUOUS_LENGTH;
 
-            NumberFormatter formatter = new NumberFormatter(4);
             final String label = "0.0";
             labelBounds = g2.getFontMetrics().getStringBounds(label, g2);
 
-                    float y0 = y;
+            float y0 = y;
 
             double v = max;
             for (int i = 0; i < CONTINUOUS_LENGTH; i++) {
-                g2.setPaint(((HSBContinuousColourDecorator)colourDecorator).getColour(v));
+                g2.setPaint(((HSBContinuousColourDecorator)colourDecorator).getColourForValue(v));
                 Rectangle2D rect = new Rectangle2D.Double(xOffset1, y, labelBounds.getHeight(), 1);
                 g2.fill(rect);
 
@@ -115,8 +114,8 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
             }
 
             g2.setPaint(Color.BLACK);
-            g2.drawString(formatter.getFormattedValue(max), xOffset2, y0 + (yOffset / 2));
-            g2.drawString(formatter.getFormattedValue(min), xOffset2, y + (yOffset / 2));
+            g2.drawString(getNumberFormat().format(min), xOffset2, y0 + (yOffset / 2));
+            g2.drawString(getNumberFormat().format(max), xOffset2, y + (yOffset / 2));
 
             Line2D line = new Line2D.Double(xOffset1, y0, xOffset1 + labelBounds.getHeight() * 1.25, y0);
             g2.draw(line);
@@ -149,7 +148,7 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
 
     public void setColourDecorator(ColourDecorator colourDecorator) {
         this.colourDecorator = colourDecorator;
-        setVisible(colourDecorator == null);
+        setVisible(colourDecorator != null);
         firePainterChanged();
     }
 

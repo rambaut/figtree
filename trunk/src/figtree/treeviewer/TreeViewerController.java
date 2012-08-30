@@ -10,6 +10,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
@@ -168,18 +169,21 @@ public class TreeViewerController extends AbstractController {
 
 		optionsPanel.addSpanningComponent(layoutPanel);
 
-		rectangularTreeToggle.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
-				if (rectangularTreeToggle.isSelected()) setTreeLayout(TreeLayoutType.RECTILINEAR);
-			}
-		});
-		polarTreeToggle.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
+		rectangularTreeToggle.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (rectangularTreeToggle.isSelected()) setTreeLayout(TreeLayoutType.RECTILINEAR);
+            }
+        });
+		polarTreeToggle.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
 				if (polarTreeToggle.isSelected()) setTreeLayout(TreeLayoutType.POLAR);
 			}
 		});
-		radialTreeToggle.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
+		radialTreeToggle.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
 				if (radialTreeToggle.isSelected()) setTreeLayout(TreeLayoutType.RADIAL);
 			}
 		});
