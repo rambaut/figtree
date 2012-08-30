@@ -207,9 +207,8 @@ public class LabelPainterController extends AbstractController {
         addComponent(digitsSpinner);
         enableComponents(titleCheckBox.isSelected());
 
-        titleCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+        titleCheckBox.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 enableComponents(titleCheckBox.isSelected());
                 labelPainter.setVisible(titleCheckBox.isSelected());
             }

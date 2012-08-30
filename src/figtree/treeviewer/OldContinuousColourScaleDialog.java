@@ -7,6 +7,8 @@ import jam.panels.OptionsPanel;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.event.*;
@@ -76,8 +78,8 @@ public class OldContinuousColourScaleDialog {
         toColourButton = new ColorWellButton(settings.toColour, "Choose End Colour");
         middleColourButton = new ColorWellButton(settings.middleColour, "Choose Middle Colour");
 
-        autoScaleCheck.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        autoScaleCheck.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 boolean enabled = !autoScaleCheck.isSelected();
                 fromLabel.setEnabled(enabled);
                 fromNumberField.setEnabled(enabled);
@@ -86,8 +88,8 @@ public class OldContinuousColourScaleDialog {
             }
         });
 
-        middleColourCheck.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        middleColourCheck.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 middleColourButton.setEnabled(middleColourCheck.isSelected());
             }
         });

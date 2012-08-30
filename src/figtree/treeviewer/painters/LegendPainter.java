@@ -114,8 +114,8 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
             }
 
             g2.setPaint(Color.BLACK);
-            g2.drawString(getNumberFormat().format(min), xOffset2, y0 + (yOffset / 2));
-            g2.drawString(getNumberFormat().format(max), xOffset2, y + (yOffset / 2));
+            g2.drawString(getNumberFormat().format(max), xOffset2, y0 + (yOffset / 2));
+            g2.drawString(getNumberFormat().format(min), xOffset2, y + (yOffset / 2));
 
             Line2D line = new Line2D.Double(xOffset1, y0, xOffset1 + labelBounds.getHeight() * 1.25, y0);
             g2.draw(line);

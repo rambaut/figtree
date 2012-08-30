@@ -109,8 +109,8 @@ public class TreeAppearanceController extends AbstractController {
         });
 
         final JCheckBox useGradientCheck = new JCheckBox("Gradient");
-        useGradientCheck.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent event) {
+        useGradientCheck.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 branchColourIsGradient = useGradientCheck.isSelected();
                 setupBranchDecorators();
             }

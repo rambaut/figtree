@@ -81,9 +81,8 @@ public class PolarTreeLayoutController extends AbstractController {
         optionsPanel.addComponent(showRootCheck);
 
         showRootCheck.setSelected(treeLayout.isShowingRootBranch());
-        showRootCheck.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+        showRootCheck.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 treeLayout.setShowingRootBranch(showRootCheck.isSelected());
             }
         });
@@ -107,9 +106,8 @@ public class PolarTreeLayoutController extends AbstractController {
         alignTipLabelsCheck.setOpaque(false);
 
         alignTipLabelsCheck.setSelected(treeLayout.getTipLabelPosition() == PolarTreeLayout.TipLabelPosition.RADIAL);
-        alignTipLabelsCheck.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+        alignTipLabelsCheck.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
                 treeLayout.setTipLabelPosition(alignTipLabelsCheck.isSelected() ? PolarTreeLayout.TipLabelPosition.RADIAL : PolarTreeLayout.TipLabelPosition.FLUSH);
             }
         });
