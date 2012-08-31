@@ -1,5 +1,6 @@
 package figtree.treeviewer.painters;
 
+import figtree.treeviewer.TreeViewer;
 import jam.controlpalettes.AbstractController;
 import jam.panels.OptionsPanel;
 
@@ -31,7 +32,8 @@ public class NodeBarController extends AbstractController {
 
     private static float DEFAULT_BAR_WIDTH = 4.0f;
 
-    public NodeBarController(String title, final NodeBarPainter nodeBarPainter) {
+    public NodeBarController(String title, final NodeBarPainter nodeBarPainter,
+                             final TreeViewer treeViewer) {
         this.title = title;
         this.nodeBarPainter = nodeBarPainter;
 
@@ -52,6 +54,7 @@ public class NodeBarController extends AbstractController {
                 nodeBarPainter.setDisplayAttribute(attribute);
             }
         });
+        new AttributeComboHelper(displayAttributeCombo, treeViewer, LabelPainter.PainterIntent.RANGE);
 
         this.nodeBarPainter.addPainterListener(new PainterListener() {
             public void painterChanged() {
@@ -61,7 +64,15 @@ public class NodeBarController extends AbstractController {
             }
 
             public void attributesChanged() {
-                setupAttributes();
+                Object item = displayAttributeCombo.getSelectedItem();
+                displayAttributeCombo.removeAllItems();
+                for (String name : nodeBarPainter.getAttributeNames()) {
+                    displayAttributeCombo.addItem(name);
+                }
+
+                displayAttributeCombo.setSelectedItem(item);
+
+                optionsPanel.repaint();
             }
         });
 
@@ -91,17 +102,6 @@ public class NodeBarController extends AbstractController {
         });
     }
 
-    private void setupAttributes() {
-        Object item1 = displayAttributeCombo.getSelectedItem();
-        displayAttributeCombo.removeAllItems();
-        for (String name : nodeBarPainter.getAttributeNames()) {
-            displayAttributeCombo.addItem(name);
-        }
-        displayAttributeCombo.setSelectedItem(item1);
-
-        optionsPanel.repaint();
-    }
-
     public JComponent getTitleComponent() {
         return titleCheckBox;
     }
@@ -118,7 +118,7 @@ public class NodeBarController extends AbstractController {
         // nothing to do
     }
     public void setSettings(Map<String,Object> settings) {
-        titleCheckBox.setSelected((Boolean)settings.get(NODE_BARS_KEY + "." + IS_SHOWN));
+        titleCheckBox.setSelected((Boolean) settings.get(NODE_BARS_KEY + "." + IS_SHOWN));
         displayAttributeCombo.setSelectedItem((String) settings.get(NODE_BARS_KEY + "." + DISPLAY_ATTRIBUTE_KEY));
         barWidthSpinner.setValue((Double)settings.get(NODE_BARS_KEY + "." + BAR_WIDTH_KEY));
     }
