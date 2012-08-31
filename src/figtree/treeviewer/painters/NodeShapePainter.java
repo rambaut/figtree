@@ -91,9 +91,9 @@ public class NodeShapePainter extends NodePainter {
         Line2D shapePath = treePane.getTreeLayoutCache().getNodeShapePath(node);
         if (shapePath != null) {
 
-            double size = tree.getHeight(node) * 0.75;
+//            double size = tree.getHeight(node) * 0.75;
+            double size = defaultSize;
 
-            boolean hasShape = false;
 
             if (sizeAttribute != null && !sizeAttribute.equals(FIXED)) {
                 Object value = node.getAttribute(sizeAttribute);
@@ -104,17 +104,14 @@ public class NodeShapePainter extends NodePainter {
                         } else {
                             size = Double.parseDouble(value.toString());
                         }
-                        hasShape = true;
                     } else {
                         // todo - warn the user somehow?
                     }
                 }
 
-            } else {
-                hasShape = true;
             }
 
-            if (hasShape) {
+            if (size > 0.0) {
                 // x1,y1 is the node point
                 double x1 = shapePath.getX1();
                 double y1 = shapePath.getY1();
@@ -153,23 +150,24 @@ public class NodeShapePainter extends NodePainter {
      * @param node
      */
     public void paint(Graphics2D g2, Node node, Point2D nodePoint) {
-//        if (nodeShape != null) {
+        if (nodeShape != null) {
 
-        nodeShape = new Ellipse2D.Double(nodePoint.getX() - (SIZE / 2), nodePoint.getY() - (SIZE / 2), SIZE, SIZE);
+            Shape nodeShape = AffineTransform.getTranslateInstance(nodePoint.getX(), nodePoint.getY()).createTransformedShape(this.nodeShape);
+//        nodeShape = new Ellipse2D.Double(nodePoint.getX() - (SIZE / 2), nodePoint.getY() - (SIZE / 2), SIZE, SIZE);
 
-        Paint paint = Color.BLUE;
-        if (colourDecorator != null) {
-            colourDecorator.setItem(node);
-            paint = colourDecorator.getPaint(paint);
+            Paint paint = Color.BLUE;
+            if (colourDecorator != null) {
+                colourDecorator.setItem(node);
+                paint = colourDecorator.getPaint(paint);
+            }
+            g2.setPaint(paint);
+            g2.fill(nodeShape);
+
+            g2.setPaint(Color.black);
+            g2.setStroke(new BasicStroke(0.5F));
+
+            g2.draw(nodeShape);
         }
-        g2.setPaint(paint);
-        g2.fill(nodeShape);
-
-        g2.setPaint(Color.black);
-        g2.setStroke(new BasicStroke(0.5F));
-
-        g2.draw(nodeShape);
-//        }
 
     }
 
@@ -192,6 +190,11 @@ public class NodeShapePainter extends NodePainter {
         return sizeAttribute;
     }
 
+    public void setDefaultSize(double defaultSize) {
+        this.defaultSize = defaultSize;
+        firePainterChanged();
+    }
+
     public void setSizeAttribute(String sizeAttribute) {
         this.sizeAttribute = sizeAttribute;
         firePainterChanged();
@@ -202,8 +205,9 @@ public class NodeShapePainter extends NodePainter {
         firePainterChanged();
     }
 
-    private Shape nodeShape;
+    private Shape nodeShape = null;
 
+    private double defaultSize = SIZE;
     private String sizeAttribute = null;
 
     private Decorator colourDecorator = null;

@@ -25,7 +25,8 @@ public abstract class LabelPainter<T> extends AbstractPainter<T> {
     public enum PainterIntent {
         NODE,
         BRANCH,
-        TIP
+        TIP,
+        RANGE
     };
 
     protected LabelPainter(PainterIntent intent) {

@@ -102,9 +102,17 @@ public class AttributeComboHelper {
                     for (Node node : tree.getInternalNodes()) {
                         nodeAttributes.addAll(node.getAttributeNames());
                     }
+                } else if (intent == LabelPainter.PainterIntent.RANGE) {
+                    for (Node node : tree.getInternalNodes()) {
+                        nodeAttributes.addAll(node.getAttributeNames());
+                    }
                 } else {
                     for (Node node : tree.getNodes()) {
-                        nodeAttributes.addAll(node.getAttributeNames());
+                        for (String key : node.getAttributeMap().keySet()) {
+                            if (node.getAttributeMap().get(key) instanceof Object[]) {
+                                nodeAttributes.add(key);
+                            }
+                        }
                     }
                 }
             }

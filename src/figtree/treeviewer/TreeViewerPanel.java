@@ -62,7 +62,7 @@ public class TreeViewerPanel extends JPanel {
         NodeBarPainter nodeBarPainter = new NodeBarPainter();
         nodeBarPainter.setForeground(new Color(24, 32, 228, 128));
         nodeBarPainter.setVisible(false);
-        controlPalette.addController(new NodeBarController("Node Bars", nodeBarPainter));
+        controlPalette.addController(new NodeBarController("Node Bars", nodeBarPainter, treeViewer));
         treeViewer.setNodeBarPainter(nodeBarPainter);
 
         // Create a branch label painter and its controller

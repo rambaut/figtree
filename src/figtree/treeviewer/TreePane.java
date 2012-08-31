@@ -1548,16 +1548,16 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         }
 
         // bounds on nodeShapes
-//        if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
-//            nodeShapes.clear();
-//            // Iterate though the nodes
-//            for (Node node : tree.getNodes()) {
-//
-////                Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
-////                treeBounds.add(shapeBounds);
-//                nodeShapes.put(node, nodeShapePainter.getNodeShape());
-//            }
-//        }
+        if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
+            nodeShapes.clear();
+            // Iterate though the nodes
+            for (Node node : tree.getNodes()) {
+
+                Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
+                treeBounds.add(shapeBounds);
+                nodeShapes.put(node, nodeShapePainter.getNodeShape());
+            }
+        }
 
         // adjust the bounds so that the origin is at 0,0
         //treeBounds = new Rectangle2D.Double(0.0, 0.0, treeBounds.getWidth(), treeBounds.getHeight());
