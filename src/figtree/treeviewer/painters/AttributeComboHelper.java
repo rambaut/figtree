@@ -76,7 +76,9 @@ public class AttributeComboHelper {
                     attributeComboBox.addItem(name);
                 }
 
-                attributeComboBox.setSelectedItem(selected);
+                if (selected != null) {
+                    attributeComboBox.setSelectedItem(selected);
+                }
             }
 
             public void treeSettingsChanged() {
@@ -104,7 +106,19 @@ public class AttributeComboHelper {
                     }
                 } else if (intent == LabelPainter.PainterIntent.RANGE) {
                     for (Node node : tree.getInternalNodes()) {
-                        nodeAttributes.addAll(node.getAttributeNames());
+                        for (String name : node.getAttributeNames()) {
+                            if (!name.startsWith("!")) {
+                                Object attr = node.getAttribute(name);
+                                if (attr instanceof Object[]) {
+                                    Object[] array = (Object[])attr;
+                                    if (array.length == 2 &&
+                                            array[0] instanceof Double &&
+                                            array[1] instanceof Double) {
+                                        attributeNames.add(name);
+                                    }
+                                }
+                            }
+                        }
                     }
                 } else {
                     for (Node node : tree.getNodes()) {

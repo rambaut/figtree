@@ -18,39 +18,6 @@ import java.util.TreeSet;
 public class NodeBarPainter extends NodePainter {
 
 	public NodeBarPainter() {
-
-		setupAttributes(null);
-	}
-
-	public void setupAttributes(Collection<? extends Tree> trees) {
-		java.util.Set<String> attributeNames = new TreeSet<String>();
-        if (trees != null) {
-            for (Tree tree : trees) {
-                for (Node node : tree.getNodes()) {
-                    for (String name : node.getAttributeNames()) {
-                        if (!name.startsWith("!")) {
-                            Object attr = node.getAttribute(name);
-                            if (attr instanceof Object[]) {
-                                Object[] array = (Object[])attr;
-                                if (array.length == 2 &&
-                                        array[0] instanceof Double &&
-                                        array[1] instanceof Double) {
-                                    attributeNames.add(name);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-		if (attributeNames.size() == 0) {
-			attributeNames.add("no attributes");
-		}
-
-		this.attributeNames = new String[attributeNames.size()];
-		attributeNames.toArray(this.attributeNames);
-
-		fireAttributesChanged();
 	}
 
 	public void setTreePane(TreePane treePane) {
@@ -178,10 +145,6 @@ public class NodeBarPainter extends NodePainter {
 		throw new UnsupportedOperationException("This version of paint is not used in NodeBarPainter");
 	}
 
-	public String[] getAttributeNames() {
-		return attributeNames;
-	}
-
 	public String getDisplayAttributeName() {
 		return displayAttribute;
 	}
@@ -192,7 +155,6 @@ public class NodeBarPainter extends NodePainter {
 	}
 
 	private String displayAttribute = null;
-	private String[] attributeNames;
 
 	private TreePane treePane;
 

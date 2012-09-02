@@ -340,7 +340,7 @@ public class MultiPaneTreeViewer extends TreeViewer {
 		for (TreePane treePane : treePanes) {
 			treePane.setNodeBarPainter(nodeBarPainter);
 		}
-		nodeBarPainter.setupAttributes(trees);
+//		nodeBarPainter.setupAttributes(trees);
 		fireTreeSettingsChanged();
 	}
 
@@ -348,7 +348,6 @@ public class MultiPaneTreeViewer extends TreeViewer {
         for (TreePane treePane : treePanes) {
             treePane.setNodeShapePainter(nodeShapePainter);
         }
-        nodeShapePainter.setupAttributes(trees);
         fireTreeSettingsChanged();
     }
 
@@ -356,7 +355,6 @@ public class MultiPaneTreeViewer extends TreeViewer {
 		for (TreePane treePane : treePanes) {
 			treePane.setBranchLabelPainter(branchLabelPainter);
 		}
-//		branchLabelPainter.setupAttributes(trees);
 		fireTreeSettingsChanged();
 	}
 
