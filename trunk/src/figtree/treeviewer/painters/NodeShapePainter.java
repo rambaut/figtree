@@ -42,37 +42,6 @@ public class NodeShapePainter extends NodePainter {
     public NodeShapePainter() {
 
         nodeShape = new Ellipse2D.Double(0,0,1,1);
-        setupAttributes(null);
-    }
-
-    public void setupAttributes(Collection<? extends Tree> trees) {
-        java.util.Set<String> attributeNames = new TreeSet<String>();
-        attributeNames.add(FIXED);
-
-        if (trees != null) {
-            for (Tree tree : trees) {
-                for (Node node : tree.getNodes()) {
-                    for (String name : node.getAttributeNames()) {
-                        if (!name.startsWith("!")) {
-                            Object attr = node.getAttribute(name);
-                            if (attr instanceof Object[]) {
-                                Object[] array = (Object[])attr;
-                                if (array.length == 2 &&
-                                        array[0] instanceof Double &&
-                                        array[1] instanceof Double) {
-                                    attributeNames.add(name);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        this.attributeNames = new String[attributeNames.size()];
-        attributeNames.toArray(this.attributeNames);
-
-        fireAttributesChanged();
     }
 
     public void setTreePane(TreePane treePane) {
@@ -182,10 +151,6 @@ public class NodeShapePainter extends NodePainter {
         throw new UnsupportedOperationException("This version of paint is not used in NodeShapePainter");
     }
 
-    public String[] getAttributeNames() {
-        return attributeNames;
-    }
-
     public String getSizeAttribute() {
         return sizeAttribute;
     }
@@ -211,7 +176,6 @@ public class NodeShapePainter extends NodePainter {
     private String sizeAttribute = null;
 
     private Decorator colourDecorator = null;
-    private String[] attributeNames;
 
     private TreePane treePane;
 }

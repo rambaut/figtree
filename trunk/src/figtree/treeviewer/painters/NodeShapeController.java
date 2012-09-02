@@ -57,9 +57,7 @@ public class NodeShapeController extends AbstractController {
 
         shapeCombo = new JComboBox(NodeShapePainter.NodeShape.values());
 
-        String[] attributes = this.nodeShapePainter.getAttributeNames();
-
-        sizeAttributeCombo = new JComboBox(attributes);
+        sizeAttributeCombo = new JComboBox();
         sizeAttributeCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 String attribute = (String) sizeAttributeCombo.getSelectedItem();
@@ -68,7 +66,7 @@ public class NodeShapeController extends AbstractController {
         });
         new AttributeComboHelper(sizeAttributeCombo, treeViewer, "Fixed");
 
-        colourAttributeCombo = new JComboBox(attributes);
+        colourAttributeCombo = new JComboBox();
         setupColourButton = new JButton("Colour");
 
         shapeSizeSpinner = new JSpinner(new SpinnerNumberModel(defaultShapeSize, 0.0, 48.0, 1.0));
@@ -86,27 +84,6 @@ public class NodeShapeController extends AbstractController {
             public void controlsChanged() {
                 Decorator colourDecorator = colourController.getColourDecorator(colourAttributeCombo, null);
                 nodeShapePainter.setColourDecorator(colourDecorator);
-            }
-        });
-
-        this.nodeShapePainter.addPainterListener(new PainterListener() {
-            public void painterChanged() {
-
-            }
-
-            public void painterSettingsChanged() {
-            }
-
-            public void attributesChanged() {
-                Object item = sizeAttributeCombo.getSelectedItem();
-                sizeAttributeCombo.removeAllItems();
-                for (String name : nodeShapePainter.getAttributeNames()) {
-                    sizeAttributeCombo.addItem(name);
-                }
-
-                sizeAttributeCombo.setSelectedItem(item);
-
-                optionsPanel.repaint();
             }
         });
 

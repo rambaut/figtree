@@ -45,9 +45,7 @@ public class NodeBarController extends AbstractController {
 
         titleCheckBox.setSelected(this.nodeBarPainter.isVisible());
 
-        String[] attributeNames = this.nodeBarPainter.getAttributeNames();
-
-        displayAttributeCombo = new JComboBox(attributeNames);
+        displayAttributeCombo = new JComboBox();
         displayAttributeCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 String attribute = (String) displayAttributeCombo.getSelectedItem();
@@ -55,26 +53,6 @@ public class NodeBarController extends AbstractController {
             }
         });
         new AttributeComboHelper(displayAttributeCombo, treeViewer, LabelPainter.PainterIntent.RANGE);
-
-        this.nodeBarPainter.addPainterListener(new PainterListener() {
-            public void painterChanged() {
-            }
-
-            public void painterSettingsChanged() {
-            }
-
-            public void attributesChanged() {
-                Object item = displayAttributeCombo.getSelectedItem();
-                displayAttributeCombo.removeAllItems();
-                for (String name : nodeBarPainter.getAttributeNames()) {
-                    displayAttributeCombo.addItem(name);
-                }
-
-                displayAttributeCombo.setSelectedItem(item);
-
-                optionsPanel.repaint();
-            }
-        });
 
         barWidthSpinner = new JSpinner(new SpinnerNumberModel(defaultBarWidth, 0.01, 48.0, 1.0));
         barWidthSpinner.addChangeListener(new ChangeListener() {
