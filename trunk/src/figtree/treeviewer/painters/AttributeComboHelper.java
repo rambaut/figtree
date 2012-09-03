@@ -107,15 +107,13 @@ public class AttributeComboHelper {
                 } else if (intent == LabelPainter.PainterIntent.RANGE) {
                     for (Node node : tree.getInternalNodes()) {
                         for (String name : node.getAttributeNames()) {
-                            if (!name.startsWith("!")) {
-                                Object attr = node.getAttribute(name);
-                                if (attr instanceof Object[]) {
-                                    Object[] array = (Object[])attr;
-                                    if (array.length == 2 &&
-                                            array[0] instanceof Double &&
-                                            array[1] instanceof Double) {
-                                        attributeNames.add(name);
-                                    }
+                            Object attr = node.getAttribute(name);
+                            if (attr instanceof Object[]) {
+                                Object[] array = (Object[])attr;
+                                if (array.length == 2 &&
+                                        array[0] instanceof Double &&
+                                        array[1] instanceof Double) {
+                                    nodeAttributes.add(name);
                                 }
                             }
                         }
