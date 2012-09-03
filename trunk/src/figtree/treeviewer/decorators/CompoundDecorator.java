@@ -11,59 +11,83 @@ import java.util.Set;
  */
 public class CompoundDecorator implements Decorator {
 
-	public void addDecorator(Decorator decorator) {
-		decorators.add(decorator);
-	}
+    public void addDecorator(Decorator decorator) {
+        decorators.add(decorator);
+    }
+
+    public boolean allowsGradient() {
+        for (Decorator decorator : decorators) {
+            if (decorator.allowsGradient()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void setItem(Object item) {
-		for (Decorator decorator : decorators) {
-			decorator.setItem(item);
-		}
-	}
+        for (Decorator decorator : decorators) {
+            decorator.setItem(item);
+        }
+    }
 
     public void setItems(final Object item1, final Object item2) {
-        throw new UnsupportedOperationException("This decorator doesn't support gradients");
+        for (Decorator decorator : decorators) {
+            if (decorator.allowsGradient()) {
+                decorator.setItems(item1, item2);
+                return;
+            }
+        }
     }
 
     public Paint getPaint(Paint paint) {
-		Paint p = paint;
-		for (Decorator decorator : decorators) {
-			p = decorator.getPaint(p);
-		}
-		return p;
-	}
+        Paint p = paint;
+        for (Decorator decorator : decorators) {
+            p = decorator.getPaint(p);
+        }
+        return p;
+    }
 
     public Paint getPaint(final Paint paint, final Point2D point1, final Point2D point2) {
-        throw new UnsupportedOperationException("This decorator doesn't support gradients");
+        for (Decorator decorator : decorators) {
+            if (decorator.allowsGradient()) {
+                return decorator.getPaint(paint, point1, point2);
+            }
+        }
+        return null;
     }
 
     public Paint getFillPaint(Paint paint) {
-		Paint p = paint;
-		for (Decorator decorator : decorators) {
-			p = decorator.getFillPaint(p);
-		}
-		return p;
-	}
+        Paint p = paint;
+        for (Decorator decorator : decorators) {
+            p = decorator.getFillPaint(p);
+        }
+        return p;
+    }
 
     public Paint getFillPaint(final Paint paint, final Point2D point1, final Point2D point2) {
-        throw new UnsupportedOperationException("This decorator doesn't support gradients");
+        for (Decorator decorator : decorators) {
+            if (decorator.allowsGradient()) {
+                return decorator.getFillPaint(paint, point1, point2);
+            }
+        }
+        return null;
     }
 
     public Stroke getStroke(Stroke stroke) {
-		Stroke s = stroke;
-		for (Decorator decorator : decorators) {
-			s = decorator.getStroke(s);
-		}
-		return s;
-	}
+        Stroke s = stroke;
+        for (Decorator decorator : decorators) {
+            s = decorator.getStroke(s);
+        }
+        return s;
+    }
 
-	public Font getFont(Font font) {
-		Font f = font;
-		for (Decorator decorator : decorators) {
-			f = decorator.getFont(f);
-		}
-		return f;
-	}
+    public Font getFont(Font font) {
+        Font f = font;
+        for (Decorator decorator : decorators) {
+            f = decorator.getFont(f);
+        }
+        return f;
+    }
 
-	private Set<Decorator> decorators = new HashSet<Decorator>();
+    private Set<Decorator> decorators = new HashSet<Decorator>();
 }

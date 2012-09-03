@@ -47,7 +47,6 @@ public class HSBContinuousColourDecorator extends ContinuousColourDecorator {
         super(continuousScale);
     }
 
-
     public void setup(float hueUpper, float hueLower,
                       float saturationUpper, float saturationLower,
                       float brightnessUpper, float brightnessLower) {

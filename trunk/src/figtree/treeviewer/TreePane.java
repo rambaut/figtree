@@ -1367,7 +1367,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                 Shape transPath = transform.createTransformedShape(branchPath);
                 Paint paint = Color.BLACK;
                 if (branchDecorator != null) {
-                    if (branchDecoratorGradient) {
+                    if (branchDecoratorGradient && branchDecorator.allowsGradient()) {
                         branchDecorator.setItems(node, tree.getParent(node));
                         PathIterator iter = transPath.getPathIterator(null);
                         double[] coords = new double[6];
