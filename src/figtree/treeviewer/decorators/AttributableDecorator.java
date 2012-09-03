@@ -18,6 +18,11 @@ public class AttributableDecorator implements Decorator {
         return this.paint;
     }
 
+    @Override
+    public boolean allowsGradient() {
+        return true;
+    }
+
     public Paint getFillPaint(Paint paint) {
         if (this.fillPaint == null) return paint;
         return this.fillPaint;

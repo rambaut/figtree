@@ -26,6 +26,11 @@ public abstract class ColourDecorator implements Decorator {
         setAttributes(attributeName, items);
     }
 
+    @Override
+    public boolean allowsGradient() {
+        return true;
+    }
+
     public void setAttributes(String attributeName, Set<? extends Attributable> items) {
         this.attributeName = attributeName;
     }

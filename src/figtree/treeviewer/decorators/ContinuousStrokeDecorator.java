@@ -22,7 +22,12 @@ public class ContinuousStrokeDecorator implements Decorator {
 		this.maxWidth = maxWidth;
 	}
 
-	// Decorator INTERFACE
+    @Override
+    public boolean allowsGradient() {
+        return false;
+    }
+
+    // Decorator INTERFACE
 	public Paint getPaint(Paint paint) {
 		return paint;
 	}
