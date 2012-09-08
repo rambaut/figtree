@@ -40,6 +40,7 @@ public class BasicLabelPainter extends LabelPainter<Node> {
 
     public void setBorderDecorator(Decorator borderDecorator) {
         this.borderDecorator = borderDecorator;
+        firePainterSettingsChanged();
     }
 
     public Decorator getTextDecorator() {
@@ -48,7 +49,6 @@ public class BasicLabelPainter extends LabelPainter<Node> {
 
     public void setTextDecorator(Decorator textDecorator) {
         this.textDecorator = textDecorator;
-
         firePainterSettingsChanged();
     }
 

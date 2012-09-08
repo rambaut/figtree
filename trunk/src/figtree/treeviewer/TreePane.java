@@ -1402,10 +1402,11 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         // Paint node shapes
         if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
             for (Node node : treeLayoutCache.getNodePointMap().keySet() ) {
-//                Shape nodeShape = nodeShapes.get(node);
-                Point2D point = treeLayoutCache.getNodePoint(node);
-                point = transform.transform(point, null);
-                nodeShapePainter.paint(g2, node, point);
+                Shape nodeShape = nodeShapes.get(node);
+                nodeShape = transform.createTransformedShape(nodeShape);
+//                Point2D point = treeLayoutCache.getNodePoint(node);
+//                point = transform.transform(point, null);
+                nodeShapePainter.paint(g2, node, nodeShape);
             }
         }
 
@@ -1542,8 +1543,10 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             for (Node node : tree.getInternalNodes()) {
 
                 Rectangle2D shapeBounds = nodeBarPainter.calibrate(g2, node);
-                treeBounds.add(shapeBounds);
-                nodeBars.put(node, nodeBarPainter.getNodeBar());
+                if (shapeBounds != null) {
+                    treeBounds.add(shapeBounds);
+                    nodeBars.put(node, nodeBarPainter.getNodeBar());
+                }
             }
         }
 
@@ -1554,8 +1557,10 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             for (Node node : tree.getNodes()) {
 
                 Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
-                treeBounds.add(shapeBounds);
-                nodeShapes.put(node, nodeShapePainter.getNodeShape());
+                if (shapeBounds != null) {
+                    treeBounds.add(shapeBounds);
+                    nodeShapes.put(node, nodeShapePainter.getNodeShape());
+                }
             }
         }
 
@@ -1649,6 +1654,13 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         }
         totalTreeBounds.add(totalScaleBounds);
 
+        if (legendPainter != null && legendPainter.isVisible()) {
+            legendPainter.calibrate(g2, this);
+            final double w2 = legendPainter.getPreferredWidth();
+            legendBounds = new Rectangle2D.Double(-w2, 0, w2, treeBounds.getHeight());
+            totalTreeBounds.add(legendBounds);
+        }
+
         final double availableW = width - insets.left - insets.right;
         final double availableH = height - insets.top - insets.bottom;
 
@@ -1724,7 +1736,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             yScale = h / treeBounds.getHeight();
 
             // and set the origin in the top left corner
-            xOffset = - (treeBounds.getX() * xScale);
+            xOffset = - totalTreeBounds.getX() - (treeBounds.getX() * xScale);
             yOffset = - totalTreeBounds.getY();
 
             treeScale = xScale;
@@ -1836,8 +1848,6 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                 // Get the line that represents the path for the branch label
                 Line2D labelPath = treeLayoutCache.getBranchLabelPath(node);
 
-                // AR - I don't think we need to recalibrate this here
-                // branchLabelPainter.calibrate(g2, node);
                 final double labelHeight = branchLabelPainter.getPreferredHeight();
                 final double labelWidth = branchLabelPainter.getPreferredWidth();
                 final Rectangle2D labelBounds = new Rectangle2D.Double(0.0, 0.0, labelWidth, labelHeight);

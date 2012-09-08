@@ -33,7 +33,7 @@ public class NodeShapeController extends AbstractController {
     public static final String COLOUR_ATTRIBUTE_KEY = "colourAttribute";
     private static final String SHAPE_SIZE_KEY = "size";
 
-    private static float DEFAULT_SHAPE_SIZE = 4.0f;
+    private static float DEFAULT_SHAPE_SIZE = 1.0f;
 
     public NodeShapeController(String title, final NodeShapePainter nodeShapePainter,
                                final AttributeColourController colourController,
@@ -73,7 +73,7 @@ public class NodeShapeController extends AbstractController {
         shapeSizeSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
                 float shapeSize = ((Double) shapeSizeSpinner.getValue()).floatValue();
-                nodeShapePainter.setDefaultSize(shapeSize);
+                nodeShapePainter.setDefaultSize(shapeSize / 100);
             }
         });
 

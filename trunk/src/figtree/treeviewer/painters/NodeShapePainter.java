@@ -18,7 +18,7 @@ public class NodeShapePainter extends NodePainter {
 
 
     public static final String FIXED = "fixed";
-    public static final double SIZE = 10.0;
+    public static final double SIZE = 0.0001;
 
     public enum NodeShape {
         CIRCLE("Circle"),
@@ -40,8 +40,6 @@ public class NodeShapePainter extends NodePainter {
     }
 
     public NodeShapePainter() {
-
-        nodeShape = new Ellipse2D.Double(0,0,1,1);
     }
 
     public void setTreePane(TreePane treePane) {
@@ -60,7 +58,6 @@ public class NodeShapePainter extends NodePainter {
         Line2D shapePath = treePane.getTreeLayoutCache().getNodeShapePath(node);
         if (shapePath != null) {
 
-//            double size = tree.getHeight(node) * 0.75;
             double size = defaultSize;
 
 
@@ -85,17 +82,13 @@ public class NodeShapePainter extends NodePainter {
                 double x1 = shapePath.getX1();
                 double y1 = shapePath.getY1();
 
-                // x2,y2 is 1.0 units higher than the node
-                double x2 = shapePath.getX2();
-                double y2 = shapePath.getY2();
-
-                nodeShape = new Ellipse2D.Double(x1, y1, size, size);
+                nodeShape = createNodeShape(x1 - (size * 0.5), y1 - (size * 0.5), size);
 
             }
         }
 
         if (nodeShape == null) {
-            return new Rectangle2D.Double(0,0,0,0);
+            return null;
         }
 
         return nodeShape.getBounds2D();
@@ -118,13 +111,17 @@ public class NodeShapePainter extends NodePainter {
      * @param g2
      * @param node
      */
-    public void paint(Graphics2D g2, Node node, Point2D nodePoint) {
+    public void paint(Graphics2D g2, Node node, Shape nodeShape) {
         if (nodeShape != null) {
 
-            Shape nodeShape = AffineTransform.getTranslateInstance(nodePoint.getX(), nodePoint.getY()).createTransformedShape(this.nodeShape);
-//        nodeShape = new Ellipse2D.Double(nodePoint.getX() - (SIZE / 2), nodePoint.getY() - (SIZE / 2), SIZE, SIZE);
+            nodeShape = createNodeShape(
+                    nodeShape.getBounds2D().getCenterX() - (nodeShape.getBounds2D().getHeight() * 0.5),
+                    nodeShape.getBounds2D().getCenterY() - (nodeShape.getBounds2D().getHeight() * 0.5),
+                    nodeShape.getBounds2D().getHeight());
+//            Stroke stroke = getStroke();
+//            Shape strokedOutline = stroke.createStrokedShape(nodeShape);
 
-            Paint paint = Color.BLUE;
+            Paint paint = getForeground();
             if (colourDecorator != null) {
                 colourDecorator.setItem(node);
                 paint = colourDecorator.getPaint(paint);
@@ -134,7 +131,6 @@ public class NodeShapePainter extends NodePainter {
 
             g2.setPaint(Color.black);
             g2.setStroke(new BasicStroke(0.5F));
-
             g2.draw(nodeShape);
         }
 
@@ -168,6 +164,10 @@ public class NodeShapePainter extends NodePainter {
     public void setColourDecorator(Decorator colourDecorator) {
         this.colourDecorator = colourDecorator;
         firePainterChanged();
+    }
+
+    private Shape createNodeShape(double x, double y, double size) {
+        return new Ellipse2D.Double(x, y, size, size);
     }
 
     private Shape nodeShape = null;
