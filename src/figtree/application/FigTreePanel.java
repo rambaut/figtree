@@ -98,7 +98,15 @@ public class FigTreePanel extends JPanel {
 
         setLayout(new BorderLayout());
         add(slideOpenPanel, BorderLayout.CENTER);
-        add(controlPalette.getPanel(), BorderLayout.WEST);
+
+        JScrollPane scrollPane = new JScrollPane(controlPalette.getPanel());
+        scrollPane.setBorder(null);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setPreferredSize(new Dimension(
+                controlPalette.getPanel().getPreferredSize().width + scrollPane.getVerticalScrollBar().getPreferredSize().width,
+                controlPalette.getPanel().getPreferredSize().height));
+        add(scrollPane, BorderLayout.WEST);
 
 //        treeViewer.addAnnotationsListener(new AnnotationsListener() {
 //            public void annotationsChanged() {

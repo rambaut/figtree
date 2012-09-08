@@ -73,7 +73,7 @@ public class NodeBarPainter extends NodePainter {
 				// x1,y1 is the node point
 				double x1 = barPath.getX1();
 				double y1 = barPath.getY1();
-				// x2,y2 is 1.0 units heigher than the node
+				// x2,y2 is 1.0 units higher than the node
 				double x2 = barPath.getX2();
 				double y2 = barPath.getY2();
 
