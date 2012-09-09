@@ -33,7 +33,7 @@ public class NodeShapeController extends AbstractController {
     public static final String COLOUR_ATTRIBUTE_KEY = "colourAttribute";
     private static final String SHAPE_SIZE_KEY = "size";
 
-    private static float DEFAULT_SHAPE_SIZE = 1.0f;
+    private static float DEFAULT_SHAPE_SIZE = 10.0f;
 
     public NodeShapeController(String title, final NodeShapePainter nodeShapePainter,
                                final AttributeColourController colourController,
@@ -69,11 +69,11 @@ public class NodeShapeController extends AbstractController {
         colourAttributeCombo = new JComboBox();
         setupColourButton = new JButton("Colour");
 
-        shapeSizeSpinner = new JSpinner(new SpinnerNumberModel(defaultShapeSize, 0.0, 48.0, 1.0));
+        shapeSizeSpinner = new JSpinner(new SpinnerNumberModel(defaultShapeSize, 0.0, 100.0, 1.0));
         shapeSizeSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
                 float shapeSize = ((Double) shapeSizeSpinner.getValue()).floatValue();
-                nodeShapePainter.setDefaultSize(shapeSize / 100);
+                nodeShapePainter.setDefaultSize(shapeSize);
             }
         });
 

@@ -1401,11 +1401,9 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
         // Paint node shapes
         if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
-            for (Node node : treeLayoutCache.getNodePointMap().keySet() ) {
+            for (Node node : nodeShapes.keySet() ) {
                 Shape nodeShape = nodeShapes.get(node);
-                nodeShape = transform.createTransformedShape(nodeShape);
-//                Point2D point = treeLayoutCache.getNodePoint(node);
-//                point = transform.transform(point, null);
+                nodeShape = translate.createTransformedShape(nodeShape);
                 nodeShapePainter.paint(g2, node, nodeShape);
             }
         }
@@ -1550,22 +1548,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
         }
 
-        // bounds on nodeShapes
-        if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
-            nodeShapes.clear();
-            // Iterate though the nodes
-            for (Node node : tree.getNodes()) {
-
-                Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
-                if (shapeBounds != null) {
-                    treeBounds.add(shapeBounds);
-                    nodeShapes.put(node, nodeShapePainter.getNodeShape());
-                }
-            }
-        }
-
-        // adjust the bounds so that the origin is at 0,0
-        //treeBounds = new Rectangle2D.Double(0.0, 0.0, treeBounds.getWidth(), treeBounds.getHeight());
+        // totalTreeBounds includes all the stuff which is not in a tree scale (like labels and shapes) but in
+        // screen pixel scale. This is added to the treeBounds to make space round the edge.
 
         // add the tree bounds
         final Rectangle2D totalTreeBounds = treeBounds.getBounds2D(); // (YH) same as (Rectangle2D) treeBounds.clone();
@@ -1636,6 +1620,20 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
                 // and add the translated bounds to the overall bounds
                 totalTreeBounds.add(labelTransform.createTransformedShape(labelBounds).getBounds2D());
+            }
+        }
+
+        // bounds on nodeShapes
+        if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
+            nodeShapes.clear();
+            // Iterate though the nodes
+            for (Node node : tree.getNodes()) {
+
+                Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
+                if (shapeBounds != null) {
+                    totalTreeBounds.add(shapeBounds);
+                    nodeShapes.put(node, nodeShapePainter.getNodeShape());
+                }
             }
         }
 
@@ -1748,6 +1746,10 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         transform = new AffineTransform();
         transform.translate(xOffset + insets.left, yOffset + insets.top);
         transform.scale(xScale, yScale);
+
+        // Create the overall transform
+        translate = new AffineTransform();
+        translate.translate(xOffset + insets.left, yOffset + insets.top);
 
         // Get the bounds for the newly scaled tree
         treeBounds = null;
@@ -2034,6 +2036,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     private boolean calibrated = false;
     private AffineTransform transform = null;
+    private AffineTransform translate = null;
 
     private boolean showingTipCallouts = true;
 
