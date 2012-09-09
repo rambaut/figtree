@@ -18,7 +18,7 @@ public class NodeShapePainter extends NodePainter {
 
 
     public static final String FIXED = "fixed";
-    public static final double SIZE = 0.0001;
+    public static final double SIZE = 1.0;
 
     public enum NodeShape {
         CIRCLE("Circle"),
@@ -60,7 +60,6 @@ public class NodeShapePainter extends NodePainter {
 
             double size = defaultSize;
 
-
             if (sizeAttribute != null && !sizeAttribute.equals(FIXED)) {
                 Object value = node.getAttribute(sizeAttribute);
                 if (value != null) {
@@ -70,6 +69,8 @@ public class NodeShapePainter extends NodePainter {
                         } else {
                             size = Double.parseDouble(value.toString());
                         }
+                        size *= 10.0;
+                        size += defaultSize;
                     } else {
                         // todo - warn the user somehow?
                     }
@@ -114,12 +115,11 @@ public class NodeShapePainter extends NodePainter {
     public void paint(Graphics2D g2, Node node, Shape nodeShape) {
         if (nodeShape != null) {
 
+            double h = nodeShape.getBounds2D().getHeight();
             nodeShape = createNodeShape(
-                    nodeShape.getBounds2D().getCenterX() - (nodeShape.getBounds2D().getHeight() * 0.5),
-                    nodeShape.getBounds2D().getCenterY() - (nodeShape.getBounds2D().getHeight() * 0.5),
-                    nodeShape.getBounds2D().getHeight());
-//            Stroke stroke = getStroke();
-//            Shape strokedOutline = stroke.createStrokedShape(nodeShape);
+                    nodeShape.getBounds2D().getCenterX() - (h * 0.5),
+                    nodeShape.getBounds2D().getCenterY() - (h * 0.5),
+                    h);
 
             Paint paint = getForeground();
             if (colourDecorator != null) {
