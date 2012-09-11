@@ -17,7 +17,7 @@ import java.util.*;
 public class NodeShapePainter extends NodePainter {
 
 
-    public static final String FIXED = "fixed";
+    public static final String FIXED = "Fixed";
     public static final double SIZE = 1.0;
 
     public enum NodeShape {
@@ -58,7 +58,7 @@ public class NodeShapePainter extends NodePainter {
         Line2D shapePath = treePane.getTreeLayoutCache().getNodeShapePath(node);
         if (shapePath != null) {
 
-            double size = defaultSize;
+            double size = 0;
 
             if (sizeAttribute != null && !sizeAttribute.equals(FIXED)) {
                 Object value = node.getAttribute(sizeAttribute);
@@ -69,13 +69,15 @@ public class NodeShapePainter extends NodePainter {
                         } else {
                             size = Double.parseDouble(value.toString());
                         }
-                        size *= 10.0;
+//                        size *= sizeScale;
                         size += defaultSize;
                     } else {
                         // todo - warn the user somehow?
                     }
                 }
 
+            } else {
+                size = defaultSize;
             }
 
             if (size > 0.0) {

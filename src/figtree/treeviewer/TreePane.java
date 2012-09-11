@@ -1403,7 +1403,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
             for (Node node : nodeShapes.keySet() ) {
                 Shape nodeShape = nodeShapes.get(node);
-                nodeShape = translate.createTransformedShape(nodeShape);
+                nodeShape = transform.createTransformedShape(nodeShape);
                 nodeShapePainter.paint(g2, node, nodeShape);
             }
         }
@@ -1632,7 +1632,9 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                 Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
                 if (shapeBounds != null) {
                     totalTreeBounds.add(shapeBounds);
-                    nodeShapes.put(node, nodeShapePainter.getNodeShape());
+
+                    // just at the shapeBounds in here as the actual shape will be reconstructed when drawing
+                    nodeShapes.put(node, shapeBounds);
                 }
             }
         }
@@ -1746,10 +1748,6 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         transform = new AffineTransform();
         transform.translate(xOffset + insets.left, yOffset + insets.top);
         transform.scale(xScale, yScale);
-
-        // Create the overall transform
-        translate = new AffineTransform();
-        translate.translate(xOffset + insets.left, yOffset + insets.top);
 
         // Get the bounds for the newly scaled tree
         treeBounds = null;
@@ -2036,7 +2034,6 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     private boolean calibrated = false;
     private AffineTransform transform = null;
-    private AffineTransform translate = null;
 
     private boolean showingTipCallouts = true;
 

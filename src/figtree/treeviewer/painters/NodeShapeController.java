@@ -64,7 +64,7 @@ public class NodeShapeController extends AbstractController {
                 nodeShapePainter.setSizeAttribute(attribute);
             }
         });
-        new AttributeComboHelper(sizeAttributeCombo, treeViewer, "Fixed");
+        new AttributeComboHelper(sizeAttributeCombo, treeViewer, NodeShapePainter.FIXED);
 
         colourAttributeCombo = new JComboBox();
         setupColourButton = new JButton("Colour");
