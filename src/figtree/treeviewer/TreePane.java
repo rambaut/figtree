@@ -1401,11 +1401,27 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
         // Paint node shapes
         if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
-            for (Node node : nodeShapes.keySet() ) {
-                Shape nodeShape = nodeShapes.get(node);
-                nodeShape = transform.createTransformedShape(nodeShape);
-                nodeShapePainter.paint(g2, node, nodeShape);
+            // paint the tip shapes...
+            for (Node node : nodeShapeTransforms.keySet()) {
+                AffineTransform tipLabelTransform = tipLabelTransforms.get(node);
+                g2.transform(tipLabelTransform);
+                nodeShapePainter.paint(g2, node, new Rectangle2D.Double(0.0, 0.0, 1, 1));
+
+                g2.setTransform(oldTransform);
             }
+
+            for (Node node : nodeLabelTransforms.keySet()) {
+                AffineTransform nodeLabelTransform = nodeLabelTransforms.get(node);
+                g2.transform(nodeLabelTransform);
+                nodeShapePainter.paint(g2, node, new Rectangle2D.Double(0.0, 0.0, 1, 1));
+
+                g2.setTransform(oldTransform);
+            }
+
+//            for (Node node : nodeShapes.keySet() ) {
+//                Point2D nodePoint = node.get(node);
+//                nodeShape = translate.createTransformedShape(nodeShape);
+//            }
         }
 
         // Paint tip labels
@@ -2051,6 +2067,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     private Map<Node, Shape> nodeBars = new HashMap<Node, Shape>();
     private Map<Node, Shape> nodeShapes = new HashMap<Node, Shape>();
+    private Map<Node, AffineTransform> nodeShapeTransforms = new HashMap<Node, AffineTransform>();
 
     private Map<Node, Shape> calloutPaths = new HashMap<Node, Shape>();
 
