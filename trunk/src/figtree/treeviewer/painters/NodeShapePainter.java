@@ -81,7 +81,7 @@ public class NodeShapePainter extends NodePainter {
                 double x1 = shapePath.getX1();
                 double y1 = shapePath.getY1();
 
-                shapeBounds = createNodeShape(x1 - (size * 0.5), y1 - (size * 0.5), size).getBounds2D();
+                shapeBounds = createNodeShape(x1, y1, size).getBounds2D();
 
             }
         }
@@ -109,10 +109,10 @@ public class NodeShapePainter extends NodePainter {
     public void paint(Graphics2D g2, Node node, Shape nodeShape) {
         if (nodeShape != null) {
 
-            double h = nodeShape.getBounds2D().getHeight();
+            double h = defaultSize; // @todo getSize(node)
             nodeShape = createNodeShape(
-                    nodeShape.getBounds2D().getCenterX() - (h * 0.5),
-                    nodeShape.getBounds2D().getCenterY() - (h * 0.5),
+                    nodeShape.getBounds2D().getCenterX(),
+                    nodeShape.getBounds2D().getCenterY(),
                     h);
 
             Paint paint = getForeground();
@@ -161,10 +161,17 @@ public class NodeShapePainter extends NodePainter {
     }
 
     private Shape createNodeShape(double x, double y, double size) {
-        return new Ellipse2D.Double(x, y, size, size);
+        switch (shape) {
+            case CIRCLE:
+                return new Ellipse2D.Double(x - (size * 0.5), y - (size * 0.5), size, size);
+            case RECTANGLE:
+                return new Rectangle2D.Double(x - (size * 0.5), y - (size * 0.5), size, size);
+        }
+        throw new IllegalArgumentException("Unknown node shape type");
     }
 
     private double defaultSize = SIZE;
+    private NodeShape shape = NodeShape.RECTANGLE;
     private String sizeAttribute = null;
 
     private Decorator colourDecorator = null;
