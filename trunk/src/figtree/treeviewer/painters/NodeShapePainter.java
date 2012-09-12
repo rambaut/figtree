@@ -46,14 +46,10 @@ public class NodeShapePainter extends NodePainter {
         this.treePane = treePane;
     }
 
-    public Shape getNodeShape() {
-        return nodeShape;
-    }
-
     public Rectangle2D calibrate(Graphics2D g2, Node node) {
         RootedTree tree = treePane.getTree();
 
-        nodeShape = null;
+        Rectangle2D shapeBounds = null;
 
         Line2D shapePath = treePane.getTreeLayoutCache().getNodeShapePath(node);
         if (shapePath != null) {
@@ -85,16 +81,12 @@ public class NodeShapePainter extends NodePainter {
                 double x1 = shapePath.getX1();
                 double y1 = shapePath.getY1();
 
-                nodeShape = createNodeShape(x1 - (size * 0.5), y1 - (size * 0.5), size);
+                shapeBounds = createNodeShape(x1 - (size * 0.5), y1 - (size * 0.5), size).getBounds2D();
 
             }
         }
 
-        if (nodeShape == null) {
-            return null;
-        }
-
-        return nodeShape.getBounds2D();
+        return shapeBounds;
     }
 
     public double getPreferredWidth() {
@@ -171,8 +163,6 @@ public class NodeShapePainter extends NodePainter {
     private Shape createNodeShape(double x, double y, double size) {
         return new Ellipse2D.Double(x, y, size, size);
     }
-
-    private Shape nodeShape = null;
 
     private double defaultSize = SIZE;
     private String sizeAttribute = null;
