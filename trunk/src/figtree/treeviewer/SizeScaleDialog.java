@@ -6,21 +6,21 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.*;
 
 import figtree.ui.components.RealNumberField;
 
 /**
- * WidthScaleDialog.java
+ * SizeScaleDialog.java
  *
  * @author			Andrew Rambaut
  * @version			$Id$
  */
-public class WidthScaleDialog {
+public class SizeScaleDialog {
 
     private JFrame frame;
+    private String dimensionName;
+
     private OptionsPanel options;
     private JCheckBox autoScaleCheck;
     private JLabel fromLabel;
@@ -28,12 +28,14 @@ public class WidthScaleDialog {
     private JLabel toLabel;
     private RealNumberField toNumberField;
 
-    private RealNumberField fromWidthField;
-	private RealNumberField toWidthField;
+    private RealNumberField fromSizeField;
+	private RealNumberField toSizeField;
 
-    public WidthScaleDialog(final JFrame frame, boolean autoRange, double fromValue, double toValue,
-	                         final double fromWidth, final double toWidth) {
+    public SizeScaleDialog(final JFrame frame, final String dimensionName, boolean autoRange, double fromValue, double toValue,
+                           final double fromWidth, final double toWidth) {
         this.frame = frame;
+
+        this.dimensionName = dimensionName;
 
 	    autoScaleCheck = new JCheckBox("Auto-scale range");
 	    autoScaleCheck.setSelected(autoRange);
@@ -53,12 +55,12 @@ public class WidthScaleDialog {
 	    toLabel.setEnabled(false);
 	    toNumberField.setEnabled(false);
 
-	    fromWidthField = new RealNumberField();
-		fromWidthField.setColumns(4);
-	    fromWidthField.setValue(fromWidth);
-		toWidthField = new RealNumberField();
-		toWidthField.setColumns(4);
-	    toWidthField.setValue(toWidth);
+	    fromSizeField = new RealNumberField();
+		fromSizeField.setColumns(4);
+	    fromSizeField.setValue(fromWidth);
+		toSizeField = new RealNumberField();
+		toSizeField.setColumns(4);
+	    toSizeField.setValue(toWidth);
 
 	    autoScaleCheck.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -87,10 +89,10 @@ public class WidthScaleDialog {
 
 	    JPanel panel1 = new JPanel();
 	    panel1.setLayout(new FlowLayout());
-	    panel1.add(new JLabel("Width from:"));
-	    panel1.add(fromWidthField);
+	    panel1.add(new JLabel(dimensionName + " from:"));
+	    panel1.add(fromSizeField);
 	    panel1.add(new JLabel("to:"));
-	    panel1.add(toWidthField);
+	    panel1.add(toSizeField);
 	    options.addComponent(panel1);
 
         JOptionPane optionPane = new JOptionPane(options,
@@ -101,7 +103,7 @@ public class WidthScaleDialog {
                 null);
         optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        final JDialog dialog = optionPane.createDialog(frame, "Setup width scale");
+        final JDialog dialog = optionPane.createDialog(frame, "Setup " + dimensionName + " scale");
         dialog.pack();
 
         autoScaleCheck.addActionListener(new ActionListener() {
@@ -137,11 +139,11 @@ public class WidthScaleDialog {
     }
 
     public Number getFromWidth() {
-        return fromWidthField.getValue();
+        return fromSizeField.getValue();
     }
 
     public Number getToWidth() {
-        return toWidthField.getValue();
+        return toSizeField.getValue();
     }
 
 

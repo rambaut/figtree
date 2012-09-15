@@ -2,7 +2,6 @@ package figtree.treeviewer.painters;
 
 import figtree.treeviewer.AttributeColourController;
 import figtree.treeviewer.TreeViewer;
-import figtree.treeviewer.WidthScaleDialog;
 import figtree.treeviewer.decorators.Decorator;
 import jam.controlpalettes.AbstractController;
 import jam.controlpalettes.ControllerListener;
@@ -28,11 +27,11 @@ public class NodeShapeController extends AbstractController {
 
     private static final String NODE_SHAPE_KEY = "nodeShape";
     public static final String SHAPE_TYPE_KEY = "shapeType";
+    public static final String SCALE_TYPE_KEY = "scaleType";
     public static final String SIZE_ATTRIBUTE_KEY = "sizeAttribute";
     public static final String COLOUR_ATTRIBUTE_KEY = "colourAttribute";
     private static final String SHAPE_SIZE_KEY = "size";
-
-    private static float DEFAULT_SHAPE_SIZE = 10.0f;
+    private static final String SHAPE_MIN_SIZE_KEY = "minSize";
 
     public NodeShapeController(String title, final NodeShapePainter nodeShapePainter,
                                final AttributeColourController colourController,
@@ -40,7 +39,7 @@ public class NodeShapeController extends AbstractController {
         this.title = title;
         this.nodeShapePainter = nodeShapePainter;
 
-        final float defaultShapeSize = PREFS.getFloat(SHAPE_SIZE_KEY, DEFAULT_SHAPE_SIZE);
+        final float defaultShapeSize = PREFS.getFloat(SHAPE_SIZE_KEY, (float)NodeShapePainter.MAX_SIZE);
 
         optionsPanel = new ControllerOptionsPanel(2, 2);
 
@@ -57,53 +56,37 @@ public class NodeShapeController extends AbstractController {
         shapeTypeCombo = new JComboBox(NodeShapePainter.ShapeType.values());
         shapeTypeCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                NodeShapePainter.ShapeType shapeTypeType = (NodeShapePainter.ShapeType) shapeTypeCombo.getSelectedItem();
-                nodeShapePainter.setShapeType(shapeTypeType);
+                nodeShapePainter.setShapeType((NodeShapePainter.ShapeType) shapeTypeCombo.getSelectedItem());
+            }
+        });
+
+        scaleTypeCombo = new JComboBox(NodeShapePainter.ScaleType.values());
+        scaleTypeCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                nodeShapePainter.setScaleType((NodeShapePainter.ScaleType) scaleTypeCombo.getSelectedItem());
             }
         });
 
         sizeAttributeCombo = new JComboBox();
-        sizeAttributeCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                String attribute = (String) sizeAttributeCombo.getSelectedItem();
-                nodeShapePainter.setSizeAttribute(attribute);
-            }
-        });
+        // listener set after other controls are created...
         new AttributeComboHelper(sizeAttributeCombo, treeViewer, NodeShapePainter.FIXED);
 
         colourAttributeCombo = new JComboBox();
-        setupColourButton = new JButton("Colour");
+        JButton setupColourButton = new JButton("Colour");
 
         shapeSizeSpinner = new JSpinner(new SpinnerNumberModel(defaultShapeSize, 0.0, 100.0, 1.0));
         shapeSizeSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
-                float shapeSize = ((Double) shapeSizeSpinner.getValue()).floatValue();
-                nodeShapePainter.setDefaultSize(shapeSize);
+                double shapeSize = ((Double)shapeSizeSpinner.getValue());
+                nodeShapePainter.setMaxSize(shapeSize);
             }
         });
 
-//        sizeAutoRange = true;
-//        sizeFromValue = 0.0;
-//        widthToValue = 1.0;
-//        fromWidth = 1.0;
-//        toWidth = 10.0;
-
-        JButton setupWidthButton = new JButton(new AbstractAction("Scale") {
-            public void actionPerformed(ActionEvent e) {
-//                if (widthScaleDialog == null) {
-//                    widthScaleDialog = new WidthScaleDialog(frame, widthAutoRange,
-//                            widthFromValue, widthToValue,
-//                            fromWidth, toWidth);
-//                }
-//                int result = widthScaleDialog.showDialog();
-//                if (result != JOptionPane.CANCEL_OPTION) {
-//                    widthAutoRange = widthScaleDialog.getAutoRange();
-//                    widthFromValue = widthScaleDialog.getFromValue().doubleValue();
-//                    widthToValue = widthScaleDialog.getToValue().doubleValue();
-//                    fromWidth = widthScaleDialog.getFromWidth().doubleValue();
-//                    toWidth = widthScaleDialog.getToWidth().doubleValue();
-//                    setupBranchDecorators();
-//                }
+        shapeMinSizeSpinner = new JSpinner(new SpinnerNumberModel(10.0, 0.0, 100.0, 1.0));
+        shapeMinSizeSpinner.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
+                double minSize = ((Double)shapeMinSizeSpinner.getValue());
+                nodeShapePainter.setMinSize(minSize);
             }
         });
 
@@ -117,13 +100,28 @@ public class NodeShapeController extends AbstractController {
             }
         });
 
-        JLabel label1 = optionsPanel.addComponentWithLabel("Shape:", shapeTypeCombo);
-        JLabel label2 = optionsPanel.addComponentWithLabel("Size by:", sizeAttributeCombo);
-        JLabel label3 = optionsPanel.addComponentWithLabel("Min size:", shapeSizeSpinner);
-        JLabel label4 = optionsPanel.addComponentWithLabel("Setup:", setupWidthButton);
+        final JLabel label1 = optionsPanel.addComponentWithLabel("Shape:", shapeTypeCombo);
+        final JLabel label2 = optionsPanel.addComponentWithLabel("Max size:", shapeSizeSpinner);
+        final JLabel label3 = optionsPanel.addComponentWithLabel("Size by:", sizeAttributeCombo);
+        final JLabel label4 = optionsPanel.addComponentWithLabel("Min size:", shapeMinSizeSpinner);
+        final JLabel label5 = optionsPanel.addComponentWithLabel("Using:", scaleTypeCombo);
         optionsPanel.addSeparator();
-        JLabel label5 = optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
-        JLabel label6 = optionsPanel.addComponentWithLabel("Setup:", setupColourButton);
+        final JLabel label6 = optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
+        final JLabel label7 = optionsPanel.addComponentWithLabel("Setup:", setupColourButton);
+
+        sizeAttributeCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                String attribute = (String) sizeAttributeCombo.getSelectedItem();
+                nodeShapePainter.setSizeAttribute(attribute);
+                if (attribute != null) {
+                    boolean isSelected = !attribute.equals(NodeShapePainter.FIXED);
+                    label4.setEnabled(isSelected);
+                    shapeMinSizeSpinner.setEnabled(isSelected);
+                    label5.setEnabled(isSelected);
+                    scaleTypeCombo.setEnabled(isSelected);
+                }
+            }
+        });
 
         // only needed if we want to change the options depending on
         // the choice of shapeTypeCombo
@@ -137,14 +135,16 @@ public class NodeShapeController extends AbstractController {
         addComponent(label1);
         addComponent(shapeTypeCombo);
         addComponent(label2);
-        addComponent(sizeAttributeCombo);
-        addComponent(label3);
         addComponent(shapeSizeSpinner);
+        addComponent(label3);
+        addComponent(sizeAttributeCombo);
         addComponent(label4);
-        addComponent(setupWidthButton);
+        addComponent(shapeMinSizeSpinner);
         addComponent(label5);
-        addComponent(colourAttributeCombo);
+        addComponent(scaleTypeCombo);
         addComponent(label6);
+        addComponent(colourAttributeCombo);
+        addComponent(label7);
         addComponent(setupColourButton);
         enableComponents(titleCheckBox.isSelected());
 
@@ -157,7 +157,7 @@ public class NodeShapeController extends AbstractController {
 
 
     private void setupOptions() {
-        optionsPanel.removeAll();
+//        optionsPanel.removeAll();
         fireControllerChanged();
     }
 
@@ -181,29 +181,32 @@ public class NodeShapeController extends AbstractController {
         titleCheckBox.setSelected((Boolean)settings.get(NODE_SHAPE_KEY + "." + IS_SHOWN));
 
         shapeTypeCombo.setSelectedItem((NodeShapePainter.ShapeType.valueOf(settings.get(NODE_SHAPE_KEY + "." + SHAPE_TYPE_KEY).toString().toUpperCase())));
+        scaleTypeCombo.setSelectedItem((NodeShapePainter.ScaleType.valueOf(settings.get(NODE_SHAPE_KEY + "." + SCALE_TYPE_KEY).toString().toUpperCase())));
         colourAttributeCombo.setSelectedItem((String) settings.get(NODE_SHAPE_KEY + "." + COLOUR_ATTRIBUTE_KEY));
         sizeAttributeCombo.setSelectedItem((String) settings.get(NODE_SHAPE_KEY + "." + SIZE_ATTRIBUTE_KEY));
         shapeSizeSpinner.setValue((Double)settings.get(NODE_SHAPE_KEY + "." + SHAPE_SIZE_KEY));
+        shapeMinSizeSpinner.setValue((Double) settings.get(NODE_SHAPE_KEY + "." + SHAPE_MIN_SIZE_KEY));
     }
 
     public void getSettings(Map<String, Object> settings) {
         settings.put(NODE_SHAPE_KEY + "." + IS_SHOWN, titleCheckBox.isSelected());
         settings.put(NODE_SHAPE_KEY + "." + SHAPE_TYPE_KEY, shapeTypeCombo.getSelectedItem());
+        settings.put(NODE_SHAPE_KEY + "." + SCALE_TYPE_KEY, scaleTypeCombo.getSelectedItem());
         settings.put(NODE_SHAPE_KEY + "." + COLOUR_ATTRIBUTE_KEY, colourAttributeCombo.getSelectedItem());
         settings.put(NODE_SHAPE_KEY + "." + SIZE_ATTRIBUTE_KEY, sizeAttributeCombo.getSelectedItem());
         settings.put(NODE_SHAPE_KEY + "." + SHAPE_SIZE_KEY, shapeSizeSpinner.getValue());
+        settings.put(NODE_SHAPE_KEY + "." + SHAPE_MIN_SIZE_KEY, shapeMinSizeSpinner.getValue());
     }
 
     private final JCheckBox titleCheckBox;
     private final OptionsPanel optionsPanel;
 
     private final JComboBox shapeTypeCombo;
+    private final JComboBox scaleTypeCombo;
     private final JComboBox sizeAttributeCombo;
     private final JComboBox colourAttributeCombo;
     private final JSpinner shapeSizeSpinner;
-    private final JButton setupColourButton;
-
-    private WidthScaleDialog widthScaleDialog = null;
+    private final JSpinner shapeMinSizeSpinner;
 
     public String getTitle() {
         return title;

@@ -1329,7 +1329,6 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
 
             Shape branchPath = treeLayoutCache.getBranchPath(node);
-            Shape nodePath = treeLayoutCache.getNodeArea(node);
 
             if (branchColouring != null) {
                 PathIterator iter = branchPath.getPathIterator(transform);
@@ -1876,8 +1875,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
         }
 
-        nodeLabelTransforms.clear();
         if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
+            nodeShapeTransforms.clear();
             // Iterate though the nodes
             for (Node node : nodePoints.keySet()) {
                 Line2D shapePath = getTreeLayoutCache().getNodeShapePath(node);

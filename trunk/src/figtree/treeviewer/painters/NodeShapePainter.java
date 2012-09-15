@@ -1,6 +1,7 @@
 package figtree.treeviewer.painters;
 
 import figtree.treeviewer.TreePane;
+import figtree.treeviewer.decorators.ContinuousScale;
 import figtree.treeviewer.decorators.Decorator;
 import jebl.evolution.graphs.Node;
 
@@ -15,13 +16,34 @@ public class NodeShapePainter extends NodePainter {
 
 
     public static final String FIXED = "Fixed";
-    public static final double SIZE = 1.0;
+    public static final double MAX_SIZE = 4.0;
+    public static final double MIN_SIZE = 0.0;
 
     public enum ShapeType {
         CIRCLE("Circle"),
-        RECTANGLE("Rectangle");
+        RECTANGLE("Rectangle"),
+        DIAMOND("Diamond");
 
         ShapeType(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String toString() {
+            return name;
+        }
+
+        private final String name;
+    }
+
+    public enum ScaleType {
+        WIDTH("Width"),
+        AREA("Area");
+
+        ScaleType(String name) {
             this.name = name;
         }
 
@@ -59,12 +81,13 @@ public class NodeShapePainter extends NodePainter {
         return null;
     }
 
-    public ShapeType getShapeType() {
-        return shapeType;
-    }
-
     public void setShapeType(ShapeType shapeType) {
         this.shapeType = shapeType;
+        firePainterChanged();
+    }
+
+    public void setScaleType(ScaleType scaleType) {
+        this.scaleType = scaleType;
         firePainterChanged();
     }
 
@@ -114,17 +137,19 @@ public class NodeShapePainter extends NodePainter {
         throw new UnsupportedOperationException("This version of paint is not used in NodeShapePainter");
     }
 
-    public String getSizeAttribute() {
-        return sizeAttribute;
+    public void setMaxSize(double maxSize) {
+        this.maxSize = maxSize;
+        firePainterChanged();
     }
 
-    public void setDefaultSize(double defaultSize) {
-        this.defaultSize = defaultSize;
+    public void setMinSize(double minSize) {
+        this.minSize = minSize;
         firePainterChanged();
     }
 
     public void setSizeAttribute(String sizeAttribute) {
         this.sizeAttribute = sizeAttribute;
+        sizeScale = new ContinuousScale(sizeAttribute, treePane.getTree().getNodes());
         firePainterChanged();
     }
 
@@ -135,34 +160,31 @@ public class NodeShapePainter extends NodePainter {
 
     private Shape createNodeShape(Node node, double x, double y) {
 
-        double size = 0;
+        double size = maxSize;
 
         if (sizeAttribute != null && !sizeAttribute.equals(FIXED)) {
-            Object value = node.getAttribute(sizeAttribute);
-            if (value != null) {
-                if (value != null ) {
-                    if (value instanceof Number) {
-                        size = ((Number)value).doubleValue();
-                    } else {
-                        size = Double.parseDouble(value.toString());
-                    }
-//                        size *= sizeScale;
-                    size += defaultSize;
-                } else {
-                    // todo - warn the user somehow?
-                }
-            }
 
-        } else {
-            size = defaultSize;
+            Object valueObject = node.getAttribute(sizeAttribute);
+            double value = sizeScale.getValue(valueObject);
+            if (scaleType == ScaleType.AREA) {
+                double minArea = getShapeArea(minSize);
+                double maxArea = getShapeArea(maxSize + minSize);
+                size = getShapeWidth(((maxArea - minArea) * value) + minArea);
+            } else {
+                size = minSize + (maxSize * value);
+            }
         }
 
         if (size > 0.0) {
+
             switch (shapeType) {
                 case CIRCLE:
                     return new Ellipse2D.Double(x - (size * 0.5), y - (size * 0.5), size, size);
                 case RECTANGLE:
                     return new Rectangle2D.Double(x - (size * 0.5), y - (size * 0.5), size, size);
+                case DIAMOND:
+                    Shape shape = new Rectangle2D.Double(x - (size * 0.5), y - (size * 0.5), size, size);
+                    return AffineTransform.getRotateInstance(Math.PI / 4.0, x, y).createTransformedShape(shape);
             }
             throw new IllegalArgumentException("Unknown node shapeType type");
 
@@ -170,11 +192,37 @@ public class NodeShapePainter extends NodePainter {
         return null;
     }
 
-    private double defaultSize = SIZE;
+    private double getShapeArea(double width) {
+        switch (shapeType) {
+            case CIRCLE:
+                double radius = width * 0.5;
+                return Math.PI * radius * radius;
+            case RECTANGLE:
+            case DIAMOND:
+                return width * width;
+        }
+        throw new IllegalArgumentException("Unknown node shapeType type");
+    }
+
+    private double getShapeWidth(double area) {
+        switch (shapeType) {
+            case CIRCLE:
+                return 2.0 * Math.sqrt(area / Math.PI);
+            case RECTANGLE:
+            case DIAMOND:
+                return Math.sqrt(area);
+        }
+        throw new IllegalArgumentException("Unknown node shapeType type");
+    }
+
+    private double maxSize = MAX_SIZE;
+    private double minSize =  MIN_SIZE;
     private ShapeType shapeType = ShapeType.CIRCLE;
+    private ScaleType scaleType = ScaleType.WIDTH;
     private String sizeAttribute = null;
 
     private Decorator colourDecorator = null;
+    private ContinuousScale sizeScale = null;
 
     private TreePane treePane;
 }

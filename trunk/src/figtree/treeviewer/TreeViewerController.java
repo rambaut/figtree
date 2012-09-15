@@ -242,6 +242,8 @@ public class TreeViewerController extends AbstractController {
 				radialTreeToggle.setSelected(true);
 				break;
 		}
+        setTreeLayout(layout);
+
 		zoomSlider.setValue((Integer)settings.get(CONTROLLER_KEY + "." + ZOOM_KEY));
 		verticalExpansionSlider.setValue((Integer)settings.get(CONTROLLER_KEY + "." + EXPANSION_KEY));
 
