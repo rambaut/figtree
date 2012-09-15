@@ -101,7 +101,7 @@ public class WidthScaleDialog {
                 null);
         optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        final JDialog dialog = optionPane.createDialog(frame, "Setup colour range");
+        final JDialog dialog = optionPane.createDialog(frame, "Setup width scale");
         dialog.pack();
 
         autoScaleCheck.addActionListener(new ActionListener() {

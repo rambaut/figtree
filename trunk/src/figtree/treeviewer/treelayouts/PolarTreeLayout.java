@@ -338,14 +338,12 @@ public class PolarTreeLayout extends AbstractTreeLayout {
                 Line2D nodeLabelPath = new Line2D.Double(
                         transform(nodePoint.getX(), yPos),
                         transform(nodePoint.getX() + 1.0, yPos));
-
                 cache.nodeLabelPaths.put(node, nodeLabelPath);
 
-                Line2D nodeBarPath = new Line2D.Double(
+                Line2D nodeShapePath = new Line2D.Double(
                         transform(nodePoint.getX(), yPos),
                         transform(nodePoint.getX() - 1.0, yPos));
-
-                cache.nodeShapePaths.put(node, nodeBarPath);
+                cache.nodeShapePaths.put(node, nodeShapePath);
 
                 // add the node point to the map of node points
                 cache.nodePoints.put(node, transformedNodePoint);
@@ -379,6 +377,11 @@ public class PolarTreeLayout extends AbstractTreeLayout {
             }
 
             cache.tipLabelPaths.put(node, tipLabelPath);
+
+            Line2D nodeShapePath = new Line2D.Double(
+                    transform(nodePoint.getX(), yPosition),
+                    transform(nodePoint.getX() - 1.0, yPosition));
+            cache.nodeShapePaths.put(node, nodeShapePath);
 
             yPosition += yIncrement;
 
