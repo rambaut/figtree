@@ -2,9 +2,6 @@ package figtree.treeviewer;
 
 import figtree.treeviewer.painters.AttributeComboHelper;
 import jam.controlpalettes.ControllerListener;
-import jebl.evolution.trees.Tree;
-import jebl.evolution.graphs.Node;
-import jebl.util.Attributable;
 import jam.controlpalettes.AbstractController;
 import jam.panels.OptionsPanel;
 
@@ -14,7 +11,6 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import java.util.List;
 import java.util.prefs.Preferences;
 
 import figtree.treeviewer.decorators.*;
@@ -128,18 +124,18 @@ public class TreeAppearanceController extends AbstractController {
 
         JButton setupWidthButton = new JButton(new AbstractAction("Scale") {
             public void actionPerformed(ActionEvent e) {
-                if (widthScaleDialog == null) {
-                    widthScaleDialog = new WidthScaleDialog(frame, widthAutoRange,
+                if (sizeScaleDialog == null) {
+                    sizeScaleDialog = new SizeScaleDialog(frame, "width", widthAutoRange,
                             widthFromValue, widthToValue,
                             fromWidth, toWidth);
                 }
-                int result = widthScaleDialog.showDialog();
+                int result = sizeScaleDialog.showDialog();
                 if (result != JOptionPane.CANCEL_OPTION) {
-                    widthAutoRange = widthScaleDialog.getAutoRange();
-                    widthFromValue = widthScaleDialog.getFromValue().doubleValue();
-                    widthToValue = widthScaleDialog.getToValue().doubleValue();
-                    fromWidth = widthScaleDialog.getFromWidth().doubleValue();
-                    toWidth = widthScaleDialog.getToWidth().doubleValue();
+                    widthAutoRange = sizeScaleDialog.getAutoRange();
+                    widthFromValue = sizeScaleDialog.getFromValue().doubleValue();
+                    widthToValue = sizeScaleDialog.getToValue().doubleValue();
+                    fromWidth = sizeScaleDialog.getFromWidth().doubleValue();
+                    toWidth = sizeScaleDialog.getToWidth().doubleValue();
                     setupBranchDecorators();
                 }
             }
@@ -297,7 +293,7 @@ public class TreeAppearanceController extends AbstractController {
 
     private final TreeViewer treeViewer;
 
-    private WidthScaleDialog widthScaleDialog = null;
+    private SizeScaleDialog sizeScaleDialog = null;
 
     private boolean branchColourIsGradient = false;
 
