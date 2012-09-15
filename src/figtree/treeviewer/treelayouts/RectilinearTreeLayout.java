@@ -269,11 +269,10 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 
                 cache.nodeLabelPaths.put(node, nodeLabelPath);
 
-                Line2D nodeBarPath = new Line2D.Double(
+                Line2D nodeShapePath = new Line2D.Double(
                         nodePoint.getX(), ty,
                         nodePoint.getX() - 1.0, ty);
-
-                cache.nodeShapePaths.put(node, nodeBarPath);
+                cache.nodeShapePaths.put(node, nodeShapePath);
             }
         } else {
 
@@ -302,6 +301,11 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
             }
 
             cache.tipLabelPaths.put(node, tipLabelPath);
+
+            Line2D nodeShapePath = new Line2D.Double(
+                    nodePoint.getX(), ty,
+                    nodePoint.getX() - 1.0, ty);
+            cache.nodeShapePaths.put(node, nodeShapePath);
 
             yPosition += yIncrement;
 

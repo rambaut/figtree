@@ -1401,19 +1401,10 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
         // Paint node shapes
         if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
-            // paint the tip shapes...
-//            for (Node node : nodeShapeTransforms.keySet()) {
-//                AffineTransform nodeShapeTransform = nodeShapeTransforms.get(node);
-//                g2.transform(nodeShapeTransform);
-//                nodeShapePainter.paint(g2, node, new Rectangle2D.Double(0.0, 0.0, 1, 1));
-//
-//                g2.setTransform(oldTransform);
-//            }
-
-            for (Node node : nodeShapes.keySet() ) {
-                Shape nodeShape = nodeShapes.get(node);
-                nodeShape = transform.createTransformedShape(nodeShape);
-                nodeShapePainter.paint(g2, node, nodeShape);
+            for (Node node : nodePoints.keySet()) {
+                Point2D point = nodePoints.get(node);
+                point = transform.transform(point, null);
+                nodeShapePainter.paint(g2, node, point, nodeShapeTransforms.get(node));
             }
         }
 
@@ -1543,7 +1534,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
         }
 
-        // bounds on nodeShapes
+        // bounds on node bars
         if (!isTransformBranchesOn() && nodeBarPainter != null && nodeBarPainter.isVisible()) {
             nodeBars.clear();
             // Iterate though the nodes
@@ -1634,7 +1625,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
         // bounds on nodeShapes
         if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
-            nodeShapes.clear();
+            nodePoints.clear();
             // Iterate though the nodes
             for (Node node : tree.getNodes()) {
 
@@ -1642,8 +1633,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                 if (shapeBounds != null) {
                     totalTreeBounds.add(shapeBounds);
 
-                    // just at the shapeBounds in here as the actual shape will be reconstructed when drawing
-                    nodeShapes.put(node, shapeBounds);
+                    // just at the centroid in here as the actual shape will be reconstructed when drawing
+                    nodePoints.put(node, new Point2D.Double(shapeBounds.getCenterX(), shapeBounds.getCenterY()));
                 }
             }
         }
@@ -1720,7 +1711,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         double yOffset = 0.0;
 
         if (maintainAspectRatio) {
-            // If the tree is layed out in both dimensions then we
+            // If the tree is laid out in both dimensions then we
             // need to find out which axis has the least space and scale
             // the tree to that (to keep the aspect ratio.
 
@@ -1885,6 +1876,16 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
         }
 
+        nodeLabelTransforms.clear();
+        if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
+            // Iterate though the nodes
+            for (Node node : nodePoints.keySet()) {
+                Line2D shapePath = getTreeLayoutCache().getNodeShapePath(node);
+                if (shapePath != null) {
+                    nodeShapeTransforms.put(node, calculateTransform(transform, shapePath));
+                }
+            }
+        }
 
         y = height;
         for (ScalePainter scalePainter : scalePainters) {
@@ -1950,6 +1951,27 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         lineTransform.translate(tx, ty);
         return lineTransform;
     }
+
+    private AffineTransform calculateTransform(AffineTransform globalTransform, Line2D line) {
+        final Point2D origin = line.getP1();
+        if (globalTransform != null) {
+            globalTransform.transform(origin, origin);
+        }
+
+        // Work out how it is rotated and create a transform that matches that
+        AffineTransform lineTransform = new AffineTransform();
+
+        final double dy = line.getY2() - line.getY1();
+        // efficency
+        if( dy != 0.0 ) {
+            final double dx = line.getX2() - line.getX1();
+            final double angle = dx != 0.0 ? Math.atan(dy / dx) : 0.0;
+            lineTransform.rotate(angle, origin.getX(), origin.getY());
+        }
+
+        return lineTransform;
+    }
+
 
     // Overridden methods to recalibrate tree when bounds change
     public void setBounds(int x, int y, int width, int height) {
@@ -2059,7 +2081,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     private Map<Node, Painter.Justification> branchLabelJustifications = new HashMap<Node, Painter.Justification>();
 
     private Map<Node, Shape> nodeBars = new HashMap<Node, Shape>();
-    private Map<Node, Shape> nodeShapes = new HashMap<Node, Shape>();
+    private Map<Node, Point2D> nodePoints = new HashMap<Node, Point2D>();
     private Map<Node, AffineTransform> nodeShapeTransforms = new HashMap<Node, AffineTransform>();
 
     private Map<Node, Shape> calloutPaths = new HashMap<Node, Shape>();
