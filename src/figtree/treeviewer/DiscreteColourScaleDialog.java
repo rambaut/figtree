@@ -74,9 +74,10 @@ public class DiscreteColourScaleDialog {
 
         final OptionsPanel options = new OptionsPanel(6, 6);
 
+//        options.addSpanningComponent(new JLabel("Editing colour range for attribute: " + decorator.getAttributeName()));
 
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setMinimumSize(new Dimension(240, 320));
+        scrollPane.setMinimumSize(new Dimension(120, 120));
         options.addSpanningComponent(scrollPane);
 
         options.addComponentWithLabel("Primary: ", primaryAxisCombo);
@@ -115,7 +116,7 @@ public class DiscreteColourScaleDialog {
                 null);
         optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        final JDialog dialog = optionPane.createDialog(frame, "Setup colour range");
+        final JDialog dialog = optionPane.createDialog(frame, "Setup colour range: " + decorator.getAttributeName());
         dialog.pack();
         dialog.setResizable(true);
         dialog.setVisible(true);

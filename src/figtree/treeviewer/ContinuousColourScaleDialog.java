@@ -10,6 +10,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * DiscreteColourScaleDialog.java
@@ -27,7 +29,7 @@ public class ContinuousColourScaleDialog {
     private RangeSlider hueSlider;
     private RangeSlider saturationSlider;
     private RangeSlider brightnessSlider;
-
+    private JCheckBox reverseHueCheck;
 
     public ContinuousColourScaleDialog(final JFrame frame) {
         this.frame = frame;
@@ -35,11 +37,14 @@ public class ContinuousColourScaleDialog {
         hueSlider = new RangeSlider(0, SLIDER_RANGE);
         saturationSlider = new RangeSlider(0, SLIDER_RANGE);
         brightnessSlider = new RangeSlider(0, SLIDER_RANGE);
+        reverseHueCheck = new JCheckBox("Reverse hue spectrum");
     }
 
     public int showDialog() {
 
         final OptionsPanel options = new OptionsPanel(6, 6);
+
+//        options.addComponent(new JLabel("Editing colour range for attribute: " + decorator.getAttributeName()));
 
         final JComponent colourDisplay = new JComponent() {
             private final static int MAX_HEIGHT = 20;
@@ -81,6 +86,7 @@ public class ContinuousColourScaleDialog {
         options.addComponentWithLabel("Hue: ", hueSlider);
         options.addComponentWithLabel("Saturation: ", saturationSlider);
         options.addComponentWithLabel("Brightness: ", brightnessSlider);
+        options.addComponent(reverseHueCheck);
 
         setDecorator(decorator);
 
@@ -94,6 +100,15 @@ public class ContinuousColourScaleDialog {
         hueSlider.addChangeListener(listener);
         saturationSlider.addChangeListener(listener);
         brightnessSlider.addChangeListener(listener);
+        reverseHueCheck.addChangeListener(listener);
+
+//        reverseHueCheck.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent actionEvent) {
+//                setDecorator(decorator);
+//                colourDisplay.repaint();
+//            }
+//        });
 
         JOptionPane optionPane = new JOptionPane(options,
                 JOptionPane.QUESTION_MESSAGE,
@@ -103,7 +118,7 @@ public class ContinuousColourScaleDialog {
                 null);
         optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        final JDialog dialog = optionPane.createDialog(frame, "Setup colour range");
+        final JDialog dialog = optionPane.createDialog(frame, "Setup colour range: " + decorator.getAttributeName());
         dialog.pack();
         dialog.setResizable(true);
         dialog.setVisible(true);
@@ -120,8 +135,6 @@ public class ContinuousColourScaleDialog {
     public void setDecorator(HSBContinuousColourDecorator decorator) {
         this.decorator = decorator;
 
-        ContinuousScale scale = decorator.getContinuousScale();
-
         hueSlider.setValue((int)(decorator.getHueLower() * SLIDER_RANGE));
         hueSlider.setUpperValue((int) (decorator.getHueUpper() * SLIDER_RANGE));
 
@@ -130,6 +143,8 @@ public class ContinuousColourScaleDialog {
 
         brightnessSlider.setValue((int)(decorator.getBrightnessLower() * SLIDER_RANGE));
         brightnessSlider.setUpperValue((int)(decorator.getBrightnessUpper() * SLIDER_RANGE));
+
+        reverseHueCheck.setSelected(decorator.isReverseHue());
     }
 
     public void setupDecorator(HSBContinuousColourDecorator decorator) {
@@ -141,6 +156,8 @@ public class ContinuousColourScaleDialog {
 
         decorator.setBrightnessLower(((float) brightnessSlider.getValue()) / SLIDER_RANGE);
         decorator.setBrightnessUpper(((float) brightnessSlider.getUpperValue()) / SLIDER_RANGE);
+
+        decorator.setReverseHue(reverseHueCheck.isSelected());
     }
 
 }

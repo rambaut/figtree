@@ -98,6 +98,11 @@ public class SimpleControlPalette extends JPanel implements ControlPalette {
         }
     }
 
+    @Override
+    public void setPreferredWidth(int preferredWidth) {
+        // ignore
+    }
+
     private List<Controller> controllers = new ArrayList<Controller>();
 
 }

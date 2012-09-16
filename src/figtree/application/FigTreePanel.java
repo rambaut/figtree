@@ -17,12 +17,15 @@ import java.awt.*;
  */
 public class FigTreePanel extends JPanel {
 
+    public final static int CONTROL_PALETTE_WIDTH = 200;
+
     public FigTreePanel(JFrame frame, final ExtendedTreeViewer treeViewer, ControlPalette controlPalette) {
 
         this.treeViewer = treeViewer;
         this.controlPalette = controlPalette;
 
-        controlPalette.getPanel().setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
+        // the scrollpane below now has this border
+//        controlPalette.getPanel().setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
         controlPalette.getPanel().setBackground(new Color(231, 237, 246));
         controlPalette.getPanel().setOpaque(true);
 
@@ -99,12 +102,14 @@ public class FigTreePanel extends JPanel {
         setLayout(new BorderLayout());
         add(slideOpenPanel, BorderLayout.CENTER);
 
-        JPanel controls = controlPalette.getPanel();
-
-        JScrollPane scrollPane = new JScrollPane(controls);
-        scrollPane.setBorder(null);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        controlPalette.setPreferredWidth(CONTROL_PALETTE_WIDTH + scrollPane.getVerticalScrollBar().getWidth());
+
+        scrollPane.setViewportView(controlPalette.getPanel());
         add(scrollPane, BorderLayout.WEST);
 
 //        treeViewer.addAnnotationsListener(new AnnotationsListener() {
