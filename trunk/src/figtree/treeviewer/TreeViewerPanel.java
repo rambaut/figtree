@@ -77,7 +77,11 @@ public class TreeViewerPanel extends JPanel {
         setLayout(new BorderLayout());
 
         add(treeViewer, BorderLayout.CENTER);
-        add(controlPalette.getPanel(), BorderLayout.WEST);
+
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.add(controlPalette.getPanel(), BorderLayout.NORTH);
+        JScrollPane scrollPane = new JScrollPane(leftPanel);
+        add(scrollPane, BorderLayout.WEST);
 
     }
 
