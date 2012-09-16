@@ -30,9 +30,9 @@ import java.util.regex.PatternSyntaxException;
  * @version $Id: DefaultTreeViewer.java 822 2007-10-26 13:50:26Z rambaut $
  */
 public class DefaultTreeViewer extends TreeViewer {
-    private final static double MAX_ZOOM = 10000;
-    private final static double MAX_VERTICAL_EXPANSION = 10000;
-    private final static double ZOOM_POWER = Math.PI;
+    private final static double ZOOM_SCALE = 0.02;
+    private final static double VERTICAL_EXPANSION_SCALE = 0.02;
+    private final static double ZOOM_POWER = 2;
 
     public DefaultTreeViewer() {
         this(null);
@@ -185,16 +185,19 @@ public class DefaultTreeViewer extends TreeViewer {
     }
 
     private boolean zoomPending = false;
-    private double zoom = 0.0, verticalExpansion = 0.0;
+    private double zoom = 0.0;
+    private double verticalExpansion = 0.0;
 
     public void setZoom(double zoom) {
-            this.zoom = Math.pow(zoom, ZOOM_POWER) * MAX_ZOOM;
+        double n = treePane.getTree().getTaxa().size();
+        this.zoom = Math.pow(zoom * n * ZOOM_SCALE, ZOOM_POWER);
 //        this.zoom = zoom * MAX_ZOOM;
         refreshZoom();
     }
 
     public void setVerticalExpansion(double verticalExpansion) {
-            this.verticalExpansion = Math.pow(verticalExpansion, ZOOM_POWER) * MAX_VERTICAL_EXPANSION;
+        double n = treePane.getTree().getTaxa().size();
+        this.verticalExpansion = Math.pow(verticalExpansion * n * VERTICAL_EXPANSION_SCALE, ZOOM_POWER);
 //        this.verticalExpansion = verticalExpansion * MAX_VERTICAL_EXPANSION;
         refreshZoom();
     }
