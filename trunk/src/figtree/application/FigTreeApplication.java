@@ -89,7 +89,7 @@ public class FigTreeApplication extends MultiDocApplication {
             Map<String, Object> settings = new HashMap<String, Object>();
 
             ExtendedTreeViewer treeViewer = new ExtendedTreeViewer();
-            ControlPalette controlPalette = new BasicControlPalette(200, BasicControlPalette.DisplayMode.ONLY_ONE_OPEN);
+            ControlPalette controlPalette = new BasicControlPalette(FigTreePanel.CONTROL_PALETTE_WIDTH, BasicControlPalette.DisplayMode.ONLY_ONE_OPEN);
             FigTreePanel figTreePanel = new FigTreePanel(null, treeViewer, controlPalette);
 
             // First of all, fully populate the settings map so that

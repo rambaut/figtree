@@ -23,7 +23,7 @@ public class HSBContinuousColourDecorator extends ContinuousColourDecorator {
         }
 
         String[] parts = settings.substring(1, settings.length() - 1).split("[, ]+");
-        if (parts.length != 7) {
+        if (parts.length != 8) {
             throw new IllegalArgumentException("HSBContinuousColourDecorator settings string not in correct format");
         }
 
@@ -35,6 +35,7 @@ public class HSBContinuousColourDecorator extends ContinuousColourDecorator {
             saturationUpper = Float.parseFloat(parts[4]);
             brightnessLower = Float.parseFloat(parts[5]);
             brightnessUpper = Float.parseFloat(parts[6]);
+            reverseHue = Boolean.parseBoolean(parts[7]);
         } catch (NumberFormatException nfe) {
             throw new IllegalArgumentException("HSBContinuousColourDecorator settings string not in correct format");
         } catch (IllegalArgumentException iae) {
@@ -49,13 +50,15 @@ public class HSBContinuousColourDecorator extends ContinuousColourDecorator {
 
     public void setup(float hueUpper, float hueLower,
                       float saturationUpper, float saturationLower,
-                      float brightnessUpper, float brightnessLower) {
+                      float brightnessUpper, float brightnessLower,
+                      boolean reverseHue) {
         this.hueUpper = hueUpper;
         this.hueLower = hueLower;
         this.saturationUpper = saturationUpper;
         this.saturationLower = saturationLower;
         this.brightnessUpper = brightnessUpper;
         this.brightnessLower = brightnessLower;
+        this.reverseHue = reverseHue;
     }
 
     protected Color getColourForScaledValue(double value) {
@@ -67,7 +70,11 @@ public class HSBContinuousColourDecorator extends ContinuousColourDecorator {
     }
 
     private float getHue(float value) {
-        return ((hueUpper - hueLower) * value) + hueLower;
+        float hue = ((hueUpper - hueLower) * value) + hueLower;
+        if (reverseHue) {
+            return 1.0F - hue;
+        }
+        return hue;
     }
 
     private float getSaturation(float value) {
@@ -126,6 +133,14 @@ public class HSBContinuousColourDecorator extends ContinuousColourDecorator {
         this.brightnessLower = brightnessLower;
     }
 
+    public boolean isReverseHue() {
+        return reverseHue;
+    }
+
+    public void setReverseHue(boolean reverseHue) {
+        this.reverseHue = reverseHue;
+    }
+
     /**
      * Create a string representation suitable for writing to a text file
      * @return the string
@@ -147,6 +162,8 @@ public class HSBContinuousColourDecorator extends ContinuousColourDecorator {
         sb.append(brightnessLower);
         sb.append(",");
         sb.append(brightnessUpper);
+        sb.append(",");
+        sb.append(reverseHue);
         sb.append("}");
         return sb.toString();
     }
@@ -157,5 +174,7 @@ public class HSBContinuousColourDecorator extends ContinuousColourDecorator {
     private float saturationLower = 0.6F;
     private float brightnessUpper = 0.8F;
     private float brightnessLower = 0.4F;
+
+    private boolean reverseHue = false;
 
 }
