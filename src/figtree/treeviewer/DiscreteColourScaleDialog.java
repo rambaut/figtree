@@ -18,6 +18,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragSource;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.*;
 
 /**
  * DiscreteColourScaleDialog.java
@@ -161,7 +162,7 @@ public class DiscreteColourScaleDialog {
     }
 
     interface Reorderable {
-        public void reorder(int fromIndex, int toIndex);
+        public void reorder(java.util.List<Integer> sourceIndices, int destinationIndex);
     };
 
     class ColourTableModel extends DefaultTableModel implements Reorderable {
@@ -212,13 +213,20 @@ public class DiscreteColourScaleDialog {
         }
 
         @Override
-        public void reorder(int fromIndex, int toIndex) {
+        public void reorder(java.util.List<Integer> sourceIndices, int destinationIndex) {
             java.util.List<Object> values = decorator.getValues();
-            Object value = values.remove(fromIndex);
-            if (toIndex > fromIndex) {
-                toIndex -= 1;
+            java.util.List<Object> itemsToMove = new ArrayList<Object>();
+            for (int src : sourceIndices) {
+                itemsToMove.add(values.get(src));
             }
-            values.add(toIndex, value);
+            for (int i = sourceIndices.size() - 1; i >= 0; i--) {
+                int src = sourceIndices.get(i);
+                values.remove(src);
+                if (destinationIndex > src) {
+                    destinationIndex -= 1;
+                }
+            }
+            values.addAll(destinationIndex, itemsToMove);
             decorator.setupColours();
             fireTableDataChanged();
         }
@@ -269,7 +277,7 @@ public class DiscreteColourScaleDialog {
      */
     public class TableRowTransferHandler extends TransferHandler {
         //        private final DataFlavor localObjectFlavor = new ActivationDataFlavor(Integer.class, DataFlavor.javaJVMLocalObjectMimeType, "Integer Row Index");
-        private final DataFlavor localObjectFlavor = new DataFlavor(Integer.class, "Integer Row Index");
+        private final DataFlavor localObjectFlavor = new DataFlavor(ArrayList.class, "Integer Row Index");
         private JTable table = null;
 
         public TableRowTransferHandler(JTable table) {
@@ -279,7 +287,12 @@ public class DiscreteColourScaleDialog {
         @Override
         protected Transferable createTransferable(JComponent c) {
             assert (c == table);
-            return new DataHandler(new Integer(table.getSelectedRow()), localObjectFlavor.getMimeType());
+            java.util.List<Integer> selectedRows = new ArrayList<Integer>();
+            for (int row : table.getSelectedRows()) {
+                selectedRows.add(row);
+            }
+
+            return new DataHandler(selectedRows, localObjectFlavor.getMimeType());
         }
 
         @Override
@@ -291,7 +304,7 @@ public class DiscreteColourScaleDialog {
 
         @Override
         public int getSourceActions(JComponent c) {
-            return TransferHandler.COPY_OR_MOVE;
+            return TransferHandler.MOVE;
         }
 
         @Override
@@ -304,12 +317,14 @@ public class DiscreteColourScaleDialog {
                 index = max;
             target.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             try {
-                Integer rowFrom = (Integer) info.getTransferable().getTransferData(localObjectFlavor);
-                if (rowFrom != -1 && rowFrom != index) {
-                    ((Reorderable)table.getModel()).reorder(rowFrom, index);
-                    if (index > rowFrom)
+                java.util.List<Integer> selectedRows = (java.util.List)info.getTransferable().getTransferData(localObjectFlavor);
+                if (selectedRows != null && selectedRows.size() > 0) {
+                    ((Reorderable)table.getModel()).reorder(selectedRows, index);
+                    for (int row : selectedRows) {
+                    if (index > row)
                         index--;
-                    target.getSelectionModel().addSelectionInterval(index, index);
+                    }
+                    target.getSelectionModel().addSelectionInterval(index, index + selectedRows.size() - 1);
                     return true;
                 }
             } catch (Exception e) {
