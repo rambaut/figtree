@@ -91,7 +91,7 @@
 
 	</target>
 
-    <property name="version" value="1.4.0" />
+    <property name="version" value="1.4.0pre2" />
     <property name="release_dir" value="release" />
     <property name="name" value="FigTree" />
 
