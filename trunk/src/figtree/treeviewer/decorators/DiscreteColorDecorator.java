@@ -102,9 +102,12 @@ public class DiscreteColorDecorator extends ColourDecorator {
         orderMap = new TreeMap<Object, Integer>();
         this.colours = colours;
 
+        if (!this.values.containsAll(values) || this.values.size() != values.size()) {
+            this.values = new ArrayList<Object>(values);
+        }
         // now create a paint map for these values
         int i = 0;
-        for (Object value : values) {
+        for (Object value : this.values) {
             orderMap.put(value, i);
             i = (i + 1) % colours.length;
         }
@@ -127,7 +130,12 @@ public class DiscreteColorDecorator extends ColourDecorator {
         return colours[index];
     }
 
+    public void setValuesOrder(List<Object> discreteValues) {
+        values = discreteValues;
+    }
+
     private List<Object> values = new ArrayList<Object>();
     private Map<Object, Integer> orderMap = null;
     private Color[] colours = null;
+
 }

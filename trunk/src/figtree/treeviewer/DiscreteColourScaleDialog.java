@@ -13,6 +13,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.awt.List;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragSource;
@@ -42,6 +43,8 @@ public class DiscreteColourScaleDialog {
     private RangeSlider hueSlider;
     private RangeSlider saturationSlider;
     private RangeSlider brightnessSlider;
+
+    private java.util.List<Object> discreteValues = null;
 
     private ColourTableModel tableModel;
 
@@ -134,6 +137,8 @@ public class DiscreteColourScaleDialog {
     public void setDecorator(HSBDiscreteColourDecorator decorator) {
         this.decorator = decorator;
 
+        discreteValues = new ArrayList<Object>(decorator.getValues());
+
         primaryAxisCombo.setSelectedItem(decorator.getPrimaryAxis());
         secondaryCountSpinnerModel.setValue(decorator.getSecondaryCount());
 
@@ -159,6 +164,8 @@ public class DiscreteColourScaleDialog {
 
         decorator.setBrightnessLower(((float) brightnessSlider.getValue()) / SLIDER_RANGE);
         decorator.setBrightnessUpper(((float) brightnessSlider.getUpperValue()) / SLIDER_RANGE);
+
+        decorator.setValuesOrder(discreteValues);
     }
 
     interface Reorderable {
@@ -170,8 +177,8 @@ public class DiscreteColourScaleDialog {
 
         @Override
         public int getRowCount() {
-            if (decorator == null) return 0;
-            return decorator.getValues().size();
+            if (discreteValues == null) return 0;
+            return discreteValues.size();
         }
 
         @Override
@@ -193,8 +200,10 @@ public class DiscreteColourScaleDialog {
         public Object getValueAt(int row, int column) {
             switch (column) {
                 case 0:
-                    return decorator.getValues().get(row);
+                    return discreteValues.get(row);
                 case 1:
+                    // until the OK button is pressed the trait values are not actually
+                    // reordered so use the default colour order.
                     return decorator.getColor(decorator.getValues().get(row));
             }
             return null;
@@ -214,20 +223,18 @@ public class DiscreteColourScaleDialog {
 
         @Override
         public void reorder(java.util.List<Integer> sourceIndices, int destinationIndex) {
-            java.util.List<Object> values = decorator.getValues();
             java.util.List<Object> itemsToMove = new ArrayList<Object>();
             for (int src : sourceIndices) {
-                itemsToMove.add(values.get(src));
+                itemsToMove.add(discreteValues.get(src));
             }
             for (int i = sourceIndices.size() - 1; i >= 0; i--) {
                 int src = sourceIndices.get(i);
-                values.remove(src);
+                discreteValues.remove(src);
                 if (destinationIndex > src) {
                     destinationIndex -= 1;
                 }
             }
-            values.addAll(destinationIndex, itemsToMove);
-            decorator.setupColours();
+            discreteValues.addAll(destinationIndex, itemsToMove);
             fireTableDataChanged();
         }
     }
