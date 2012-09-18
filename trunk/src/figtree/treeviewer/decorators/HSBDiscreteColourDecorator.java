@@ -3,6 +3,7 @@ package figtree.treeviewer.decorators;
 import jebl.util.Attributable;
 
 import java.awt.*;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -68,7 +69,7 @@ public class HSBDiscreteColourDecorator extends DiscreteColorDecorator {
         setupColours();
     }
 
-    public void setupColours() {
+    protected void setupColours() {
         if (secondaryCount == 0) {
             return;
         }
@@ -134,7 +135,7 @@ public class HSBDiscreteColourDecorator extends DiscreteColorDecorator {
                     break;
             }
         }
-        setValues(getValues(), paints);
+        setColourMap(getValues(), paints);
     }
 
     public void setSecondaryCount(int secondaryCount) {

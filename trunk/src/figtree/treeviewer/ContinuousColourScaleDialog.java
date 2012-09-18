@@ -102,14 +102,6 @@ public class ContinuousColourScaleDialog {
         brightnessSlider.addChangeListener(listener);
         reverseHueCheck.addChangeListener(listener);
 
-//        reverseHueCheck.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent actionEvent) {
-//                setDecorator(decorator);
-//                colourDisplay.repaint();
-//            }
-//        });
-
         JOptionPane optionPane = new JOptionPane(options,
                 JOptionPane.QUESTION_MESSAGE,
                 JOptionPane.OK_CANCEL_OPTION,

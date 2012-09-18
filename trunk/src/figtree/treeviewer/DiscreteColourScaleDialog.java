@@ -165,7 +165,7 @@ public class DiscreteColourScaleDialog {
         decorator.setBrightnessLower(((float) brightnessSlider.getValue()) / SLIDER_RANGE);
         decorator.setBrightnessUpper(((float) brightnessSlider.getUpperValue()) / SLIDER_RANGE);
 
-        decorator.setValuesOrder(discreteValues);
+        decorator.setValues(discreteValues);
     }
 
     interface Reorderable {
