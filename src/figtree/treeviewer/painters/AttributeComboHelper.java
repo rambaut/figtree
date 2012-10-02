@@ -8,6 +8,8 @@ import jebl.evolution.trees.Tree;
 import jebl.util.Attributable;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 
 /**
@@ -56,6 +58,8 @@ public class AttributeComboHelper {
 
                 Object selected = attributeComboBox.getSelectedItem();
 
+                addingItems = true;
+
                 attributeComboBox.removeAllItems();
 
                 if (defaultOption != null) {
@@ -76,6 +80,8 @@ public class AttributeComboHelper {
                     attributeComboBox.addItem(name);
                 }
 
+                addingItems = false;
+
                 if (selected != null) {
                     attributeComboBox.setSelectedItem(selected);
                 }
@@ -86,6 +92,14 @@ public class AttributeComboHelper {
             }
         });
 
+        attributeComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (!addingItems) {
+                    fireAttributeSelectionChanged();
+                }
+            }
+        });
     }
 
     public void getAttributeNames(List<String> attributeNames, Collection<? extends Tree> trees, LabelPainter.PainterIntent intent) {
@@ -210,4 +224,16 @@ public class AttributeComboHelper {
         }
     }
 
+    public void addListener(AttributeComboHelperListener listener) {
+        listeners.add(listener);
+    }
+
+    private void fireAttributeSelectionChanged() {
+        for (AttributeComboHelperListener listener : listeners) {
+            listener.attributeComboChanged();
+        }
+    }
+
+    private final List<AttributeComboHelperListener> listeners = new ArrayList<AttributeComboHelperListener>();
+    private boolean addingItems = false;
 }

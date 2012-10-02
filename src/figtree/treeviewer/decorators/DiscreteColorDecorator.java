@@ -62,6 +62,11 @@ public class DiscreteColorDecorator extends ColourDecorator {
         super(attributeName, items);
     }
 
+    @Override
+    public void setup(String settings) {
+        throw new UnsupportedOperationException("setup from string not implemented");
+    }
+
     public void setAttributes(String attributeName, Set<? extends Attributable> items) {
         super.setAttributes(attributeName, items);
 
@@ -80,8 +85,24 @@ public class DiscreteColorDecorator extends ColourDecorator {
             }
         }
 
-        values = new ArrayList<Object>(sortedValues);
-        values.addAll(unsortedValues);
+        if (values == null) {
+            values = new ArrayList<Object>(sortedValues);
+            values.addAll(unsortedValues);
+        } else {
+            // if there is already a values array, only add the new values
+            // to maintain the order that may have been edited by the user.
+
+            for (Object value : sortedValues) {
+                if (!values.contains(value)) {
+                    values.add(value);
+                }
+            }
+            for (Object value : unsortedValues) {
+                if (!values.contains(value)) {
+                    values.add(value);
+                }
+            }
+        }
 
         setupColours();
     }
@@ -134,8 +155,33 @@ public class DiscreteColorDecorator extends ColourDecorator {
         return colours[index];
     }
 
-    private List<Object> values = new ArrayList<Object>();
-    private Map<Object, Integer> orderMap = null;
-    private Color[] colours = null;
+    public void setValuesOrder(List<Object> discreteValues) {
+        values = discreteValues;
+        hasReorderedValues = true;
+    }
+
+    public boolean hasReorderedValues() {
+        return hasReorderedValues;
+    }
+
+    public String getOrderString() {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (Object value : values) {
+            if (!first) {
+                sb.append(",");
+            } else {
+                first = false;
+            }
+            sb.append(value);
+        }
+        return sb.toString();
+    }
+
+    private List<Object> values;
+    private Map<Object, Integer> orderMap;
+    private Color[] colours;
+
+    private boolean hasReorderedValues = false;
 
 }

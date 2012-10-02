@@ -68,7 +68,7 @@ public class LegendPainterController extends AbstractController {
         final String attribute = PREFS.get(CONTROLLER_KEY + "." + ATTRIBUTE_KEY, DEFAULT_ATTRIBUTE_KEY);
 
         legendPainter.setFont(new Font(defaultFontName, defaultFontStyle, defaultFontSize));
-        legendPainter.setDisplayAttribute(attribute);
+//        legendPainter.setDisplayAttribute(attribute);
         legendPainter.setNumberFormat(new DecimalFormat(defaultNumberFormatting));
 
         optionsPanel = new ControllerOptionsPanel(2, 2);
@@ -77,13 +77,13 @@ public class LegendPainterController extends AbstractController {
         titleCheckBox.setSelected(legendPainter.isVisible());
 
         attributeCombo = new JComboBox();
-        attributeCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                String attribute = (String) attributeCombo.getSelectedItem();
-                legendPainter.setDisplayAttribute(attribute);
+        new AttributeComboHelper(attributeCombo, treeViewer).addListener(new AttributeComboHelperListener() {
+            @Override
+            public void attributeComboChanged() {
+                ColourDecorator colourDecorator = (ColourDecorator)colourController.getColourDecorator(attributeCombo, null);
+                legendPainter.setColourDecorator(colourDecorator);
             }
         });
-        new AttributeComboHelper(attributeCombo, treeViewer);
 
         colourController.setupControls(attributeCombo, null);
         colourController.addControllerListener(new ControllerListener() {
@@ -94,11 +94,11 @@ public class LegendPainterController extends AbstractController {
             }
         });
 
-        attributeCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                legendPainter.setDisplayAttribute((String) attributeCombo.getSelectedItem());
-            }
-        });
+//        attributeCombo.addActionListener(new ActionListener() {
+//            public void actionPerformed(ActionEvent event) {
+//                legendPainter.setDisplayAttribute((String) attributeCombo.getSelectedItem());
+//            }
+//        });
 
         Font font = legendPainter.getFont();
         fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 48, 1));

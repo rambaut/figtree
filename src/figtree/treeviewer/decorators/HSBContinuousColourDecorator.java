@@ -18,34 +18,41 @@ public class HSBContinuousColourDecorator extends ContinuousColourDecorator {
     public HSBContinuousColourDecorator(String attribute, String settings) {
         super(attribute);
 
+        setup(settings);
+    }
+
+    public HSBContinuousColourDecorator(ContinuousScale continuousScale) throws NumberFormatException {
+        super(continuousScale);
+    }
+
+    public void setup(String settings) {
         if (!settings.startsWith("{") || !settings.endsWith("}")) {
             throw new IllegalArgumentException("HSBContinuousColourDecorator settings string not in correct format");
         }
 
-        String[] parts = settings.substring(1, settings.length() - 1).split("[, ]+");
-        if (parts.length != 8) {
+        String[] parts1 = settings.substring(1, settings.length() - 1).split("}[, ]+");
+        if (parts1.length != 2) {
+            throw new IllegalArgumentException("HSBContinuousColourDecorator settings string not in correct format");
+        }
+        String[] parts2 = parts1[1].split("[, ]+");
+        if (parts2.length != 7) {
             throw new IllegalArgumentException("HSBContinuousColourDecorator settings string not in correct format");
         }
 
         try {
-            setContinuousScale(new ContinuousScale(parts[0]));
-            hueLower = Float.parseFloat(parts[1]);
-            hueUpper = Float.parseFloat(parts[2]);
-            saturationLower = Float.parseFloat(parts[3]);
-            saturationUpper = Float.parseFloat(parts[4]);
-            brightnessLower = Float.parseFloat(parts[5]);
-            brightnessUpper = Float.parseFloat(parts[6]);
-            reverseHue = Boolean.parseBoolean(parts[7]);
+            setContinuousScale(new ContinuousScale(parts1[0]));
+            hueLower = Float.parseFloat(parts2[0]);
+            hueUpper = Float.parseFloat(parts2[1]);
+            saturationLower = Float.parseFloat(parts2[2]);
+            saturationUpper = Float.parseFloat(parts2[3]);
+            brightnessLower = Float.parseFloat(parts2[4]);
+            brightnessUpper = Float.parseFloat(parts2[5]);
+            reverseHue = Boolean.parseBoolean(parts2[6]);
         } catch (NumberFormatException nfe) {
             throw new IllegalArgumentException("HSBContinuousColourDecorator settings string not in correct format");
         } catch (IllegalArgumentException iae) {
             throw new IllegalArgumentException("HSBContinuousColourDecorator settings string not in correct format");
         }
-
-    }
-
-    public HSBContinuousColourDecorator(ContinuousScale continuousScale) throws NumberFormatException {
-        super(continuousScale);
     }
 
     public void setup(float hueUpper, float hueLower,

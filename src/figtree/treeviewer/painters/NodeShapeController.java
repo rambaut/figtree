@@ -68,11 +68,11 @@ public class NodeShapeController extends AbstractController {
         });
 
         sizeAttributeCombo = new JComboBox();
-        // listener set after other controls are created...
-        new AttributeComboHelper(sizeAttributeCombo, treeViewer, NodeShapePainter.FIXED);
+        // AttributeComboHelper & listener set after other controls are created...
 
         colourAttributeCombo = new JComboBox();
         JButton setupColourButton = new JButton("Colour");
+        colourController.setupControls(colourAttributeCombo, setupColourButton);
 
         shapeSizeSpinner = new JSpinner(new SpinnerNumberModel(defaultShapeSize, 0.0, 100.0, 1.0));
         shapeSizeSpinner.addChangeListener(new ChangeListener() {
@@ -90,15 +90,6 @@ public class NodeShapeController extends AbstractController {
             }
         });
 
-        new AttributeComboHelper(colourAttributeCombo, treeViewer, "User selection");
-        colourController.setupControls(colourAttributeCombo, setupColourButton);
-        colourController.addControllerListener(new ControllerListener() {
-            @Override
-            public void controlsChanged() {
-                Decorator colourDecorator = colourController.getColourDecorator(colourAttributeCombo, null);
-                nodeShapePainter.setColourDecorator(colourDecorator);
-            }
-        });
 
         final JLabel label1 = optionsPanel.addComponentWithLabel("Shape:", shapeTypeCombo);
         final JLabel label2 = optionsPanel.addComponentWithLabel("Max size:", shapeSizeSpinner);
@@ -109,8 +100,17 @@ public class NodeShapeController extends AbstractController {
         final JLabel label6 = optionsPanel.addComponentWithLabel("Colour by:", colourAttributeCombo);
         final JLabel label7 = optionsPanel.addComponentWithLabel("Setup:", setupColourButton);
 
-        sizeAttributeCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        new AttributeComboHelper(colourAttributeCombo, treeViewer, "User selection").addListener(new AttributeComboHelperListener() {
+            @Override
+            public void attributeComboChanged() {
+                Decorator colourDecorator = colourController.getColourDecorator(colourAttributeCombo, null);
+                nodeShapePainter.setColourDecorator(colourDecorator);
+            }
+        });
+
+        new AttributeComboHelper(sizeAttributeCombo, treeViewer, NodeShapePainter.FIXED).addListener(new AttributeComboHelperListener() {
+            @Override
+            public void attributeComboChanged() {
                 String attribute = (String) sizeAttributeCombo.getSelectedItem();
                 nodeShapePainter.setSizeAttribute(attribute);
                 if (attribute != null) {

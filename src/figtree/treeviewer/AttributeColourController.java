@@ -18,12 +18,13 @@ import java.util.*;
 public class AttributeColourController extends AbstractController {
 
     public static final String CONTROLLER_KEY = "colour";
+    public static final String SCHEME_KEY = "scheme";
+    public static final String ORDER_KEY = "order";
 
     public AttributeColourController(final TreeViewer treeViewer, final JFrame frame) {
         this.treeViewer = treeViewer;
         this.frame = frame;
     }
-
 
     public void setupControls(
             final JComboBox colourAttributeCombo,
@@ -61,7 +62,11 @@ public class AttributeColourController extends AbstractController {
                         continuousColourScaleDialog.setDecorator((HSBContinuousColourDecorator)decorator);
                         int result = continuousColourScaleDialog.showDialog();
                         if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-                            continuousColourScaleDialog.setupDecorator((HSBContinuousColourDecorator)decorator);
+
+                            decorator = continuousColourScaleDialog.getDecorator();
+                            String attribute = (String) colourAttributeCombo.getSelectedItem();
+                            setDecoratorForAttribute(attribute, decorator);
+
                             update = true;
                         }
                     } else {
@@ -79,11 +84,13 @@ public class AttributeColourController extends AbstractController {
             });
         }
 
-        colourAttributeCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                fireControllerChanged();
-            }
-        });
+        // I don't think this is required and it throws up many, many events (i.e., every time
+        // an attribute is added to the combo.
+//        colourAttributeCombo.addActionListener(new ActionListener() {
+//            public void actionPerformed(ActionEvent event) {
+//                fireControllerChanged();
+//            }
+//        });
     }
 
     public Decorator getColourDecorator(JComboBox colourAttributeCombo, Decorator defaultDecorator) {
@@ -127,6 +134,9 @@ public class AttributeColourController extends AbstractController {
             }
         } else if (colourDecorator instanceof DiscreteColorDecorator) {
             ((DiscreteColorDecorator)colourDecorator).setAttributes(attribute, nodes);
+        } else if (colourDecorator instanceof ContinuousColourDecorator) {
+            ((ContinuousColourDecorator)colourDecorator).setAttributes(attribute, nodes);
+
         }
 
         return colourDecorator;
@@ -158,21 +168,52 @@ public class AttributeColourController extends AbstractController {
     @Override
     public void setSettings(Map<String, Object> settings) {
         for (String key : settings.keySet()) {
-            if (key.startsWith(CONTROLLER_KEY + ".")) {
-                ColourDecorator decorator = null;
+            if (key.trim().startsWith(CONTROLLER_KEY + "." + SCHEME_KEY)) {
 
-                String attribute = key.substring(CONTROLLER_KEY.length() + 1);
-                String colourSettings = (String)settings.get(key);
-                if (colourSettings.startsWith("HSBDiscrete")) {
-                    decorator = new HSBDiscreteColourDecorator(attribute, colourSettings.substring("HSBDiscrete".length()));
-                } else if (colourSettings.startsWith("HSBContinuous")) {
-                    decorator = new HSBContinuousColourDecorator(attribute, colourSettings.substring("HSBContinuous".length()));
-                } else {
+                String value = (String)settings.get(key);
+                if (value != null) {
+                    String[] parts = value.split(":");
+                    if (parts.length == 2) {
+                        String attribute = parts[0];
+                        ColourDecorator decorator = getDecoratorForAttribute(attribute);
+
+                        String colourSettings = parts[1];
+                        if (colourSettings.startsWith("HSBDiscrete")) {
+                            String settingsString = colourSettings.substring("HSBDiscrete".length());
+                            if (decorator == null || !(decorator instanceof HSBDiscreteColourDecorator)) {
+                                decorator = new HSBDiscreteColourDecorator(attribute, settingsString);
+                            } else {
+                                decorator.setup(settingsString);
+                            }
+                        } else if (colourSettings.startsWith("HSBContinuous")) {
+                            String settingsString = colourSettings.substring("HSBContinuous".length());
+                            if (decorator == null || !(decorator instanceof HSBDiscreteColourDecorator)) {
+                                decorator = new HSBContinuousColourDecorator(attribute, settingsString);
+                            } else {
+                                decorator.setup(settingsString);
+                            }
+                        } else {
 //                    throw new IllegalArgumentException("Unrecognized colour decorator type");
+                        }
+                        setDecoratorForAttribute(attribute, decorator);
+                    }
                 }
-
-                attributeDecoratorMap.put(attribute, decorator);
+            } else if (key.trim().startsWith(CONTROLLER_KEY + "." + ORDER_KEY)) {
+                String value = (String)settings.get(key);
+                if (value != null) {
+                    String[] parts = value.split(":");
+                    if (parts.length == 2) {
+                        String attribute = parts[0];
+                        Object[] values = parts[1].split(",");
+                        ColourDecorator decorator = getDecoratorForAttribute(attribute);
+                        if (decorator != null && decorator instanceof DiscreteColorDecorator) {
+                            ((DiscreteColorDecorator)decorator).setValuesOrder(Arrays.asList(values));
+                            setDecoratorForAttribute(attribute, decorator);
+                        }
+                    }
+                }
             }
+
         }
     }
 
@@ -189,8 +230,23 @@ public class AttributeColourController extends AbstractController {
             } else {
                 throw new IllegalArgumentException("Unrecognized colour decorator type");
             }
-            settings.put(CONTROLLER_KEY + "." + attribute, name + colourSettings);
+            settings.put(CONTROLLER_KEY + "." + SCHEME_KEY + "." + flattenName(attribute), attribute + ":" + name + colourSettings);
+            if (decorator instanceof DiscreteColorDecorator) {
+                if (((DiscreteColorDecorator)decorator).hasReorderedValues()) {
+                    String orderString = ((DiscreteColorDecorator)decorator).getOrderString();
+                    settings.put(CONTROLLER_KEY + "." + ORDER_KEY + "." + flattenName(attribute), attribute + ":" + orderString);
+
+                }
+            }
         }
+    }
+
+    private String flattenName(String name) {
+        String flattened = name.trim().toLowerCase();
+        flattened.replaceAll(" ", "_");
+        flattened.replaceAll("\t", "_");
+        flattened.replaceAll("\r", "_");
+        return flattened;
     }
 
     private final TreeViewer treeViewer;

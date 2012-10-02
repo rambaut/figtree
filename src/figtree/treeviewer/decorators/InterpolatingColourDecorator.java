@@ -77,4 +77,9 @@ public class InterpolatingColourDecorator extends ContinuousColourDecorator {
     private final float[] color1;
     private final float[] color2;
     private final float[] color3;
+
+    @Override
+    public void setup(String settings) {
+        throw new UnsupportedOperationException("setup from string not implemented");
+    }
 }

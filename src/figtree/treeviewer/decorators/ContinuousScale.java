@@ -16,11 +16,14 @@ public class ContinuousScale {
      * @param settings
      */
     public ContinuousScale(String settings) {
-        if (!settings.startsWith("{") || !settings.endsWith("}")) {
-            throw new IllegalArgumentException("ContinousScale settings string not in correct format");
+        if (settings.startsWith("{")) {
+           settings = settings.substring(1, settings.length());
+        }
+        if (settings.endsWith("}")) {
+            settings = settings.substring(0, settings.length() - 1);
         }
 
-        String[] parts = settings.substring(1, settings.length() - 1).split("[, ]+");
+        String[] parts = settings.split("[, ]+");
         if (parts.length != 4) {
             throw new IllegalArgumentException("ContinousScale settings string not in correct format");
         }
