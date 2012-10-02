@@ -82,21 +82,21 @@ public class LabelPainterController extends AbstractController {
         titleCheckBox.setSelected(labelPainter.isVisible());
 
         displayAttributeCombo = new JComboBox(new String[] { "No attributes" });
-        displayAttributeCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        new AttributeComboHelper(displayAttributeCombo, treeViewer, intent).addListener(new AttributeComboHelperListener() {
+            @Override
+            public void attributeComboChanged() {
                 String attribute = (String) displayAttributeCombo.getSelectedItem();
                 labelPainter.setDisplayAttribute(attribute);
             }
         });
-        new AttributeComboHelper(displayAttributeCombo, treeViewer, intent);
 
         colourAttributeCombo = new JComboBox(new String[] { "No attributes" });
-        colourAttributeCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        new AttributeComboHelper(colourAttributeCombo, treeViewer, "User selection").addListener(new AttributeComboHelperListener() {
+            @Override
+            public void attributeComboChanged() {
                 setupLabelDecorator();
             }
         });
-        new AttributeComboHelper(colourAttributeCombo, treeViewer, "User selection");
 
         final JButton setupColourButton = new JButton("Colour");
 

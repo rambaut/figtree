@@ -153,6 +153,9 @@ public class DiscreteColourScaleDialog {
     }
 
     public void setupDecorator(HSBDiscreteColourDecorator decorator) {
+        decorator.setValuesOrder(discreteValues);
+
+        // todo these are all resetting the colours with calls to setValues? Why?
         decorator.setPrimaryAxis((HSBDiscreteColourDecorator.Axis) primaryAxisCombo.getSelectedItem());
         decorator.setSecondaryCount(secondaryCountSpinnerModel.getNumber().intValue());
 
@@ -164,8 +167,6 @@ public class DiscreteColourScaleDialog {
 
         decorator.setBrightnessLower(((float) brightnessSlider.getValue()) / SLIDER_RANGE);
         decorator.setBrightnessUpper(((float) brightnessSlider.getUpperValue()) / SLIDER_RANGE);
-
-        decorator.setValues(discreteValues);
     }
 
     interface Reorderable {

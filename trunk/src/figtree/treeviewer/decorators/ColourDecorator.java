@@ -26,7 +26,9 @@ public abstract class ColourDecorator implements Decorator {
         setAttributes(attributeName, items);
     }
 
-    @Override
+    public abstract void setup(String settings);
+
+        @Override
     public boolean allowsGradient() {
         return true;
     }

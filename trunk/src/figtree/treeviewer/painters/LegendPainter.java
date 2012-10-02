@@ -87,7 +87,7 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
                 preferredWidth = rect.getWidth();
             }
 
-        } else {
+        } else if (colourDecorator != null) {
             throw new IllegalArgumentException("Unrecognized ColourDecorator class");
         }
 
@@ -225,6 +225,7 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
 
     @Override
     public void setDisplayAttribute(String displayAttribute) {
+        throw new UnsupportedOperationException("setDisplayAttribute not implmented - use setColourDecorator directly");
     }
 
 }

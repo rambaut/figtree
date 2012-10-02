@@ -24,7 +24,19 @@ public class HSBDiscreteColourDecorator extends DiscreteColorDecorator {
 
     public HSBDiscreteColourDecorator(String attributeName, String settings) {
         super(attributeName);
+        setup(settings);
+    }
 
+    public HSBDiscreteColourDecorator(String attributeName, Set<? extends Attributable> items) {
+        super(attributeName, items);
+        setupColours();
+    }
+
+    /**
+     * Set up from a settings string
+     * @param settings
+     */
+    public void setup(String settings) {
         if (!settings.startsWith("{") || !settings.endsWith("}")) {
             throw new IllegalArgumentException("HSBDiscreteColourDecorator settings string not in correct format");
         }
@@ -48,11 +60,6 @@ public class HSBDiscreteColourDecorator extends DiscreteColorDecorator {
         } catch (IllegalArgumentException iae) {
             throw new IllegalArgumentException("HSBDiscreteColourDecorator settings string not in correct format");
         }
-    }
-
-    public HSBDiscreteColourDecorator(String attributeName, Set<? extends Attributable> items) {
-        super(attributeName, items);
-        setupColours();
     }
 
     public void setup(int secondaryCount, float hueLower, float hueUpper, float saturationLower, float saturationUpper, float brightnessLower, float brightnessUpper, Axis primaryAxis) {

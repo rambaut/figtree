@@ -1,6 +1,7 @@
 package figtree.treeviewer;
 
 import figtree.treeviewer.painters.AttributeComboHelper;
+import figtree.treeviewer.painters.AttributeComboHelperListener;
 import jam.controlpalettes.ControllerListener;
 import jam.controlpalettes.AbstractController;
 import jam.panels.OptionsPanel;
@@ -72,10 +73,6 @@ public class TreeAppearanceController extends AbstractController {
         branchColourAttributeCombo = new JComboBox(new String[] { "No attributes" });
         backgroundColourAttributeCombo = new JComboBox(new String[] { "No attributes" });
 
-        new AttributeComboHelper(branchWidthAttributeCombo, treeViewer, FIXED);
-        new AttributeComboHelper(branchColourAttributeCombo, treeViewer, "User selection");
-        new AttributeComboHelper(backgroundColourAttributeCombo, treeViewer, "Default");
-
 //        setupAttributes(treeViewer.getTrees());
 
 //        branchColourSettings.autoRange  = true;
@@ -138,17 +135,21 @@ public class TreeAppearanceController extends AbstractController {
         optionsPanel.addComponentWithLabel("Background:", backgroundColourAttributeCombo);
         optionsPanel.addComponentWithLabel("Setup:", bgSetupColourButton);
 
-        ActionListener listener = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        new AttributeComboHelper(branchColourAttributeCombo, treeViewer, "User selection").addListener(new AttributeComboHelperListener() {
+            @Override
+            public void attributeComboChanged() {
                 setupBranchDecorators();
             }
-        };
-
-        branchColourAttributeCombo.addActionListener(listener);
-        backgroundColourAttributeCombo.addActionListener(listener);
-
-        branchWidthAttributeCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        });
+        new AttributeComboHelper(backgroundColourAttributeCombo, treeViewer, "Default").addListener(new AttributeComboHelperListener() {
+            @Override
+            public void attributeComboChanged() {
+                setupBranchDecorators();
+            }
+        });
+        new AttributeComboHelper(branchWidthAttributeCombo, treeViewer, FIXED).addListener(new AttributeComboHelperListener() {
+            @Override
+            public void attributeComboChanged() {
                 String attribute = (String) branchWidthAttributeCombo.getSelectedItem();
                 if (attribute != null) {
                     boolean isSelected = !attribute.equals(FIXED);
@@ -158,6 +159,7 @@ public class TreeAppearanceController extends AbstractController {
                 setupBranchDecorators();
             }
         });
+
         branchLineWidthSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
                 float lineWidth = ((Double) branchLineWidthSpinner.getValue()).floatValue();
