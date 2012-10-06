@@ -77,11 +77,11 @@ public class HSBContinuousColourDecorator extends ContinuousColourDecorator {
     }
 
     private float getHue(float value) {
-        float hue = ((hueUpper - hueLower) * value) + hueLower;
         if (reverseHue) {
-            return 1.0F - hue;
+            return hueUpper - ((hueUpper - hueLower) * value);
         }
-        return hue;
+
+        return ((hueUpper - hueLower) * value) + hueLower;
     }
 
     private float getSaturation(float value) {

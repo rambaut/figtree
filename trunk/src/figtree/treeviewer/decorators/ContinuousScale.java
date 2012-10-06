@@ -155,22 +155,8 @@ public class ContinuousScale {
             value = Math.log(value);
         }
 
-        double min = 0.0;
-        double max = 1.0;
-
-        if (!normalize) {
-            min = minValue;
-            max = maxValue;
-        } else {
-            min = lowerRange;
-            max = upperRange;
-            if (maxValue > max) {
-                max = maxValue;
-            }
-            if (minValue < min) {
-                min = minValue;
-            }
-        }
+        double min = getMinValue();
+        double max = getMaxValue();
 
         return ((value - min)/(max - min));
     }
@@ -182,24 +168,48 @@ public class ContinuousScale {
         return normalize;
     }
 
+    public void setNormalize(boolean normalize) {
+        this.normalize = normalize;
+    }
+
     public boolean isLogarithm() {
         return logarithm;
+    }
+
+    public void setLogarithm(boolean logarithm) {
+        this.logarithm = logarithm;
     }
 
     public double getLowerRange() {
         return lowerRange;
     }
 
+    public void setLowerRange(double lowerRange) {
+        this.lowerRange = lowerRange;
+    }
+
     public double getUpperRange() {
         return upperRange;
     }
 
+    public void setUpperRange(double upperRange) {
+        this.upperRange = upperRange;
+    }
+
     public double getMinValue() {
-        return minValue;
+        double min = minValue;
+        if (normalize && lowerRange < minValue) {
+            min = lowerRange;
+        }
+        return min;
     }
 
     public double getMaxValue() {
-        return maxValue;
+        double max = maxValue;
+        if (normalize && upperRange > maxValue) {
+            max = upperRange;
+        }
+        return max;
     }
 
     @Override
@@ -217,11 +227,11 @@ public class ContinuousScale {
         return sb.toString();
     }
 
-    private final boolean normalize;
-    private final boolean logarithm;
+    private boolean normalize;
+    private boolean logarithm;
 
-    private final double lowerRange;
-    private final double upperRange;
+    private double lowerRange;
+    private double upperRange;
 
     private String attributeName = null;
     private double minValue = Double.MAX_VALUE;
