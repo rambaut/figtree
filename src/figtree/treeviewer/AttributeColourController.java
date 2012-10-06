@@ -55,11 +55,11 @@ public class AttributeColourController extends AbstractController {
                             discreteColourScaleDialog.setupDecorator((HSBDiscreteColourDecorator)decorator);
                             update = true;
                         }
-                    } else if (decorator instanceof HSBContinuousColourDecorator) {
+                    } else if (decorator instanceof ContinuousColourDecorator) {
                         if (continuousColourScaleDialog == null) {
                             continuousColourScaleDialog = new ContinuousColourScaleDialog(frame);
                         }
-                        continuousColourScaleDialog.setDecorator((HSBContinuousColourDecorator)decorator);
+                        continuousColourScaleDialog.setDecorator((ContinuousColourDecorator)decorator);
                         int result = continuousColourScaleDialog.showDialog();
                         if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
 
@@ -192,6 +192,13 @@ public class AttributeColourController extends AbstractController {
                             } else {
                                 decorator.setup(settingsString);
                             }
+                        } else if (colourSettings.startsWith("InterpolatingContinuous")) {
+                            String settingsString = colourSettings.substring("InterpolatingContinuous".length());
+                            if (decorator == null || !(decorator instanceof InterpolatingColourDecorator)) {
+                                decorator = new InterpolatingColourDecorator(attribute, settingsString);
+                            } else {
+                                decorator.setup(settingsString);
+                            }
                         } else {
 //                    throw new IllegalArgumentException("Unrecognized colour decorator type");
                         }
@@ -227,6 +234,8 @@ public class AttributeColourController extends AbstractController {
                 name = "HSBDiscrete";
             } else if (decorator instanceof HSBContinuousColourDecorator) {
                 name = "HSBContinuous";
+            } else if (decorator instanceof InterpolatingColourDecorator) {
+                name = "InterpolatingContinuous";
             } else {
                 throw new IllegalArgumentException("Unrecognized colour decorator type");
             }

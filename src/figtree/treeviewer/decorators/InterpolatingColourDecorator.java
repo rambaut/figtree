@@ -15,9 +15,33 @@ import java.util.Set;
  */
 public class InterpolatingColourDecorator extends ContinuousColourDecorator {
 
+    public static final Color DEFAULT_COLOR_1 = Color.getHSBColor(0.01F, 0.7F, 0.85F);
+    public static final Color DEFAULT_COLOR_2 = Color.getHSBColor(0.63F, 0.7F, 0.85F);
+    public static final Color DEFAULT_COLOR_3 = Color.BLACK;
+
+    public InterpolatingColourDecorator(String attribute, String settings) {
+        super(attribute);
+        setup(settings);
+    }
+
+    public InterpolatingColourDecorator(ContinuousScale continuousScale) throws NumberFormatException {
+        super(continuousScale);
+        setColours(DEFAULT_COLOR_1, DEFAULT_COLOR_2);
+    }
+
     public InterpolatingColourDecorator(ContinuousScale continuousScale,
                                         Color color1, Color color2) throws NumberFormatException {
         super(continuousScale);
+        setColours(color1, color2);
+    }
+
+    public InterpolatingColourDecorator(ContinuousScale continuousScale,
+                                        Color color1, Color color2, Color color3) throws NumberFormatException {
+        super(continuousScale);
+        setColours(color1, color2, color3);
+    }
+
+    public void setColours(Color color1, Color color2) {
         this.color1 = new float[4];
         color1.getRGBComponents(this.color1);
         this.color2 = new float[4];
@@ -25,15 +49,34 @@ public class InterpolatingColourDecorator extends ContinuousColourDecorator {
         this.color3 = null;
     }
 
-    public InterpolatingColourDecorator(ContinuousScale continuousScale,
-                                        Color color1, Color color2, Color color3) throws NumberFormatException {
-        super(continuousScale);
+    public void setColours(Color color1, Color color2, Color color3) {
         this.color1 = new float[4];
         color1.getRGBComponents(this.color1);
         this.color2 = new float[4];
         color2.getRGBComponents(this.color2);
         this.color3 = new float[4];
         color3.getRGBComponents(this.color3);
+    }
+
+    public Color getColor1() {
+        if (color1 == null) {
+            return null;
+        }
+        return new Color(color1[0], color1[1], color1[2], color1[3]);
+    }
+
+    public Color getColor2() {
+        if (color2 == null) {
+            return null;
+        }
+        return new Color(color2[0], color2[1], color2[2], color2[3]);
+    }
+
+    public Color getColor3() {
+        if (color3 == null) {
+            return null;
+        }
+        return new Color(color3[0], color3[1], color3[2], color3[3]);
     }
 
     // Private methods
@@ -74,12 +117,72 @@ public class InterpolatingColourDecorator extends ContinuousColourDecorator {
         }
     }
 
-    private final float[] color1;
-    private final float[] color2;
-    private final float[] color3;
+    private float[] color1;
+    private float[] color2;
+    private float[] color3;
 
     @Override
     public void setup(String settings) {
-        throw new UnsupportedOperationException("setup from string not implemented");
+        if (!settings.startsWith("{") || !settings.endsWith("}")) {
+            throw new IllegalArgumentException("InterpolatingColourDecorator settings string not in correct format");
+        }
+
+        String[] parts1 = settings.substring(1, settings.length() - 1).split("}[, ]+");
+        if (parts1.length != 2) {
+            throw new IllegalArgumentException("InterpolatingColourDecorator settings string not in correct format");
+        }
+        String[] parts2 = parts1[1].split("[, ]+");
+        if (parts2.length != 2 && parts2.length != 3) {
+            throw new IllegalArgumentException("InterpolatingColourDecorator settings string not in correct format");
+        }
+
+        try {
+            setContinuousScale(new ContinuousScale(parts1[0]));
+            if (parts2.length == 3) {
+                setColours(parseColor(parts2[0]),
+                        parseColor(parts2[1]),
+                        parseColor(parts2[2]));
+            } else {
+                setColours(parseColor(parts2[0]),
+                        parseColor(parts2[1]));
+            }
+        } catch (NumberFormatException nfe) {
+            throw new IllegalArgumentException("InterpolatingColourDecorator settings string not in correct format");
+        } catch (IllegalArgumentException iae) {
+            throw new IllegalArgumentException("InterpolatingColourDecorator settings string not in correct format");
+        }
     }
+
+    private Color parseColor(String value) {
+        if (value.startsWith("#")) {
+            try {
+                return Color.decode(value.substring(1));
+            } catch (NumberFormatException nfe) {
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Create a string representation suitable for writing to a text file
+     * @return the string
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append(getContinuousScale().toString());
+        sb.append(",#");
+        sb.append(new Color(color1[0], color1[1], color1[2], color1[3]).getRGB());
+        sb.append(",#");
+        sb.append(new Color(color2[0], color2[1], color2[2], color2[3]).getRGB());
+        if (color3 != null) {
+            sb.append(",#");
+            sb.append(new Color(color3[0], color3[1], color3[2], color3[3]).getRGB());
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+
+
 }

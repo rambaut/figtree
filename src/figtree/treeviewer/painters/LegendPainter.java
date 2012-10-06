@@ -159,7 +159,7 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
 
             double v = max;
             for (int i = 0; i < CONTINUOUS_LENGTH; i++) {
-                g2.setPaint(((HSBContinuousColourDecorator)colourDecorator).getColourForValue(v));
+                g2.setPaint(((ContinuousColourDecorator)colourDecorator).getColourForValue(v));
                 Rectangle2D rect = new Rectangle2D.Double(xOffset1, y, labelBounds.getHeight(), 1);
                 g2.fill(rect);
 

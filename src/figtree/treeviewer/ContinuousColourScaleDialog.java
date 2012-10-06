@@ -34,34 +34,128 @@ public class ContinuousColourScaleDialog {
 
     private JFrame frame;
 
-    private ContinuousColourDecorator decorator;
-
     private JComboBox colourSchemeCombo = new JComboBox(new String[] { HSB_SPECTRUM, COLOUR_GRADIENT} );
 
-    private Map<Class, ColourSchemePanel> colourSchemePanelMap = new HashMap<Class, ColourSchemePanel>();
+    private Map<String, ColourSchemePanel> colourSchemeNamePanelMap = new HashMap<String, ColourSchemePanel>();
+    private Map<Class, String> colourSchemeClassNameMap = new HashMap<Class, String>();
+
+    private ContinuousColourDecorator decorator;
+
+    private JComponent colourDisplay;
+    CardLayout cardLayout = new CardLayout();
+
+    private final JCheckBox autoScaleCheck;
+    private final JLabel fromLabel;
+    private final RealNumberField fromNumberField;
+    private final JLabel toLabel;
+    private final RealNumberField toNumberField;
+
+    private final JPanel colourSchemePanel;
+
+    private JDialog dialog;
 
     public ContinuousColourScaleDialog(final JFrame frame) {
         this.frame = frame;
 
-        colourSchemePanelMap.put(HSBContinuousColourDecorator.class, new HSBColourSchemePanel());
-        colourSchemePanelMap.put(InterpolatingColourDecorator.class, new InterpolatingColourSchemePanel());
+        colourSchemeNamePanelMap.put(HSB_SPECTRUM, new HSBColourSchemePanel());
+        colourSchemeNamePanelMap.put(COLOUR_GRADIENT, new InterpolatingColourSchemePanel());
+
+        colourSchemeClassNameMap.put(HSBContinuousColourDecorator.class, HSB_SPECTRUM);
+        colourSchemeClassNameMap.put(InterpolatingColourDecorator.class, COLOUR_GRADIENT);
+
+        autoScaleCheck = new JCheckBox("Auto-scale range between min and max values");
+        fromLabel = new JLabel("Range from:");
+        fromNumberField = new RealNumberField();
+        fromNumberField.setColumns(10);
+        toLabel = new JLabel("to:");
+        toNumberField = new RealNumberField();
+        toNumberField.setColumns(10);
+
+        autoScaleCheck.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
+                boolean enabled = !autoScaleCheck.isSelected();
+                fromLabel.setEnabled(enabled);
+                fromNumberField.setEnabled(enabled);
+                toLabel.setEnabled(enabled);
+                toNumberField.setEnabled(enabled);
+            }
+        });
+
+        colourSchemePanel = new JPanel(cardLayout);
+
+        for (String name : colourSchemeNamePanelMap.keySet()) {
+            ColourSchemePanel panel = colourSchemeNamePanelMap.get(name);
+            colourSchemePanel.add(panel.getPanel(), name);
+        }
+
+        colourSchemeCombo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                cardLayout.show(colourSchemePanel, colourSchemeCombo.getSelectedItem().toString());
+                decorator = colourSchemeNamePanelMap.get(colourSchemeCombo.getSelectedItem()).getDecorator();
+                colourDisplay.repaint();
+                dialog.pack();
+            }
+        });
+
+        colourDisplay = new JComponent() {
+            private final static int MAX_HEIGHT = 20;
+            @Override
+            public void paint(Graphics graphics) {
+                ContinuousColourDecorator decorator = getDecorator();
+
+                Graphics2D g = (Graphics2D)graphics;
+                Rectangle r = getVisibleRect();
+                int width = r.width;
+                r.width = 1;
+                ContinuousScale scale = decorator.getContinuousScale();
+                double v = scale.getMinValue();
+                double d = (scale.getMaxValue() - v) / width;
+                for (int i = 0; i < width; i ++) {
+                    g.setColor(decorator.getColourForValue(v));
+                    g.fill(r);
+                    r.x ++;
+                    v += d;
+
+                }
+            }
+
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(super.getPreferredSize().width, MAX_HEIGHT);
+            }
+        };
+
     }
 
     public int showDialog() {
 
-        setDecorator(decorator);
+        ContinuousColourDecorator currentDecorator = getDecorator();
 
-        JPanel panel1 = new JPanel(new BorderLayout());
-        panel1.add(colourSchemeCombo, BorderLayout.CENTER);
-        panel1.add(new JLabel("Scheme: "), BorderLayout.WEST);
+        final OptionsPanel options = new OptionsPanel(6, 6);
 
-        JPanel options = colourSchemePanelMap.get(decorator.getClass()).getPanel();
+        JPanel panel5 = new JPanel(new BorderLayout());
+        panel5.add(colourDisplay, BorderLayout.CENTER);
+        panel5.setBorder(BorderFactory.createLineBorder(Color.black, 1));
+        options.addSpanningComponent(panel5);
 
-        final JPanel panel2 = new JPanel(new BorderLayout(12, 12));
-        panel2.add(panel1, BorderLayout.NORTH);
-        panel2.add(options, BorderLayout.CENTER);
+        options.addComponent(autoScaleCheck);
 
-        JOptionPane optionPane = new JOptionPane(panel2,
+        JPanel panel4 = new JPanel();
+        panel4.setLayout(new FlowLayout());
+        panel4.add(fromLabel);
+        panel4.add(fromNumberField);
+        panel4.add(toLabel);
+        panel4.add(toNumberField);
+        options.addComponent(panel4);
+
+        options.addComponentWithLabel("Scheme: ", colourSchemeCombo);
+
+        colourSchemePanel.setBorder(BorderFactory.createBevelBorder(1));
+        options.addSpanningComponent(colourSchemePanel);
+
+
+        JOptionPane optionPane = new JOptionPane(options,
                 JOptionPane.QUESTION_MESSAGE,
                 JOptionPane.OK_CANCEL_OPTION,
                 null,
@@ -69,28 +163,12 @@ public class ContinuousColourScaleDialog {
                 null);
         optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
 
+        dialog = optionPane.createDialog(frame, "Setup colour range: " + currentDecorator.getAttributeName());
 
-        final JDialog dialog = optionPane.createDialog(frame, "Setup colour range: " + decorator.getAttributeName());
-
-        colourSchemeCombo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                JPanel options;
-                if (colourSchemeCombo.getSelectedItem().equals(HSB_SPECTRUM)) {
-                    options = colourSchemePanelMap.get(HSBContinuousColourDecorator.class).getPanel();
-                } else if (colourSchemeCombo.getSelectedItem().equals(COLOUR_GRADIENT)) {
-                    options = colourSchemePanelMap.get(InterpolatingColourDecorator.class).getPanel();
-                } else {
-                    throw new IllegalArgumentException("Unrecognized colour scheme type: " + colourSchemeCombo.getSelectedItem().toString());
-                }
-                panel2.add(options, BorderLayout.CENTER);
-                dialog.pack();
-
-            }
-        });
+        colourSchemeCombo.setSelectedItem(colourSchemeClassNameMap.get(decorator.getClass()));
 
         dialog.pack();
-        dialog.setResizable(true);
+        dialog.setResizable(false);
         dialog.setVisible(true);
 
         int result = JOptionPane.CANCEL_OPTION;
@@ -104,20 +182,31 @@ public class ContinuousColourScaleDialog {
 
     public void setDecorator(ContinuousColourDecorator decorator) {
         this.decorator = decorator;
-        colourSchemePanelMap.get(decorator.getClass()).setDecorator(decorator);
+        autoScaleCheck.setSelected(!decorator.getContinuousScale().isNormalize());
+        fromNumberField.setValue(decorator.getContinuousScale().getLowerRange());
+        toNumberField.setValue(decorator.getContinuousScale().getUpperRange());
+        for (String key : colourSchemeNamePanelMap.keySet()) {
+            colourSchemeNamePanelMap.get(key).setDecorator(decorator);
+        }
     }
 
     public ContinuousColourDecorator getDecorator() {
-        colourSchemePanelMap.get(decorator.getClass()).setupDecorator(decorator);
-
+        String name = colourSchemeCombo.getSelectedItem().toString();
+        decorator = colourSchemeNamePanelMap.get(name).getDecorator();
+        decorator.getContinuousScale().setNormalize(!autoScaleCheck.isSelected());
+        decorator.getContinuousScale().setLowerRange(fromNumberField.getValue());
+        decorator.getContinuousScale().setUpperRange(toNumberField.getValue());
         return decorator;
     }
 
     private interface ColourSchemePanel {
         void setDecorator(ContinuousColourDecorator decorator);
-        void setupDecorator(ContinuousColourDecorator decorator);
+        ContinuousColourDecorator getDecorator();
 
         JPanel getPanel();
+
+
+        String getName();
     }
 
     private class HSBColourSchemePanel implements ColourSchemePanel  {
@@ -129,7 +218,13 @@ public class ContinuousColourScaleDialog {
         }
 
         public void setDecorator(ContinuousColourDecorator decorator) {
-            HSBContinuousColourDecorator hsbDecorator = (HSBContinuousColourDecorator)decorator;
+            if (decorator instanceof HSBContinuousColourDecorator) {
+                hsbDecorator = (HSBContinuousColourDecorator)decorator;
+            } else {
+                if (hsbDecorator == null) {
+                    hsbDecorator = new HSBContinuousColourDecorator(decorator.getContinuousScale());
+                }
+            }
 
             hueSlider.setValue((int)(hsbDecorator.getHueLower() * SLIDER_RANGE));
             hueSlider.setUpperValue((int) (hsbDecorator.getHueUpper() * SLIDER_RANGE));
@@ -143,9 +238,8 @@ public class ContinuousColourScaleDialog {
             reverseHueCheck.setSelected(hsbDecorator.isReverseHue());
         }
 
-        public void setupDecorator(ContinuousColourDecorator decorator) {
-            HSBContinuousColourDecorator hsbDecorator = (HSBContinuousColourDecorator)decorator;
-
+        @Override
+        public  ContinuousColourDecorator getDecorator() {
             hsbDecorator.setHueLower(((float) hueSlider.getValue()) / SLIDER_RANGE);
             hsbDecorator.setHueUpper(((float) hueSlider.getUpperValue()) / SLIDER_RANGE);
 
@@ -156,109 +250,59 @@ public class ContinuousColourScaleDialog {
             hsbDecorator.setBrightnessUpper(((float) brightnessSlider.getUpperValue()) / SLIDER_RANGE);
 
             hsbDecorator.setReverseHue(reverseHueCheck.isSelected());
+
+            return hsbDecorator;
         }
 
         @Override
         public JPanel getPanel() {
-            final OptionsPanel options = new OptionsPanel(6, 6);
+            if (panel == null) {
+                final OptionsPanel options = new OptionsPanel(6, 6);
 
-            final JComponent colourDisplay = new JComponent() {
-                private final static int MAX_HEIGHT = 20;
-                @Override
-                public void paint(Graphics graphics) {
-                    Graphics2D g = (Graphics2D)graphics;
-                    Rectangle r = getBounds();
-                    int width = r.width;
-                    r.width = 1;
-                    ContinuousScale scale = decorator.getContinuousScale();
-                    double v = scale.getMinValue();
-                    double d = (scale.getMaxValue() - v) / width;
-                    for (int i = 0; i < width; i ++) {
-                        g.setColor(decorator.getColourForValue(v));
-                        g.fill(r);
-                        r.x ++;
-                        v += d;
+                options.addComponentWithLabel("Hue: ", hueSlider);
+                options.addComponentWithLabel("Saturation: ", saturationSlider);
+                options.addComponentWithLabel("Brightness: ", brightnessSlider);
+                options.addComponent(reverseHueCheck);
 
+                ChangeListener listener = new ChangeListener() {
+                    public void stateChanged(ChangeEvent e) {
+                        getDecorator();
+                        colourDisplay.repaint();
                     }
-                }
+                };
 
-                @Override
-                public Dimension getMaximumSize() {
-                    return new Dimension(super.getMaximumSize().width, MAX_HEIGHT);
-                }
+                hueSlider.addChangeListener(listener);
+                saturationSlider.addChangeListener(listener);
+                brightnessSlider.addChangeListener(listener);
+                reverseHueCheck.addChangeListener(listener);
+                panel = options;
+            }
+            return panel;
+        }
 
-                @Override
-                public Dimension getMinimumSize() {
-                    return new Dimension(super.getMinimumSize().width, MAX_HEIGHT);
-                }
-
-                @Override
-                public Dimension getPreferredSize() {
-                    return new Dimension(super.getPreferredSize().width, MAX_HEIGHT);
-                }
-            };
-            options.addSpanningComponent(colourDisplay);
-
-            options.addComponentWithLabel("Hue: ", hueSlider);
-            options.addComponentWithLabel("Saturation: ", saturationSlider);
-            options.addComponentWithLabel("Brightness: ", brightnessSlider);
-            options.addComponent(reverseHueCheck);
-
-            ChangeListener listener = new ChangeListener() {
-                public void stateChanged(ChangeEvent e) {
-                    setupDecorator(decorator);
-                    colourDisplay.repaint();
-                }
-            };
-
-            hueSlider.addChangeListener(listener);
-            saturationSlider.addChangeListener(listener);
-            brightnessSlider.addChangeListener(listener);
-            reverseHueCheck.addChangeListener(listener);
-
-            return options;
+        @Override
+        public String getName() {
+            return HSB_SPECTRUM;
         }
 
         private RangeSlider hueSlider;
         private RangeSlider saturationSlider;
         private RangeSlider brightnessSlider;
         private JCheckBox reverseHueCheck;
+
+        private HSBContinuousColourDecorator hsbDecorator = null;
+
+        private JPanel panel = null;
     }
 
     private class InterpolatingColourSchemePanel implements ColourSchemePanel  {
         public InterpolatingColourSchemePanel() {
 
-            autoScaleCheck = new JCheckBox("Auto-scale range between min and max values");
-            autoScaleCheck.setSelected(false);
-
-            fromLabel = new JLabel("Range from:");
-            fromNumberField = new RealNumberField();
-            fromNumberField.setColumns(10);
-
-            toLabel = new JLabel("to:");
-            toNumberField = new RealNumberField();
-            toNumberField.setColumns(10);
-
-            fromLabel.setEnabled(false);
-            fromNumberField.setEnabled(false);
-            toLabel.setEnabled(false);
-            toNumberField.setEnabled(false);
-
             middleColourCheck = new JCheckBox("through:");
 
-            fromColourButton = new ColorWellButton(Color.RED, "Choose Start Colour");
-            toColourButton = new ColorWellButton(Color.BLUE, "Choose End Colour");
-            middleColourButton = new ColorWellButton(Color.BLACK, "Choose Middle Colour");
-
-            autoScaleCheck.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent changeEvent) {
-                    boolean enabled = !autoScaleCheck.isSelected();
-                    fromLabel.setEnabled(enabled);
-                    fromNumberField.setEnabled(enabled);
-                    toLabel.setEnabled(enabled);
-                    toNumberField.setEnabled(enabled);
-                }
-            });
+            fromColourButton = new ColorWellButton(InterpolatingColourDecorator.DEFAULT_COLOR_1, "Choose Start Colour");
+            toColourButton = new ColorWellButton(InterpolatingColourDecorator.DEFAULT_COLOR_2, "Choose End Colour");
+            middleColourButton = new ColorWellButton(InterpolatingColourDecorator.DEFAULT_COLOR_3, "Choose Middle Colour");
 
             middleColourCheck.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent changeEvent) {
@@ -270,63 +314,79 @@ public class ContinuousColourScaleDialog {
         }
 
         public void setDecorator(ContinuousColourDecorator decorator) {
-            InterpolatingColourDecorator interpolatingDecorator = (InterpolatingColourDecorator)decorator;
+            if (decorator instanceof InterpolatingColourDecorator) {
+                this.interpolatingDecorator = (InterpolatingColourDecorator)decorator;
+            } else {
+                if (interpolatingDecorator == null) {
+                    interpolatingDecorator = new InterpolatingColourDecorator(decorator.getContinuousScale());
+                }
+            }
 
-//            autoScaleCheck.setSelected(interpolatingDecorator);
-//            fromNumberField.setValue(settings.fromValue);
-//            toNumberField.setValue(settings.toValue);
-
+            fromColourButton.setSelectedColor(interpolatingDecorator.getColor1());
+            if (interpolatingDecorator.getColor3() != null) {
+                middleColourCheck.setSelected(true);
+                middleColourButton.setSelectedColor(interpolatingDecorator.getColor2());
+                toColourButton.setSelectedColor(interpolatingDecorator.getColor3());
+            } else {
+                middleColourCheck.setSelected(false);
+                toColourButton.setSelectedColor(interpolatingDecorator.getColor2());
+            }
         }
 
-        public void setupDecorator(ContinuousColourDecorator decorator) {
-            InterpolatingColourDecorator interpolatingDecorator = (InterpolatingColourDecorator)decorator;
-//            settings.autoRange = autoScaleCheck.isSelected();
-//            settings.fromValue =  fromNumberField.getValue();
-//            settings.toValue = toNumberField.getValue();
-//            settings.fromColour = fromColourButton.getSelectedColor();
-//            settings.toColour = toColourButton.getSelectedColor();
-//            if (middleColourCheck.isSelected()) {
-//                settings.middleColour = middleColourButton.getSelectedColor();
-//            } else {
-//                settings.middleColour = null;
-//            }
+        @Override
+        public  ContinuousColourDecorator getDecorator() {
+            if (middleColourCheck.isSelected()) {
+                interpolatingDecorator.setColours(
+                        fromColourButton.getSelectedColor(),
+                        middleColourButton.getSelectedColor(),
+                        toColourButton.getSelectedColor());
+            } else {
+                interpolatingDecorator.setColours(
+                        fromColourButton.getSelectedColor(),
+                        toColourButton.getSelectedColor());
+            }
+            return interpolatingDecorator;
         }
 
         @Override
         public JPanel getPanel() {
-            final OptionsPanel options = new OptionsPanel(6, 6);
+            if (panel == null) {
+                final OptionsPanel options = new OptionsPanel(6, 6);
 
-            options.addComponent(autoScaleCheck);
+                JPanel panel1 = new JPanel();
+                panel1.setLayout(new FlowLayout());
+                panel1.add(new JLabel("Colour gradient from:"));
+                panel1.add(fromColourButton);
+                panel1.add(new JLabel("to:"));
+                panel1.add(toColourButton);
+                options.addComponent(panel1);
 
-            JPanel panel = new JPanel();
-            panel.setLayout(new FlowLayout());
-            panel.add(fromLabel);
-            panel.add(fromNumberField);
-            panel.add(toLabel);
-            panel.add(toNumberField);
-            options.addComponent(panel);
+                JPanel panel2 = new JPanel();
+                panel1.setLayout(new FlowLayout());
+                panel1.add(middleColourCheck);
+                panel1.add(middleColourButton);
+                options.addComponent(panel2);
+                this.panel = options;
 
-            JPanel panel1 = new JPanel();
-            panel1.setLayout(new FlowLayout());
-            panel1.add(new JLabel("Colour gradient from:"));
-            panel1.add(fromColourButton);
-            panel1.add(new JLabel("to:"));
-            panel1.add(toColourButton);
-            options.addComponent(panel1);
+                ChangeListener listener = new ChangeListener() {
+                    public void stateChanged(ChangeEvent e) {
+                        getDecorator();
+                        colourDisplay.repaint();
+                    }
+                };
 
-            JPanel panel2 = new JPanel();
-            panel1.setLayout(new FlowLayout());
-            panel1.add(middleColourCheck);
-            panel1.add(middleColourButton);
-            options.addComponent(panel2);
-            return options;
+                fromColourButton.addChangeListener(listener);
+                toColourButton.addChangeListener(listener);
+                middleColourCheck.addChangeListener(listener);
+                middleColourButton.addChangeListener(listener);
+            }
+            return panel;
         }
 
-        private JCheckBox autoScaleCheck;
-        private JLabel fromLabel;
-        private RealNumberField fromNumberField;
-        private JLabel toLabel;
-        private RealNumberField toNumberField;
+        @Override
+        public String getName() {
+            return COLOUR_GRADIENT;
+        }
 
         private ColorWellButton fromColourButton;
         private ColorWellButton toColourButton;
@@ -334,5 +394,8 @@ public class ContinuousColourScaleDialog {
         private JCheckBox middleColourCheck;
         private ColorWellButton middleColourButton;
 
+        private InterpolatingColourDecorator interpolatingDecorator = null;
+
+        private JPanel panel = null;
     }
 }
