@@ -217,22 +217,16 @@ public class LabelPainterController extends AbstractController {
 
     private void setupLabelDecorator() {
 
-        Decorator textDecorator = null;
+        Decorator colourDecorator = colourController.getColourDecorator(colourAttributeCombo, userLabelDecorator);
 
-        textDecorator = userLabelDecorator;
-        Decorator colourDecorator = colourController.getColourDecorator(colourAttributeCombo, null);
+        CompoundDecorator compoundDecorator = new CompoundDecorator();
+        compoundDecorator.addDecorator(colourDecorator);
 
-        if (colourDecorator != null) {
-            CompoundDecorator compoundDecorator = new CompoundDecorator();
-            compoundDecorator.addDecorator(colourDecorator);
-            AttributableDecorator fontDecorator = new AttributableDecorator();
-            userLabelDecorator.setFontAttributeName("!font");
-            compoundDecorator.addDecorator(fontDecorator);
+        AttributableDecorator fontDecorator = new AttributableDecorator();
+        userLabelDecorator.setFontAttributeName("!font");
+        compoundDecorator.addDecorator(fontDecorator);
 
-            textDecorator = compoundDecorator;
-        }
-
-        labelPainter.setTextDecorator(textDecorator);
+        labelPainter.setTextDecorator(compoundDecorator);
     }
 
     public JComponent getTitleComponent() {
