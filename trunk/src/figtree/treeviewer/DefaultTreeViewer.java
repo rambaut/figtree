@@ -189,14 +189,14 @@ public class DefaultTreeViewer extends TreeViewer {
     private double verticalExpansion = 0.0;
 
     public void setZoom(double zoom) {
-        double n = treePane.getTree().getTaxa().size();
+        double n = Math.max(treePane.getTree().getTaxa().size(), 50);
         this.zoom = Math.pow(zoom * n * ZOOM_SCALE, ZOOM_POWER);
 //        this.zoom = zoom * MAX_ZOOM;
         refreshZoom();
     }
 
     public void setVerticalExpansion(double verticalExpansion) {
-        double n = treePane.getTree().getTaxa().size();
+        double n = Math.max(treePane.getTree().getTaxa().size(), 50);
         this.verticalExpansion = Math.pow(verticalExpansion * n * VERTICAL_EXPANSION_SCALE, ZOOM_POWER);
 //        this.verticalExpansion = verticalExpansion * MAX_VERTICAL_EXPANSION;
         refreshZoom();
