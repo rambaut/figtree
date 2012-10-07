@@ -42,7 +42,7 @@ New Features:
 	
 	Numerous tweaks to the controls to make things more convenient. These include the reintroduction of font size spinners (in addition to font selection dialogs) and scrolling of the entire control panel when larger than the window.
 	
-	New zooming/expansion. The maximum extent of zooming is now proportional to the number of tips in the tree. I.e., the bigger the tree the more you can zoom in.
+	New zooming/expansion. The maximum extent of zooming is now proportional to the number of tips in the tree. I.e., the bigger the tree the more you can zoom in. Also added a non-linearity to zooming (starts slower).
 		
 Bug Fixes:
 	Issue 52:	Significant figure spinners don't currently have an effect.
