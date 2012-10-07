@@ -1,5 +1,6 @@
 package figtree.treeviewer.decorators;
 
+import jebl.evolution.graphs.Node;
 import jebl.util.Attributable;
 
 import java.awt.*;
@@ -77,7 +78,9 @@ public abstract class ColourDecorator implements Decorator {
     }
 
     public void setItem(Object item) {
-        if (item instanceof Attributable) {
+        if (item instanceof Node) {
+            setAttributableItem((Attributable)item);
+        } if (item instanceof Attributable) {
             setAttributableItem((Attributable)item);
         } else {
             paint = getColourForValue(item);
@@ -156,6 +159,27 @@ public abstract class ColourDecorator implements Decorator {
         if (isNumber && !isInteger) return false;
 
         return true;
+    }
+
+    public static boolean isNumerical(String attributeName, Set<? extends Attributable> items) {
+        // First collect the set of all attribute values
+        Set<Object> values = new HashSet<Object>();
+        for (Attributable item : items) {
+            Object value = item.getAttribute(attributeName);
+            if (value != null) {
+                values.add(value);
+            }
+        }
+
+        boolean isNumber = true;
+
+        for (Object value : values) {
+            if (!(value instanceof Number)) {
+                isNumber = false;
+            }
+        }
+
+        return isNumber;
     }
 
     // Private methods

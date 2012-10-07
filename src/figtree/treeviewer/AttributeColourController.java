@@ -3,6 +3,7 @@ package figtree.treeviewer;
 import figtree.treeviewer.decorators.*;
 import jam.controlpalettes.AbstractController;
 import jebl.evolution.graphs.Node;
+import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.Tree;
 import jebl.util.Attributable;
 
@@ -107,10 +108,13 @@ public class AttributeColourController extends AbstractController {
     public ColourDecorator getDecoratorForAttribute(String attribute) {
         ColourDecorator colourDecorator = attributeDecoratorMap.get(attribute);
 
-        Set<Node> nodes = new HashSet<Node>();
+        Set<Attributable> items = new HashSet<Attributable>();
         for (Tree tree : treeViewer.getTrees()) {
             for (Node node : tree.getNodes()) {
-                nodes.add(node);
+                items.add(node);
+            }
+            for (Taxon taxon : tree.getTaxa()) {
+                items.add(taxon);
             }
         }
 
@@ -119,23 +123,23 @@ public class AttributeColourController extends AbstractController {
             if (attribute.endsWith("*")) {
                 // todo reinstate branch colouring
                 return null;
-            } else if (DiscreteColorDecorator.isDiscrete(attribute, nodes)) {
-                colourDecorator = new HSBDiscreteColourDecorator(attribute, nodes);
+            } else if (DiscreteColorDecorator.isDiscrete(attribute, items)) {
+                colourDecorator = new HSBDiscreteColourDecorator(attribute, items);
             } else {
                 ContinuousScale scale = attributeScaleMap.get(attribute);
                 if (scale == null) {
                     scale = new ContinuousScale();
                     attributeScaleMap.put(attribute, scale);
                 }
-                scale.setAttributes(attribute, nodes);
+                scale.setAttributes(attribute, items);
 
                 colourDecorator = new HSBContinuousColourDecorator(scale);
 
             }
         } else if (colourDecorator instanceof DiscreteColorDecorator) {
-            ((DiscreteColorDecorator)colourDecorator).setAttributes(attribute, nodes);
+            ((DiscreteColorDecorator)colourDecorator).setAttributes(attribute, items);
         } else if (colourDecorator instanceof ContinuousColourDecorator) {
-            ((ContinuousColourDecorator)colourDecorator).setAttributes(attribute, nodes);
+            ((ContinuousColourDecorator)colourDecorator).setAttributes(attribute, items);
 
         }
 
