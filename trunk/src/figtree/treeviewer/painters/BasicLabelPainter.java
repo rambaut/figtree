@@ -227,7 +227,7 @@ public class BasicLabelPainter extends LabelPainter<Node> {
             // this is a bit of a hack to detect whether we should be getting the
             // colour attribute from the taxon, or some other attribute from the
             // node:
-            if (textDecorator instanceof AttributableDecorator) {
+            if (getIntent() == PainterIntent.TIP) {
                 textDecorator.setItem(tree.getTaxon(item));
             } else {
                 textDecorator.setItem(item);

@@ -111,10 +111,9 @@ public class AttributeColourController extends AbstractController {
         Set<Attributable> items = new HashSet<Attributable>();
         for (Tree tree : treeViewer.getTrees()) {
             for (Node node : tree.getNodes()) {
-                items.add(node);
-            }
-            for (Taxon taxon : tree.getTaxa()) {
-                items.add(taxon);
+                if (node.getAttribute(attribute) != null) {
+                    items.add(node);
+                }
             }
         }
 
@@ -140,7 +139,6 @@ public class AttributeColourController extends AbstractController {
             ((DiscreteColorDecorator)colourDecorator).setAttributes(attribute, items);
         } else if (colourDecorator instanceof ContinuousColourDecorator) {
             ((ContinuousColourDecorator)colourDecorator).setAttributes(attribute, items);
-
         }
 
         return colourDecorator;
