@@ -135,7 +135,7 @@ public class TreeAppearanceController extends AbstractController {
         optionsPanel.addComponentWithLabel("Background:", backgroundColourAttributeCombo);
         optionsPanel.addComponentWithLabel("Setup:", bgSetupColourButton);
 
-        new AttributeComboHelper(branchColourAttributeCombo, treeViewer, "User selection").addListener(new AttributeComboHelperListener() {
+        new AttributeComboHelper(branchColourAttributeCombo, treeViewer, "User selection", false, true).addListener(new AttributeComboHelperListener() {
             @Override
             public void attributeComboChanged() {
                 setupBranchDecorators();
@@ -147,7 +147,7 @@ public class TreeAppearanceController extends AbstractController {
                 setupBranchDecorators();
             }
         });
-        new AttributeComboHelper(branchWidthAttributeCombo, treeViewer, FIXED).addListener(new AttributeComboHelperListener() {
+        new AttributeComboHelper(branchWidthAttributeCombo, treeViewer, FIXED, true, false).addListener(new AttributeComboHelperListener() {
             @Override
             public void attributeComboChanged() {
                 String attribute = (String) branchWidthAttributeCombo.getSelectedItem();

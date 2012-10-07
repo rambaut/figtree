@@ -1,4 +1,4 @@
-                  FigTree v1.3.1 2006-2009
+                  FigTree v1.4 2006-2012
                         Andrew Rambaut
 
               Institute of Evolutionary Biology
@@ -7,7 +7,7 @@
 
 
 UNIX/Linux/Mac OS X (command-line) version README
-Last updated: a.rambaut@ed.ac.uk - 21st December 2009
+Last updated: a.rambaut@ed.ac.uk - 8th October 2012
 
 Contents:
 1) INTRODUCTION
@@ -27,6 +27,32 @@ FigTree is designed as a graphical viewer of phylogenetic trees and as a program
 ___________________________________________________________________________
 2) VERSION HISTORY
 
+v1.4 Released 8th October 2012.
+
+New Features:
+	Added a 'Node Shape' option which can draw circles, squares or diamonds on each node. These can be coloured and sized by attributes.
+	
+	Added a 'Legend' option which can produce a colour legend for any attribute/colour scheme being used.
+	
+	New colour scheme for discrete attributes based on a HSB colour wheel. This replaces the old fixed sequence of colours and is more customizable. Attribute values can be re-ordered.
+	
+	New colour scheme for continuous attributes also based on HSB. The old interpolating colour scheme is still available.
+	
+	Colour schemes are now selectable for particular attributes and these are saved and loaded in FigTree files.
+	
+	Numerous tweaks to the controls to make things more convenient. These include the reintroduction of font size spinners (in addition to font selection dialogs) and scrolling of the entire control panel when larger than the window.
+	
+	New zooming/expansion. The maximum extent of zooming is now proportional to the number of tips in the tree. I.e., the bigger the tree the more you can zoom in.
+		
+Bug Fixes:
+	Issue 52:	Significant figure spinners don't currently have an effect.
+	Issue 51:	Preference fonts initially set to first font in list
+	Issue 50:	Problem with MidPoint rooting a tree
+	Issue 48:	Taxon labels not displaying traits of nodes
+	Issue 45:	Nexus importer doesn't ignore unrecognised commands
+	Issue 42:	Collapsed clades are clipped at the top of the page
+	Issue 39:	Rerooting doesn't always work.
+	
 v1.3.1 Released 21st December 2009.
 
 Bug Fixes:
@@ -221,3 +247,5 @@ Thanks to the following for assisting with the creation or testing of FigTree:
 	Tulio de Oliveira
 	Oliver Pybus
 	Beth Shapiro
+	Marc Suchard
+	

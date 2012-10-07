@@ -2,6 +2,7 @@ package figtree.treeviewer.painters;
 
 import figtree.treeviewer.TreeViewer;
 import figtree.treeviewer.TreeViewerListener;
+import figtree.treeviewer.decorators.ColourDecorator;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.Tree;
@@ -22,34 +23,44 @@ public class AttributeComboHelper {
 
     public AttributeComboHelper(final JComboBox attributeComboBox, final TreeViewer treeViewer) {
 
-        this(attributeComboBox, treeViewer, null, null, false);
+        this(attributeComboBox, treeViewer, null, null, false, false);
 
     }
 
     public AttributeComboHelper(final JComboBox attributeComboBox, final TreeViewer treeViewer,
                                 final String defaultOption) {
 
-        this(attributeComboBox, treeViewer, defaultOption, null, false);
+        this(attributeComboBox, treeViewer, defaultOption, null, false, false);
 
     }
 
     public AttributeComboHelper(final JComboBox attributeComboBox, final TreeViewer treeViewer,
                                 final String defaultOption,
+                                final boolean numericalOnly,
                                 final boolean includeLineageColourings) {
 
-        this(attributeComboBox, treeViewer, defaultOption, null, includeLineageColourings);
+        this(attributeComboBox, treeViewer, defaultOption, null, numericalOnly, includeLineageColourings);
 
     }
 
     public AttributeComboHelper(final JComboBox attributeComboBox, final TreeViewer treeViewer,
                                 final LabelPainter.PainterIntent intent) {
 
-        this(attributeComboBox, treeViewer, null, intent, false);
+        this(attributeComboBox, treeViewer, null, intent, false, false);
+
+    }
+
+    public AttributeComboHelper(final JComboBox attributeComboBox, final TreeViewer treeViewer,
+                                final LabelPainter.PainterIntent intent,
+                                final boolean numericalOnly) {
+
+        this(attributeComboBox, treeViewer, null, intent, numericalOnly, false);
     }
 
     public AttributeComboHelper(final JComboBox attributeComboBox, final TreeViewer treeViewer,
                                 final String defaultOption,
                                 final LabelPainter.PainterIntent intent,
+                                final boolean numericalOnly,
                                 final boolean includeLineageColourings) {
 
         treeViewer.addTreeViewerListener(new TreeViewerListener() {
@@ -70,8 +81,8 @@ public class AttributeComboHelper {
                     return;
                 }
                 List<String> names = new ArrayList<String>();
-                if (intent != null) {
-                    getAttributeNames(names, trees, intent);
+                if (intent != null || numericalOnly) {
+                    getAttributeNames(names, trees, intent, numericalOnly);
                 } else {
                     getAttributeNames(names, trees, includeLineageColourings);
                 }
@@ -102,7 +113,9 @@ public class AttributeComboHelper {
         });
     }
 
-    public void getAttributeNames(List<String> attributeNames, Collection<? extends Tree> trees, LabelPainter.PainterIntent intent) {
+    public static void getAttributeNames(List<String> attributeNames, Collection<? extends Tree> trees,
+                                         LabelPainter.PainterIntent intent,
+                                         boolean numericalOnly) {
 
         Set<String> nodeAttributes = new TreeSet<String>();
         if (trees != null) {
@@ -135,43 +148,59 @@ public class AttributeComboHelper {
                 } else {
                     for (Node node : tree.getNodes()) {
                         for (String key : node.getAttributeMap().keySet()) {
-                            if (node.getAttributeMap().get(key) instanceof Object[]) {
-                                nodeAttributes.add(key);
-                            }
+                            nodeAttributes.add(key);
                         }
                     }
                 }
             }
         }
 
-        switch( intent ) {
-            case TIP: {
-                attributeNames.add(LabelPainter.NAMES);
-                attributeNames.add(LabelPainter.NODE_AGES);
-                attributeNames.add(LabelPainter.NODE_HEIGHTS);
-                attributeNames.add(LabelPainter.BRANCH_TIMES);
-                attributeNames.add(LabelPainter.BRANCH_LENGTHS);
-                break;
-            }
-            case NODE: {
-                if (nodeAttributes.contains("!name")) {
-                    attributeNames.add(LabelPainter.NAMES);
+        if (numericalOnly) {
+            Set<String> continuousNodeAttributes = new TreeSet<String>();
+            for (String nodeAttributeName : nodeAttributes) {
+                boolean isNumerical = true;
+                for (Tree tree : trees) {
+                    if (!ColourDecorator.isNumerical(nodeAttributeName, tree.getNodes())) {
+                        isNumerical = false;
+                    }
                 }
-                attributeNames.add(LabelPainter.NODE_AGES);
-                attributeNames.add(LabelPainter.NODE_HEIGHTS);
-                attributeNames.add(LabelPainter.BRANCH_TIMES);
-                attributeNames.add(LabelPainter.BRANCH_LENGTHS);
-                break;
-            }
-            case BRANCH: {
-                if (nodeAttributes.contains("!name")) {
-                    attributeNames.add(LabelPainter.NAMES);
+                if (isNumerical) {
+                    continuousNodeAttributes.add(nodeAttributeName);
                 }
-                attributeNames.add(LabelPainter.BRANCH_TIMES);
-                attributeNames.add(LabelPainter.BRANCH_LENGTHS);
-                attributeNames.add(LabelPainter.NODE_AGES);
-                attributeNames.add(LabelPainter.NODE_HEIGHTS);
-                break;
+            }
+            nodeAttributes = continuousNodeAttributes;
+        }
+
+        if (intent != null) {
+            switch( intent ) {
+                case TIP: {
+                    attributeNames.add(LabelPainter.NAMES);
+                    attributeNames.add(LabelPainter.NODE_AGES);
+                    attributeNames.add(LabelPainter.NODE_HEIGHTS);
+                    attributeNames.add(LabelPainter.BRANCH_TIMES);
+                    attributeNames.add(LabelPainter.BRANCH_LENGTHS);
+                    break;
+                }
+                case NODE: {
+                    if (nodeAttributes.contains("!name")) {
+                        attributeNames.add(LabelPainter.NAMES);
+                    }
+                    attributeNames.add(LabelPainter.NODE_AGES);
+                    attributeNames.add(LabelPainter.NODE_HEIGHTS);
+                    attributeNames.add(LabelPainter.BRANCH_TIMES);
+                    attributeNames.add(LabelPainter.BRANCH_LENGTHS);
+                    break;
+                }
+                case BRANCH: {
+                    if (nodeAttributes.contains("!name")) {
+                        attributeNames.add(LabelPainter.NAMES);
+                    }
+                    attributeNames.add(LabelPainter.BRANCH_TIMES);
+                    attributeNames.add(LabelPainter.BRANCH_LENGTHS);
+                    attributeNames.add(LabelPainter.NODE_AGES);
+                    attributeNames.add(LabelPainter.NODE_HEIGHTS);
+                    break;
+                }
             }
         }
 

@@ -41,7 +41,7 @@ import ch.randelshofer.quaqua.QuaquaManager;
 
 public class FigTreeApplication extends MultiDocApplication {
 
-    public static final String VERSION = "1.4.0pre2";
+    public static final String VERSION = "1.4.0pre3";
     public static final String DATES = "2006-2012";
 
     public static FigTreeApplication application;
@@ -211,7 +211,7 @@ public class FigTreeApplication extends MultiDocApplication {
         centreLine("Uses the Java Evolutionary Biology Library (JEBL)", 60);
         centreLine("http://jebl.sourceforge.net/", 60);
         centreLine("Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, ", 60);
-        centreLine("Tulio de Oliveira, Beth Shapiro & Marc Suchard", 60);
+        centreLine("Tulio de Oliveira, Oliver Pybus, Beth Shapiro & Marc Suchard", 60);
 	    System.out.println();
     }
 
@@ -356,7 +356,7 @@ public class FigTreeApplication extends MultiDocApplication {
                 "<a href=\"http://tree.bio.ed.ac.uk/\">http://tree.bio.ed.ac.uk/</a><br><br>" +
                 "Uses the Java Evolutionary Biology Library (JEBL)<br>" +
                 "<a href=\"http://sourceforge.net/projects/jebl/\">http://jebl.sourceforge.net/</a><br><br>" +
-                "Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, <br>Tulio de Oliveira, Beth Shapiro & Marc Suchard</center></html>";
+                "Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, <br>Tulio de Oliveira, Oliver Pybus, Beth Shapiro & Marc Suchard</center></html>";
 
         String websiteURLString = "http://tree.bio.ed.ac.uk/software/figtree/";
         String helpURLString = "http://tree.bio.ed.ac.uk/software/figtree/";

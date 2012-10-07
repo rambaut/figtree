@@ -108,7 +108,9 @@ public class NodeShapeController extends AbstractController {
             }
         });
 
-        new AttributeComboHelper(sizeAttributeCombo, treeViewer, NodeShapePainter.FIXED).addListener(new AttributeComboHelperListener() {
+        new AttributeComboHelper(sizeAttributeCombo,
+                treeViewer,
+                NodeShapePainter.FIXED, true, false).addListener(new AttributeComboHelperListener() {
             @Override
             public void attributeComboChanged() {
                 String attribute = (String) sizeAttributeCombo.getSelectedItem();
