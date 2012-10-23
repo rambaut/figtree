@@ -32,7 +32,7 @@ import java.util.regex.PatternSyntaxException;
 public class DefaultTreeViewer extends TreeViewer {
     private final static double ZOOM_SCALE = 0.02;
     private final static double VERTICAL_EXPANSION_SCALE = 0.02;
-    private final static double ZOOM_POWER = 2;
+    private final static double ZOOM_POWER = 1.2;
 
     public DefaultTreeViewer() {
         this(null);
