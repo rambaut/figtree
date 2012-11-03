@@ -2,6 +2,7 @@ package figtree.treeviewer;
 
 import figtree.treeviewer.painters.AttributeComboHelper;
 import figtree.treeviewer.painters.AttributeComboHelperListener;
+import figtree.treeviewer.painters.NodeShapePainter;
 import jam.controlpalettes.ControllerListener;
 import jam.controlpalettes.AbstractController;
 import jam.panels.OptionsPanel;
@@ -84,7 +85,7 @@ public class TreeAppearanceController extends AbstractController {
 
         branchColourIsGradient = false;
 
-        JButton setupColourButton = new JButton("Colours");
+        final JButton setupColourButton = new JButton("Colours");
 
         colourController.setupControls(branchColourAttributeCombo, setupColourButton);
         colourController.addControllerListener(new ControllerListener() {
@@ -102,7 +103,7 @@ public class TreeAppearanceController extends AbstractController {
             }
         });
         optionsPanel.addComponentWithLabel("Colour by:", branchColourAttributeCombo);
-        optionsPanel.addComponentWithLabel("Setup:", setupColourButton);
+        final JLabel setupColourButtonLabel = optionsPanel.addComponentWithLabel("Setup:", setupColourButton);
         optionsPanel.addComponent(useGradientCheck);
         optionsPanel.addSeparator();
 
@@ -123,7 +124,7 @@ public class TreeAppearanceController extends AbstractController {
 //        backgroundColourSettings.toColour = new Color(192, 16, 0);
 //        backgroundColourSettings.middleColour = null;
 
-        JButton bgSetupColourButton = new JButton("Colours");
+        final JButton bgSetupColourButton = new JButton("Colours");
         colourController.setupControls(backgroundColourAttributeCombo, bgSetupColourButton);
         colourController.addControllerListener(new ControllerListener() {
             @Override
@@ -133,29 +134,36 @@ public class TreeAppearanceController extends AbstractController {
         });
 
         optionsPanel.addComponentWithLabel("Background:", backgroundColourAttributeCombo);
-        optionsPanel.addComponentWithLabel("Setup:", bgSetupColourButton);
+        final JLabel bgSetupColourButtonLabel = optionsPanel.addComponentWithLabel("Setup:", bgSetupColourButton);
 
         new AttributeComboHelper(branchColourAttributeCombo, treeViewer, "User selection", false, true).addListener(new AttributeComboHelperListener() {
             @Override
             public void attributeComboChanged() {
+                boolean isSelected = branchColourAttributeCombo.getSelectedIndex() != 0;
+                setupColourButtonLabel.setEnabled(isSelected);
+                setupColourButton.setEnabled(isSelected);
+
                 setupBranchDecorators();
             }
         });
+
         new AttributeComboHelper(backgroundColourAttributeCombo, treeViewer, "Default").addListener(new AttributeComboHelperListener() {
             @Override
             public void attributeComboChanged() {
+                boolean isSelected = branchColourAttributeCombo.getSelectedIndex() != 0;
+                bgSetupColourButtonLabel.setEnabled(isSelected);
+                bgSetupColourButton.setEnabled(isSelected);
+
                 setupBranchDecorators();
             }
         });
+
         new AttributeComboHelper(branchWidthAttributeCombo, treeViewer, FIXED, true, false).addListener(new AttributeComboHelperListener() {
             @Override
             public void attributeComboChanged() {
-                String attribute = (String) branchWidthAttributeCombo.getSelectedItem();
-                if (attribute != null) {
-                    boolean isSelected = !attribute.equals(FIXED);
-                    label.setEnabled(isSelected);
-                    branchMinLineWidthSpinner.setEnabled(isSelected);
-                }
+                boolean isSelected = branchColourAttributeCombo.getSelectedIndex() != 0;
+                label.setEnabled(isSelected);
+                branchMinLineWidthSpinner.setEnabled(isSelected);
                 setupBranchDecorators();
             }
         });
