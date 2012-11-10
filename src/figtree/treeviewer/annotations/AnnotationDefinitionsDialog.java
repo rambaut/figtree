@@ -22,13 +22,8 @@ import java.util.*;
 import java.util.List;
 
 /**
- * DemographicDialog.java
- *
- * Title:			Tracer
- * Description:		An application for analysing MCMC trace files.
- * @author			Andrew Rambaut
- * @author			Alexei Drummond
- * @version			$Id: AnnotationDefinitionsDialog.java,v 1.2 2006/03/21 00:10:22 rambaut Exp $
+ * @author Andrew Rambaut
+ * @version $Id$
  */
 public class AnnotationDefinitionsDialog {
 
