@@ -11,8 +11,6 @@ import java.awt.*;
 import figtree.ui.components.RealNumberField;
 
 /**
- * SizeScaleDialog.java
- *
  * @author			Andrew Rambaut
  * @version			$Id$
  */

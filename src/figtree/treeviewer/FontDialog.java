@@ -1,12 +1,3 @@
-/*
- * FontDialog.java
- *
- * Copyright (c) 2009 FigTree Development Team
- *
- * This package is distributed under the Gnu Public Licence (GPL)
- *
- */
-
 package figtree.treeviewer;
 
 import jam.panels.OptionsPanel;

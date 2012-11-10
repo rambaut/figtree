@@ -22,8 +22,6 @@ import java.awt.event.ActionListener;
 import java.util.*;
 
 /**
- * DiscreteColourScaleDialog.java
- *
  * @author			Andrew Rambaut
  * @version			$Id$
  */

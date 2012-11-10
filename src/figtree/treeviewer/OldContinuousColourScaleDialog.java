@@ -18,8 +18,6 @@ import figtree.ui.components.RealNumberField;
 import figtree.ui.components.ColorWellButton;
 
 /**
- * OldContinuousColourScaleDialog.java
- *
  * @author			Andrew Rambaut
  * @version			$Id$
  */
