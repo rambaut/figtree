@@ -13,7 +13,6 @@ import java.util.*;
 
 import jam.panels.StatusProvider;
 
-
 /**
  * @author Andrew Rambaut
  * @version $Id: MultiPaneTreeViewer.java 777 2007-09-05 16:24:18Z rambaut $

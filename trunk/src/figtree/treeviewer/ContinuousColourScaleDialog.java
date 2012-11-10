@@ -21,10 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * DiscreteColourScaleDialog.java
- *
- * @author			Andrew Rambaut
- * @version			$Id$
+ * @author Andrew Rambaut
+ * @version $Id$
  */
 public class ContinuousColourScaleDialog {
     private static final int SLIDER_RANGE = 1000;

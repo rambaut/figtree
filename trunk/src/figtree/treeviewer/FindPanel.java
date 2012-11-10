@@ -1,6 +1,3 @@
-/*
- * FindDialog.java
- */
 package figtree.treeviewer;
 
 import figtree.treeviewer.annotations.AnnotationDefinition;
@@ -14,8 +11,6 @@ import figtree.ui.components.RealNumberField;
 import figtree.ui.components.WholeNumberField;
 
 /**
- * FindDialog
- *
  * @author			Andrew Rambaut
  * @version			$Id: FindDialog.java,v 1.8 2006/11/21 11:11:23 rambaut Exp $
  */

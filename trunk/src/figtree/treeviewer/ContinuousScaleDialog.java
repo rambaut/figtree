@@ -14,8 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * ContinuousScaleDialog.java
- *
  * @author			Andrew Rambaut
  * @version			$Id$
  */

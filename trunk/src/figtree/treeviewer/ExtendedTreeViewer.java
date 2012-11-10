@@ -1,12 +1,3 @@
-/*
- * ExtendedTreeViewer.java
- *
- * (c) 2002-2005 BEAST Development Core Team
- *
- * This package may be distributed under the
- * Lesser Gnu Public Licence (LGPL)
- */
-
 package figtree.treeviewer;
 
 import jebl.evolution.alignments.Alignment;
@@ -29,10 +20,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * A panel that displays correlation plots of 2 traces
- *
  * @author Andrew Rambaut
- * @author Alexei Drummond
  * @version $Id: ExtendedTreeViewer.java,v 1.38 2007/09/05 16:24:23 rambaut Exp $
  */
 public class ExtendedTreeViewer extends DefaultTreeViewer implements StatusProvider {

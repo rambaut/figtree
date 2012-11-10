@@ -15,7 +15,6 @@ import java.awt.print.*;
 import java.util.*;
 import java.util.List;
 
-
 /**
  * @author Andrew Rambaut
  * @version $Id: TreePane.java 823 2007-10-28 20:28:47Z stevensh $
