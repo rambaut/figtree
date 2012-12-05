@@ -1,0 +1,2 @@
+<!-- for tomcat -->
+<Context cookies="false" />
