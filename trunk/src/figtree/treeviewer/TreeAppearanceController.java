@@ -150,7 +150,7 @@ public class TreeAppearanceController extends AbstractController {
         new AttributeComboHelper(backgroundColourAttributeCombo, treeViewer, "Default").addListener(new AttributeComboHelperListener() {
             @Override
             public void attributeComboChanged() {
-                boolean isSelected = branchColourAttributeCombo.getSelectedIndex() != 0;
+                boolean isSelected = backgroundColourAttributeCombo.getSelectedIndex() != 0;
                 bgSetupColourButtonLabel.setEnabled(isSelected);
                 bgSetupColourButton.setEnabled(isSelected);
 
@@ -224,7 +224,10 @@ public class TreeAppearanceController extends AbstractController {
 
         treeViewer.setBranchDecorator(compoundDecorator, branchColourIsGradient);
 
-        colourDecorator = colourController.getColourDecorator(backgroundColourAttributeCombo, null);
+        colourDecorator = null;
+        if (backgroundColourAttributeCombo.getSelectedIndex() > 1) {
+            colourDecorator = colourController.getColourDecorator(backgroundColourAttributeCombo, null);
+        }
         treeViewer.setNodeBackgroundDecorator(colourDecorator);
 
     }
