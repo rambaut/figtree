@@ -42,9 +42,8 @@ final public class ReRootedTree implements RootedTree {
                    l += source.getEdgeLength(outgroupNode, adj);
                 }
             }
-
-            setLength(node2, Math.max(l - ingroupBranchLength, 0.0));
         }
+        setLength(node2, Math.max(l - ingroupBranchLength, 0.0));
         children.add(node2);
 
         createInternalNode(null, children);
