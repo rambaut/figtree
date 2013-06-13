@@ -1259,6 +1259,10 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                     nexusExporter.writeFigTreeBlock(settings);
                 }
                 break;
+            case JSON:
+                JSONTreeExporter jsonExporter = new JSONTreeExporter(writer, writeAnnotations);
+                jsonExporter.exportTrees(trees);
+                break;
         }
 
         writer.close();
