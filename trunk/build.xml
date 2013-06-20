@@ -91,7 +91,7 @@
 
 	</target>
 
-    <property name="version" value="1.4.0" />
+    <property name="version" value="1.4.1" />
     <property name="release_dir" value="release" />
     <property name="name" value="FigTree" />
 
@@ -114,7 +114,8 @@
         <!-- Create the release directory -->
         <mkdir dir="${Windows_package_dir}" />
 
-        <property name="launch4j.dir" location="${Windows_dir}/launch4j" />
+        <property name="launch4j.dir" location="./launch4j" />
+
         <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
             classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
 
@@ -132,7 +133,8 @@
                   fileVersion="${version}.0"
                   txtFileVersion="${version}"
                   productVersion="${version}.0"
-                  txtProductVersion="${version}"/>
+                  txtProductVersion="${version}"
+                />
 
         <zip destfile="${release_dir}/${name} v${version}.zip">
             <zipfileset dir="${Windows_package_dir}" prefix="${name} v${version}"/>
@@ -190,10 +192,10 @@
                         mainclass="figtree.application.FigTreeApplication"
                         icon="${Mac_dir}/icons/FigTree.icns"
                         jvmversion="1.5+"
-                        vmoptions="-Xmx512M"
+                        vmoptions="-Xmx1024M"
                         arguments=""
                         version="${version}"
-                        infostring="${name} v${version}, Copyright 2006-2009, Andrew Rambaut"
+                        infostring="${name} v${version}, Copyright 2006-2013, Andrew Rambaut"
                         bundleid="figtree" >
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
             <jarfileset dir="${dist}">
@@ -225,6 +227,47 @@
             <arg value="zlib-level=6"/>
             <arg value="${release_dir}/${name} v${version}.dmg"/>
         </exec>
+
+        <echo message="Mac version release is finished." />
+    </target>
+
+    <target name="mac_7_Release"
+            description="release Mac version of FigTree for Java 7">
+        <delete dir="${Mac_package_dir}" />
+        <!-- Create the release directory -->
+        <mkdir dir="${Mac_package_dir}" />
+
+        <copy file="${dist}/figtree.jar" todir="${Mac_package_dir}/lib"/>
+        <copy file="${dist}/figtree-pdf.jar" todir="${Mac_package_dir}/QuickLook Plugin/FigTreeQuickLookPlugin.qlgenerator/Contents/Resources"/>
+        <copy todir="${Mac_package_dir}">
+            <fileset dir="${common_dir}/"/>
+        </copy>
+        <copy todir="${Mac_package_dir}/QuickLook Plugin">
+            <fileset dir="${Mac_dir}/QuickLook Plugin"/>
+        </copy>
+
+        <taskdef name="bundleapp" 
+        	classname="com.oracle.appbundler.AppBundlerTask"
+        	classpath="release/Mac/appbundler-1.0.jar" 
+        	/>
+
+		<property environment="env" />
+
+		<bundleapp outputdirectory="${Mac_package_dir}"
+			name="${name} v${version}"
+			displayname="${name} v${version}"
+			identifier="uk.ac.ed.bio.figtree"
+			shortversion="1.4.1"
+        	copyright="${name} v${version}, Copyright 2006-2013, Andrew Rambaut"
+			applicationCategory="public.app-category.medical"
+			mainclassname="figtree/application/FigTreeApplication"
+           	icon="${Mac_dir}/icons/FigTree.icns"
+			>
+			<runtime dir="${env.JAVA_HOME}"/>
+			<classpath file="./dist/figtree.jar"/>
+			<classpath file="./release/Mac/lib/quaqua.jar"/>
+			<option value="-Dapple.laf.useScreenMenuBar=true"/>
+		</bundleapp>
 
         <echo message="Mac version release is finished." />
     </target>
