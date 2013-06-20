@@ -59,8 +59,8 @@ import ch.randelshofer.quaqua.QuaquaManager;
 
 public class FigTreeApplication extends MultiDocApplication {
 
-    public static final String VERSION = "1.4.0";
-    public static final String DATES = "2006-2012";
+    public static final String VERSION = "1.4.1";
+    public static final String DATES = "2006-2013";
 
     public static FigTreeApplication application;
 
@@ -127,7 +127,7 @@ public class FigTreeApplication extends MultiDocApplication {
                         if (importer.getNextBlockName().equalsIgnoreCase("FIGTREE")) {
                             importer.parseFigTreeBlock(settings);
                         }
-                    } catch (EOFException ex) {
+                        } catch (EOFException ex) {
                         break;
                     }
                 }
@@ -322,32 +322,32 @@ public class FigTreeApplication extends MultiDocApplication {
             System.setProperty("apple.awt.graphics.UseQuartz","true");
 
             // set the Quaqua Look and Feel in the UIManager
-            try {
-                // Only override the UI's necessary for ColorChooser and
-                // FileChooser:
-                Set includes = new HashSet();
-                includes.add("ColorChooser");
-                includes.add("FileChooser");
-                includes.add("Component");
-                includes.add("Browser");
-                includes.add("Tree");
-                includes.add("SplitPane");
-                includes.add("TitledBorder");
-
-                try {
-                    QuaquaManager.setIncludedUIs(includes);
-                } catch (java.lang.NoClassDefFoundError ncdfe) {
-                    // this is to protect against the figtree.jar being
-                    // run on Mac OS without Quaqua on the classpath
-                }
-
-                UIManager.setLookAndFeel(
-                    "ch.randelshofer.quaqua.QuaquaLookAndFeel"
-                );
-
-                lafLoaded = true;
-            } catch (Exception e) {
-            }
+//            try {
+//                // Only override the UI's necessary for ColorChooser and
+//                // FileChooser:
+//                Set includes = new HashSet();
+//                includes.add("ColorChooser");
+//                includes.add("FileChooser");
+//                includes.add("Component");
+//                includes.add("Browser");
+//                includes.add("Tree");
+//                includes.add("SplitPane");
+//                includes.add("TitledBorder");
+//
+//                try {
+//                    QuaquaManager. setIncludedUIs(includes);
+//                } catch (java.lang.NoClassDefFoundError ncdfe) {
+//                    // this is to protect against the figtree.jar being
+//                    // run on Mac OS without Quaqua on the classpath
+//                }
+//
+//                UIManager.setLookAndFeel(
+//                    "ch.randelshofer.quaqua.QuaquaLookAndFeel"
+//                );
+//
+//                lafLoaded = true;
+//            } catch (Exception e) {
+//            }
 
             UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
             UIManager.put("SmallSystemFont", new Font("Lucida Grande", Font.PLAIN, 11));
