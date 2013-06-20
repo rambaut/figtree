@@ -75,34 +75,47 @@ public class JSONTreeExporter implements TreeExporter {
     }
 
     private void writeTrees(Collection<? extends Tree> trees) throws IOException {
-        int nt = 0;
+        int indent = 1;
+        int treeCount = 0;
+
+        writer.println("{");
+        writer.println("\t\"trees\": [");
+
         for( Tree t : trees ) {
             final boolean isRooted = t instanceof RootedTree;
             final RootedTree rtree = isRooted ? (RootedTree)t : Utils.rootTheTree(t);
 
-            final Object name = t.getAttribute(treeNameAttributeKey);
+            StringBuilder builder = new StringBuilder();
 
-            ++nt;
-            final String treeName = (name != null) ? NexusImporter.makeIntoAllowableIdentifier(name.toString()) : "tree_" + nt;
+            appendIndent(builder, indent);
+            builder.append("\"tree\": {\n");
 
-            StringBuilder builder = new StringBuilder("\ttree ");
+            appendIndent(builder, indent + 1);
+            builder.append("\"root\": ");
+            appendTree(rtree, rtree.getRootNode(), builder, indent + 1);
 
-            builder.append(treeName);
-            builder.append(" = ");
+            appendAttributes(rtree, builder, indent + 1);
+            builder.append("\n");
 
-            // TREE & UTREE are depreciated in the NEXUS format in favour of a metacomment
-            // [&U] or [&R] after the TREE command. Andrew.
-            // TT: The [&U], [&R] should actually come *after* the " = " and be uppercase, see
-            // e.g. tree_rest in http://www.cs.nmsu.edu/~epontell/nexus/nexus_grammar .
-            // Before 2008-05-05 we incorrectly inserted it before the treeName.
-            builder.append(isRooted && !rtree.conceptuallyUnrooted() ? "[&R] " : "[&U] ");
-
-            appendAttributes(rtree, builder);
-
-            appendTree(rtree, rtree.getRootNode(), builder);
-            builder.append(";");
+            appendIndent(builder, indent);
+            if (treeCount < trees.size() - 1) {
+                builder.append("},\n");
+            } else {
+                builder.append("}\n");
+            }
 
             writer.println(builder);
+
+            treeCount ++;
+        }
+
+        writer.println("\t]");
+        writer.println("}");
+    }
+
+    private void appendIndent(StringBuilder builder, int indent) {
+        for (int i = 0; i < indent; i++) {
+            builder.append('\t');
         }
     }
 
@@ -113,20 +126,6 @@ public class JSONTreeExporter implements TreeExporter {
 
     final private String nameRegex = "^(\\w|-)+$";
 
-    /**
-     * Name suitable as token - quotes if necessary
-     * @param name to check
-     * @return the name
-     */
-    private String safeName(String name) {
-        // allow dash in names
-
-        if (!name.matches(nameRegex)) {
-            name = name.replace("\'", "\'\'");
-            return "\'" + name + "\'";
-        }
-        return name;
-    }
 
     /**
      * name suitable for printing - quotes if necessary
@@ -136,13 +135,10 @@ public class JSONTreeExporter implements TreeExporter {
      */
     private StringBuilder appendTaxonName(Taxon taxon, StringBuilder builder) {
         String name = taxon.getName();
-        if (!name.matches(nameRegex)) {
-            // JEBL way of quoting the quote character
-            name = name.replace("\'", "\'\'");
-            builder.append("\'").append(name).append("\'");
-            return builder;
+        if (name.contains("\"")) {
+            name = name.replace("\"", "\\\"");
         }
-        return builder.append(name);
+        return builder.append("\"name\": \"").append(name).append("\"");
     }
 
     /**
@@ -152,36 +148,45 @@ public class JSONTreeExporter implements TreeExporter {
      * @param node
      * @param builder
      */
-    private void appendTree(RootedTree tree, Node node, StringBuilder builder) {
+    private void appendTree(RootedTree tree, Node node, StringBuilder builder, int indent) {
+        builder.append("{\n");
+
         if (tree.isExternal(node)) {
+            appendIndent(builder, indent + 1);
             appendTaxonName(tree.getTaxon(node), builder);
-
-            appendAttributes(node, builder);
-
-            if( tree.hasLengths() ) {
-                builder.append(':');
-                builder.append(roundDouble(tree.getLength(node), 6));
-            }
         } else {
-            builder.append('(');
+            appendIndent(builder, indent + 1);
+            builder.append("\"children\": [\n");
             java.util.List<Node> children = tree.getChildren(node);
             final int last = children.size() - 1;
             for (int i = 0; i < children.size(); i++) {
-                appendTree(tree, children.get(i), builder);
-                builder.append(i == last ? ')' : ',');
+                appendIndent(builder, indent + 2);
+                appendTree(tree, children.get(i), builder, indent + 2);
+                builder.append(i == last ? "\n" : ",\n");
             }
+            appendIndent(builder, indent + 1);
+            builder.append("]");
+        }
 
-            appendAttributes(node, builder);
-
-            Node parent = tree.getParent(node);
-            // Don't write root length. This is ignored elsewhere and the nexus importer fails
-            // whet it is present.
-            if (parent != null) {
-                if (tree.hasLengths()) {
-                    builder.append(":").append(roundDouble(tree.getLength(node), 6));
-                }
+        Node parent = tree.getParent(node);
+        if (parent != null) {
+            if (tree.hasLengths()) {
+                builder.append(",\n");
+                appendIndent(builder, indent + 1);
+                builder.append("\"length\": ").append(tree.getLength(node));
             }
         }
+
+        builder.append(",\n");
+        appendIndent(builder, indent + 1);
+        builder.append("\"height\": ").append(tree.getHeight(node));
+
+        appendAttributes(node, builder, indent + 1);
+
+        builder.append("\n");
+
+        appendIndent(builder, indent);
+        builder.append("}");
     }
 
     public static double roundDouble(double value, int decimalPlace) {
@@ -191,39 +196,17 @@ public class JSONTreeExporter implements TreeExporter {
         return Math.round(value * power_of_ten) / power_of_ten;
     }
 
-    private StringBuilder appendAttributes(Attributable item, StringBuilder builder) {
-        if (!writeMetaComments) {
-            return builder;
-        }
-
-        boolean first = true;
+    private StringBuilder appendAttributes(Attributable item, StringBuilder builder, int indent) {
         for( String key : item.getAttributeNames() ) {
-            // we should replace the explicit check for name by something more general.
-            // Like a reserved character at the start (here &). however we have to worry about backward
-            // compatibility so no change yet with name.
-            boolean exclude = false;
-            if( !exclude && !key.startsWith("&") ) {
-                if (first) {
-                    builder.append("[&");
-                    first = false;
-                } else {
-                    builder.append(",");
-                }
+            if (!key.startsWith("&") ) {
+                builder.append(",\n");
+                appendIndent(builder, indent);
 
-                if( key.indexOf(' ') < 0 ) {
-                    builder.append(key);
-                } else {
-                    builder.append("\"").append(key).append("\"");
-                }
-
-                builder.append('=');
+                builder.append("\"").append(key).append("\": ");
 
                 Object value = item.getAttribute(key);
                 appendAttributeValue(value, builder);
             }
-        }
-        if (!first) {
-            builder.append("]");
         }
 
         return builder;
@@ -231,7 +214,7 @@ public class JSONTreeExporter implements TreeExporter {
 
     private StringBuilder appendAttributeValue(Object value, StringBuilder builder) {
         if (value instanceof Object[]) {
-            builder.append("{");
+            builder.append("[");
             Object[] elements = ((Object[])value);
 
             if (elements.length > 0) {
@@ -241,7 +224,7 @@ public class JSONTreeExporter implements TreeExporter {
                     appendAttributeValue(elements[i], builder);
                 }
             }
-            return builder.append("}");
+            return builder.append("]");
         }
 
         if (value instanceof Color) {
