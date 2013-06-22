@@ -35,7 +35,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
 
-    public final static boolean DEBUG_OUTLINE = false;
+    public final static boolean DEBUG_OUTLINE = true;
 
     public final String CARTOON_ATTRIBUTE_NAME = "!cartoon";
     public final String COLLAPSE_ATTRIBUTE_NAME = "!collapse";
@@ -1211,7 +1211,9 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
 
-        if (!calibrated) calibrate(g2, width, height);
+        if (!calibrated) {
+            calibrate(g2, width, height);
+        }
 
         // save graphics state which draw changes so that upon exit it can be restored
 
@@ -1557,29 +1559,10 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         if (tipLabelPainter != null && tipLabelPainter.isVisible()) {
 
             tipLabelWidth = 0.0;
-
-            // Find the longest taxon label
-            for (Node node : externalNodes) {
-
-                tipLabelPainter.calibrate(g2, node);
-                tipLabelWidth = Math.max(tipLabelWidth, tipLabelPainter.getPreferredWidth());
-            }
-
             final double tipLabelHeight = tipLabelPainter.getPreferredHeight();
 
-            // Iterate though the nodes with tip labels
-            for (Node node : treeLayoutCache.getTipLabelPathMap().keySet()) {
-                Rectangle2D labelBounds = new Rectangle2D.Double(0.0, 0.0, tipLabelWidth, tipLabelHeight);
-
-                // Get the line that represents the path for the taxon label
-                Line2D taxonPath = treeLayoutCache.getTipLabelPath(node);
-
-                // Work out how it is rotated and create a transform that matches that
-                AffineTransform taxonTransform = calculateTransform(null, taxonPath, tipLabelWidth, tipLabelHeight, true);
-
-                // and add the translated bounds to the overall bounds
-                totalTreeBounds.add(taxonTransform.createTransformedShape(labelBounds).getBounds2D());
-            }
+            // put this in a recursive function to allow for collapsed node labels
+            calibrateTipLabels(g2, tree.getRootNode(), tipLabelHeight, totalTreeBounds);
         }
 
         if (nodeLabelPainter != null && nodeLabelPainter.isVisible()) {
@@ -1734,8 +1717,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             yScale = h / treeBounds.getHeight();
 
             // and set the origin in the top left corner
-            xOffset = - totalTreeBounds.getX() - (treeBounds.getX() * xScale);
-            yOffset = - totalTreeBounds.getY();
+            xOffset = - totalTreeBounds.getX() + (treeBounds.getX() * xScale);
+            yOffset = - totalTreeBounds.getY() - (treeBounds.getY() * yScale);
 
             treeScale = xScale;
         }
@@ -1915,6 +1898,32 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         clearSelectionPaths();
 
         calibrated = true;
+    }
+
+    private void calibrateTipLabels(final Graphics2D g2, final Node node, final double tipLabelHeight, final Rectangle2D totalTreeBounds) {
+
+        if (tree.isExternal(node) || node.getAttribute(COLLAPSE_ATTRIBUTE_NAME) != null) {
+            tipLabelPainter.calibrate(g2, node);
+            double width = tipLabelPainter.getPreferredWidth();
+            tipLabelWidth = Math.max(tipLabelWidth, width);
+
+            Rectangle2D labelBounds = new Rectangle2D.Double(0.0, 0.0, width, tipLabelHeight);
+
+            // Get the line that represents the path for the taxon label
+            Line2D taxonPath = treeLayoutCache.getTipLabelPath(node);
+
+            if (taxonPath != null) {
+                // Work out how it is rotated and create a transform that matches that
+                AffineTransform taxonTransform = calculateTransform(null, taxonPath, tipLabelWidth, tipLabelHeight, true);
+
+                // and add the translated bounds to the overall bounds
+                totalTreeBounds.add(taxonTransform.createTransformedShape(labelBounds).getBounds2D());
+            }
+        } else {
+            for (Node child : tree.getChildren(node)) {
+                calibrateTipLabels(g2, child, tipLabelHeight, totalTreeBounds);
+            }
+        }
     }
 
     private AffineTransform calculateTransform(AffineTransform globalTransform, Line2D line,
