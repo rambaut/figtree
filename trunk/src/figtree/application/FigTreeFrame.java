@@ -1107,7 +1107,8 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                             exportTreeDialog.allTrees(),
                             exportTreeDialog.asDisplayed(),
                             exportTreeDialog.includeFigTreeBlock(),
-                            exportTreeDialog.includeAnnotations());
+                            exportTreeDialog.includeAnnotations(),
+                            false);
                     writer.close();
                 } catch (IOException ioe) {
                     JOptionPane.showMessageDialog(this, "Error writing tree file: " + ioe.getMessage(),
@@ -1169,7 +1170,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
     public void doCopy() {
         StringWriter writer = new StringWriter();
         try {
-            writeTreeFile(writer, ExportTreeDialog.Format.NEXUS, true, false, false, true);
+            writeTreeFile(writer, ExportTreeDialog.Format.NEXUS, true, false, false, true, true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1237,7 +1238,8 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                                  boolean writeAllTrees,
                                  boolean writeAsDisplayed,
                                  boolean writeFigTreeBlock,
-                                 boolean writeAnnotations) throws IOException {
+                                 boolean writeAnnotations,
+                                 boolean writeSelectedSubtree) throws IOException {
 
         Map<String, Object> settings = null;
         if (writeFigTreeBlock) {
@@ -1245,7 +1247,13 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
             controlPalette.getSettings(settings);
         }
 
-        List<Tree> trees = treeViewer.getTreesAsViewed();
+        List<Tree> trees = new ArrayList<Tree>();
+
+        if (writeSelectedSubtree) {
+            trees.add(treeViewer.getSelectedSubtree());
+        } else {
+            trees.addAll(treeViewer.getTreesAsViewed());
+        }
 
         switch (format) {
             case NEWICK:
