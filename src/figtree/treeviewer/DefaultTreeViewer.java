@@ -125,6 +125,10 @@ public class DefaultTreeViewer extends TreeViewer {
         return treeAsDisplayed;
     }
 
+    public RootedTree getSelectedSubtree() {
+        return treePane.getSelectedSubtree();
+    }
+
     public int getCurrentTreeIndex() {
         return currentTreeIndex;
     }

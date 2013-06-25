@@ -2,6 +2,7 @@ package figtree.treeviewer;
 
 import jebl.evolution.graphs.Node;
 import jebl.evolution.graphs.Graph;
+import jebl.evolution.io.ImportException;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.*;
 import figtree.treeviewer.decorators.*;
@@ -12,6 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.print.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -756,10 +758,9 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                     calibrated = false;
                     repaint();
                 }
-
-                for (Node child : tree.getChildren(node)) {
-                    clearSelectedHilightedNodes(child);
-                }
+            }
+            for (Node child : tree.getChildren(node)) {
+                clearSelectedHilightedNodes(child);
             }
         }
     }
@@ -1052,6 +1053,37 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     public Set<Node> getSelectedTips() {
         return selectedTips;
+    }
+
+    public RootedTree getSelectedSubtree() {
+        SimpleRootedTree newTree = new SimpleRootedTree();
+
+        getSelectedSubtree(newTree, this.tree.getRootNode(), false);
+
+        return newTree;
+    }
+
+    public Node getSelectedSubtree(SimpleRootedTree newtree, Node node, boolean isSelected) {
+        Node newNode = null;
+
+        if (!isSelected) {
+            isSelected = selectedNodes.contains(node);
+        }
+
+        if (tree.isExternal(node)) {
+            if (isSelected) {
+                newNode = newtree.createExternalNode(tree.getTaxon(node));
+            }
+        } else {
+            List<Node> children = new ArrayList<Node>();
+
+            for (Node child : tree.getChildren(node)) {
+                children.add(getSelectedSubtree(newtree, child, isSelected));
+            }
+            newNode = newtree.createInternalNode(children);
+        }
+
+        return newNode;
     }
 
     public Rectangle2D getDragRectangle() {
