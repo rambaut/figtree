@@ -87,6 +87,7 @@ public class FigTreeDefaultFileMenuFactory implements MenuFactory {
             item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK + KeyEvent.SHIFT_MASK + KeyEvent.ALT_MASK));
             menu.add(item);
 
+            /* to be added ... */
 //            menu.addSeparator();
 //
 //            item = new JMenuItem(((FigTreeFileMenuHandler)frame).getImportColourSchemeAction());
