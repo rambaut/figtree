@@ -469,81 +469,146 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     public void setSelectedNode(Node selectedNode) {
         selectedNodes.clear();
         selectedTips.clear();
-        addSelectedNode(selectedNode);
+        addSelectedNode(selectedNode, false, false);
     }
 
     public void setSelectedTip(Node selectedTip) {
         selectedNodes.clear();
         selectedTips.clear();
-        addSelectedTip(selectedTip);
+        addSelectedTip(selectedTip, false, false);
     }
 
     public void setSelectedClade(Node selectedNode) {
         selectedNodes.clear();
         selectedTips.clear();
-        addSelectedClade(selectedNode);
+        addSelectedClade(selectedNode, false, false);
     }
 
     public void setSelectedTips(Node selectedNode) {
         selectedNodes.clear();
         selectedTips.clear();
-        addSelectedTips(selectedNode);
+        addSelectedTips(selectedNode, false);
     }
 
     private boolean canSelectNode(Node selectedNode) {
         return selectedNode != null;
     }
+
     public void addSelectedNode(Node selectedNode) {
-        if ( canSelectNode(selectedNode) ) {
-            selectedNodes.add(selectedNode);
-        }
+        addSelectedNode(selectedNode, false, false);
+    }
+
+    public void addSelectedNode(Node selectedNode, boolean toggle, boolean extend) {
+        amendNodeSelection(selectedNode, toggle, extend);
         fireSelectionChanged();
         clearSelectionPaths();
         repaint();
     }
 
     public void addSelectedTip(Node selectedTip) {
-        if (selectedTip != null) {
-            this.selectedNodes
-                    .add(selectedTip);
-        }
+        addSelectedTip(selectedTip, false, false);
+    }
+
+    public void addSelectedTip(Node selectedTip, boolean toggle, boolean extend) {
+        amendNodeSelection(selectedTip, toggle, extend);
         selectTipsFromSelectedNodes();
         fireSelectionChanged();
         clearSelectionPaths();
         repaint();
     }
 
+
     public void addSelectedClade(Node selectedNode) {
-        if ( canSelectNode(selectedNode) ) {
-            addSelectedChildClades(selectedNode);
+        addSelectedClade(selectedNode, false, false);
+    }
+
+    public void addSelectedClade(Node selectedNode, boolean toggle, boolean extend) {
+        if (canSelectNode(selectedNode)) {
+            amendCladeSelection(selectedNode, toggle, extend);
         }
         fireSelectionChanged();
         clearSelectionPaths();
         repaint();
     }
 
-    private void addSelectedChildClades(Node selectedNode) {
-        selectedNodes.add(selectedNode);
-        for (Node child : tree.getChildren(selectedNode)) {
-            addSelectedChildClades(child);
+    private void amendNodeSelection(Node selectedNode, boolean toggle, boolean extend) {
+        if ( !canSelectNode(selectedNode) ) {
+            return;
+        }
+
+        if (extend) {
+            Set<Node> nodeSet = new HashSet<Node>(selectedNodes);
+            nodeSet.add(selectedNode);
+            Node mrca = RootedTreeUtils.getCommonAncestorNode(tree, nodeSet);
+
+            for (Node node : nodeSet) {
+                while (node != null && node != mrca) {
+                    amendNodeSelection(node, false, false);
+                    node = tree.getParent(node);
+                }
+            }
+        } else {
+            if (toggle && selectedNodes.contains(selectedNode)) {
+                selectedNodes.remove(selectedNode);
+            } else {
+                selectedNodes.add(selectedNode);
+            }
         }
     }
+
+    private void amendCladeSelection(Node selectedNode, boolean toggle, boolean extend) {
+        if ( !canSelectNode(selectedNode) ) {
+            return;
+        }
+
+        if (extend) {
+            Set<Node> nodeSet = new HashSet<Node>(selectedNodes);
+            nodeSet.add(selectedNode);
+            Node mrca = RootedTreeUtils.getCommonAncestorNode(tree, nodeSet);
+
+            for (Node node : nodeSet) {
+                while (node != null && node != mrca) {
+                    amendCladeSelection(node, false, false);
+                    node = tree.getParent(node);
+                }
+            }
+        } else {
+            if (toggle && selectedNodes.contains(selectedNode)) {
+                selectedNodes.remove(selectedNode);
+            } else {
+                selectedNodes.add(selectedNode);
+            }
+        }
+        for (Node child : tree.getChildren(selectedNode)) {
+            amendCladeSelection(child, toggle, false);
+        }
+    }
+
 
     public void addSelectedTips(Node selectedNode) {
+        addSelectedTips(selectedNode, false);
+    }
+
+    public void addSelectedTips(Node selectedNode, boolean toggle) {
         if (selectedNode != null) {
-            addSelectedChildTips(selectedNode);
+            addSelectedChildTips(selectedNode, toggle);
         }
         fireSelectionChanged();
         clearSelectionPaths();
         repaint();
     }
 
-    private void addSelectedChildTips(Node selectedNode) {
+    private void addSelectedChildTips(Node selectedNode, boolean toggle) {
         if (tree.isExternal(selectedNode)) {
-            selectedTips.add(selectedNode);
-        }
-        for (Node child : tree.getChildren(selectedNode)) {
-            addSelectedChildTips(child);
+            if (toggle && selectedTips.contains(selectedNode)) {
+                selectedTips.remove(selectedNode);
+            } else {
+                selectedTips.add(selectedNode);
+            }
+        } else {
+            for (Node child : tree.getChildren(selectedNode)) {
+                addSelectedChildTips(child, toggle);
+            }
         }
     }
 
@@ -551,7 +616,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         Set<Node> nodes = new HashSet<Node>(selectedNodes);
         selectedNodes.clear();
         for (Node node : nodes) {
-            addSelectedClade(node);
+            addSelectedClade(node, false, false);
         }
         fireSelectionChanged();
         clearSelectionPaths();
@@ -560,7 +625,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     public void selectTipsFromSelectedNodes() {
         for (Node node : selectedNodes) {
-            addSelectedChildTips(node);
+            addSelectedChildTips(node, false);
         }
         selectedNodes.clear();
         fireSelectionChanged();
@@ -571,7 +636,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     public void selectNodesFromSelectedTips() {
         if (selectedTips.size() > 0) {
             Node node = RootedTreeUtils.getCommonAncestorNode(tree, selectedTips);
-            addSelectedClade(node);
+            addSelectedClade(node, false, false);
         }
 
         selectedTips.clear();
@@ -1063,7 +1128,15 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         return newTree;
     }
 
-    public Node getSelectedSubtree(SimpleRootedTree newtree, Node node, boolean isSelected) {
+    /**
+     * Returns a new node structure within newTree that contains the subtree subtended by selected
+     * nodes of the current tree.
+     * @param newTree
+     * @param node
+     * @param isSelected
+     * @return
+     */
+    public Node getSelectedSubtree(SimpleRootedTree newTree, Node node, boolean isSelected) {
         Node newNode = null;
 
         if (!isSelected) {
@@ -1072,15 +1145,15 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
         if (tree.isExternal(node)) {
             if (isSelected) {
-                newNode = newtree.createExternalNode(tree.getTaxon(node));
+                newNode = newTree.createExternalNode(tree.getTaxon(node));
             }
         } else {
             List<Node> children = new ArrayList<Node>();
 
             for (Node child : tree.getChildren(node)) {
-                children.add(getSelectedSubtree(newtree, child, isSelected));
+                children.add(getSelectedSubtree(newTree, child, isSelected));
             }
-            newNode = newtree.createInternalNode(children);
+            newNode = newTree.createInternalNode(children);
         }
 
         return newNode;

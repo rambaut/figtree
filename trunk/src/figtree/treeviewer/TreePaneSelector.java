@@ -110,7 +110,11 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
             treePane.setCrosshairShown(false);
 
             Node selectedNode = treePane.getNodeAt((Graphics2D) treePane.getGraphics(), mouseEvent.getPoint());
-            if (!mouseEvent.isShiftDown()) {
+
+            boolean extendSelection = mouseEvent.isShiftDown();
+            boolean invertSelection = isCommandKeyDown(mouseEvent);
+
+            if (!extendSelection && !invertSelection) {
                 treePane.clearSelection();
             }
 
@@ -125,13 +129,13 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
 
             switch (mode) {
                 case NODE:
-                    treePane.addSelectedNode(selectedNode);
+                    treePane.addSelectedNode(selectedNode, invertSelection, extendSelection);
                     break;
                 case CLADE:
-                    treePane.addSelectedClade(selectedNode);
+                    treePane.addSelectedClade(selectedNode, invertSelection, extendSelection);
                     break;
                 case TAXA:
-                    treePane.addSelectedTip(selectedNode);
+                    treePane.addSelectedTip(selectedNode, invertSelection, extendSelection);
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown SelectionMode: " + selectionMode.name());
@@ -158,7 +162,10 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
             if (treePane.getDragRectangle() != null) {
                 Set<Node> selectedNodes = treePane.getNodesAt((Graphics2D) treePane.getGraphics(), treePane.getDragRectangle().getBounds());
 
-                if (!mouseEvent.isShiftDown()) {
+                boolean extendSelection = mouseEvent.isShiftDown();
+                boolean invertSelection = isCommandKeyDown(mouseEvent);
+
+                if (!extendSelection && !invertSelection) {
                     treePane.clearSelection();
                 }
 
@@ -174,13 +181,13 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
                 for (Node selectedNode : selectedNodes) {
                     switch (mode) {
                         case NODE:
-                            treePane.addSelectedNode(selectedNode);
+                            treePane.addSelectedNode(selectedNode, invertSelection, extendSelection);
                             break;
                         case CLADE:
-                            treePane.addSelectedClade(selectedNode);
+                            treePane.addSelectedClade(selectedNode, invertSelection, extendSelection);
                             break;
                         case TAXA:
-                            treePane.addSelectedTip(selectedNode);
+                            treePane.addSelectedTip(selectedNode, invertSelection, extendSelection);
                             break;
                         default:
                             throw new IllegalArgumentException("Unknown SelectionMode: " + selectionMode.name());
