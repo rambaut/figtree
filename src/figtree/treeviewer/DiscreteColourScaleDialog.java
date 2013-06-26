@@ -37,7 +37,7 @@ public class DiscreteColourScaleDialog {
 
     private JTable table;
 
-    private JComboBox colourSchemeCombo = new JComboBox(new String[] { HSB_SPECTRUM, FIXED_COLOURS} );
+    private JComboBox colourSchemeCombo = new JComboBox(new String[] { HSB_SPECTRUM /*, FIXED_COLOURS */} );
 
     CardLayout cardLayout = new CardLayout();
     private final JPanel colourSchemePanel;
@@ -55,10 +55,10 @@ public class DiscreteColourScaleDialog {
         this.frame = frame;
 
         colourSchemeNamePanelMap.put(HSB_SPECTRUM, new HSBColourSchemePanel());
-        colourSchemeNamePanelMap.put(FIXED_COLOURS, new FixedColourSchemePanel());
+//        colourSchemeNamePanelMap.put(FIXED_COLOURS, new FixedColourSchemePanel());
 
-        colourSchemeClassNameMap.put(HSBContinuousColourDecorator.class, HSB_SPECTRUM);
-        colourSchemeClassNameMap.put(FixedDiscreteColourDecorator.class, FIXED_COLOURS);
+        colourSchemeClassNameMap.put(HSBDiscreteColourDecorator.class, HSB_SPECTRUM);
+//        colourSchemeClassNameMap.put(FixedDiscreteColourDecorator.class, FIXED_COLOURS);
 
 
         colourSchemePanel = new JPanel(cardLayout);
