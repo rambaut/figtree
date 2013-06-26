@@ -34,6 +34,7 @@ import jebl.evolution.alignments.BasicAlignment;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.io.*;
 import jebl.evolution.taxa.Taxon;
+import jebl.evolution.trees.RootedTree;
 import jebl.evolution.trees.Tree;
 import jebl.util.Attributable;
 import jam.controlpalettes.BasicControlPalette;
@@ -1165,7 +1166,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
     public final void doExportGraphic() {
         ExportDialog export = new ExportDialog();
-        export.showExportDialog( this, "Export view as ...", treeViewer.getContentPane(), "export" );
+        export.showExportDialog(this, "Export view as ...", treeViewer.getContentPane(), "export");
     }
 
 
@@ -1293,27 +1294,32 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         List<Tree> trees = new ArrayList<Tree>();
 
         if (writeSelectedSubtree) {
-            trees.add(treeViewer.getSelectedSubtree());
+            RootedTree tree = treeViewer.getSelectedSubtree();
+            if (tree != null) {
+                trees.add(tree);
+            }
         } else {
             trees.addAll(treeViewer.getTreesAsViewed());
         }
 
-        switch (format) {
-            case NEWICK:
-                NewickExporter newickExporter = new NewickExporter(writer);
-                newickExporter.exportTrees(trees);
-                break;
-            case NEXUS:
-                FigTreeNexusExporter nexusExporter = new FigTreeNexusExporter(writer, writeAnnotations);
-                nexusExporter.exportTrees(trees);
-                if (settings != null) {
-                    nexusExporter.writeFigTreeBlock(settings);
-                }
-                break;
-            case JSON:
-                JSONTreeExporter jsonExporter = new JSONTreeExporter(writer, writeAnnotations);
-                jsonExporter.exportTrees(trees);
-                break;
+        if (trees.size() > 0) {
+            switch (format) {
+                case NEWICK:
+                    NewickExporter newickExporter = new NewickExporter(writer);
+                    newickExporter.exportTrees(trees);
+                    break;
+                case NEXUS:
+                    FigTreeNexusExporter nexusExporter = new FigTreeNexusExporter(writer, writeAnnotations);
+                    nexusExporter.exportTrees(trees);
+                    if (settings != null) {
+                        nexusExporter.writeFigTreeBlock(settings);
+                    }
+                    break;
+                case JSON:
+                    JSONTreeExporter jsonExporter = new JSONTreeExporter(writer, writeAnnotations);
+                    jsonExporter.exportTrees(trees);
+                    break;
+            }
         }
 
         writer.close();
@@ -1400,7 +1406,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
     @Override
     public Action getImportColourSchemeAction() {
-    return importColourSchemeAction;
+        return importColourSchemeAction;
     }
 
     @Override

@@ -1125,6 +1125,11 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
         getSelectedSubtree(newTree, this.tree.getRootNode(), false);
 
+        if (newTree.getRootNode() == null) {
+            // no tree was constructed, most likely because only one tip was selected
+            return null;
+        }
+
         return newTree;
     }
 
@@ -1136,24 +1141,48 @@ public class TreePane extends JComponent implements PainterListener, Printable {
      * @param isSelected
      * @return
      */
-    public Node getSelectedSubtree(SimpleRootedTree newTree, Node node, boolean isSelected) {
-        Node newNode = null;
+    private Node getSelectedSubtree(SimpleRootedTree newTree, Node node, boolean isSelected) {
+        Node newNode;
 
-        if (!isSelected) {
-            isSelected = selectedNodes.contains(node);
-        }
 
         if (tree.isExternal(node)) {
-            if (isSelected) {
+            if (isSelected || selectedNodes.contains(node)) {
                 newNode = newTree.createExternalNode(tree.getTaxon(node));
+                newTree.setHeight(newNode, tree.getHeight(node));
+                for (String key : node.getAttributeNames()) {
+                    newNode.setAttribute(key, node.getAttribute(key));
+                }
+            } else {
+                newNode = null;
             }
         } else {
             List<Node> children = new ArrayList<Node>();
 
             for (Node child : tree.getChildren(node)) {
-                children.add(getSelectedSubtree(newTree, child, isSelected));
+                Node subtree = getSelectedSubtree(newTree, child, isSelected);
+                if (subtree != null) {
+                    children.add(subtree);
+                }
             }
-            newNode = newTree.createInternalNode(children);
+
+            if (children.size() == 0) {
+                if (selectedNodes.contains(node)) {
+                    // if this node was selected but none of its children then include the entire
+                    // descendent clade...
+                    newNode = getSelectedSubtree(newTree, node, true);
+                } else {
+                    newNode = null;
+                }
+            } else if (children.size() == 1) {
+                // just one child so pass it up...
+                newNode = children.get(0);
+            } else {
+                newNode = newTree.createInternalNode(children);
+                newTree.setHeight(newNode, tree.getHeight(node));
+                for (String key : node.getAttributeNames()) {
+                    newNode.setAttribute(key, node.getAttribute(key));
+                }
+            }
         }
 
         return newNode;
