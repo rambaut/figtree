@@ -20,6 +20,7 @@
 
 package figtree.treeviewer.painters;
 
+import figtree.treeviewer.TreeViewerListener;
 import jam.controlpalettes.AbstractController;
 import jam.panels.OptionsPanel;
 
@@ -69,7 +70,7 @@ public class ScaleBarPainterController extends AbstractController {
     public static String DEFAULT_NUMBER_FORMATTING = "#.####";
     public static float DEFAULT_LINE_WIDTH = 1.0f;
 
-    public ScaleBarPainterController(final ScaleBarPainter scaleBarPainter) {
+    public ScaleBarPainterController(final ScaleBarPainter scaleBarPainter, final TreeViewer treeViewer) {
         this.scaleBarPainter = scaleBarPainter;
 
         final String defaultFontName = PREFS.get(CONTROLLER_KEY + "." + FONT_NAME_KEY, DEFAULT_FONT_NAME);
@@ -191,6 +192,18 @@ public class ScaleBarPainterController extends AbstractController {
                 }
             }
         });
+
+        treeViewer.addTreeViewerListener(new TreeViewerListener() {
+            public void treeChanged() {
+                scaleBarPainter.calculateScaleRange();
+                scaleBarPainter.firePainterChanged();
+            }
+
+            public void treeSettingsChanged() {
+                // nothing to do
+            }
+        });
+
     }
 
     public JComponent getTitleComponent() {

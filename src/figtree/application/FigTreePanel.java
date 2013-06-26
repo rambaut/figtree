@@ -99,7 +99,7 @@ public class FigTreePanel extends JPanel {
         // Create a scale controller
         final ScaleBarPainter scaleBarPainter = new ScaleBarPainter();
         scaleBarPainter.setVisible(true);
-        controlPalette.addController(new ScaleBarPainterController(scaleBarPainter));
+        controlPalette.addController(new ScaleBarPainterController(scaleBarPainter, treeViewer));
         treeViewer.addScalePainter(scaleBarPainter);
 
         // Create a scale axis controller
@@ -107,7 +107,7 @@ public class FigTreePanel extends JPanel {
         final ScaleGridPainter scaleGridPainter = new ScaleGridPainter();
         scaleAxisPainter.setVisible(false);
         scaleGridPainter.setVisible(false);
-        controlPalette.addController(new ScaleAxisPainterController(scaleAxisPainter, scaleGridPainter));
+        controlPalette.addController(new ScaleAxisPainterController(scaleAxisPainter, scaleGridPainter, treeViewer));
         treeViewer.addScalePainter(scaleAxisPainter);
         treeViewer.setScaleGridPainter(scaleGridPainter);
 
