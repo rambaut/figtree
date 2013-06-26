@@ -34,9 +34,9 @@ import java.util.List;
  * If the data take more values than colors, then they will wrap around
  *
  * @author Andrew Rambaut
- * @version $Id: DiscreteColorDecorator.java 639 2007-02-15 10:05:28Z rambaut $
+ * @version $Id: DiscreteColourDecorator.java 639 2007-02-15 10:05:28Z rambaut $
  */
-public class DiscreteColorDecorator extends ColourDecorator {
+public class DiscreteColourDecorator extends ColourDecorator {
 
     public static Color[] DEFAULT_PAINTS = new Color[] {
             new Color(64,35,225),
@@ -69,16 +69,16 @@ public class DiscreteColorDecorator extends ColourDecorator {
             new Color(120,128,17)
     };
 
-    public DiscreteColorDecorator() {
+    public DiscreteColourDecorator() {
         super(null);
         colours = DEFAULT_PAINTS;
     }
 
-    public DiscreteColorDecorator(String attributeName) {
+    public DiscreteColourDecorator(String attributeName) {
         super(attributeName);
     }
 
-    public DiscreteColorDecorator(String attributeName, Set<? extends Attributable> items) {
+    public DiscreteColourDecorator(String attributeName, Set<? extends Attributable> items) {
         super(attributeName, items);
     }
 

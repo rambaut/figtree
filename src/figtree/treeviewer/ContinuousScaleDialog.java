@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
  * @author			Andrew Rambaut
  * @version			$Id$
  */
+@Deprecated
 public class ContinuousScaleDialog {
 
     public static class ScaleSettings {

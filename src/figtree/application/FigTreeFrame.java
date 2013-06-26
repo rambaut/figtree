@@ -26,7 +26,7 @@ import com.itextpdf.text.pdf.DefaultFontMapper;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
-import figtree.treeviewer.decorators.DiscreteColorDecorator;
+import figtree.treeviewer.decorators.DiscreteColourDecorator;
 import figtree.treeviewer.decorators.HSBDiscreteColourDecorator;
 import figtree.treeviewer.painters.StatesPainter;
 import jebl.evolution.alignments.Alignment;
@@ -921,7 +921,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
                 // Hack to show tips states...
                 String[] annotationNames = new String[annotations.keySet().size()];
-                DiscreteColorDecorator[] decorators = new DiscreteColorDecorator[annotations.keySet().size()];
+                DiscreteColourDecorator[] decorators = new DiscreteColourDecorator[annotations.keySet().size()];
 
                 int i = 0;
                 for (AnnotationDefinition definition: annotations.keySet()) {
@@ -1066,6 +1066,49 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
     }
 
     protected boolean importCharactersFromFile(File file) throws FileNotFoundException, IOException {
+
+        final String fileName = file.getName();
+        SequenceImporter importer = new NexusImporter(new FileReader(file));
+        try {
+            Alignment alignment = new BasicAlignment(importer.importSequences());
+
+            treeViewer.setCharacters(alignment);
+        } catch (ImportException ie) {
+            JOptionPane.showMessageDialog(this, "Error reading characters file: " + ie.getMessage(),
+                    "Import Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void doImportColourScheme() {
+
+        FileDialog dialog = new FileDialog(this,
+                "Import Colour Scheme...",
+                FileDialog.LOAD);
+
+        dialog.setVisible(true);
+        if (dialog.getFile() != null) {
+            File file = new File(dialog.getDirectory(), dialog.getFile());
+
+            try {
+                importColourSchemeFromFile(file);
+            } catch (FileNotFoundException fnfe) {
+                JOptionPane.showMessageDialog(this, "Unable to open file: File not found",
+                        "Unable to open file",
+                        JOptionPane.ERROR_MESSAGE);
+            } catch (IOException ioe) {
+                JOptionPane.showMessageDialog(this, "Unable to read file: " + ioe.getMessage(),
+                        "Unable to read file",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+    }
+
+    protected boolean importColourSchemeFromFile(File file) throws FileNotFoundException, IOException {
 
         final String fileName = file.getName();
         SequenceImporter importer = new NexusImporter(new FileReader(file));
@@ -1355,6 +1398,16 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         return treeViewer.getContentPane();
     }
 
+    @Override
+    public Action getImportColourSchemeAction() {
+    return importColourSchemeAction;
+    }
+
+    @Override
+    public Action getExportColourSchemeAction() {
+        return exportColourSchemeAction;
+    }
+
     public Action getExportTreesAction() {
         return exportTreesAction;
     }
@@ -1468,6 +1521,18 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
     private AbstractAction importCharactersAction = new AbstractAction("Import Characters...") {
         public void actionPerformed(ActionEvent ae) {
             doImportCharacters();
+        }
+    };
+
+    private AbstractAction importColourSchemeAction = new AbstractAction("Import Colour Scheme...") {
+        public void actionPerformed(ActionEvent ae) {
+            doImportColourScheme();
+        }
+    };
+
+    private AbstractAction exportColourSchemeAction = new AbstractAction("Export Colour Scheme...") {
+        public void actionPerformed(ActionEvent ae) {
+//            doExportColourScheme();
         }
     };
 

@@ -24,16 +24,10 @@ import figtree.treeviewer.AttributeColourController;
 import figtree.treeviewer.TreePane;
 import figtree.treeviewer.decorators.*;
 import jam.controlpalettes.ControlPalette;
-import jebl.evolution.graphs.Node;
-import jebl.evolution.trees.Tree;
-import jebl.util.Attributable;
-import jebl.util.NumberFormatter;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-import java.util.Set;
 
 /**
  * @author Andrew Rambaut
@@ -82,8 +76,8 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
         preferredHeight = fm.getHeight();
         preferredWidth = 0;
 
-        if (colourDecorator instanceof DiscreteColorDecorator) {
-            for (Object value : ((DiscreteColorDecorator)colourDecorator).getValues()) {
+        if (colourDecorator instanceof DiscreteColourDecorator) {
+            for (Object value : ((DiscreteColourDecorator)colourDecorator).getValues()) {
                 Rectangle2D rect = fm.getStringBounds(value.toString(), g2);
                 if (rect.getWidth() > preferredWidth) {
                     preferredWidth = rect.getWidth();
@@ -154,9 +148,9 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
 
         y += yDelta;
 
-        if (colourDecorator instanceof DiscreteColorDecorator) {
-            for (Object value : ((DiscreteColorDecorator)colourDecorator).getValues()) {
-                g2.setPaint(((DiscreteColorDecorator)colourDecorator).getColor(value));
+        if (colourDecorator instanceof DiscreteColourDecorator) {
+            for (Object value : ((DiscreteColourDecorator)colourDecorator).getValues()) {
+                g2.setPaint(((DiscreteColourDecorator)colourDecorator).getColor(value));
                 Rectangle2D rect = new Rectangle2D.Double(xOffset1, y, labelBounds.getHeight(), labelBounds.getHeight());
                 g2.fill(rect);
                 g2.drawString(value.toString(), xOffset2, y + yOffset);

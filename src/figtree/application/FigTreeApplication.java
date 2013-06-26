@@ -127,7 +127,7 @@ public class FigTreeApplication extends MultiDocApplication {
                         if (importer.getNextBlockName().equalsIgnoreCase("FIGTREE")) {
                             importer.parseFigTreeBlock(settings);
                         }
-                        } catch (EOFException ex) {
+                    } catch (EOFException ex) {
                         break;
                     }
                 }
@@ -144,7 +144,7 @@ public class FigTreeApplication extends MultiDocApplication {
 
             controlPalette.setSettings(settings);
 
-	        treeViewer.getContentPane().setSize(width, height);
+            treeViewer.getContentPane().setSize(width, height);
 
             OutputStream stream;
             if (graphicFileName != null) {
@@ -153,52 +153,52 @@ public class FigTreeApplication extends MultiDocApplication {
                 stream = System.out;
             }
 
-	        Properties p = new Properties();
+            Properties p = new Properties();
 //	        p.setProperty("PageSize","A5");
-	        VectorGraphics g;
+            VectorGraphics g;
 
-	        if (graphicFormat.equals("PDF")) {
+            if (graphicFormat.equals("PDF")) {
                 if (graphicFileName != null) {
                     System.out.println("Creating PDF graphic: " + graphicFileName);
                 }
-		        g = new PDFGraphics2D(stream, new Dimension(width, height));
-	        } else if (graphicFormat.equals("PS")) {
+                g = new PDFGraphics2D(stream, new Dimension(width, height));
+            } else if (graphicFormat.equals("PS")) {
                 if (graphicFileName != null) {
                     System.out.println("Creating PS graphic: " + graphicFileName);
                 }
-		        g = new PSGraphics2D(stream, new Dimension(width, height));
-	        } else if (graphicFormat.equals("EMF")) {
+                g = new PSGraphics2D(stream, new Dimension(width, height));
+            } else if (graphicFormat.equals("EMF")) {
                 if (graphicFileName != null) {
                     System.out.println("Creating EMF graphic: " + graphicFileName);
                 }
-		        g = new EMFGraphics2D(stream, new Dimension(width, height));
-	        } else if (graphicFormat.equals("SVG")) {
+                g = new EMFGraphics2D(stream, new Dimension(width, height));
+            } else if (graphicFormat.equals("SVG")) {
                 if (graphicFileName != null) {
                     System.out.println("Creating SVG graphic: " + graphicFileName);
                 }
-		        g = new SVGGraphics2D(stream, new Dimension(width, height));
-	        } else if (graphicFormat.equals("SWF")) {
+                g = new SVGGraphics2D(stream, new Dimension(width, height));
+            } else if (graphicFormat.equals("SWF")) {
                 if (graphicFileName != null) {
                     System.out.println("Creating SWF graphic: " + graphicFileName);
                 }
-		        g = new SWFGraphics2D(stream, new Dimension(width, height));
-	        } else if (graphicFormat.equals("GIF")) {
+                g = new SWFGraphics2D(stream, new Dimension(width, height));
+            } else if (graphicFormat.equals("GIF")) {
                 if (graphicFileName != null) {
                     System.out.println("Creating GIF graphic: " + graphicFileName);
                 }
-		        g = new GIFGraphics2D(stream, new Dimension(width, height));
+                g = new GIFGraphics2D(stream, new Dimension(width, height));
 //	        } else if (graphicFormat.equals("PNG")) {
 //		        g = new PNGGraphics2D(file, new Dimension(width, height));
 //	        } else if (graphicFormat.equals("JPEG")) {
 //		        g = new JPEGGraphics2D(file, new Dimension(width, height));
-	        } else {
-				throw new RuntimeException("Unknown graphic format");
-	        }
+            } else {
+                throw new RuntimeException("Unknown graphic format");
+            }
 
-	        g.setProperties(p);
-	        g.startExport();
-			treeViewer.getContentPane().print(g);
-	        g.endExport();
+            g.setProperties(p);
+            g.startExport();
+            treeViewer.getContentPane().print(g);
+            g.endExport();
 
         } catch(ImportException ie) {
             throw new RuntimeException("Error writing graphic file: " + ie);
@@ -230,7 +230,7 @@ public class FigTreeApplication extends MultiDocApplication {
         centreLine("http://jebl.sourceforge.net/", 60);
         centreLine("Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, ", 60);
         centreLine("Tulio de Oliveira, Oliver Pybus, Beth Shapiro & Marc Suchard", 60);
-	    System.out.println();
+        System.out.println();
     }
 
     public static void printUsage(Arguments arguments) {
@@ -239,9 +239,11 @@ public class FigTreeApplication extends MultiDocApplication {
         System.out.println();
         System.out.println("  Example: figtree test.tree");
         System.out.println("  Example: figtree -graphic PDF test.tree test.pdf");
-	    System.out.println("  Example: figtree -graphic GIF -width 320 -height 320 test.tree test.gif");
+        System.out.println("  Example: figtree -graphic GIF -width 320 -height 320 test.tree test.gif");
         System.out.println();
     }
+
+    private static boolean lafLoaded = false;
 
     // Main entry point
     static public void main(String[] args) {
@@ -250,12 +252,12 @@ public class FigTreeApplication extends MultiDocApplication {
                 new Arguments.Option[] {
                         new Arguments.StringOption("graphic", new String[] {
                                 "PDF", "SVG", "SWF", "PS", "EMF",
-		                        // "PNG",
-		                        "GIF",
-		                        // "JPEG"
+                                // "PNG",
+                                "GIF",
+                                // "JPEG"
                         }, false, "produce a graphic with the given format"),
-		                new Arguments.IntegerOption("width", "the width of the graphic in pixels"),
-		                new Arguments.IntegerOption("height", "the height of the graphic in pixels"),
+                        new Arguments.IntegerOption("width", "the width of the graphic in pixels"),
+                        new Arguments.IntegerOption("height", "the height of the graphic in pixels"),
                         new Arguments.Option("help", "option to print this message")
                 });
 
@@ -278,16 +280,16 @@ public class FigTreeApplication extends MultiDocApplication {
 
         if (arguments.hasOption("graphic")) {
 
-	        int width = 800;
-	        int height = 600;
+            int width = 800;
+            int height = 600;
 
-	        if (arguments.hasOption("width")) {
-		        width = arguments.getIntegerOption("width");
-	        }
+            if (arguments.hasOption("width")) {
+                width = arguments.getIntegerOption("width");
+            }
 
-	        if (arguments.hasOption("height")) {
-		        height = arguments.getIntegerOption("height");
-	        }
+            if (arguments.hasOption("height")) {
+                height = arguments.getIntegerOption("height");
+            }
 
             // command line version...
             String graphicFormat = arguments.getStringOption("graphic");
@@ -309,8 +311,6 @@ public class FigTreeApplication extends MultiDocApplication {
             }
         }
 
-        boolean lafLoaded = false;
-
         if (Utils.isMacOSX()) {
             if (Utils.getMacOSXMajorVersionNumber() >= 5) {
                 System.setProperty("apple.awt.brushMetalLook","true");
@@ -321,33 +321,40 @@ public class FigTreeApplication extends MultiDocApplication {
             System.setProperty("apple.awt.showGrowBox","true");
             System.setProperty("apple.awt.graphics.UseQuartz","true");
 
-            // set the Quaqua Look and Feel in the UIManager
-//            try {
-//                // Only override the UI's necessary for ColorChooser and
-//                // FileChooser:
-//                Set includes = new HashSet();
-//                includes.add("ColorChooser");
-//                includes.add("FileChooser");
-//                includes.add("Component");
-//                includes.add("Browser");
-//                includes.add("Tree");
-//                includes.add("SplitPane");
-//                includes.add("TitledBorder");
-//
-//                try {
-//                    QuaquaManager. setIncludedUIs(includes);
-//                } catch (java.lang.NoClassDefFoundError ncdfe) {
-//                    // this is to protect against the figtree.jar being
-//                    // run on Mac OS without Quaqua on the classpath
-//                }
-//
-//                UIManager.setLookAndFeel(
-//                    "ch.randelshofer.quaqua.QuaquaLookAndFeel"
-//                );
-//
-//                lafLoaded = true;
-//            } catch (Exception e) {
-//            }
+            try {
+                // set the Quaqua Look and Feel in the UIManager
+                javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+                    public void run() {
+                        try {
+                            // Only override the UI's necessary for ColorChooser and
+                            // FileChooser:
+                            Set includes = new HashSet();
+                            includes.add("ColorChooser");
+                            includes.add("FileChooser");
+                            includes.add("Component");
+                            includes.add("Browser");
+                            includes.add("Tree");
+                            includes.add("SplitPane");
+                            includes.add("TitledBorder");
+
+                            try {
+                                QuaquaManager.setIncludedUIs(includes);
+                            } catch (java.lang.NoClassDefFoundError ncdfe) {
+                                // this is to protect against the figtree.jar being
+                                // run on Mac OS without Quaqua on the classpath
+                            }
+
+                            UIManager.setLookAndFeel(
+                                    "ch.randelshofer.quaqua.QuaquaLookAndFeel"
+                            );
+
+                            lafLoaded = true;
+                        } catch (Exception e) {
+                        }
+                    }
+                });
+            } catch (Exception e) {
+            }
 
             UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
             UIManager.put("SmallSystemFont", new Font("Lucida Grande", Font.PLAIN, 11));
@@ -355,9 +362,18 @@ public class FigTreeApplication extends MultiDocApplication {
 
         if (!lafLoaded) {
             try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e1) {
-                e1.printStackTrace();
+                // set the System Look and Feel in the UIManager
+                javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+                    public void run() {
+                        try {
+                            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 

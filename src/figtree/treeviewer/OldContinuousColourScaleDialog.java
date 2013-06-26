@@ -1,17 +1,12 @@
 package figtree.treeviewer;
 
 import figtree.treeviewer.decorators.Decorator;
-import figtree.treeviewer.decorators.DiscreteColorDecorator;
 import jam.panels.OptionsPanel;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import java.awt.event.*;
 import java.awt.*;
 
 import figtree.ui.components.RealNumberField;
@@ -21,6 +16,7 @@ import figtree.ui.components.ColorWellButton;
  * @author			Andrew Rambaut
  * @version			$Id$
  */
+@Deprecated
 public class OldContinuousColourScaleDialog {
 
     public static class ColourSettings {

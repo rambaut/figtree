@@ -1,6 +1,6 @@
 package figtree.treeviewer;
 
-import figtree.treeviewer.decorators.HSBDiscreteColourDecorator;
+import figtree.treeviewer.decorators.*;
 import figtree.ui.components.RangeSlider;
 import jam.panels.OptionsPanel;
 
@@ -28,30 +28,55 @@ import java.util.*;
 public class DiscreteColourScaleDialog {
     private static final int SLIDER_RANGE = 1000;
 
+    private static final String HSB_SPECTRUM = "HSB Spectrum";
+    private static final String FIXED_COLOURS = "Fixed Colours";
+
     private JFrame frame;
 
-    private HSBDiscreteColourDecorator decorator;
+    private DiscreteColourDecorator decorator;
 
     private JTable table;
 
-    private JComboBox primaryAxisCombo = new JComboBox(HSBDiscreteColourDecorator.Axis.values());
-    private SpinnerNumberModel secondaryCountSpinnerModel = new SpinnerNumberModel(2, 1, 100, 1);
-    private JSpinner secondaryCountSpinner = new JSpinner(secondaryCountSpinnerModel);
+    private JComboBox colourSchemeCombo = new JComboBox(new String[] { HSB_SPECTRUM, FIXED_COLOURS} );
 
-    private RangeSlider hueSlider;
-    private RangeSlider saturationSlider;
-    private RangeSlider brightnessSlider;
+    CardLayout cardLayout = new CardLayout();
+    private final JPanel colourSchemePanel;
+
+    private Map<String, ColourSchemePanel> colourSchemeNamePanelMap = new HashMap<String, ColourSchemePanel>();
+    private Map<Class, String> colourSchemeClassNameMap = new HashMap<Class, String>();
 
     private java.util.List<Object> discreteValues = null;
 
     private ColourTableModel tableModel;
 
+    private JDialog dialog;
+
     public DiscreteColourScaleDialog(final JFrame frame) {
         this.frame = frame;
 
-        hueSlider = new RangeSlider(0, SLIDER_RANGE);
-        saturationSlider = new RangeSlider(0, SLIDER_RANGE);
-        brightnessSlider = new RangeSlider(0, SLIDER_RANGE);
+        colourSchemeNamePanelMap.put(HSB_SPECTRUM, new HSBColourSchemePanel());
+        colourSchemeNamePanelMap.put(FIXED_COLOURS, new FixedColourSchemePanel());
+
+        colourSchemeClassNameMap.put(HSBContinuousColourDecorator.class, HSB_SPECTRUM);
+        colourSchemeClassNameMap.put(FixedDiscreteColourDecorator.class, FIXED_COLOURS);
+
+
+        colourSchemePanel = new JPanel(cardLayout);
+
+        for (String name : colourSchemeNamePanelMap.keySet()) {
+            ColourSchemePanel panel = colourSchemeNamePanelMap.get(name);
+            colourSchemePanel.add(panel.getPanel(), name);
+        }
+
+        colourSchemeCombo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                cardLayout.show(colourSchemePanel, colourSchemeCombo.getSelectedItem().toString());
+                decorator = colourSchemeNamePanelMap.get(colourSchemeCombo.getSelectedItem()).getDecorator();
+                tableModel.fireTableDataChanged();
+                dialog.pack();
+            }
+        });
 
 
         tableModel = new ColourTableModel();
@@ -82,33 +107,12 @@ public class DiscreteColourScaleDialog {
         scrollPane.setMinimumSize(new Dimension(120, 120));
         options.addSpanningComponent(scrollPane);
 
-        options.addComponentWithLabel("Primary: ", primaryAxisCombo);
-        options.addComponentWithLabel("Secondary count: ", secondaryCountSpinner);
+        options.addComponentWithLabel("Scheme: ", colourSchemeCombo);
 
-        options.addComponentWithLabel("Hue: ", hueSlider);
-        options.addComponentWithLabel("Saturation: ", saturationSlider);
-        options.addComponentWithLabel("Brightness: ", brightnessSlider);
+        colourSchemePanel.setBorder(BorderFactory.createBevelBorder(1));
+        options.addSpanningComponent(colourSchemePanel);
 
         setDecorator(decorator);
-
-        primaryAxisCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                setupDecorator(decorator);
-                tableModel.fireTableDataChanged();
-            }
-        });
-
-        ChangeListener listener = new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                setupDecorator(decorator);
-                tableModel.fireTableDataChanged();
-            }
-        };
-
-        secondaryCountSpinner.addChangeListener(listener);
-        hueSlider.addChangeListener(listener);
-        saturationSlider.addChangeListener(listener);
-        brightnessSlider.addChangeListener(listener);
 
         JOptionPane optionPane = new JOptionPane(options,
                 JOptionPane.QUESTION_MESSAGE,
@@ -118,7 +122,8 @@ public class DiscreteColourScaleDialog {
                 null);
         optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        final JDialog dialog = optionPane.createDialog(frame, "Setup colour range: " + decorator.getAttributeName());
+        dialog = optionPane.createDialog(frame, "Setup colour range: " + decorator.getAttributeName());
+
         dialog.pack();
         dialog.setResizable(true);
         dialog.setVisible(true);
@@ -132,40 +137,24 @@ public class DiscreteColourScaleDialog {
         return result;
     }
 
-    public void setDecorator(HSBDiscreteColourDecorator decorator) {
+    public void setDecorator(DiscreteColourDecorator decorator) {
         this.decorator = decorator;
 
         discreteValues = new ArrayList<Object>(decorator.getValues());
 
-        primaryAxisCombo.setSelectedItem(decorator.getPrimaryAxis());
-        secondaryCountSpinnerModel.setValue(decorator.getSecondaryCount());
-
-        hueSlider.setValue((int) (decorator.getHueLower() * SLIDER_RANGE));
-        hueSlider.setUpperValue((int) (decorator.getHueUpper() * SLIDER_RANGE));
-
-        saturationSlider.setValue((int) (decorator.getSaturationLower() * SLIDER_RANGE));
-        saturationSlider.setUpperValue((int) (decorator.getSaturationUpper() * SLIDER_RANGE));
-
-        brightnessSlider.setValue((int) (decorator.getBrightnessLower() * SLIDER_RANGE));
-        brightnessSlider.setUpperValue((int) (decorator.getBrightnessUpper() * SLIDER_RANGE));
+        for (String key : colourSchemeNamePanelMap.keySet()) {
+            colourSchemeNamePanelMap.get(key).setDecorator(decorator);
+        }
     }
 
-    public void setupDecorator(HSBDiscreteColourDecorator decorator) {
+    public DiscreteColourDecorator getDecorator() {
+        String name = colourSchemeCombo.getSelectedItem().toString();
+        decorator = colourSchemeNamePanelMap.get(name).getDecorator();
         decorator.setValuesOrder(discreteValues);
-
-        // todo these are all resetting the colours with calls to setValues? Why?
-        decorator.setPrimaryAxis((HSBDiscreteColourDecorator.Axis) primaryAxisCombo.getSelectedItem());
-        decorator.setSecondaryCount(secondaryCountSpinnerModel.getNumber().intValue());
-
-        decorator.setHueLower(((float) hueSlider.getValue()) / SLIDER_RANGE);
-        decorator.setHueUpper(((float) hueSlider.getUpperValue()) / SLIDER_RANGE);
-
-        decorator.setSaturationLower(((float) saturationSlider.getValue()) / SLIDER_RANGE);
-        decorator.setSaturationUpper(((float) saturationSlider.getUpperValue()) / SLIDER_RANGE);
-
-        decorator.setBrightnessLower(((float) brightnessSlider.getValue()) / SLIDER_RANGE);
-        decorator.setBrightnessUpper(((float) brightnessSlider.getUpperValue()) / SLIDER_RANGE);
+        return decorator;
     }
+
+
 
     interface Reorderable {
         public void reorder(java.util.List<Integer> sourceIndices, int destinationIndex);
@@ -346,6 +335,150 @@ public class DiscreteColourScaleDialog {
             }
         }
 
+    }
+
+    private interface ColourSchemePanel {
+        void setDecorator(DiscreteColourDecorator decorator);
+        DiscreteColourDecorator getDecorator();
+
+        JPanel getPanel();
+
+
+        String getName();
+    }
+
+    private class HSBColourSchemePanel implements ColourSchemePanel  {
+        public HSBColourSchemePanel() {
+            hueSlider = new RangeSlider(0, SLIDER_RANGE);
+            saturationSlider = new RangeSlider(0, SLIDER_RANGE);
+            brightnessSlider = new RangeSlider(0, SLIDER_RANGE);
+        }
+
+        public void setDecorator(DiscreteColourDecorator decorator) {
+            if (decorator instanceof HSBDiscreteColourDecorator) {
+                hsbDecorator = (HSBDiscreteColourDecorator)decorator;
+            } else {
+                if (hsbDecorator == null) {
+                    hsbDecorator = new HSBDiscreteColourDecorator(decorator.getAttributeName());
+                }
+            }
+
+            hueSlider.setValue((int)(hsbDecorator.getHueLower() * SLIDER_RANGE));
+            hueSlider.setUpperValue((int) (hsbDecorator.getHueUpper() * SLIDER_RANGE));
+
+            saturationSlider.setValue((int)(hsbDecorator.getSaturationLower() * SLIDER_RANGE));
+            saturationSlider.setUpperValue((int)(hsbDecorator.getSaturationUpper() * SLIDER_RANGE));
+
+            brightnessSlider.setValue((int)(hsbDecorator.getBrightnessLower() * SLIDER_RANGE));
+            brightnessSlider.setUpperValue((int)(hsbDecorator.getBrightnessUpper() * SLIDER_RANGE));
+        }
+
+        @Override
+        public  DiscreteColourDecorator getDecorator() {
+            hsbDecorator.setHueLower(((float) hueSlider.getValue()) / SLIDER_RANGE);
+            hsbDecorator.setHueUpper(((float) hueSlider.getUpperValue()) / SLIDER_RANGE);
+
+            hsbDecorator.setSaturationLower(((float) saturationSlider.getValue()) / SLIDER_RANGE);
+            hsbDecorator.setSaturationUpper(((float) saturationSlider.getUpperValue()) / SLIDER_RANGE);
+
+            hsbDecorator.setBrightnessLower(((float) brightnessSlider.getValue()) / SLIDER_RANGE);
+            hsbDecorator.setBrightnessUpper(((float) brightnessSlider.getUpperValue()) / SLIDER_RANGE);
+
+            return hsbDecorator;
+        }
+
+        @Override
+        public JPanel getPanel() {
+            if (panel == null) {
+                final OptionsPanel options = new OptionsPanel(6, 6);
+
+                options.addComponentWithLabel("Primary: ", primaryAxisCombo);
+                options.addComponentWithLabel("Secondary count: ", secondaryCountSpinner);
+
+                options.addComponentWithLabel("Hue: ", hueSlider);
+                options.addComponentWithLabel("Saturation: ", saturationSlider);
+                options.addComponentWithLabel("Brightness: ", brightnessSlider);
+
+                primaryAxisCombo.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent event) {
+                        getDecorator();
+                        tableModel.fireTableDataChanged();
+                    }
+                });
+
+                ChangeListener listener = new ChangeListener() {
+                    public void stateChanged(ChangeEvent e) {
+                        getDecorator();
+                        tableModel.fireTableDataChanged();
+                    }
+                };
+
+                secondaryCountSpinner.addChangeListener(listener);
+                hueSlider.addChangeListener(listener);
+                saturationSlider.addChangeListener(listener);
+                brightnessSlider.addChangeListener(listener);
+
+                panel = options;
+            }
+            return panel;
+        }
+
+        @Override
+        public String getName() {
+            return HSB_SPECTRUM;
+        }
+
+        private JComboBox primaryAxisCombo = new JComboBox(HSBDiscreteColourDecorator.Axis.values());
+        private SpinnerNumberModel secondaryCountSpinnerModel = new SpinnerNumberModel(2, 1, 100, 1);
+        private JSpinner secondaryCountSpinner = new JSpinner(secondaryCountSpinnerModel);
+
+        private RangeSlider hueSlider;
+        private RangeSlider saturationSlider;
+        private RangeSlider brightnessSlider;
+
+        private HSBDiscreteColourDecorator hsbDecorator = null;
+
+        private JPanel panel = null;
+    }
+
+    private class FixedColourSchemePanel implements ColourSchemePanel  {
+        public FixedColourSchemePanel() {
+        }
+
+        public void setDecorator(DiscreteColourDecorator decorator) {
+            if (decorator instanceof FixedDiscreteColourDecorator) {
+                fixedDecorator = (FixedDiscreteColourDecorator)decorator;
+            } else {
+                if (fixedDecorator == null) {
+                    fixedDecorator = new FixedDiscreteColourDecorator(decorator.getAttributeName());
+                }
+            }
+//            fixedDecorator.setValues(discreteValues);
+        }
+
+        @Override
+        public  DiscreteColourDecorator getDecorator() {
+            return fixedDecorator;
+        }
+
+        @Override
+        public JPanel getPanel() {
+            if (panel == null) {
+                final OptionsPanel options = new OptionsPanel(6, 6);
+
+                panel = options;
+            }
+            return panel;
+        }
+
+        @Override
+        public String getName() {
+            return FIXED_COLOURS;
+        }
+
+        private FixedDiscreteColourDecorator fixedDecorator = null;
+
+        private JPanel panel = null;
     }
 
 }

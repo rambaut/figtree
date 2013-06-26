@@ -20,13 +20,9 @@
 
 package figtree.treeviewer.painters;
 
-import jebl.evolution.alignments.Alignment;
 import jebl.evolution.graphs.Node;
-import jebl.evolution.sequences.AminoAcids;
-import jebl.evolution.sequences.Sequence;
 import jebl.evolution.trees.Tree;
-import figtree.treeviewer.painters.BasicLabelPainter;
-import figtree.treeviewer.decorators.DiscreteColorDecorator;
+import figtree.treeviewer.decorators.DiscreteColourDecorator;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -37,7 +33,7 @@ import java.awt.geom.Rectangle2D;
  */
 public class StatesPainter extends BasicLabelPainter {
 
-    public StatesPainter(String[] annotationNames, DiscreteColorDecorator[] decorators) {
+    public StatesPainter(String[] annotationNames, DiscreteColourDecorator[] decorators) {
         super(PainterIntent.TIP);
 
         this.annotationNames = annotationNames;
@@ -140,7 +136,7 @@ public class StatesPainter extends BasicLabelPainter {
     }
 
     private String[] annotationNames = null;
-    private DiscreteColorDecorator[] decorators;
+    private DiscreteColourDecorator[] decorators;
 
     private double width;
 

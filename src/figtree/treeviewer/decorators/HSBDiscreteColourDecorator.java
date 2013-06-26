@@ -23,14 +23,13 @@ package figtree.treeviewer.decorators;
 import jebl.util.Attributable;
 
 import java.awt.*;
-import java.util.Collection;
 import java.util.Set;
 
 /**
  * @author Andrew Rambaut
  * @version $Id$
  */
-public class HSBDiscreteColourDecorator extends DiscreteColorDecorator {
+public class HSBDiscreteColourDecorator extends DiscreteColourDecorator {
     public enum Axis {
         HUE,
         SATURATION,
@@ -41,6 +40,11 @@ public class HSBDiscreteColourDecorator extends DiscreteColorDecorator {
             return super.toString().toLowerCase();
         }
     }
+
+    public HSBDiscreteColourDecorator(String attributeName) {
+        super(attributeName);
+    }
+
 
     public HSBDiscreteColourDecorator(String attributeName, String settings) {
         super(attributeName);
