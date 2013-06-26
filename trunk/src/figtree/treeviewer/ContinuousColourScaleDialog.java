@@ -34,13 +34,15 @@ public class ContinuousColourScaleDialog {
 
     private JComboBox colourSchemeCombo = new JComboBox(new String[] { HSB_SPECTRUM, COLOUR_GRADIENT} );
 
+    CardLayout cardLayout = new CardLayout();
+    private final JPanel colourSchemePanel;
+
     private Map<String, ColourSchemePanel> colourSchemeNamePanelMap = new HashMap<String, ColourSchemePanel>();
     private Map<Class, String> colourSchemeClassNameMap = new HashMap<Class, String>();
 
     private ContinuousColourDecorator decorator;
 
     private JComponent colourDisplay;
-    CardLayout cardLayout = new CardLayout();
 
     private final JCheckBox autoScaleCheck;
     private final JLabel fromLabel;
@@ -48,7 +50,6 @@ public class ContinuousColourScaleDialog {
     private final JLabel toLabel;
     private final RealNumberField toNumberField;
 
-    private final JPanel colourSchemePanel;
 
     private JDialog dialog;
 

@@ -83,14 +83,18 @@ public class FigTreeMacFileMenuFactory implements MenuFactory {
 		        item = new JMenuItem(action);
 		        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, MenuBarFactory.MENU_MASK));
 		        menu.add(item);
-		    } else {
+
+            } else {
 		        item = new JMenuItem("Import Annotations...");
 		        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, MenuBarFactory.MENU_MASK));
 		        item.setEnabled(false);
 		        menu.add(item);
 		    }
 
-		    menu.addSeparator();
+            item = new JMenuItem(((FigTreeFileMenuHandler)frame).getImportColourSchemeAction());
+            menu.add(item);
+
+            menu.addSeparator();
 
 		    item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExportTreesAction());
 		    item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK));
@@ -103,7 +107,15 @@ public class FigTreeMacFileMenuFactory implements MenuFactory {
             item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExportPDFAction());
             item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK + KeyEvent.SHIFT_MASK + KeyEvent.ALT_MASK));
             menu.add(item);
-		} else {
+
+            menu.addSeparator();
+
+            item = new JMenuItem(((FigTreeFileMenuHandler)frame).getImportColourSchemeAction());
+            menu.add(item);
+
+            item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExportColourSchemeAction());
+            menu.add(item);
+        } else {
 		    // If the frame is not a TracerFileMenuHandler then create a dummy set of disabled menu options.
 		    // At present the only situation where this may happen is in Mac OS X when no windows
 		    // are open and the menubar is created by the hidden frame.

@@ -6,13 +6,10 @@ import jebl.evolution.graphs.Node;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.Tree;
 import jebl.util.Attributable;
-import figtree.treeviewer.DefaultTreeViewer;
-import figtree.treeviewer.decorators.DiscreteColorDecorator;
 import jam.panels.StatusListener;
 import jam.panels.StatusProvider;
 import figtree.treeviewer.annotations.AnnotationDefinition;
 import figtree.treeviewer.painters.CharactersPainter;
-import figtree.treeviewer.painters.StatesPainter;
 
 import javax.swing.*;
 import java.awt.*;

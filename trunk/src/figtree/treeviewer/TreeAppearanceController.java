@@ -194,7 +194,7 @@ public class TreeAppearanceController extends AbstractController {
 //                        // along the length of the branch...
 //                        treeViewer.setBranchColouringDecorator(
 //                                attribute.substring(0, attribute.length() - 2),
-//                                new DiscreteColorDecorator());
+//                                new DiscreteColourDecorator());
 //                        return;
 
 //        if (colourDecorator != null && colourDecorator.isGradient()) {

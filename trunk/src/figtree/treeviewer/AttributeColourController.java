@@ -3,7 +3,6 @@ package figtree.treeviewer;
 import figtree.treeviewer.decorators.*;
 import jam.controlpalettes.AbstractController;
 import jebl.evolution.graphs.Node;
-import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.Tree;
 import jebl.util.Attributable;
 
@@ -50,10 +49,14 @@ public class AttributeColourController extends AbstractController {
                         if (discreteColourScaleDialog == null) {
                             discreteColourScaleDialog = new DiscreteColourScaleDialog(frame);
                         }
-                        discreteColourScaleDialog.setDecorator((HSBDiscreteColourDecorator)decorator);
+                        discreteColourScaleDialog.setDecorator((DiscreteColourDecorator)decorator);
                         int result = discreteColourScaleDialog.showDialog();
                         if (result != JOptionPane.CANCEL_OPTION && result != JOptionPane.CLOSED_OPTION) {
-                            discreteColourScaleDialog.setupDecorator((HSBDiscreteColourDecorator)decorator);
+                            decorator = discreteColourScaleDialog.getDecorator();
+
+                            String attribute = (String) colourAttributeCombo.getSelectedItem();
+                            setDecoratorForAttribute(attribute, decorator);
+
                             update = true;
                         }
                     } else if (decorator instanceof ContinuousColourDecorator) {
@@ -122,7 +125,7 @@ public class AttributeColourController extends AbstractController {
             if (attribute.endsWith("*")) {
                 // todo reinstate branch colouring
                 return null;
-            } else if (DiscreteColorDecorator.isDiscrete(attribute, items)) {
+            } else if (DiscreteColourDecorator.isDiscrete(attribute, items)) {
                 colourDecorator = new HSBDiscreteColourDecorator(attribute, items);
             } else {
                 ContinuousScale scale = attributeScaleMap.get(attribute);
@@ -135,8 +138,8 @@ public class AttributeColourController extends AbstractController {
                 colourDecorator = new HSBContinuousColourDecorator(scale);
 
             }
-        } else if (colourDecorator instanceof DiscreteColorDecorator) {
-            ((DiscreteColorDecorator)colourDecorator).setAttributes(attribute, items);
+        } else if (colourDecorator instanceof DiscreteColourDecorator) {
+            ((DiscreteColourDecorator)colourDecorator).setAttributes(attribute, items);
         } else if (colourDecorator instanceof ContinuousColourDecorator) {
             ((ContinuousColourDecorator)colourDecorator).setAttributes(attribute, items);
         }
@@ -215,8 +218,8 @@ public class AttributeColourController extends AbstractController {
                         String attribute = parts[0];
                         Object[] values = parts[1].split(",");
                         ColourDecorator decorator = getDecoratorForAttribute(attribute);
-                        if (decorator != null && decorator instanceof DiscreteColorDecorator) {
-                            ((DiscreteColorDecorator)decorator).setValuesOrder(Arrays.asList(values));
+                        if (decorator != null && decorator instanceof DiscreteColourDecorator) {
+                            ((DiscreteColourDecorator)decorator).setValuesOrder(Arrays.asList(values));
                             setDecoratorForAttribute(attribute, decorator);
                         }
                     }
@@ -242,9 +245,9 @@ public class AttributeColourController extends AbstractController {
                 throw new IllegalArgumentException("Unrecognized colour decorator type");
             }
             settings.put(CONTROLLER_KEY + "." + SCHEME_KEY + "." + flattenName(attribute), attribute + ":" + name + colourSettings);
-            if (decorator instanceof DiscreteColorDecorator) {
-                if (((DiscreteColorDecorator)decorator).hasReorderedValues()) {
-                    String orderString = ((DiscreteColorDecorator)decorator).getOrderString();
+            if (decorator instanceof DiscreteColourDecorator) {
+                if (((DiscreteColourDecorator)decorator).hasReorderedValues()) {
+                    String orderString = ((DiscreteColourDecorator)decorator).getOrderString();
                     settings.put(CONTROLLER_KEY + "." + ORDER_KEY + "." + flattenName(attribute), attribute + ":" + orderString);
 
                 }

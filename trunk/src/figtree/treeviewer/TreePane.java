@@ -37,7 +37,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
 
-    public final static boolean DEBUG_OUTLINE = true;
+    public final static boolean DEBUG_OUTLINE = false;
 
     public final String CARTOON_ATTRIBUTE_NAME = "!cartoon";
     public final String COLLAPSE_ATTRIBUTE_NAME = "!collapse";

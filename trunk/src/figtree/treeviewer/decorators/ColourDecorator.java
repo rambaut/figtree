@@ -35,7 +35,7 @@ import java.util.List;
  * If the data take more values than colors, then they will wrap around
  *
  * @author Andrew Rambaut
- * @version $Id: DiscreteColorDecorator.java 639 2007-02-15 10:05:28Z rambaut $
+ * @version $Id: DiscreteColourDecorator.java 639 2007-02-15 10:05:28Z rambaut $
  */
 public abstract class ColourDecorator implements Decorator {
 

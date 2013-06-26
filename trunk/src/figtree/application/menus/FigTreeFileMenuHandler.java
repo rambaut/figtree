@@ -27,7 +27,11 @@ import javax.swing.*;
  * @version $Id$
  */
 public interface FigTreeFileMenuHandler {
-	Action getExportTreesAction();
+    Action getImportColourSchemeAction();
+
+    Action getExportColourSchemeAction();
+
+    Action getExportTreesAction();
 
 	Action getExportGraphicAction();
 
