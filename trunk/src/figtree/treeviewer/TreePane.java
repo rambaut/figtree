@@ -1121,6 +1121,11 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
     public RootedTree getSelectedSubtree() {
+        if (selectedNodes.size() == 0 && selectedTips.size() == 0) {
+            // nothing selected so return the whole tree
+            return tree;
+        }
+
         SimpleRootedTree newTree = new SimpleRootedTree();
 
         getSelectedSubtree(newTree, this.tree.getRootNode(), false);
@@ -1144,9 +1149,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     private Node getSelectedSubtree(SimpleRootedTree newTree, Node node, boolean isSelected) {
         Node newNode;
 
-
         if (tree.isExternal(node)) {
-            if (isSelected || selectedNodes.contains(node)) {
+            if (isSelected || selectedNodes.contains(node) || selectedTips.contains(node)) {
                 newNode = newTree.createExternalNode(tree.getTaxon(node));
                 newTree.setHeight(newNode, tree.getHeight(node));
                 for (String key : node.getAttributeNames()) {

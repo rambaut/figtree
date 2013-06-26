@@ -20,6 +20,7 @@
 
 package figtree.treeviewer.painters;
 
+import figtree.treeviewer.TreeViewerListener;
 import jam.controlpalettes.AbstractController;
 import jam.panels.OptionsPanel;
 
@@ -74,7 +75,7 @@ public class ScaleAxisPainterController extends AbstractController {
     private static String DEFAULT_NUMBER_FORMATTING = "#.####";
     private static float DEFAULT_LINE_WIDTH = 1.0f;
 
-    public ScaleAxisPainterController(final ScaleAxisPainter scaleAxisPainter, final ScaleGridPainter scaleGridPainter) {
+    public ScaleAxisPainterController(final ScaleAxisPainter scaleAxisPainter, final ScaleGridPainter scaleGridPainter, final TreeViewer treeViewer) {
         this.scaleAxisPainter = scaleAxisPainter;
         this.scaleGridPainter = scaleGridPainter;
 
@@ -269,6 +270,15 @@ public class ScaleAxisPainterController extends AbstractController {
             }
         });
 
+        treeViewer.addTreeViewerListener(new TreeViewerListener() {
+            public void treeChanged() {
+                scaleAxisPainter.firePainterChanged();
+            }
+
+            public void treeSettingsChanged() {
+                // nothing to do
+            }
+        });
     }
 
     private double getValue(RealNumberField field, double defaultValue) {
