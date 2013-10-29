@@ -103,6 +103,8 @@ public abstract class TreeViewer extends JPanel implements Printable {
 
     public abstract void setNodeBackgroundDecorator(Decorator nodeBackgroundDecorator);
 
+    public abstract void setHilightingGradient(boolean hilightingGradient);
+
     public abstract void setSelectionColor(Color selectionColor);
 
     public abstract Paint getSelectionPaint();

@@ -407,6 +407,12 @@ public class MultiPaneTreeViewer extends TreeViewer {
         fireTreeSettingsChanged();
     }
 
+    public void setHilightingGradient(boolean hilightingGradient) {
+        for (TreePane treePane : treePanes) {
+            treePane.setHilightingGradient(hilightingGradient);
+        }
+    }
+
     public void setSelectionColor(Color selectionColor) {
 		for (TreePane treePane : treePanes) {
 			treePane.setSelectionColor(selectionColor);

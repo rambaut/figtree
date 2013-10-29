@@ -33,6 +33,8 @@ public class TreeAppearanceController extends AbstractController {
     public static final String BACKGROUND_COLOUR_KEY = "backgroundColour";
     public static final String SELECTION_COLOUR_KEY = "selectionColour";
     public static final String BRANCH_COLOR_ATTRIBUTE_KEY = "branchColorAttribute";
+    public static final String BRANCH_COLOR_GRADIENT_KEY = "branchColorGradient";
+    public static final String HILIGHTING_GRADIENT_KEY = "hilightingGradient";
     public static final String BACKGROUND_COLOR_ATTRIBUTE_KEY = "backgroundColorAttribute";
     public static final String BRANCH_LINE_WIDTH_KEY = "branchLineWidth";
     public static final String BRANCH_MIN_LINE_WIDTH_KEY = "branchMinLineWidth";
@@ -83,7 +85,7 @@ public class TreeAppearanceController extends AbstractController {
 //        branchColourSettings.toColour = new Color(192, 16, 0);
 //        branchColourSettings.middleColour = new Color(0, 0, 0);
 
-        branchColourIsGradient = false;
+        branchColourIsGradient = TreeAppearanceController.PREFS.getBoolean(CONTROLLER_KEY + "." + BRANCH_COLOR_GRADIENT_KEY, false);
 
         final JButton setupColourButton = new JButton("Colours");
 
@@ -95,16 +97,28 @@ public class TreeAppearanceController extends AbstractController {
             }
         });
 
-        final JCheckBox useGradientCheck = new JCheckBox("Gradient");
-        useGradientCheck.addChangeListener(new ChangeListener() {
+        branchColourGradientCheck = new JCheckBox("Gradient");
+        branchColourGradientCheck.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
-                branchColourIsGradient = useGradientCheck.isSelected();
+                branchColourIsGradient = branchColourGradientCheck.isSelected();
                 setupBranchDecorators();
             }
         });
         optionsPanel.addComponentWithLabel("Colour by:", branchColourAttributeCombo);
         final JLabel setupColourButtonLabel = optionsPanel.addComponentWithLabel("Setup:", setupColourButton);
-        optionsPanel.addComponent(useGradientCheck);
+        optionsPanel.addComponent(branchColourGradientCheck);
+        optionsPanel.addSeparator();
+
+        boolean hilightingGradient = TreeAppearanceController.PREFS.getBoolean(CONTROLLER_KEY + "." + HILIGHTING_GRADIENT_KEY, false);
+
+        hilightingGradientCheck = new JCheckBox("Hilight with gradient");
+        hilightingGradientCheck.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
+                treeViewer.setHilightingGradient(hilightingGradientCheck.isSelected());
+            }
+        });
+        optionsPanel.addComponent(hilightingGradientCheck);
+        hilightingGradientCheck.setSelected(hilightingGradient);
         optionsPanel.addSeparator();
 
         branchLineWidthSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.01, 48.0, 1.0));
@@ -256,6 +270,8 @@ public class TreeAppearanceController extends AbstractController {
         treeViewer.setSelectionColor((Color)settings.get(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY));
 
         branchColourAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BRANCH_COLOR_ATTRIBUTE_KEY));
+        branchColourGradientCheck.setSelected((Boolean)settings.get(CONTROLLER_KEY+"."+BRANCH_COLOR_GRADIENT_KEY));
+        hilightingGradientCheck.setSelected((Boolean)settings.get(CONTROLLER_KEY+"."+HILIGHTING_GRADIENT_KEY));
         backgroundColourAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY + "." + BACKGROUND_COLOR_ATTRIBUTE_KEY));
         branchLineWidthSpinner.setValue((Double) settings.get(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY));
         branchWidthAttributeCombo.setSelectedItem(settings.get(CONTROLLER_KEY+"."+BRANCH_WIDTH_ATTRIBUTE_KEY));
@@ -269,6 +285,8 @@ public class TreeAppearanceController extends AbstractController {
         settings.put(CONTROLLER_KEY + "." + SELECTION_COLOUR_KEY, treeViewer.getSelectionPaint());
 
         settings.put(CONTROLLER_KEY + "." + BRANCH_COLOR_ATTRIBUTE_KEY, branchColourAttributeCombo.getSelectedItem().toString());
+        settings.put(CONTROLLER_KEY + "." + BRANCH_COLOR_GRADIENT_KEY, branchColourGradientCheck.isSelected());
+        settings.put(CONTROLLER_KEY + "." + HILIGHTING_GRADIENT_KEY, hilightingGradientCheck.isSelected());
         settings.put(CONTROLLER_KEY + "." + BACKGROUND_COLOR_ATTRIBUTE_KEY, backgroundColourAttributeCombo.getSelectedItem().toString());
         settings.put(CONTROLLER_KEY + "." + BRANCH_LINE_WIDTH_KEY, branchLineWidthSpinner.getValue());
         settings.put(CONTROLLER_KEY + "." + BRANCH_WIDTH_ATTRIBUTE_KEY, branchWidthAttributeCombo.getSelectedItem().toString());
@@ -283,6 +301,8 @@ public class TreeAppearanceController extends AbstractController {
     private final OptionsPanel optionsPanel;
 
     private final JComboBox branchColourAttributeCombo;
+    private final JCheckBox branchColourGradientCheck;
+    private final JCheckBox hilightingGradientCheck;
     private final JComboBox backgroundColourAttributeCombo;
     private final JSpinner branchLineWidthSpinner;
     private final JSpinner branchMinLineWidthSpinner;
