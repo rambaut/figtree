@@ -620,6 +620,10 @@ public class DefaultTreeViewer extends TreeViewer {
         treePane.setNodeBackgroundDecorator(nodeBackgroundDecorator);
     }
 
+    public void setHilightingGradient(boolean hilightingGradient) {
+        treePane.setHilightingGradient(hilightingGradient);
+    }
+
     public void setSelectionColor(Color selectionColor) {
         treePane.setSelectionColor(selectionColor);
     }

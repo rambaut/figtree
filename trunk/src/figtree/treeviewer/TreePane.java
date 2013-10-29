@@ -2,7 +2,6 @@ package figtree.treeviewer;
 
 import jebl.evolution.graphs.Node;
 import jebl.evolution.graphs.Graph;
-import jebl.evolution.io.ImportException;
 import jebl.evolution.taxa.Taxon;
 import jebl.evolution.trees.*;
 import figtree.treeviewer.decorators.*;
@@ -238,6 +237,15 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         this.branchColouringAttribute = branchColouringAttribute;
         treeLayout.setBranchColouringAttributeName(branchColouringAttribute);
         this.branchColouringDecorator = branchColouringDecorator;
+        repaint();
+    }
+
+    public boolean isHilightingGradient() {
+        return hilightingGradient;
+    }
+
+    public void setHilightingGradient(boolean hilightingGradient) {
+        this.hilightingGradient = hilightingGradient;
         repaint();
     }
 
@@ -583,7 +591,6 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             amendCladeSelection(child, toggle, false);
         }
     }
-
 
     public void addSelectedTips(Node selectedNode) {
         addSelectedTips(selectedNode, false);
@@ -1403,15 +1410,24 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             Paint fillPaint = (Color)values[2];
             Stroke stroke = new BasicStroke(0.5F);
 
-            if (fillPaint != null) {
+            if (hilightingGradient && fillPaint != null) {
+                fillPaint = new GradientPaint(
+                        (float)transShape.getBounds2D().getMinX(), 0.0F, Color.WHITE,
+                        (float)transShape.getBounds2D().getMaxX(), 0.0F, (Color)values[2], false);
                 g2.setPaint(fillPaint);
                 g2.fill(transShape);
-            }
+            } else {
 
-            if (paint != null) {
-                g2.setPaint(paint);
-                g2.setStroke(stroke);
-                g2.draw(transShape);
+                if (fillPaint != null) {
+                    g2.setPaint(fillPaint);
+                    g2.fill(transShape);
+                }
+
+                if (paint != null) {
+                    g2.setPaint(paint);
+                    g2.setStroke(stroke);
+                    g2.draw(transShape);
+                }
             }
         }
 
@@ -2178,6 +2194,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     private Decorator branchColouringDecorator = null;
     private boolean branchDecoratorGradient = false;
     private String branchColouringAttribute = null;
+
+    private boolean hilightingGradient = false;
 
     private Decorator nodeBackgroundDecorator = null;
 
