@@ -151,11 +151,11 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 
         Point2D nodePoint;
 
-        if (!tree.isExternal(node)) {
+        if (hilightAttributeName != null && node.getAttribute(hilightAttributeName) != null) {
+            constructHilight(tree, node, xParent, xPosition, cache);
+        }
 
-            if (hilightAttributeName != null && node.getAttribute(hilightAttributeName) != null) {
-                constructHilight(tree, node, xParent, xPosition, cache);
-            }
+        if (!tree.isExternal(node)) {
 
             if (collapsedAttributeName != null && node.getAttribute(collapsedAttributeName) != null) {
                 nodePoint = constructCollapsedNode(tree, node, xPosition, cache);

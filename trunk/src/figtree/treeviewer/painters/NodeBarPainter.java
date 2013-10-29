@@ -112,7 +112,7 @@ public class NodeBarPainter extends NodePainter {
 		}
 
 		if (nodeBar == null) {
-			return new Rectangle2D.Double(0,0,0,0);
+			return null;
 		}
 
 		return nodeBar.getBounds2D();
