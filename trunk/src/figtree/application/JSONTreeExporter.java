@@ -48,6 +48,9 @@ import java.util.*;
 public class JSONTreeExporter implements TreeExporter {
     public static final String treeNameAttributeKey = "name";
 
+    public final static Set<String> ATTRIBUTE_NAMES = new TreeSet<String>(Arrays.asList(new String[] { "location", "host", "Hx", "Nx", "posterior" }));
+    public final static String ORIGIN = "2013.34520547945";
+
     public JSONTreeExporter(Writer writer) {
         this(writer, true);
     }
@@ -75,33 +78,60 @@ public class JSONTreeExporter implements TreeExporter {
     }
 
     private void writeTrees(Collection<? extends Tree> trees) throws IOException {
-        int indent = 1;
+        int indent = 0;
         int treeCount = 0;
 
         writer.println("{");
-        writer.println("\t\"trees\": [");
+
+        if (trees.size() > 1) {
+            writer.println("\t\"trees\": [");
+            indent ++;
+        }
+
+        Map<String, Set<String>> attributeMap = new LinkedHashMap<String, Set<String>>();
 
         for( Tree t : trees ) {
             final boolean isRooted = t instanceof RootedTree;
             final RootedTree rtree = isRooted ? (RootedTree)t : Utils.rootTheTree(t);
 
+            for (Node node : rtree.getNodes()) {
+                for (String name : node.getAttributeNames()) {
+                    if (ATTRIBUTE_NAMES.contains(name)) {
+                        Object valueObject = node.getAttribute(name);
+                        if (valueObject instanceof String) {
+                            Set<String> values = attributeMap.get(name);
+                            if (values == null) {
+                                values = new TreeSet<String>();
+                                attributeMap.put(name, values);
+                            }
+                            String value = (String)valueObject;
+                            if (value.contains("+")) {
+                                values.add(value.split("\\+")[0]);
+                            } else {
+                                values.add(valueObject.toString());
+                            }
+                        }
+                    }
+                }
+            }
+
             StringBuilder builder = new StringBuilder();
 
-            appendIndent(builder, indent);
-            builder.append("\"tree\": {\n");
+            if (trees.size() > 1) {
+                appendIndent(builder, indent);
+                builder.append("\"tree\": {\n");
+            }
 
             appendIndent(builder, indent + 1);
             builder.append("\"root\": ");
             appendTree(rtree, rtree.getRootNode(), builder, indent + 1);
 
             appendAttributes(rtree, builder, indent + 1);
-            builder.append("\n");
+            builder.append((trees.size() == 1 || treeCount < trees.size() - 1 ? ",\n" : "\n"));
 
-            appendIndent(builder, indent);
-            if (treeCount < trees.size() - 1) {
-                builder.append("},\n");
-            } else {
-                builder.append("}\n");
+            if (trees.size() > 1) {
+                appendIndent(builder, indent);
+                builder.append((treeCount < trees.size() - 1 ? "},\n" : "}\n"));
             }
 
             writer.println(builder);
@@ -109,7 +139,26 @@ public class JSONTreeExporter implements TreeExporter {
             treeCount ++;
         }
 
-        writer.println("\t]");
+        if (trees.size() > 1) {
+            writer.println("\t],");
+        }
+
+        writer.println("\t\"origin\":\"" + ORIGIN + "\",");
+
+        int i = 0;
+        for (String name : attributeMap.keySet()) {
+            Set<String> values = attributeMap.get(name);
+            writer.println("\t\"" + name + ".fullSet\": [");
+            int j = 0;
+            for (String value : values) {
+                writer.println("\t\t\"" + value + "\"" + (j < values.size() - 1 ? "," : ""));
+                j++;
+            }
+            writer.println("\t]" + (i < attributeMap.keySet().size() - 1 ? "," : ""));
+            i++;
+        }
+
+
         writer.println("}");
     }
 
@@ -198,7 +247,7 @@ public class JSONTreeExporter implements TreeExporter {
 
     private StringBuilder appendAttributes(Attributable item, StringBuilder builder, int indent) {
         for( String key : item.getAttributeNames() ) {
-            if (!key.startsWith("&") ) {
+            if (!key.startsWith("&") && ATTRIBUTE_NAMES.contains(key)) {
                 builder.append(",\n");
                 appendIndent(builder, indent);
 
@@ -232,6 +281,9 @@ public class JSONTreeExporter implements TreeExporter {
         }
 
         if (value instanceof String) {
+            if (((String) value).contains("+")) {
+                return builder.append("\"").append(((String) value).split("\\+")[0]).append("\"");
+            }
             return builder.append("\"").append(value).append("\"");
         }
 
