@@ -21,6 +21,7 @@
 package figtree.treeviewer.decorators;
 
 import jebl.evolution.taxa.Taxon;
+import jebl.util.Attributable;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -33,6 +34,7 @@ public interface Decorator {
 
     boolean allowsGradient();
 
+    void setItem(Attributable item, Attributable fallbackItem);
     void setItem(Object item);
     void setItems(Object item1, Object item2);
 

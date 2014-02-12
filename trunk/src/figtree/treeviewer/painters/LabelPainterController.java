@@ -114,6 +114,7 @@ public class LabelPainterController extends AbstractController {
         new AttributeComboHelper(colourAttributeCombo, treeViewer, "User selection").addListener(new AttributeComboHelperListener() {
             @Override
             public void attributeComboChanged() {
+                String attribute = (String) colourAttributeCombo.getSelectedItem();
                 setupLabelDecorator();
             }
         });

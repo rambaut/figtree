@@ -79,6 +79,10 @@ public class ContinuousStrokeDecorator implements Decorator {
         return false;
     }
 
+    public void setItem(Attributable item, Attributable fallbackItem) {
+        setAttributableItem((Attributable)item);
+    }
+
     public void setItem(Object item) {
 		if (item instanceof Attributable) {
 			setAttributableItem((Attributable)item);

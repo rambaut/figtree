@@ -81,6 +81,11 @@ public class AttributableDecorator implements Decorator {
         isGradient = gradient;
     }
 
+    @Override
+    public void setItem(Attributable item, Attributable fallbackItem) {
+        setAttributableItem(item);
+    }
+
     public void setItem(Object item) {
         if (item instanceof Attributable) {
             setAttributableItem((Attributable)item);

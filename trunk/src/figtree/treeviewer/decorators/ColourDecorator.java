@@ -21,6 +21,7 @@
 package figtree.treeviewer.decorators;
 
 import jebl.evolution.graphs.Node;
+import jebl.evolution.taxa.Taxon;
 import jebl.util.Attributable;
 
 import java.awt.*;
@@ -49,7 +50,7 @@ public abstract class ColourDecorator implements Decorator {
 
     public abstract void setup(String settings);
 
-        @Override
+    @Override
     public boolean allowsGradient() {
         return true;
     }
@@ -97,11 +98,13 @@ public abstract class ColourDecorator implements Decorator {
         return font;
     }
 
+    public void setItem(Attributable item, Attributable fallbackItem) {
+        setAttributableItem(item, fallbackItem);
+    }
+
     public void setItem(Object item) {
-        if (item instanceof Node) {
-            setAttributableItem((Attributable)item);
-        } if (item instanceof Attributable) {
-            setAttributableItem((Attributable)item);
+        if (item instanceof Attributable) {
+            setAttributableItem((Attributable)item, null);
         } else {
             paint = getColourForValue(item);
         }
@@ -203,9 +206,14 @@ public abstract class ColourDecorator implements Decorator {
     }
 
     // Private methods
-    private void setAttributableItem(Attributable item) {
-        paint = null;
+    private void setAttributableItem(Attributable item, Attributable fallbackItem) {
         Object value = item.getAttribute(attributeName);
+
+        if (value == null && fallbackItem != null) {
+            value = fallbackItem.getAttribute(attributeName);
+        }
+
+        paint = null;
 
         Color colour = getColourForValue(value);
         if (colour != null) {
