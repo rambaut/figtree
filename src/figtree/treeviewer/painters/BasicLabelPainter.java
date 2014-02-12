@@ -248,10 +248,11 @@ public class BasicLabelPainter extends LabelPainter<Node> {
             // colour attribute from the taxon, or some other attribute from the
             // node:
             if (getIntent() == PainterIntent.TIP) {
-                textDecorator.setItem(tree.getTaxon(item));
+                textDecorator.setItem((Node)item, tree.getTaxon(item));
             } else {
                 textDecorator.setItem(item);
             }
+
             g2.setPaint(textDecorator.getPaint(getForeground()));
             g2.setFont(textDecorator.getFont(getFont()));
         } else {

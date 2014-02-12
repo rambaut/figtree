@@ -20,6 +20,8 @@
 
 package figtree.treeviewer.decorators;
 
+import jebl.util.Attributable;
+
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.HashSet;
@@ -42,6 +44,13 @@ public class CompoundDecorator implements Decorator {
             }
         }
         return false;
+    }
+
+    @Override
+    public void setItem(Attributable item, Attributable fallbackItem) {
+        for (Decorator decorator : decorators) {
+            decorator.setItem(item, fallbackItem);
+        }
     }
 
     public void setItem(Object item) {
