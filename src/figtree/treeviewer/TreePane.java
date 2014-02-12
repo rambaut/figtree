@@ -1,5 +1,6 @@
 package figtree.treeviewer;
 
+import figtree.treeviewer.painters.Painter;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.graphs.Graph;
 import jebl.evolution.taxa.Taxon;
