@@ -32,8 +32,15 @@ import java.awt.event.ItemListener;
 import java.util.Map;
 
 /**
+ *
  * @author Andrew Rambaut
  * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class AnnotationsController extends AbstractController {
 
