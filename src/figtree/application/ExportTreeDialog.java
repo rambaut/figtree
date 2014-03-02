@@ -28,7 +28,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 
 /**
- * ExportTreeDialog
+ * Dialog presenting options for exporting one or more trees from FigTree
  *
  * @author Andrew Rambaut
  * @version $Id$

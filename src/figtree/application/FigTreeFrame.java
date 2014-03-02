@@ -63,7 +63,8 @@ import java.util.*;
 import java.util.List;
 
 /**
- *
+ * Primary window for FigTree. The window contains a toolbar, a control panel and a panel displaying the
+ * tree. It responds to menu commands and hot keys specific to the focused window.
  * @author Andrew Rambaut
  * @version $Id: FigTreeApplication.java 232 2014-03-02 15:47:10Z rambaut $
  *

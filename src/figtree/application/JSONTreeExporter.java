@@ -42,6 +42,8 @@ import java.io.Writer;
 import java.util.*;
 
 /**
+ * TreeExport to generate a tree in a JSON format.
+ *
  * @author Andrew Rambaut
  * @version $Id$
  *
