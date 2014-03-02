@@ -1,7 +1,7 @@
 /*
  * SimpleTreeViewer.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,11 +40,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A panel that displays correlation plots of 2 traces
  *
  * @author Andrew Rambaut
- * @author Alexei Drummond
- * @version $Id: ExtendedTreeViewer.java,v 1.38 2007/09/05 16:24:23 rambaut Exp $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class SimpleTreeViewer extends DefaultTreeViewer implements StatusProvider {
 	/** Creates new AlignmentPanel */

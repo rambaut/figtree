@@ -1,7 +1,7 @@
 /*
  * Painter.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,8 +29,15 @@ import java.awt.geom.Rectangle2D;
 /**
  * A painter draws a particular decoration onto the tree within a
  * rectangle.
+ *
  * @author Andrew Rambaut
- * @version $Id: Painter.java 370 2006-06-29 18:57:56Z rambaut $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public interface Painter<T> {
 

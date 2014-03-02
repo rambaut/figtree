@@ -1,7 +1,7 @@
 /*
  * FigTreeFrame.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,6 +26,8 @@ import com.itextpdf.text.pdf.DefaultFontMapper;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
+//import de.erichseifert.vectorgraphics2d.PDFGraphics2D;
+//import de.erichseifert.vectorgraphics2d.SVGGraphics2D;
 import figtree.treeviewer.decorators.DiscreteColourDecorator;
 import figtree.treeviewer.decorators.HSBDiscreteColourDecorator;
 import figtree.treeviewer.painters.StatesPainter;
@@ -1170,6 +1172,42 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
     }
 
 
+//    public final void doExportVectorGraphic() {
+//        FileDialog dialog = new FileDialog(this,
+//                "Export PDF Image...",
+//                FileDialog.SAVE);
+//
+//        dialog.setVisible(true);
+//        if (dialog.getFile() != null) {
+//            File file = new File(dialog.getDirectory(), dialog.getFile());
+//
+//            Rectangle2D bounds = treeViewer.getContentPane().getBounds();
+////            PDFGraphics2D g = new PDFGraphics2D(bounds.getX(), bounds.getY(), bounds.getHeight(), bounds.getWidth());
+//            SVGGraphics2D g = new SVGGraphics2D(bounds.getX(), bounds.getY(), bounds.getHeight(), bounds.getWidth());
+//
+//            try {
+//                // Write the PDF output to a file
+//                FileOutputStream outputStream = new FileOutputStream(file);
+//
+//                treeViewer.getContentPane().print(g);
+//
+//                outputStream.write(g.getBytes());
+//
+//                outputStream.close();
+//            }
+//            catch (FileNotFoundException e) {
+//                JOptionPane.showMessageDialog(this, "Error writing PDF file: " + e,
+//                        "Export PDF Error",
+//                        JOptionPane.ERROR_MESSAGE);
+//            }
+//            catch(IOException ioe) {
+//                JOptionPane.showMessageDialog(this, "Error writing PDF file: " + ioe,
+//                        "Export PDF Error",
+//                        JOptionPane.ERROR_MESSAGE);
+//            }
+//        }
+//    }
+
     public final void doExportPDF() {
         FileDialog dialog = new FileDialog(this,
                 "Export PDF Image...",
@@ -1209,7 +1247,6 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
             document.close();
         }
     }
-
 
     public void doCopy() {
         StringWriter writer = new StringWriter();

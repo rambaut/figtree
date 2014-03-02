@@ -1,7 +1,7 @@
 /*
  * AbstractPainter.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,7 +25,13 @@ import java.util.List;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: AbstractPainter.java 373 2006-07-01 15:18:27Z rambaut $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public abstract class AbstractPainter<T> implements Painter<T> {
     public void addPainterListener(PainterListener listener) {

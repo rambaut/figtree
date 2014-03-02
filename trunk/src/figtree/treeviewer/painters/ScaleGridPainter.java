@@ -1,7 +1,7 @@
 /*
  * ScaleGridPainter.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,7 +35,13 @@ import java.util.Set;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: ScaleBarPainter.java,v 1.7 2006/11/21 16:10:24 rambaut Exp $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class ScaleGridPainter extends LabelPainter<TreePane> implements ScalePainter {
 

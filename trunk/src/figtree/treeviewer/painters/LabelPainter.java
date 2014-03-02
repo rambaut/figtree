@@ -1,7 +1,7 @@
 /*
  * LabelPainter.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,7 +33,13 @@ import figtree.treeviewer.decorators.Decorator;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: LabelPainter.java 536 2006-11-21 16:10:24Z rambaut $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public abstract class LabelPainter<T> extends AbstractPainter<T> {
     public static final String NAMES = "Names";

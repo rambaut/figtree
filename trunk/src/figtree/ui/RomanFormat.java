@@ -1,25 +1,37 @@
-package figtree.treeviewer.painters;
+/*
+ RomanFormat.java (5.1k) is a Java class for converting to/from Roman numerals.
+
+ Whilst there are a number of styles for writing Roman numerals (several of which
+ are implemented in the above code), there appears to be a simple algorithm that
+ can correctly parse almost any 'reasonable'-looking Roman number (sufficiently
+ simple that I'm inclined to treat it as a test for whether a number is valid or
+ not).
+
+ All this code is licensed under a BSD-like license.
+
+ http://www.hawaga.org.uk/ben/tech/roman.html
+*/
+
+package figtree.ui;
 
 import java.text.*;
 
 /**
- <p>
- This NumberFormat converts long integers to and from Roman Numeral notation.
- Once an instance has been created, the format and parse methods may be used
- as defined in java.text.NumberFormat.
- </p>
-
- <p>
- The
- <a href="../benno/applets/RomanNumeralConverter.html">RomanNumeralConverter
- applet</a> demonstrates the use of this class.
- </p>
-
- @author Ben Clifford
- @version $Revision: 1.1 $
+ *  This NumberFormat converts long integers to and from Roman Numeral notation.
+ *  Once an instance has been created, the format and parse methods may be used
+ *  as defined in java.text.NumberFormat.
+ *
+ * @author Ben Clifford
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 
-public class Roman extends NumberFormat
+public class RomanFormat extends NumberFormat
 {
 
 
@@ -62,14 +74,14 @@ public class Roman extends NumberFormat
      cannot see the definition.
      */
 
-    public static Roman.SymTab syms[]= {
-            new Roman.SymTab('M',1000),
-            new Roman.SymTab('D',500),
-            new Roman.SymTab('C',100),
-            new Roman.SymTab('L',50),
-            new Roman.SymTab('X',10),
-            new Roman.SymTab('V',5),
-            new Roman.SymTab('I',1)
+    public static RomanFormat.SymTab syms[]= {
+            new RomanFormat.SymTab('M',1000),
+            new RomanFormat.SymTab('D',500),
+            new RomanFormat.SymTab('C',100),
+            new RomanFormat.SymTab('L',50),
+            new RomanFormat.SymTab('X',10),
+            new RomanFormat.SymTab('V',5),
+            new RomanFormat.SymTab('I',1)
     };
 
 

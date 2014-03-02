@@ -1,7 +1,7 @@
 /*
  * TreeMenuHandler.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,7 +24,13 @@ import javax.swing.*;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: TreeMenuHandler.java,v 1.3 2007/09/05 11:17:15 rambaut Exp $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public interface TreeMenuHandler {
 	public static final String NEXT_TREE = "Next Tree";

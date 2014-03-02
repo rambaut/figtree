@@ -232,6 +232,7 @@
         <echo message="Mac version release is finished." />
     </target>
 
+    <!--
     <taskdef name="bundleapp"
              classname="com.oracle.appbundler.AppBundlerTask"
              classpath="release/Mac/appbundler-1.0.jar"
@@ -242,7 +243,7 @@
     <target name="mac_release"
             description="release Mac version of FigTree for Mountain Lion">
         <delete dir="${Mac_package_dir}" />
-        <!-- Create the release directory -->
+
         <mkdir dir="${Mac_package_dir}" />
 
         <copy file="${dist}/figtree.jar" todir="${Mac_package_dir}/lib"/>
@@ -278,5 +279,5 @@
 
         <echo message="Mac version release is finished." />
     </target>
-
+            -->
 </project>

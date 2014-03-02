@@ -1,7 +1,7 @@
 /*
  * InterpolatingColourDecorator.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,7 +31,13 @@ import java.util.Set;
  * based on a gradient between color1 & color2.
  *
  * @author Andrew Rambaut
- * @version $Id: ContinuousColourDecorator.java 822 2007-10-26 13:50:26Z rambaut $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class InterpolatingColourDecorator extends ContinuousColourDecorator {
 

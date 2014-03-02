@@ -1,7 +1,7 @@
 /*
  * TreeMenuFactory.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,9 +26,14 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 
 /**
- * @author rambaut
- *         Date: Feb 24, 2005
- *         Time: 5:12:11 PM
+ * @author Andrew Rambaut
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class TreeMenuFactory implements MenuFactory {
 

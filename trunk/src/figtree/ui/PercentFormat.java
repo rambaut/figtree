@@ -1,7 +1,7 @@
 /*
  * PercentFormat.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,16 +18,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package figtree.treeviewer.painters;
+package figtree.ui;
 
 import java.text.*;
 
 /**
- This NumberFormat converts numbers to and from percent notation.
- Once an instance has been created, the format and parse methods may be used
- as defined in java.text.NumberFormat.
-
- @author Andrew Rambaut
+ * This NumberFormat converts numbers to and from percent notation.
+ * Once an instance has been created, the format and parse methods may be used
+ * as defined in java.text.NumberFormat.
+ *
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 
 public class PercentFormat extends NumberFormat

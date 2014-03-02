@@ -1,7 +1,7 @@
 /*
  * ScaleBarPainterController.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,7 +38,13 @@ import figtree.ui.components.RealNumberField;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: ScaleBarPainterController.java,v 1.1 2007/08/14 15:50:41 rambaut Exp $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class ScaleBarPainterController extends AbstractController {
 

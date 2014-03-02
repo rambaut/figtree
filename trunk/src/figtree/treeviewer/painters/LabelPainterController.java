@@ -1,7 +1,7 @@
 /*
  * LabelPainterController.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,8 @@
 
 package figtree.treeviewer.painters;
 
+import figtree.ui.PercentFormat;
+import figtree.ui.RomanFormat;
 import jam.controlpalettes.AbstractController;
 import jam.controlpalettes.ControllerListener;
 import jam.panels.OptionsPanel;
@@ -36,11 +38,16 @@ import java.util.prefs.Preferences;
 
 import figtree.treeviewer.*;
 import figtree.treeviewer.decorators.*;
-import jebl.util.Attributable;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: LabelPainterController.java 773 2007-09-04 23:51:07Z rambaut $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class LabelPainterController extends AbstractController {
 
@@ -178,7 +185,7 @@ public class LabelPainterController extends AbstractController {
                 } else if (formatType.equals("Percent")) {
                     format = new PercentFormat();
                 } else if (formatType.equals("Roman")) {
-                    format = new Roman();
+                    format = new RomanFormat();
                 }
                 format.setMaximumFractionDigits(digits);
                 labelPainter.setNumberFormat(format);
