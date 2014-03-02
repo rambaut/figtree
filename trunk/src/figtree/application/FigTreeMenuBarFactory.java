@@ -25,6 +25,7 @@ import jam.mac.*;
 import figtree.application.menus.*;
 
 /**
+ * Register all the menus used by the FigTree app.
  *
  * @author Andrew Rambaut
  * @version $Id$

@@ -29,6 +29,9 @@ import java.util.Map;
 import java.awt.*;
 
 /**
+ * An extension of the NexusImporter from JEBL to parse FigTree settings from
+ * a FigTree block.
+ *
  * @author Andrew Rambaut
  * @version $Id$
  *

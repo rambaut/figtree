@@ -48,6 +48,7 @@ import jebl.evolution.io.NewickImporter;
 import jebl.evolution.trees.Tree;
 
 /**
+ * Commandline main() to generate PDF graphics from FigTree trees.
  *
  * @author Andrew Rambaut
  * @version $Id$
@@ -60,8 +61,8 @@ import jebl.evolution.trees.Tree;
  */
 public class FigTreePDF {
 
-    public static final String VERSION = "1.4";
-    public static final String DATES = "2006-2012";
+    public static final String VERSION = "1.4.1";
+    public static final String DATES = "2006-2014";
 
     static public void createGraphic(int width, int height, String treeFileName, String graphicFileName) {
 

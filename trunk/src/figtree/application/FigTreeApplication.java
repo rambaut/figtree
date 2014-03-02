@@ -58,6 +58,8 @@ import javax.swing.*;
 import ch.randelshofer.quaqua.QuaquaManager;
 
 /**
+ * Application class for FigTree including main() method for invoking it.
+ * Uses JAM Application classes to create a MultiDoc Application.
  *
  * @author Andrew Rambaut
  * @version $Id$

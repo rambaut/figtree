@@ -28,6 +28,8 @@ import java.util.Map;
 import java.awt.*;
 
 /**
+ * An extension of the NexusExporter from JEBL to write FigTree settings in
+ * a FigTree block.
  *
  * @author Andrew Rambaut
  * @version $Id: FigTreeApplication.java 232 2014-03-02 15:47:10Z rambaut $

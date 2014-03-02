@@ -23,6 +23,11 @@ package figtree.application;
 import java.util.StringTokenizer;
 
 /**
+ * Parses a set of command line arguments according to the given definitions.
+ * Can parse simple switches, numerical arguments, string arguments from a list
+ * of options and lists.
+ *
+ * Will generate help text automatically.
  *
  * @author Andrew Rambaut
  * @version $Id$
