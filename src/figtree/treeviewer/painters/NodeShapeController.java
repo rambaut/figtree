@@ -1,7 +1,7 @@
 /*
  * NodeShapeController.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,7 +39,13 @@ import figtree.treeviewer.ControllerOptionsPanel;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: NodeShapeController.java 760 2007-08-21 00:05:45Z rambaut $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class NodeShapeController extends AbstractController {
 

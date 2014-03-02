@@ -1,7 +1,7 @@
 /*
- * DiscreteColorDecorator.java
+ * DiscreteColourDecorator.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,7 +34,13 @@ import java.util.List;
  * If the data take more values than colors, then they will wrap around
  *
  * @author Andrew Rambaut
- * @version $Id: DiscreteColourDecorator.java 639 2007-02-15 10:05:28Z rambaut $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class DiscreteColourDecorator extends ColourDecorator {
 

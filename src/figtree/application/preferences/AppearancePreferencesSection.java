@@ -1,7 +1,7 @@
 /*
  * AppearancePreferencesSection.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,7 +33,13 @@ import figtree.ui.components.ColorWellButton;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: AppearancePreferencesSection.java,v 1.2 2007/08/18 09:52:24 rambaut Exp $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class AppearancePreferencesSection implements PreferencesSection {
     Icon coloursToolIcon = IconUtils.getIcon(FigTreeApplication.class, "images/coloursTool.png");

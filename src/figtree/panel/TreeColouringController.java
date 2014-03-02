@@ -1,7 +1,7 @@
 /*
  * TreeColouringController.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,7 +37,13 @@ import java.util.*;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: TreeAppearanceController.java,v 1.2 2007/09/10 14:52:02 rambaut Exp $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class TreeColouringController extends AbstractController {
 

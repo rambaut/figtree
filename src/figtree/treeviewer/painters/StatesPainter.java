@@ -1,7 +1,7 @@
 /*
  * StatesPainter.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,7 +29,13 @@ import java.awt.geom.Rectangle2D;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: CharactersPainter.java,v 1.18 2006/11/21 16:10:26 rambaut Exp $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class StatesPainter extends BasicLabelPainter {
 

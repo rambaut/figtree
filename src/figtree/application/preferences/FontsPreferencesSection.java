@@ -1,7 +1,7 @@
 /*
  * FontsPreferencesSection.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,7 +34,13 @@ import java.awt.*;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: AdvancedPreferencesSection.java,v 1.1 2006/09/09 15:23:33 rambaut Exp $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class FontsPreferencesSection implements PreferencesSection {
     Icon projectToolIcon = IconUtils.getIcon(FigTreeApplication.class, "images/prefsFonts.png");

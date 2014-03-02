@@ -1,7 +1,7 @@
 /*
  * ScaleAxisPainterController.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,7 +41,13 @@ import figtree.ui.components.RealNumberField;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: ScaleAxisPainterController.java 819 2007-10-22 14:42:58Z rambaut $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class ScaleAxisPainterController extends AbstractController {
 

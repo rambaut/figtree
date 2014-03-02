@@ -1,7 +1,7 @@
 /*
  * LegendPainterController.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,12 +24,11 @@ import figtree.treeviewer.AttributeColourController;
 import figtree.treeviewer.ControllerOptionsPanel;
 import figtree.treeviewer.TreeViewer;
 import figtree.treeviewer.decorators.ColourDecorator;
-import figtree.treeviewer.decorators.Decorator;
-import figtree.ui.components.RealNumberField;
+import figtree.ui.PercentFormat;
+import figtree.ui.RomanFormat;
 import jam.controlpalettes.AbstractController;
 import jam.controlpalettes.ControllerListener;
 import jam.panels.OptionsPanel;
-import jebl.util.Attributable;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -37,8 +36,6 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
@@ -46,7 +43,13 @@ import java.util.prefs.Preferences;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: ScaleBarPainterController.java 760 2007-08-21 00:05:45Z rambaut $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class LegendPainterController extends AbstractController {
 
@@ -147,7 +150,7 @@ public class LegendPainterController extends AbstractController {
                 } else if (formatType.equals("Percent")) {
                     format = new PercentFormat();
                 } else if (formatType.equals("Roman")) {
-                    format = new Roman();
+                    format = new RomanFormat();
                 }
                 format.setMaximumFractionDigits(digits);
                 legendPainter.setNumberFormat(format);

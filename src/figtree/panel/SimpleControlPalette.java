@@ -1,7 +1,7 @@
 /*
  * SimpleControlPalette.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,7 +29,13 @@ import java.util.Map;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: BasicControlPalette.java 856 2007-12-13 23:36:02Z rambaut $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class SimpleControlPalette extends JPanel implements ControlPalette {
 

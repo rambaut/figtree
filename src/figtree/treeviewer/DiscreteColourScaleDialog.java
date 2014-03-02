@@ -1,3 +1,23 @@
+/*
+ * DiscreteColourScaleDialog.java
+ *
+ * Copyright (C) 2006-2014 Andrew Rambaut
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
 package figtree.treeviewer;
 
 import figtree.treeviewer.decorators.*;
@@ -22,8 +42,14 @@ import java.awt.event.ActionListener;
 import java.util.*;
 
 /**
- * @author			Andrew Rambaut
- * @version			$Id$
+ * @author Andrew Rambaut
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class DiscreteColourScaleDialog {
     private static final int SLIDER_RANGE = 1000;
@@ -37,7 +63,7 @@ public class DiscreteColourScaleDialog {
 
     private JTable table;
 
-    private JComboBox colourSchemeCombo = new JComboBox(new String[] { HSB_SPECTRUM /*, FIXED_COLOURS */} );
+    private JComboBox colourSchemeCombo = new JComboBox(new String[] { HSB_SPECTRUM, FIXED_COLOURS} );
 
     CardLayout cardLayout = new CardLayout();
     private final JPanel colourSchemePanel;
@@ -55,10 +81,10 @@ public class DiscreteColourScaleDialog {
         this.frame = frame;
 
         colourSchemeNamePanelMap.put(HSB_SPECTRUM, new HSBColourSchemePanel());
-//        colourSchemeNamePanelMap.put(FIXED_COLOURS, new FixedColourSchemePanel());
+        colourSchemeNamePanelMap.put(FIXED_COLOURS, new FixedColourSchemePanel());
 
         colourSchemeClassNameMap.put(HSBDiscreteColourDecorator.class, HSB_SPECTRUM);
-//        colourSchemeClassNameMap.put(FixedDiscreteColourDecorator.class, FIXED_COLOURS);
+        colourSchemeClassNameMap.put(FixedDiscreteColourDecorator.class, FIXED_COLOURS);
 
 
         colourSchemePanel = new JPanel(cardLayout);
@@ -363,6 +389,10 @@ public class DiscreteColourScaleDialog {
                 }
             }
 
+            settingValues = true;
+
+            secondaryCountSpinnerModel.setValue(hsbDecorator.getSecondaryCount());
+
             hueSlider.setValue((int)(hsbDecorator.getHueLower() * SLIDER_RANGE));
             hueSlider.setUpperValue((int) (hsbDecorator.getHueUpper() * SLIDER_RANGE));
 
@@ -371,10 +401,17 @@ public class DiscreteColourScaleDialog {
 
             brightnessSlider.setValue((int)(hsbDecorator.getBrightnessLower() * SLIDER_RANGE));
             brightnessSlider.setUpperValue((int)(hsbDecorator.getBrightnessUpper() * SLIDER_RANGE));
+
+            settingValues = false;
+
+            getDecorator();
+            tableModel.fireTableDataChanged();
         }
 
         @Override
         public  DiscreteColourDecorator getDecorator() {
+            hsbDecorator.setSecondaryCount(secondaryCountSpinnerModel.getNumber().intValue());
+
             hsbDecorator.setHueLower(((float) hueSlider.getValue()) / SLIDER_RANGE);
             hsbDecorator.setHueUpper(((float) hueSlider.getUpperValue()) / SLIDER_RANGE);
 
@@ -386,6 +423,8 @@ public class DiscreteColourScaleDialog {
 
             return hsbDecorator;
         }
+
+        private boolean settingValues = false;
 
         @Override
         public JPanel getPanel() {
@@ -408,8 +447,10 @@ public class DiscreteColourScaleDialog {
 
                 ChangeListener listener = new ChangeListener() {
                     public void stateChanged(ChangeEvent e) {
-                        getDecorator();
-                        tableModel.fireTableDataChanged();
+                        if (!settingValues) {
+                            getDecorator();
+                            tableModel.fireTableDataChanged();
+                        }
                     }
                 };
 

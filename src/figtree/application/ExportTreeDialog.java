@@ -1,7 +1,7 @@
 /*
  * ExportTreeDialog.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,10 +28,16 @@ import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 
 /**
- * FindDialog
+ * ExportTreeDialog
  *
- * @author			Andrew Rambaut
- * @version			$Id: FindDialog.java,v 1.8 2006/11/21 11:11:23 rambaut Exp $
+ * @author Andrew Rambaut
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class ExportTreeDialog {
 

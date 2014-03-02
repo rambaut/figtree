@@ -1,7 +1,7 @@
 /*
- * HSBDiscreteColourDecorator.java
+ * FixedDiscreteColourDecorator.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,6 +29,12 @@ import java.util.Set;
 /**
  * @author Andrew Rambaut
  * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class FixedDiscreteColourDecorator extends DiscreteColourDecorator {
 
@@ -79,7 +85,7 @@ public class FixedDiscreteColourDecorator extends DiscreteColourDecorator {
         values.add("AC13");
         values.add("AC14");
         values.add("AC2");
-//        values.add("AC3");
+        values.add("AC3");
         values.add("AC4");
         values.add("AC5");
         values.add("AC6");
@@ -95,7 +101,7 @@ public class FixedDiscreteColourDecorator extends DiscreteColourDecorator {
                 new Color(0.551F, 0.242F, 0.598F),  // AC13
                 new Color(0.43F, 0.674F, 0.744F),  // AC14
                 new Color(0.816F, 0.765F, 0.376F),  // AC2
-//                new Color(0.26F, 0.141F, 0.632F),   // AC3
+                new Color(0.26F, 0.141F, 0.632F),   // AC3
                 new Color(0.242F, 0.445F, 0.718F),  // AC4
                 new Color(0.592F, 0.669F, 0.295F),  // AC5
                 new Color(0.791F, 0.27F, 0.146F),   // AC6

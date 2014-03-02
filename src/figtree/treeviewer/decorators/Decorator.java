@@ -1,7 +1,7 @@
 /*
  * Decorator.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,7 +28,13 @@ import java.awt.geom.Point2D;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: Decorator.java 433 2006-08-27 19:34:13Z rambaut $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public interface Decorator {
 

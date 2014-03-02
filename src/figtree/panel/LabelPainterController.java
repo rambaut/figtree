@@ -1,7 +1,7 @@
 /*
  * LabelPainterController.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,7 +35,13 @@ import sun.jvm.hotspot.tools.FinalizerInfo;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: LabelPainterController.java,v 1.1 2007/08/14 15:50:42 rambaut Exp $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class LabelPainterController extends AbstractController {
 

@@ -1,7 +1,7 @@
 /*
  * HSBDiscreteColourDecorator.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,6 +28,12 @@ import java.util.Set;
 /**
  * @author Andrew Rambaut
  * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class HSBDiscreteColourDecorator extends DiscreteColourDecorator {
     public enum Axis {
@@ -269,7 +275,7 @@ public class HSBDiscreteColourDecorator extends DiscreteColourDecorator {
     }
 
     private Axis primaryAxis = Axis.HUE;
-    private int secondaryCount = 2;
+    private int secondaryCount = 1;
     private float hueUpper = 1.0F;
     private float hueLower = 0.0F;
     private float saturationUpper = 0.6F;

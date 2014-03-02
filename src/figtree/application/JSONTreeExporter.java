@@ -1,7 +1,7 @@
 /*
- * FigTreeNexusExporter.java
+ * JSONTreeExporter.java
  *
- * Copyright (C) 2012 Andrew Rambaut
+ * Copyright (C) 2006-2014 Andrew Rambaut
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,7 +43,13 @@ import java.util.*;
 
 /**
  * @author Andrew Rambaut
- * @version $Id: FigTreeNexusExporter.java,v 1.2 2006/08/27 15:17:36 rambaut Exp $
+ * @version $Id$
+ *
+ * $HeadURL$
+ *
+ * $LastChangedBy$
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 public class JSONTreeExporter implements TreeExporter {
     public static final String treeNameAttributeKey = "name";
