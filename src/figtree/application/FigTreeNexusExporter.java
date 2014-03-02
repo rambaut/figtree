@@ -28,8 +28,15 @@ import java.util.Map;
 import java.awt.*;
 
 /**
+ *
  * @author Andrew Rambaut
- * @version $Id: FigTreeNexusExporter.java,v 1.2 2006/08/27 15:17:36 rambaut Exp $
+ * @version $Id: FigTreeApplication.java 232 2014-03-02 15:47:10Z rambaut $
+ *
+ * $HeadURL: https://figtree.googlecode.com/svn/trunk/src/figtree/application/FigTreeApplication.java $
+ *
+ * $LastChangedBy: rambaut $
+ * $LastChangedDate: 2014-03-02 15:47:10 +0000 (Sun, 02 Mar 2014) $
+ * $LastChangedRevision: 232 $
  */
 public class FigTreeNexusExporter extends NexusExporter {
 
