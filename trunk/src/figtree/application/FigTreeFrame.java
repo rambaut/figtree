@@ -62,6 +62,17 @@ import java.text.NumberFormat;
 import java.util.*;
 import java.util.List;
 
+/**
+ *
+ * @author Andrew Rambaut
+ * @version $Id: FigTreeApplication.java 232 2014-03-02 15:47:10Z rambaut $
+ *
+ * $HeadURL: https://figtree.googlecode.com/svn/trunk/src/figtree/application/FigTreeApplication.java $
+ *
+ * $LastChangedBy: rambaut $
+ * $LastChangedDate: 2014-03-02 15:47:10 +0000 (Sun, 02 Mar 2014) $
+ * $LastChangedRevision: 232 $
+ */
 public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandler, TreeMenuHandler {
     private final ExtendedTreeViewer treeViewer;
     private final ControlPalette controlPalette;
