@@ -2,7 +2,7 @@
 
 <project name="FigTree" default="dist" basedir=".">
     <description>
-        Build file for TreeDraw
+        Build file for FigTree
         $Id:$
     </description>
 
