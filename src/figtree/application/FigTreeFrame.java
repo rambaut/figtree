@@ -667,16 +667,16 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
             boolean isNexus = (line != null && line.toUpperCase().contains("#NEXUS"));
 
-            reader = new FileReader(file);
+//            reader = new FileReader(file);
 
-//			ProgressMonitorInputStream in = new ProgressMonitorInputStream(
-//					this,
-//					"Reading " + file.getName(),
-//					new FileInputStream(file));
-//			in.getProgressMonitor().setMillisToDecideToPopup(1000);
-//			in.getProgressMonitor().setMillisToPopup(1000);
-//
-//	        reader = new InputStreamReader(in);
+			ProgressMonitorInputStream in = new ProgressMonitorInputStream(
+					this,
+					"Reading " + file.getName(),
+					new FileInputStream(file));
+			in.getProgressMonitor().setMillisToDecideToPopup(1000);
+			in.getProgressMonitor().setMillisToPopup(1000);
+
+	        reader = new InputStreamReader(in);
 
             boolean success = readData(reader, isNexus);
 
@@ -761,6 +761,104 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         return true;
     }
 
+    /**
+     * This version loads the trees in a thread but this needs more thought in order
+     * to tie in to the JAM framework correctly
+     */
+//    protected boolean readData(final Reader reader, final boolean isNexus) {
+//
+//        final JFrame frame = this;
+//        Thread readThread = new Thread () {
+//            public void run() {
+//                try {
+//
+//                    final List<Tree> trees = new ArrayList<Tree>();
+//
+//                    boolean hasSettings = false;
+//
+//                    final Map<String, Object> settings = new HashMap<String, Object>();
+//                    // First of all, fully populate the settings map so that
+//                    // all the settings have defaults
+//                    controlPalette.getSettings(settings);
+//
+//                    if (isNexus) {
+//                        FigTreeNexusImporter importer = new FigTreeNexusImporter(reader);
+//                        while (importer.hasTree()) {
+//                            Tree tree = importer.importNextTree();
+//                            trees.add(tree);
+//                        }
+//                        // Try to find a figtree block and if found, parse the settings
+//                        while (true) {
+//                            try {
+//                                importer.findNextBlock();
+//                                if (importer.getNextBlockName().equalsIgnoreCase("FIGTREE")) {
+//                                    importer.parseFigTreeBlock(settings);
+//                                    hasSettings = true;
+//                                }
+//                            } catch (EOFException ex) {
+//                                break;
+//                            }
+//                        }
+//                    } else {
+//                        NewickImporter importer = new NewickImporter(reader, true);
+//                        while (importer.hasTree()) {
+//                            Tree tree = importer.importNextTree();
+//                            trees.add(tree);
+//                        }
+//                    }
+//
+//                    if (trees.size() == 0) {
+//                        throw new ImportException("This file contained no trees.");
+//                    }
+//
+//                    final boolean hasSettings2 = hasSettings;
+//
+//                    EventQueue.invokeLater (
+//                            new Runnable () {
+//                                public void run () {
+//                                    treeViewer.setTrees(trees);
+//                                    controlPalette.setSettings(settings);
+//
+//                                    if (!hasSettings2) {
+//                                        // If there weren't settings in the file then this wasn't a TreeDraw
+//                                        // created document so we don't want to be able to overwrite it without
+//                                        // explicit action of the user...
+//                                        setDirty();
+//                                        clearFile();
+//                                    }
+//                                }
+//                            });
+//
+//                } catch (final ImportException ie) {
+//                    EventQueue.invokeLater (
+//                            new Runnable () {
+//                                public void run () {
+//                                    JOptionPane.showMessageDialog(frame, "Error reading tree file: " + ie.getMessage(),
+//                                            "Import Error",
+//                                            JOptionPane.ERROR_MESSAGE);
+//                                }
+//                            });
+//                } catch (final InterruptedIOException iioex) {
+//                    // The cancel dialog button was pressed - do nothing
+//                } catch (final IOException ioex) {
+//                    EventQueue.invokeLater (
+//                            new Runnable () {
+//                                public void run () {
+//                                    JOptionPane.showMessageDialog(frame, "File I/O Error: " + ioex.getMessage(),
+//                                            "File I/O Error",
+//                                            JOptionPane.ERROR_MESSAGE);
+//                                }
+//                            });
+//                }
+//
+//            }
+//        };
+//        readThread.start();
+//
+//        return true;
+//    }
+
+
     private void checkLabelAttribute(List<Tree> trees) {
 
         boolean hasLabel = false;
@@ -805,104 +903,6 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         }
     }
 
-
-    /**
-     * This version loads the trees in a thread but this needs more thought in order
-     * to tie in to the JAM framework correctly
-     *
-     protected boolean readData(final Reader reader, final boolean isNexus) {
-
-     final JFrame frame = this;
-     Thread readThread = new Thread () {
-     public void run() {
-     try {
-
-     final List<Tree> trees = new ArrayList<Tree>();
-
-     boolean hasSettings = false;
-
-     final Map<String, Object> settings = new HashMap<String, Object>();
-     // First of all, fully populate the settings map so that
-     // all the settings have defaults
-     controlPalette.getSettings(settings);
-
-     if (isNexus) {
-     FigTreeNexusImporter importer = new FigTreeNexusImporter(reader);
-     while (importer.hasTree()) {
-     Tree tree = importer.importNextTree();
-     trees.add(tree);
-     }
-     // Try to find a figtree block and if found, parse the settings
-     while (true) {
-     try {
-     importer.findNextBlock();
-     if (importer.getNextBlockName().equalsIgnoreCase("FIGTREE")) {
-     importer.parseFigTreeBlock(settings);
-     hasSettings = true;
-     }
-     } catch (EOFException ex) {
-     break;
-     }
-     }
-     } else {
-     NewickImporter importer = new NewickImporter(reader, true);
-     while (importer.hasTree()) {
-     Tree tree = importer.importNextTree();
-     trees.add(tree);
-     }
-     }
-
-     if (trees.size() == 0) {
-     throw new ImportException("This file contained no trees.");
-     }
-
-     final boolean hasSettings2 = hasSettings;
-
-     EventQueue.invokeLater (
-     new Runnable () {
-     public void run () {
-     treeViewer.setTrees(trees);
-     controlPalette.setSettings(settings);
-
-     if (!hasSettings2) {
-     // If there weren't settings in the file then this wasn't a TreeDraw
-     // created document so we don't want to be able to overwrite it without
-     // explicit action of the user...
-     setDirty();
-     clearFile();
-     }
-     }
-     });
-
-     } catch (final ImportException ie) {
-     EventQueue.invokeLater (
-     new Runnable () {
-     public void run () {
-     JOptionPane.showMessageDialog(frame, "Error reading tree file: " + ie.getMessage(),
-     "Import Error",
-     JOptionPane.ERROR_MESSAGE);
-     }
-     });
-     } catch (final InterruptedIOException iioex) {
-     // The cancel dialog button was pressed - do nothing
-     } catch (final IOException ioex) {
-     EventQueue.invokeLater (
-     new Runnable () {
-     public void run () {
-     JOptionPane.showMessageDialog(frame, "File I/O Error: " + ioex.getMessage(),
-     "File I/O Error",
-     JOptionPane.ERROR_MESSAGE);
-     }
-     });
-     }
-
-     }
-     };
-     readThread.start();
-
-     return true;
-     }
-     */
 
     protected boolean writeToFile(File file) throws IOException {
 
