@@ -1,5 +1,5 @@
 /*
- * FigTreeFileMenuHandler.java
+ * GraphicFormat.java
  *
  * Copyright (C) 2006-2014 Andrew Rambaut
  *
@@ -18,11 +18,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package figtree.application.menus;
-
-import javax.swing.*;
+package figtree.application;
 
 /**
+ * ${CLASS_NAME}
+ *
  * @author Andrew Rambaut
  * @version $Id$
  *
@@ -32,16 +32,22 @@ import javax.swing.*;
  * $LastChangedDate$
  * $LastChangedRevision$
  */
-public interface FigTreeFileMenuHandler {
-    Action getImportColourSchemeAction();
 
-    Action getExportColourSchemeAction();
+public enum GraphicFormat {
+    JPEG("JPG"), PNG("PNG"), GIF("GIF"), BMP("BMP"), EPS("EPS"), SVG("SVG"), PDF("PDF");
 
-    Action getExportTreesAction();
+    GraphicFormat(String name) {
+        this.name = name;
+    }
 
-//	Action getExportGraphicAction();
+    public String getName() {
+        return name;
+    }
 
-    Action getExportPNGGraphicAction();
-    Action getExportJPEGGraphicAction();
-    Action getExportPDFAction();
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    private final String name;
 }

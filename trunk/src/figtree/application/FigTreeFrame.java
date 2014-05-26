@@ -26,8 +26,6 @@ import com.itextpdf.text.pdf.DefaultFontMapper;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
-//import de.erichseifert.vectorgraphics2d.PDFGraphics2D;
-//import de.erichseifert.vectorgraphics2d.SVGGraphics2D;
 import figtree.treeviewer.decorators.DiscreteColourDecorator;
 import figtree.treeviewer.decorators.HSBDiscreteColourDecorator;
 import figtree.treeviewer.painters.StatesPainter;
@@ -50,13 +48,14 @@ import figtree.application.menus.FigTreeFileMenuHandler;
 import figtree.treeviewer.*;
 import figtree.treeviewer.TreeSelectionListener;
 import figtree.treeviewer.annotations.*;
-import org.freehep.util.export.ExportDialog;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.text.NumberFormat;
 import java.util.*;
@@ -669,14 +668,14 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
 //            reader = new FileReader(file);
 
-			ProgressMonitorInputStream in = new ProgressMonitorInputStream(
-					this,
-					"Reading " + file.getName(),
-					new FileInputStream(file));
-			in.getProgressMonitor().setMillisToDecideToPopup(1000);
-			in.getProgressMonitor().setMillisToPopup(1000);
+            ProgressMonitorInputStream in = new ProgressMonitorInputStream(
+                    this,
+                    "Reading " + file.getName(),
+                    new FileInputStream(file));
+            in.getProgressMonitor().setMillisToDecideToPopup(1000);
+            in.getProgressMonitor().setMillisToPopup(1000);
 
-	        reader = new InputStreamReader(in);
+            reader = new InputStreamReader(in);
 
             boolean success = readData(reader, isNexus);
 
@@ -1178,52 +1177,54 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         }
     }
 
-    public final void doExportGraphic() {
-        ExportDialog export = new ExportDialog();
-        export.showExportDialog(this, "Export view as ...", treeViewer.getContentPane(), "export");
+    public final void doExportGraphic(GraphicFormat format) {
+        FileDialog dialog = new FileDialog(this,
+                "Export " + format.getName() + " File...",
+                FileDialog.SAVE);
+
+        String name = this.getFile().getName() + "." + format.getName().toLowerCase();
+        dialog.setFile(name);
+
+        dialog.setVisible(true);
+        if (dialog.getFile() != null) {
+            File file = new File(dialog.getDirectory(), dialog.getFile());
+
+            try {
+                JComponent comp = treeViewer.getContentPane();
+                int imageType = BufferedImage.TYPE_INT_RGB;
+
+                if (format == GraphicFormat.PNG) {
+                    // PNG allows an alpha channel
+                    imageType = BufferedImage.TYPE_INT_ARGB;
+                }
+                BufferedImage bi = new BufferedImage(comp.getSize().width, comp.getSize().height, imageType);
+                Graphics g = bi.createGraphics();
+
+                if (format != GraphicFormat.PNG) {
+                    g.setColor(Color.WHITE);
+                    g.fillRect(0, 0, bi.getWidth(), bi.getHeight());
+                    comp.paint(g);
+                }
+                g.dispose();
+                ImageIO.write(bi, format.getName(), file);
+            } catch (IOException ioe) {
+                JOptionPane.showMessageDialog(this, "Error writing tree file: " + ioe.getMessage(),
+                        "Export Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+
+        }
+
     }
-
-
-//    public final void doExportVectorGraphic() {
-//        FileDialog dialog = new FileDialog(this,
-//                "Export PDF Image...",
-//                FileDialog.SAVE);
-//
-//        dialog.setVisible(true);
-//        if (dialog.getFile() != null) {
-//            File file = new File(dialog.getDirectory(), dialog.getFile());
-//
-//            Rectangle2D bounds = treeViewer.getContentPane().getBounds();
-////            PDFGraphics2D g = new PDFGraphics2D(bounds.getX(), bounds.getY(), bounds.getHeight(), bounds.getWidth());
-//            SVGGraphics2D g = new SVGGraphics2D(bounds.getX(), bounds.getY(), bounds.getHeight(), bounds.getWidth());
-//
-//            try {
-//                // Write the PDF output to a file
-//                FileOutputStream outputStream = new FileOutputStream(file);
-//
-//                treeViewer.getContentPane().print(g);
-//
-//                outputStream.write(g.getBytes());
-//
-//                outputStream.close();
-//            }
-//            catch (FileNotFoundException e) {
-//                JOptionPane.showMessageDialog(this, "Error writing PDF file: " + e,
-//                        "Export PDF Error",
-//                        JOptionPane.ERROR_MESSAGE);
-//            }
-//            catch(IOException ioe) {
-//                JOptionPane.showMessageDialog(this, "Error writing PDF file: " + ioe,
-//                        "Export PDF Error",
-//                        JOptionPane.ERROR_MESSAGE);
-//            }
-//        }
-//    }
 
     public final void doExportPDF() {
         FileDialog dialog = new FileDialog(this,
                 "Export PDF Image...",
                 FileDialog.SAVE);
+
+
+        String name = this.getFile().getName() + ".pdf";
+        dialog.setFile(name);
 
         dialog.setVisible(true);
         if (dialog.getFile() != null) {
@@ -1467,12 +1468,20 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         return exportTreesAction;
     }
 
-    public Action getExportGraphicAction() {
-        return exportGraphicAction;
-    }
+//    public Action getExportGraphicAction() {
+//        return exportGraphicAction;
+//    }
 
     public Action getExportPDFAction() {
         return exportPDFAction;
+    }
+
+    public Action getExportPNGGraphicAction() {
+        return exportPNGGraphicAction;
+    }
+
+    public Action getExportJPEGGraphicAction() {
+        return exportJPEGGraphicAction;
     }
 
     public Action getNextTreeAction() {
@@ -1597,9 +1606,21 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         }
     };
 
-    private AbstractAction exportGraphicAction = new AbstractAction("Export Graphic...") {
+//    private AbstractAction exportGraphicAction = new AbstractAction("Export Graphic...") {
+//        public void actionPerformed(ActionEvent ae) {
+//            doExportGraphic(GraphicFormat.PNG);
+//        }
+//    };
+
+    private AbstractAction exportPNGGraphicAction = new AbstractAction("Export PNG...") {
         public void actionPerformed(ActionEvent ae) {
-            doExportGraphic();
+            doExportGraphic(GraphicFormat.PNG);
+        }
+    };
+
+    private AbstractAction exportJPEGGraphicAction = new AbstractAction("Export JPEG...") {
+        public void actionPerformed(ActionEvent ae) {
+            doExportGraphic(GraphicFormat.JPEG);
         }
     };
 
