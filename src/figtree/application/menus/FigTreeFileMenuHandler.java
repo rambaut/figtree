@@ -44,4 +44,5 @@ public interface FigTreeFileMenuHandler {
     Action getExportPNGGraphicAction();
     Action getExportJPEGGraphicAction();
     Action getExportPDFAction();
+    Action getExportSVGGraphicAction();
 }

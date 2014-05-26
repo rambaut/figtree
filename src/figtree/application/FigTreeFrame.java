@@ -48,6 +48,10 @@ import figtree.application.menus.FigTreeFileMenuHandler;
 import figtree.treeviewer.*;
 import figtree.treeviewer.TreeSelectionListener;
 import figtree.treeviewer.annotations.*;
+import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.batik.svggen.SVGGraphics2DIOException;
+import org.w3c.dom.DOMImplementation;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -1191,22 +1195,22 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
             try {
                 JComponent comp = treeViewer.getContentPane();
-                int imageType = BufferedImage.TYPE_INT_RGB;
+                switch (format) {
 
-                if (format == GraphicFormat.PNG) {
-                    // PNG allows an alpha channel
-                    imageType = BufferedImage.TYPE_INT_ARGB;
+                    case PNG:
+                    case GIF:
+                    case BMP:
+                        exportGraphicsFile(format, comp, file);
+                        break;
+                    case EPS:
+                        throw new UnsupportedOperationException("EPS not handled");
+                    case SVG:
+                        exportSVGFile(comp, file);
+                        break;
+                    case PDF:
+                        exportPDFFile(comp, file);
+                        break;
                 }
-                BufferedImage bi = new BufferedImage(comp.getSize().width, comp.getSize().height, imageType);
-                Graphics g = bi.createGraphics();
-
-                if (format != GraphicFormat.PNG) {
-                    g.setColor(Color.WHITE);
-                    g.fillRect(0, 0, bi.getWidth(), bi.getHeight());
-                    comp.paint(g);
-                }
-                g.dispose();
-                ImageIO.write(bi, format.getName(), file);
             } catch (IOException ioe) {
                 JOptionPane.showMessageDialog(this, "Error writing tree file: " + ioe.getMessage(),
                         "Export Error",
@@ -1217,48 +1221,72 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
     }
 
-    public final void doExportPDF() {
-        FileDialog dialog = new FileDialog(this,
-                "Export PDF Image...",
-                FileDialog.SAVE);
+    private final void exportGraphicsFile(GraphicFormat format, JComponent component, File file) throws IOException {
+        int imageType = BufferedImage.TYPE_INT_RGB;
 
-
-        String name = this.getFile().getName() + ".pdf";
-        dialog.setFile(name);
-
-        dialog.setVisible(true);
-        if (dialog.getFile() != null) {
-            File file = new File(dialog.getDirectory(), dialog.getFile());
-
-            Rectangle2D bounds = treeViewer.getContentPane().getBounds();
-            Document document = new Document(new com.itextpdf
-                    .text.Rectangle((float)bounds.getWidth(), (float)bounds.getHeight()));
-            try {
-                // step 2
-                PdfWriter writer;
-                writer = PdfWriter.getInstance(document, new FileOutputStream(file));
-                // step 3
-                document.open();
-                // step 4
-                PdfContentByte cb = writer.getDirectContent();
-                PdfTemplate tp = cb.createTemplate((float)bounds.getWidth(), (float)bounds.getHeight());
-                Graphics2D g2d = tp.createGraphics((float)bounds.getWidth(), (float)bounds.getHeight(), new DefaultFontMapper());
-                treeViewer.getContentPane().print(g2d);
-                g2d.dispose();
-                cb.addTemplate(tp, 0, 0);
-            }
-            catch(DocumentException de) {
-                JOptionPane.showMessageDialog(this, "Error writing PDF file: " + de,
-                        "Export PDF Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-            catch (FileNotFoundException e) {
-                JOptionPane.showMessageDialog(this, "Error writing PDF file: " + e,
-                        "Export PDF Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-            document.close();
+        if (format == GraphicFormat.PNG) {
+            // PNG allows an alpha channel
+            imageType = BufferedImage.TYPE_INT_ARGB;
         }
+        BufferedImage bi = new BufferedImage(component.getSize().width, component.getSize().height, imageType);
+        Graphics g = bi.createGraphics();
+
+        if (format != GraphicFormat.PNG) {
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, bi.getWidth(), bi.getHeight());
+            component.paint(g);
+        }
+        g.dispose();
+        ImageIO.write(bi, format.getName(), file);
+    }
+
+    private final void exportSVGFile(JComponent component, File file) throws IOException {
+        // Get a DOMImplementation and create an XML document
+        DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
+        org.w3c.dom.Document document = domImpl.createDocument(null, "svg", null);
+
+        // Create an instance of the SVG Generator
+        SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
+
+        component.paint(svgGenerator);
+
+        // Write svg file
+        OutputStream outputStream = new FileOutputStream(file);
+        Writer out = new OutputStreamWriter(outputStream, "UTF-8");
+        svgGenerator.stream(out, true /* use css */);
+        outputStream.flush();
+        outputStream.close();
+    }
+
+    public final void exportPDFFile(JComponent component, File file) {
+        Rectangle2D bounds = treeViewer.getContentPane().getBounds();
+        Document document = new Document(new com.itextpdf
+                .text.Rectangle((float)bounds.getWidth(), (float)bounds.getHeight()));
+        try {
+            // step 2
+            PdfWriter writer;
+            writer = PdfWriter.getInstance(document, new FileOutputStream(file));
+            // step 3
+            document.open();
+            // step 4
+            PdfContentByte cb = writer.getDirectContent();
+            PdfTemplate tp = cb.createTemplate((float)bounds.getWidth(), (float)bounds.getHeight());
+            Graphics2D g2d = tp.createGraphics((float)bounds.getWidth(), (float)bounds.getHeight(), new DefaultFontMapper());
+            component.print(g2d);
+            g2d.dispose();
+            cb.addTemplate(tp, 0, 0);
+        }
+        catch(DocumentException de) {
+            JOptionPane.showMessageDialog(this, "Error writing PDF file: " + de,
+                    "Export PDF Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(this, "Error writing PDF file: " + e,
+                    "Export PDF Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        document.close();
     }
 
     public void doCopy() {
@@ -1484,6 +1512,10 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         return exportJPEGGraphicAction;
     }
 
+    public Action getExportSVGGraphicAction() {
+        return exportSVGAction;
+    }
+
     public Action getNextTreeAction() {
         return nextTreeAction;
     }
@@ -1624,9 +1656,15 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         }
     };
 
+    private AbstractAction exportSVGAction = new AbstractAction("Export SVG...") {
+        public void actionPerformed(ActionEvent ae) {
+            doExportGraphic(GraphicFormat.SVG);
+        }
+    };
+
     private AbstractAction exportPDFAction = new AbstractAction("Export PDF...") {
         public void actionPerformed(ActionEvent ae) {
-            doExportPDF();
+            doExportGraphic(GraphicFormat.PDF);
         }
     };
 

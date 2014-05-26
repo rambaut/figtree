@@ -110,6 +110,9 @@ public class FigTreeMacFileMenuFactory implements MenuFactory {
             item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK + KeyEvent.ALT_MASK));
             menu.add(item);
 
+            item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExportSVGGraphicAction());
+            menu.add(item);
+
             item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExportPNGGraphicAction());
             menu.add(item);
 

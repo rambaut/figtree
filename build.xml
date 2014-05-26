@@ -35,7 +35,7 @@
     <target name="compile" depends="init">
         <!-- Compile the java code from ${src} into ${build} -->
         <javac source="1.6" target="1.6" srcdir="${src}" destdir="${build}"
-               classpath="${lib}/jebl.jar:${lib}/jam.jar:${lib}/freehep.jar:${lib}/iText.jar:${lib}/quaqua.jar:${lib}/jwt/servlet-api-2.5-6.0.2.jar:${lib}/jwt/jwt-3.1.7pre1.jar">
+               classpath="${lib}/jebl.jar:${lib}/jam.jar:${lib}/batik-awt-util.jar:${lib}/batik-dom.jar:${lib}/batik-ext.jar:${lib}/batik-svggen.jar:${lib}/batik-util.jar:${lib}/batik-xml.jar:${lib}/xml-apis.jar:${lib}/iText.jar:${lib}/quaqua.jar:${lib}/jwt/servlet-api-2.5-6.0.2.jar:${lib}/jwt/jwt-3.1.7pre1.jar">
             <include name="figtree/**"/>
         </javac>
         <copy todir="${build}" verbose="true">
@@ -50,7 +50,8 @@
         <jar jarfile="${dist}/figtree.jar">
             <zipgroupfileset dir="${lib}" includes="jebl.jar"/>
             <zipgroupfileset dir="${lib}" includes="jam.jar"/>
-            <zipgroupfileset dir="${lib}" includes="freehep.jar"/>
+            <zipgroupfileset dir="${lib}" includes="batik*.jar"/>
+            <zipgroupfileset dir="${lib}" includes="xml-apis.jar"/>
             <zipgroupfileset dir="${lib}" includes="iText.jar"/>
             <fileset dir="${build}" includes="**/*.class,**/*.properties,**/*.png,**/*.gif"/>
             <manifest>
@@ -79,7 +80,6 @@
                 <include name="jwt-3.1.6.jar" />
             </lib>
             <lib dir="${lib}">
-                <include name="freehep.jar" />
                 <include name="iText.jar" />
                 <include name="jam.jar" />
                 <include name="jdom.jar" />
