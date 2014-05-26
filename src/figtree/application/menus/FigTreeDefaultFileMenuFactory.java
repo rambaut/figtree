@@ -85,12 +85,14 @@ public class FigTreeDefaultFileMenuFactory implements MenuFactory {
 		    item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK));
 		    menu.add(item);
 
-		    item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExportGraphicAction());
-		    item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK + KeyEvent.ALT_MASK));
-		    menu.add(item);
-
             item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExportPDFAction());
-            item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK + KeyEvent.SHIFT_MASK + KeyEvent.ALT_MASK));
+            item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK + KeyEvent.ALT_MASK));
+            menu.add(item);
+
+            item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExportPNGGraphicAction());
+            menu.add(item);
+
+            item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExportJPEGGraphicAction());
             menu.add(item);
 
             /* to be added ... */

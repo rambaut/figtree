@@ -36,15 +36,9 @@ import jam.framework.*;
 import jam.controlpalettes.BasicControlPalette;
 import jam.controlpalettes.ControlPalette;
 import jam.mac.Utils;
-import org.freehep.graphics2d.VectorGraphics;
-import org.freehep.graphicsio.ps.PSGraphics2D;
-import org.freehep.graphicsio.pdf.PDFGraphics2D;
-import org.freehep.graphicsio.emf.EMFGraphics2D;
-import org.freehep.graphicsio.svg.SVGGraphics2D;
-import org.freehep.graphicsio.gif.GIFGraphics2D;
-import org.freehep.graphicsio.swf.SWFGraphics2D;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -53,6 +47,7 @@ import jebl.evolution.io.ImportException;
 import jebl.evolution.io.NewickImporter;
 import jebl.evolution.trees.Tree;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import ch.randelshofer.quaqua.QuaquaManager;
@@ -166,52 +161,51 @@ public class FigTreeApplication extends MultiDocApplication {
                 stream = System.out;
             }
 
-            Properties p = new Properties();
-//	        p.setProperty("PageSize","A5");
-            VectorGraphics g;
-
+            GraphicFormat format = null;
             if (graphicFormat.equals("PDF")) {
                 if (graphicFileName != null) {
                     System.out.println("Creating PDF graphic: " + graphicFileName);
                 }
-                g = new PDFGraphics2D(stream, new Dimension(width, height));
-            } else if (graphicFormat.equals("PS")) {
-                if (graphicFileName != null) {
-                    System.out.println("Creating PS graphic: " + graphicFileName);
-                }
-                g = new PSGraphics2D(stream, new Dimension(width, height));
-            } else if (graphicFormat.equals("EMF")) {
-                if (graphicFileName != null) {
-                    System.out.println("Creating EMF graphic: " + graphicFileName);
-                }
-                g = new EMFGraphics2D(stream, new Dimension(width, height));
-            } else if (graphicFormat.equals("SVG")) {
-                if (graphicFileName != null) {
-                    System.out.println("Creating SVG graphic: " + graphicFileName);
-                }
-                g = new SVGGraphics2D(stream, new Dimension(width, height));
-            } else if (graphicFormat.equals("SWF")) {
-                if (graphicFileName != null) {
-                    System.out.println("Creating SWF graphic: " + graphicFileName);
-                }
-                g = new SWFGraphics2D(stream, new Dimension(width, height));
+                format = GraphicFormat.PDF;
+//            } else if (graphicFormat.equals("PS")) {
+//                if (graphicFileName != null) {
+//                    System.out.println("Creating PS graphic: " + graphicFileName);
+//                }
+//                g = new PSGraphics2D(stream, new Dimension(width, height));
+//            } else if (graphicFormat.equals("EMF")) {
+//                if (graphicFileName != null) {
+//                    System.out.println("Creating EMF graphic: " + graphicFileName);
+//                }
+//                g = new EMFGraphics2D(stream, new Dimension(width, height));
+//            } else if (graphicFormat.equals("SVG")) {
+//                if (graphicFileName != null) {
+//                    System.out.println("Creating SVG graphic: " + graphicFileName);
+//                }
+//                g = new SVGGraphics2D(stream, new Dimension(width, height));
+//            } else if (graphicFormat.equals("SWF")) {
+//                if (graphicFileName != null) {
+//                    System.out.println("Creating SWF graphic: " + graphicFileName);
+//                }
+//                g = new SWFGraphics2D(stream, new Dimension(width, height));
             } else if (graphicFormat.equals("GIF")) {
                 if (graphicFileName != null) {
                     System.out.println("Creating GIF graphic: " + graphicFileName);
                 }
-                g = new GIFGraphics2D(stream, new Dimension(width, height));
-//	        } else if (graphicFormat.equals("PNG")) {
-//		        g = new PNGGraphics2D(file, new Dimension(width, height));
-//	        } else if (graphicFormat.equals("JPEG")) {
-//		        g = new JPEGGraphics2D(file, new Dimension(width, height));
+                format = GraphicFormat.GIF;
+	        } else if (graphicFormat.equals("PNG")) {
+                format = GraphicFormat.PNG;
+            } else if (graphicFormat.equals("JPEG")) {
+                format = GraphicFormat.JPEG;
             } else {
                 throw new RuntimeException("Unknown graphic format");
             }
 
-            g.setProperties(p);
-            g.startExport();
-            treeViewer.getContentPane().print(g);
-            g.endExport();
+            JComponent comp = treeViewer.getContentPane();
+            BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics g = bi.createGraphics();
+            comp.paint(g);
+            g.dispose();
+            ImageIO.write(bi, format.getName(), stream);
 
         } catch(ImportException ie) {
             throw new RuntimeException("Error writing graphic file: " + ie);
@@ -239,8 +233,8 @@ public class FigTreeApplication extends MultiDocApplication {
         centreLine("a.rambaut@ed.ac.uk", 60);
         System.out.println();
         centreLine("http://tree.bio.ed.ac.uk/", 60);
-        centreLine("Uses the Java Evolutionary Biology Library (JEBL)", 60);
-        centreLine("http://jebl.sourceforge.net/", 60);
+        centreLine("Uses the Java Evolutionary Biology 2 Library (JEBL2)", 60);
+        centreLine("http://jebl2.googlecode.com/", 60);
         centreLine("Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, ", 60);
         centreLine("Tulio de Oliveira, Oliver Pybus, Beth Shapiro & Marc Suchard", 60);
         System.out.println();
@@ -399,10 +393,12 @@ public class FigTreeApplication extends MultiDocApplication {
 
         final String nameString = "FigTree";
         String aboutString = "<html><center>Tree Figure Drawing Tool<br>Version " + VERSION + "<br>" + DATES + ", Andrew Rambaut<br>" +
-                "Institute of Evolutionary Biology, University of Edinburgh.<br><br>" +
+                "Institute of Evolutionary Biology, University of Edinburgh.<br>" +
                 "<a href=\"http://tree.bio.ed.ac.uk/\">http://tree.bio.ed.ac.uk/</a><br><br>" +
-                "Uses the Java Evolutionary Biology Library (JEBL)<br>" +
-                "<a href=\"http://sourceforge.net/projects/jebl/\">http://jebl.sourceforge.net/</a><br><br>" +
+                "Source code available from:<br>" +
+                "<a href=\"https://figtree.googlecode.com/\">http://figtree.googlecode.com/</a><br><br>" +
+                "Uses the Java Evolutionary Biology 2 Library (JEBL2)<br>" +
+                "<a href=\"https://jebl2.googlecode.com/\">http://jebl2.googlecode.com/</a><br><br>" +
                 "Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, <br>Tulio de Oliveira, Oliver Pybus, Beth Shapiro & Marc Suchard</center></html>";
 
         String websiteURLString = "http://tree.bio.ed.ac.uk/software/figtree/";
