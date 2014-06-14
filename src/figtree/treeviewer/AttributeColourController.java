@@ -29,6 +29,8 @@ import jebl.util.Attributable;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.*;
 
 /**
@@ -112,6 +114,15 @@ public class AttributeColourController extends AbstractController {
                     }
                 }
             });
+
+            colourAttributeCombo.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent itemEvent) {
+                    colourSetupButton.setEnabled(colourAttributeCombo.getSelectedIndex() > 0);
+                }
+            });
+
+            colourSetupButton.setEnabled(colourAttributeCombo.getSelectedIndex() > 0);
         }
 
         // I don't think this is required and it throws up many, many events (i.e., every time
@@ -143,8 +154,13 @@ public class AttributeColourController extends AbstractController {
                 if (node.getAttribute(attribute) != null) {
                     items.add(node);
                 }
+                if (tree.getTaxon(node) != null) {
+                    items.add(tree.getTaxon(node));
+                }
             }
         }
+
+        //
 
         if (colourDecorator == null) {
 
