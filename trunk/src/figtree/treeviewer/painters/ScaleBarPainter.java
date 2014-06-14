@@ -227,6 +227,11 @@ public class ScaleBarPainter extends LabelPainter<TreePane> implements ScalePain
         // nothing to do...
     }
 
+    @Override
+    public String getDisplayAttribute() {
+        throw new UnsupportedOperationException("getDisplayAttribute not implmented");
+    }
+
     public void setDisplayAttribute(String displayAttribute) {
         throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleBarPainter");
     }

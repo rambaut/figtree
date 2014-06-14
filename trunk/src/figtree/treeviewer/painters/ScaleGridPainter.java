@@ -192,7 +192,12 @@ public class ScaleGridPainter extends LabelPainter<TreePane> implements ScalePai
 		// nothing to do...
 	}
 
-	public void setDisplayAttribute(String displayAttribute) {
+    @Override
+    public String getDisplayAttribute() {
+        throw new UnsupportedOperationException("getDisplayAttribute not implmented");
+    }
+
+    public void setDisplayAttribute(String displayAttribute) {
         throw new UnsupportedOperationException("setDisplayAttribute not implemented in ScaleGridPainter");
 	}
 

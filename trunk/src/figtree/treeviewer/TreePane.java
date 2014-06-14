@@ -1076,6 +1076,16 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         return legendPainter;
     }
 
+    public float getLabelSpacing() {
+        return labelXOffset;
+    }
+
+    public void setLabelSpacing(float labelSpacing) {
+        this.labelXOffset = labelSpacing;
+        calibrated = false;
+        repaint();
+    }
+
     public void setPreferredSize(Dimension dimension) {
         if (treeLayout.maintainAspectRatio()) {
             super.setPreferredSize(new Dimension(dimension.width, dimension.height));
@@ -1898,7 +1908,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             yScale = h / treeBounds.getHeight();
 
             // and set the origin in the top left corner
-            xOffset = - totalTreeBounds.getX() + (treeBounds.getX() * xScale);
+            xOffset = - totalTreeBounds.getX() - (treeBounds.getX() * xScale);
             yOffset = - totalTreeBounds.getY() - (treeBounds.getY() * yScale);
 
             treeScale = xScale;

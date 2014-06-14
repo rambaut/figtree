@@ -273,6 +273,22 @@ public class DefaultTreeViewer extends TreeViewer {
         return treePane.getSelectedTips();
     }
 
+    /**
+     * Select taxa with a search string matching the currently displayed attribute
+     * @param searchType
+     * @param searchString
+     * @param caseSensitive
+     */
+    public void selectTaxa(TextSearchType searchType, String searchString, boolean caseSensitive) {
+        String attributeName = "!name";
+        LabelPainter lp = treePane.getTipLabelPainter();
+        if (lp != null && lp.isVisible() && lp.getDisplayAttribute() != null) {
+            attributeName = lp.getDisplayAttribute();
+        }
+
+        selectTaxa(attributeName, searchType, searchString, caseSensitive);
+    }
+
     public void selectTaxa(String attributeName, TextSearchType searchType, String searchString, boolean caseSensitive) {
         if (treePane.getTree() == null) {
             return;
@@ -311,6 +327,10 @@ public class DefaultTreeViewer extends TreeViewer {
                     target = taxon.getName();
                 } else {
                     target = taxon.getAttribute(attributeName);
+                    if (target == null) {
+                        // if we can't find the attribute on the taxon, try the node
+                        target = node.getAttribute(attributeName);
+                    }
                 }
                 if (matchesItem(searchType, target, query, caseSensitive)) {
                     treePane.addSelectedTip(node);

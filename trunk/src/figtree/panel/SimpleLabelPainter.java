@@ -321,7 +321,11 @@ public class SimpleLabelPainter extends LabelPainter<Node> {
 		return attributes;
 	}
 
-	public void setDisplayAttribute(String displayAttribute) {
+    public String getDisplayAttribute() {
+        return displayAttribute;
+    }
+
+    public void setDisplayAttribute(String displayAttribute) {
 		this.displayAttribute = displayAttribute;
 		firePainterChanged();
 	}

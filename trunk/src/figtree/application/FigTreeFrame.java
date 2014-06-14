@@ -388,7 +388,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
                 for (TreeViewer.TextSearchType searchType : TreeViewer.TextSearchType.values()) {
                     if (searchType.toString().equals(value)) {
-                        treeViewer.selectTaxa("!name", searchType, searchString, false);
+                        treeViewer.selectTaxa(searchType, searchString, false);
                     }
                 }
             }

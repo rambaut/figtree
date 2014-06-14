@@ -243,6 +243,11 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
     private Insets insets = new Insets(8, 8, 8, 8);
 
     @Override
+    public String getDisplayAttribute() {
+        throw new UnsupportedOperationException("getDisplayAttribute not implmented");
+    }
+
+    @Override
     public void setDisplayAttribute(String displayAttribute) {
         throw new UnsupportedOperationException("setDisplayAttribute not implmented - use setColourDecorator directly");
     }

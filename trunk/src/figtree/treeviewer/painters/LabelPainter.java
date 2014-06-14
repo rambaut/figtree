@@ -61,6 +61,8 @@ public abstract class LabelPainter<T> extends AbstractPainter<T> {
 
 	// Abstract
 
+    public abstract String getDisplayAttribute();
+
     public abstract void setDisplayAttribute(String displayAttribute);
 
     public abstract void setTextDecorator(Decorator textDecorator);
