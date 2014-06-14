@@ -151,7 +151,12 @@ public class DiscreteColourDecorator extends ColourDecorator {
     }
 
     protected void setColourMap(Collection<Object> values, Color[] colours) {
+        if (values == null) {
+            return;
+        }
+
         orderMap = new TreeMap<Object, Integer>();
+
         this.colours = colours;
 
         this.values = new ArrayList<Object>(values);

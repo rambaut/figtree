@@ -33,7 +33,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.List;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragSource;
@@ -59,9 +58,7 @@ public class DiscreteColourScaleDialog {
 
     private JFrame frame;
 
-    private DiscreteColourDecorator decorator;
 
-    private JTable table;
 
     private JComboBox colourSchemeCombo = new JComboBox(new String[] { HSB_SPECTRUM, FIXED_COLOURS} );
 
@@ -71,9 +68,12 @@ public class DiscreteColourScaleDialog {
     private Map<String, ColourSchemePanel> colourSchemeNamePanelMap = new HashMap<String, ColourSchemePanel>();
     private Map<Class, String> colourSchemeClassNameMap = new HashMap<Class, String>();
 
+//    private DiscreteColourDecorator decorator;
+
     private java.util.List<Object> discreteValues = null;
 
-    private ColourTableModel tableModel;
+      private JTable table;
+      private ColourTableModel tableModel;
 
     private JDialog dialog;
 
@@ -98,7 +98,7 @@ public class DiscreteColourScaleDialog {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cardLayout.show(colourSchemePanel, colourSchemeCombo.getSelectedItem().toString());
-                decorator = colourSchemeNamePanelMap.get(colourSchemeCombo.getSelectedItem()).getDecorator();
+//                decorator = colourSchemeNamePanelMap.get(colourSchemeCombo.getSelectedItem()).getDecorator();
                 tableModel.fireTableDataChanged();
                 dialog.pack();
             }
@@ -125,6 +125,8 @@ public class DiscreteColourScaleDialog {
 
     public int showDialog() {
 
+        DiscreteColourDecorator currentDecorator = getDecorator();
+
         final OptionsPanel options = new OptionsPanel(6, 6);
 
 //        options.addSpanningComponent(new JLabel("Editing colour range for attribute: " + decorator.getAttributeName()));
@@ -138,7 +140,7 @@ public class DiscreteColourScaleDialog {
         colourSchemePanel.setBorder(BorderFactory.createBevelBorder(1));
         options.addSpanningComponent(colourSchemePanel);
 
-        setDecorator(decorator);
+//        setDecorator(currentDecorator);
 
         JOptionPane optionPane = new JOptionPane(options,
                 JOptionPane.QUESTION_MESSAGE,
@@ -148,7 +150,9 @@ public class DiscreteColourScaleDialog {
                 null);
         optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        dialog = optionPane.createDialog(frame, "Setup colour range: " + decorator.getAttributeName());
+        dialog = optionPane.createDialog(frame, "Setup colour range: " + currentDecorator.getAttributeName());
+
+        colourSchemeCombo.setSelectedItem(colourSchemeClassNameMap.get(currentDecorator.getClass()));
 
         dialog.pack();
         dialog.setResizable(true);
@@ -164,7 +168,7 @@ public class DiscreteColourScaleDialog {
     }
 
     public void setDecorator(DiscreteColourDecorator decorator) {
-        this.decorator = decorator;
+//        this.decorator = decorator;
 
         discreteValues = new ArrayList<Object>(decorator.getValues());
 
@@ -175,7 +179,7 @@ public class DiscreteColourScaleDialog {
 
     public DiscreteColourDecorator getDecorator() {
         String name = colourSchemeCombo.getSelectedItem().toString();
-        decorator = colourSchemeNamePanelMap.get(name).getDecorator();
+        DiscreteColourDecorator decorator = colourSchemeNamePanelMap.get(name).getDecorator();
         decorator.setValuesOrder(discreteValues);
         return decorator;
     }
@@ -216,6 +220,7 @@ public class DiscreteColourScaleDialog {
                 case 0:
                     return discreteValues.get(row);
                 case 1:
+                    DiscreteColourDecorator decorator = getDecorator();
                     // until the OK button is pressed the trait values are not actually
                     // reordered so use the default colour order.
                     return decorator.getColor(decorator.getValues().get(row));
@@ -494,7 +499,7 @@ public class DiscreteColourScaleDialog {
                     fixedDecorator = new FixedDiscreteColourDecorator(decorator.getAttributeName());
                 }
             }
-//            fixedDecorator.setValues(discreteValues);
+            fixedDecorator.setValues(discreteValues);
         }
 
         @Override
