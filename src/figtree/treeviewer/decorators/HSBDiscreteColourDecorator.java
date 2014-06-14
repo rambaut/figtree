@@ -119,7 +119,6 @@ public class HSBDiscreteColourDecorator extends DiscreteColourDecorator {
             primaryCount +=  secondaryCount - (valueCount % secondaryCount);
         }
 
-
         Color[] paints = new Color[primaryCount * secondaryCount];
 
         float hDelta = (hueUpper - hueLower) / (primaryAxis == Axis.HUE ? primaryCount :  secondaryCount);

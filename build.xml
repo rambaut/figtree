@@ -214,6 +214,14 @@
                           role="Editor"/>
         </jarbundler>
 
+        <!-- remove code signing -->
+        <exec executable="/usr/bin/codesign">
+            <arg value="-s"/>
+            <arg value="-"/>
+            <arg value="--force"/>
+            <arg value="${Mac_dir}/${name} v${version}/${name} v${version}.app"/>
+        </exec>
+
         <echo message="Building disk image." />
 
         <!-- create disk image -->
