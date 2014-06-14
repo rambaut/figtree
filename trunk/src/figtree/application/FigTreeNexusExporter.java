@@ -63,7 +63,7 @@ public class FigTreeNexusExporter extends NexusExporter {
             return "null";
         }
 		if (value instanceof Color) {
-			return "#" + ((Color)value).getRGB();
+            return "#" + Integer.toHexString(((Color)value).getRGB()).substring(2);
 		}
 		if (value instanceof String) {
 			return "\"" + value + "\"";

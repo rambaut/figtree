@@ -91,14 +91,21 @@ public class FigTreeNexusImporter extends NexusImporter {
 			return new Boolean(value);
 		}
 
-		if (value.startsWith("#")) {
-			try {
-				return Color.decode(value.substring(1));
-			} catch (NumberFormatException nfe) {
-			}
-		}
+        if (value.startsWith("#")) {
+            String colourValue = value.substring(1);
+            if (colourValue.startsWith("-")) {
+                // old style decimal numbers
+                try {
+                    return Color.decode(colourValue);
+                } catch (NumberFormatException nfe1) {
+                    // not a colour
+                }
+            } else {
+                return Color.decode("0x" + colourValue);
+            }
+        }
 
-		try {
+        try {
 			return Integer.parseInt(value);
 		} catch (NumberFormatException nfe) {
 		}
