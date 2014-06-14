@@ -914,7 +914,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
         FileWriter writer = new FileWriter(file);
         FigTreeNexusExporter exporter = new FigTreeNexusExporter(writer, true);
-        exporter.exportTrees(treeViewer.getTrees());
+        exporter.exportTrees(treeViewer.getTrees(), true);
         exporter.writeFigTreeBlock(settings);
 
         writer.close();
