@@ -368,12 +368,18 @@ public class FigTreeApplication extends MultiDocApplication {
         }
 
         if (!lafLoaded) {
+            UIManager.LookAndFeelInfo[] lafs = UIManager.getInstalledLookAndFeels();
+            for (UIManager.LookAndFeelInfo laf : lafs) {
+                System.out.println(laf);
+            }
+
             try {
                 // set the System Look and Feel in the UIManager
                 javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
                     public void run() {
                         try {
                             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//                              UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

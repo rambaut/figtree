@@ -26,7 +26,10 @@ import figtree.treeviewer.*;
 import figtree.treeviewer.painters.*;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.awt.*;
+import java.lang.reflect.Field;
 
 /**
  * This is a panel that has a TreeViewer and a BasicControlPalette with
@@ -126,17 +129,45 @@ public class FigTreePanel extends JPanel {
         slideOpenPanel = new SlideOpenPanel(treeViewer);
 
         setLayout(new BorderLayout());
-        add(slideOpenPanel, BorderLayout.CENTER);
+//        add(slideOpenPanel, BorderLayout.CENTER);
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        controlPalette.setPreferredWidth(CONTROL_PALETTE_WIDTH + scrollPane.getVerticalScrollBar().getWidth());
+        int scrollBarWidth = scrollPane.getVerticalScrollBar().getWidth();
+        int controlPanelWidth = CONTROL_PALETTE_WIDTH + scrollBarWidth;
+        controlPalette.setPreferredWidth(controlPanelWidth);
 
         scrollPane.setViewportView(controlPalette.getPanel());
-        add(scrollPane, BorderLayout.WEST);
+//        add(scrollPane, BorderLayout.WEST);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, slideOpenPanel);
+        splitPane.putClientProperty("Quaqua.SplitPane.style", "bar");
+        splitPane.setOneTouchExpandable(true);
+        add(splitPane, BorderLayout.CENTER);
+        int w = splitPane.getLeftComponent().getPreferredSize().width;
+        splitPane.getLeftComponent().setMinimumSize(new Dimension(w, 0));
+
+//        splitPane.getLeftComponent().setMaximumSize(new Dimension(2 * w, 0));
+
+        // Might be possible to improve the action of the oneTouchExpandable button. Ideally would not allow
+        // maximization of control panel, only its collapse.
+//        BasicSplitPaneDivider bspd = ((BasicSplitPaneUI)splitPane.getUI()).getDivider();
+//        try {
+//            Field rightButtonField = BasicSplitPaneDivider.class.getDeclaredField("rightButton");
+//            rightButtonField.setAccessible(true);
+//            JButton rightButton = (JButton) rightButtonField.get(((BasicSplitPaneUI)splitPane.getUI()).getDivider());
+//
+//            Field leftButtonField = BasicSplitPaneDivider.class.getDeclaredField("leftButton");
+//            leftButtonField.setAccessible(true);
+//            JButton leftButton = (JButton) leftButtonField.get(((BasicSplitPaneUI)splitPane.getUI()).getDivider());
+//
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
 //        treeViewer.addAnnotationsListener(new AnnotationsListener() {
 //            public void annotationsChanged() {
