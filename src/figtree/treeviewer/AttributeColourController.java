@@ -73,7 +73,7 @@ public class AttributeColourController extends AbstractController {
                     }
 
                     boolean update = false;
-                    if (decorator instanceof HSBDiscreteColourDecorator) {
+                    if (decorator instanceof DiscreteColourDecorator) {
                         if (discreteColourScaleDialog == null) {
                             discreteColourScaleDialog = new DiscreteColourScaleDialog(frame);
                         }
@@ -232,6 +232,13 @@ public class AttributeColourController extends AbstractController {
                             } else {
                                 decorator.setup(settingsString);
                             }
+                        } else if (colourSettings.startsWith("FixedDiscrete")) {
+                            String settingsString = colourSettings.substring("FixedDiscrete".length());
+                            if (decorator == null || !(decorator instanceof FixedDiscreteColourDecorator)) {
+                                decorator = new FixedDiscreteColourDecorator(attribute, settingsString);
+                            } else {
+                                decorator.setup(settingsString);
+                            }
                         } else if (colourSettings.startsWith("HSBContinuous")) {
                             String settingsString = colourSettings.substring("HSBContinuous".length());
                             if (decorator == null || !(decorator instanceof HSBDiscreteColourDecorator)) {
@@ -279,6 +286,8 @@ public class AttributeColourController extends AbstractController {
             String name = "";
             if (decorator instanceof HSBDiscreteColourDecorator) {
                 name = "HSBDiscrete";
+            } else if (decorator instanceof FixedDiscreteColourDecorator) {
+                name = "FixedDiscrete";
             } else if (decorator instanceof HSBContinuousColourDecorator) {
                 name = "HSBContinuous";
             } else if (decorator instanceof InterpolatingColourDecorator) {

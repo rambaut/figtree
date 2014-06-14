@@ -107,6 +107,9 @@ public class HSBDiscreteColourDecorator extends DiscreteColourDecorator {
     }
 
     protected void setupColours() {
+        if (getValues() == null) {
+            return;
+        }
         if (secondaryCount == 0) {
             return;
         }
@@ -115,6 +118,7 @@ public class HSBDiscreteColourDecorator extends DiscreteColourDecorator {
         if (valueCount % secondaryCount > 0) {
             primaryCount +=  secondaryCount - (valueCount % secondaryCount);
         }
+
 
         Color[] paints = new Color[primaryCount * secondaryCount];
 

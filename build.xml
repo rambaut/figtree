@@ -101,7 +101,7 @@
     <property name="Linux_dir" value="${release_dir}/Linux" />
     <property name="Windows_dir" value="${release_dir}/Windows" />
 
-    <property name="Mac_package_dir_SL" value="${Mac_dir}/${name} v${version} SL" />
+    <property name="Mac_package_dir_SL" value="${Mac_dir}/${name} v${version}" />
     <property name="Mac_package_dir" value="${Mac_dir}/${name} v${version}" />
     <property name="Linux_package_dir" value="${Linux_dir}/${name}_v${version}" />
     <property name="Windows_package_dir" value="${Windows_dir}/${name} v${version}" />
