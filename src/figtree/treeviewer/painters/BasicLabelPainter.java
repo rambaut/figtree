@@ -295,6 +295,18 @@ public class BasicLabelPainter extends LabelPainter<Node> {
         g2.setFont(oldFont);
     }
 
+    public String getDisplayAttribute() {
+        if (displayAttribute.equalsIgnoreCase(NAMES) ||
+                displayAttribute.equalsIgnoreCase(NODE_AGES) ||
+                displayAttribute.equalsIgnoreCase(NODE_HEIGHTS) ||
+                displayAttribute.equalsIgnoreCase(BRANCH_TIMES) ||
+                displayAttribute.equalsIgnoreCase(BRANCH_LENGTHS)) {
+            return null;
+        }
+
+        return displayAttribute;
+    }
+
     public void setDisplayAttribute(String displayAttribute) {
         this.displayAttribute = displayAttribute;
         firePainterChanged();
