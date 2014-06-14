@@ -59,6 +59,13 @@ public class AttributeComboHelper {
     }
 
     public AttributeComboHelper(final JComboBox attributeComboBox, final TreeViewer treeViewer,
+                                final String defaultOption, final LabelPainter.PainterIntent intent) {
+
+        this(attributeComboBox, treeViewer, defaultOption, intent, false, false);
+
+    }
+
+    public AttributeComboHelper(final JComboBox attributeComboBox, final TreeViewer treeViewer,
                                 final String defaultOption,
                                 final boolean numericalOnly,
                                 final boolean includeLineageColourings) {

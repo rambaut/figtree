@@ -118,7 +118,7 @@ public class LabelPainterController extends AbstractController {
         });
 
         colourAttributeCombo = new JComboBox(new String[] { "No attributes" });
-        new AttributeComboHelper(colourAttributeCombo, treeViewer, "User selection").addListener(new AttributeComboHelperListener() {
+        new AttributeComboHelper(colourAttributeCombo, treeViewer, "User selection", intent).addListener(new AttributeComboHelperListener() {
             @Override
             public void attributeComboChanged() {
                 String attribute = (String) colourAttributeCombo.getSelectedItem();

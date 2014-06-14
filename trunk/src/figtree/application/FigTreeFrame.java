@@ -938,17 +938,17 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                 treeViewer.setTaxonAnnotations(annotations);
 
                 // Hack to show tips states...
-                String[] annotationNames = new String[annotations.keySet().size()];
-                DiscreteColourDecorator[] decorators = new DiscreteColourDecorator[annotations.keySet().size()];
-
-                int i = 0;
-                for (AnnotationDefinition definition: annotations.keySet()) {
-                    Map<Taxon, Object> annotation = annotations.get(definition);
-                    annotationNames[i] = definition.getName();
-                    decorators[i] = new HSBDiscreteColourDecorator(annotationNames[i], annotation.keySet());
-                    i++;
-                }
-                treeViewer.setTipLabelPainter(new StatesPainter(annotationNames, decorators));
+//                String[] annotationNames = new String[annotations.keySet().size()];
+//                DiscreteColourDecorator[] decorators = new DiscreteColourDecorator[annotations.keySet().size()];
+//
+//                int i = 0;
+//                for (AnnotationDefinition definition: annotations.keySet()) {
+//                    Map<Taxon, Object> annotation = annotations.get(definition);
+//                    annotationNames[i] = definition.getName();
+//                    decorators[i] = new HSBDiscreteColourDecorator(annotationNames[i], annotation.keySet());
+//                    i++;
+//                }
+//                treeViewer.setTipLabelPainter(new StatesPainter(annotationNames, decorators));
 
 
             } catch (FileNotFoundException fnfe) {
