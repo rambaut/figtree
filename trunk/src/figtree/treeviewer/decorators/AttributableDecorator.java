@@ -89,7 +89,7 @@ public class AttributableDecorator implements Decorator {
 
     @Override
     public void setItem(Attributable item, Attributable fallbackItem) {
-        setAttributableItem(item);
+        setAttributableItem(item != null ? item: fallbackItem);
     }
 
     public void setItem(Object item) {
