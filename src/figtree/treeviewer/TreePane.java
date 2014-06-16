@@ -818,7 +818,20 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
     public void clearCollapsedNodes() {
-        clearSelectedCollapsedNodes(tree.getRootNode());
+        if (selectedNodes.size() > 0) {
+            clearSelectedCollapsedNodes(tree.getRootNode());
+        } else {
+            for (Node node : tree.getInternalNodes()){
+                if (node.getAttribute(COLLAPSE_ATTRIBUTE_NAME) != null) {
+                    node.removeAttribute(COLLAPSE_ATTRIBUTE_NAME);
+                }
+                if (node.getAttribute(CARTOON_ATTRIBUTE_NAME) != null) {
+                    node.removeAttribute(CARTOON_ATTRIBUTE_NAME);
+                }
+            }
+            calibrated = false;
+            repaint();
+        }
     }
 
     private void clearSelectedCollapsedNodes(Node node) {
@@ -845,13 +858,23 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
     public void clearHilightedNodes() {
-        clearSelectedHilightedNodes(tree.getRootNode());
+        if (selectedNodes.size() > 0) {
+            clearSelectedHilightedNodes(tree.getRootNode());
+        } else {
+            for (Node node : tree.getInternalNodes()){
+                if (node.getAttribute(HILIGHT_ATTRIBUTE_NAME) != null) {
+                    node.removeAttribute(HILIGHT_ATTRIBUTE_NAME);
+                }
+            }
+            calibrated = false;
+            repaint();
+        }
     }
 
     private void clearSelectedHilightedNodes(Node node) {
 
         if (!tree.isExternal(node)) {
-            if (selectedNodes.contains(node)) {
+            if (selectedNodes.size() == 0 || selectedNodes.contains(node)) {
                 if (node.getAttribute(HILIGHT_ATTRIBUTE_NAME) != null) {
                     node.removeAttribute(HILIGHT_ATTRIBUTE_NAME);
                     calibrated = false;
@@ -891,8 +914,14 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
     public void clearSelectedNodeRotations() {
-        for (Node selectedNode : selectedNodes) {
-            clearRotation(selectedNode);
+        if (selectedNodes.size() > 0) {
+            for (Node node : selectedNodes) {
+                clearRotation(node);
+            }
+        } else {
+            for (Node node : tree.getInternalNodes()) {
+                clearRotation(node);
+            }
         }
         repaint();
     }
