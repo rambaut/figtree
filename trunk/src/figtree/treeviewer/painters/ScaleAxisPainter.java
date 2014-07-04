@@ -32,6 +32,7 @@ import jam.controlpalettes.ControlPalette;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Set;
 
@@ -246,7 +247,8 @@ public class ScaleAxisPainter extends LabelPainter<TreePane> implements ScalePai
 		g2.setPaint(getForeground());
 		g2.setStroke(getScaleBarStroke());
 
-		String label = axis.getFormatter().format(value);
+//		String label = axis.getFormatter().format(value);
+		String label = getNumberFormat().format(value);
 		double pos = treePane.scaleOnAxis(value);
 
 		Line2D line = new Line2D.Double(pos, axisBounds.getMinY(), pos, axisBounds.getMinY() + majorTickSize);
