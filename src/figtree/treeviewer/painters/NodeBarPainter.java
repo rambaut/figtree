@@ -58,6 +58,7 @@ public class NodeBarPainter extends NodePainter {
 		RootedTree tree = treePane.getTree();
 
 		nodeBar = null;
+        maxHeight = 0.0;
 
 		Line2D barPath = treePane.getTreeLayoutCache().getNodeShapePath(node);
 		if (barPath != null) {
@@ -96,6 +97,10 @@ public class NodeBarPainter extends NodePainter {
 
 
 			if (hasBar) {
+                if (upper > maxHeight) {
+                    maxHeight = upper;
+                }
+
 				// x1,y1 is the node point
 				double x1 = barPath.getX1();
 				double y1 = barPath.getY1();
@@ -180,9 +185,15 @@ public class NodeBarPainter extends NodePainter {
 		firePainterChanged();
 	}
 
-	private String displayAttribute = null;
+    public double getMaxHeight() {
+        return maxHeight;
+    }
+
+    private String displayAttribute = null;
 
 	private TreePane treePane;
 
 	private Line2D nodeBar = null;
+
+    private double maxHeight;
 }

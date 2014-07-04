@@ -69,12 +69,12 @@ public interface Painter<T> {
 	 */
     boolean isVisible();
 
-	/**
-	 * Called to calibrate the painters for a given graphics context. This should
-	 * work out the preferred width and height (perhaps for the current font).
-	 * @param g2
-	 * @param item
-	 */
+    /**
+     * Called to calibrate the painters for a given graphics context. This should
+     * work out the preferred width and height (perhaps for the current font).
+     * @param g2
+     * @param item
+     */
     Rectangle2D calibrate(Graphics2D g2, T item);
 
 	/**

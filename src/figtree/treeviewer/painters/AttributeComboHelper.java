@@ -169,8 +169,8 @@ public class AttributeComboHelper {
                             if (attr instanceof Object[]) {
                                 Object[] array = (Object[])attr;
                                 if (array.length == 2 &&
-                                        array[0] instanceof Double &&
-                                        array[1] instanceof Double) {
+                                        array[0] instanceof Number &&
+                                        array[1] instanceof Number) {
                                     nodeAttributes.add(name);
                                 }
                             }
