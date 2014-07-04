@@ -40,6 +40,7 @@ import jam.mac.Utils;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 
@@ -192,7 +193,7 @@ public class FigTreeApplication extends MultiDocApplication {
                     System.out.println("Creating GIF graphic: " + graphicFileName);
                 }
                 format = GraphicFormat.GIF;
-	        } else if (graphicFormat.equals("PNG")) {
+            } else if (graphicFormat.equals("PNG")) {
                 format = GraphicFormat.PNG;
             } else if (graphicFormat.equals("JPEG")) {
                 format = GraphicFormat.JPEG;
@@ -265,6 +266,7 @@ public class FigTreeApplication extends MultiDocApplication {
                         }, false, "produce a graphic with the given format"),
                         new Arguments.IntegerOption("width", "the width of the graphic in pixels"),
                         new Arguments.IntegerOption("height", "the height of the graphic in pixels"),
+                        new Arguments.Option("url", "the input file is a URL"),
                         new Arguments.Option("help", "option to print this message")
                 });
 
@@ -421,9 +423,19 @@ public class FigTreeApplication extends MultiDocApplication {
 
         application.initialize();
 
-        if (args.length > 0) {
-            for (String arg : args) {
-                application.doOpen(arg);
+        boolean useURLs = arguments.hasOption("url");
+        String[] leftoverArguments = arguments.getLeftoverArguments();
+        if (leftoverArguments.length > 0) {
+            for (String arg : leftoverArguments) {
+                if (useURLs) {
+                    FigTreeFrame frame = (FigTreeFrame)application.doNew();
+                    try {
+                        frame.readFromURL(new URL(arg));
+                    } catch (IOException e) {
+                    }
+                } else {
+                    application.doOpen(arg);
+                }
             }
         }
 

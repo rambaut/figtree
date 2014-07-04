@@ -61,6 +61,7 @@ import java.awt.datatransfer.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.List;
@@ -487,6 +488,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         List<String> annotationNames = new ArrayList<String>();
         annotationNames.add("Colour");
         annotationNames.addAll(treeViewer.getAnnotationDefinitions().keySet());
+        annotationNames.add("Name");
 
         if (selectAnnotationDialog == null) {
             selectAnnotationDialog = new SelectAnnotationDialog(this);
@@ -667,15 +669,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         try {
             reader = new FileReader(file);
 
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            String line = bufferedReader.readLine();
-            while (line != null && line.length() == 0) {
-                line = bufferedReader.readLine();
-            }
-
-            boolean isNexus = (line != null && line.toUpperCase().contains("#NEXUS"));
-
-//            reader = new FileReader(file);
+            boolean isNexus = isNexus(reader);
 
             ProgressMonitorInputStream in = new ProgressMonitorInputStream(
                     this,
@@ -698,6 +692,29 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
             }
             throw ioe;
         }
+    }
+
+    public boolean readFromURL(URL url) throws IOException {
+        InputStream in = url.openStream();
+        Reader reader = new InputStreamReader(url.openStream());
+
+        boolean isNexus = isNexus(reader);
+
+        reader.close();
+
+        reader = new InputStreamReader(url.openStream());
+
+        return readData(reader, isNexus);
+    }
+
+    private boolean isNexus(Reader reader) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        String line = bufferedReader.readLine();
+        while (line != null && line.length() == 0) {
+            line = bufferedReader.readLine();
+        }
+
+        return (line != null && line.toUpperCase().contains("#NEXUS"));
     }
 
     public boolean readFromString(String string) throws IOException {
