@@ -338,9 +338,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
     private void setupScaleAxis() {
-        double treeHeight = tree.getHeight(tree.getRootNode()) + treeLayout.getRootLength();
         double minValue = timeScale.getAge(0.0, tree);
-        double maxValue = timeScale.getAge(treeHeight, tree);
+        double maxValue = timeScale.getAge(maxTreeHeight, tree);
 
         if (minValue < maxValue) {
             if (axisOrigin < minValue) {
@@ -1702,8 +1701,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         // First layout the tree
         treeLayout.layout(tree, treeLayoutCache);
 
-        // Now rescale the scale axis
-        setupScaleAxis();
+        maxTreeHeight = tree.getHeight(tree.getRootNode()) + treeLayout.getRootLength();
 
         // First of all get the bounds for the unscaled tree
         treeBounds = null;
@@ -1766,6 +1764,9 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                     nodeBars.put(node, nodeBarPainter.getNodeBar());
                 }
             }
+            if (nodeBarPainter.getMaxHeight() > maxTreeHeight) {
+                maxTreeHeight = nodeBarPainter.getMaxHeight();
+            }
         }
 
         // totalTreeBounds includes all the stuff which is not in a tree scale (like labels and shapes) but in
@@ -1773,8 +1774,6 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
         // add the tree bounds
         final Rectangle2D totalTreeBounds = treeBounds.getBounds2D(); // (YH) same as (Rectangle2D) treeBounds.clone();
-
-        final Set<Node> externalNodes = tree.getExternalNodes();
 
         if (tipLabelPainter != null && tipLabelPainter.isVisible()) {
 
@@ -1840,14 +1839,17 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
         }
 
+        // Now rescale the scale axis
+        setupScaleAxis();
+
         totalScaleBounds = new Rectangle2D.Double(0.0, 0.0, 0.0, 0.0);
-        double y = totalTreeBounds.getY() + totalTreeBounds.getHeight();
+        double y = totalTreeBounds.getHeight();
         for (ScalePainter scalePainter : scalePainters) {
             if (scalePainter.isVisible()) {
                 scalePainter.calibrate(g2, this);
                 Rectangle2D sb = new Rectangle2D.Double(
-                        treeBounds.getX(), y,
-                        treeBounds.getWidth(), scalePainter.getPreferredHeight());
+                        totalTreeBounds.getX(), y,
+                        totalTreeBounds.getWidth(), scalePainter.getPreferredHeight());
                 y += sb.getHeight();
                 totalScaleBounds.add(sb);
                 scaleBounds.put(scalePainter, sb);
@@ -1861,6 +1863,15 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             legendBounds = new Rectangle2D.Double(-w2, 0, w2, treeBounds.getHeight());
             totalTreeBounds.add(legendBounds);
         }
+
+//        // translate treeBounds to the inset within totalTreeBounds
+//        treeBounds.setRect(-totalTreeBounds.getX(), -totalTreeBounds.getY(), treeBounds.getWidth(), treeBounds.getHeight());
+//
+//        // translate totalTreeBounds so it is at 0, 0
+//        totalTreeBounds.setRect(0, 0,
+//                totalTreeBounds.getWidth(),
+//                totalTreeBounds.getHeight());
+
 
         final double availableW = width - insets.left - insets.right;
         final double availableH = height - insets.top - insets.bottom;
@@ -1937,8 +1948,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             yScale = h / treeBounds.getHeight();
 
             // and set the origin in the top left corner
-            xOffset = - totalTreeBounds.getX() - (treeBounds.getX() * xScale);
-            yOffset = - totalTreeBounds.getY() - (treeBounds.getY() * yScale);
+            xOffset = - treeBounds.getX() * xScale;
+            yOffset = - treeBounds.getY() * yScale;
 
             treeScale = xScale;
         }
@@ -1971,6 +1982,20 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                 treeBounds = branchBounds;
             } else {
                 treeBounds.add(branchBounds);
+            }
+        }
+
+        // bounds on node bars
+        if (!isTransformBranchesOn() && nodeBarPainter != null && nodeBarPainter.isVisible()) {
+            nodeBars.clear();
+            // Iterate though the nodes
+            for (Node node : tree.getInternalNodes()) {
+
+                Rectangle2D shapeBounds = nodeBarPainter.calibrate(g2, node);
+                if (shapeBounds != null) {
+                    treeBounds.add(shapeBounds);
+                    nodeBars.put(node, nodeBarPainter.getNodeBar());
+                }
             }
         }
 
@@ -2096,7 +2121,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
         }
 
-        totalScaleBounds = new Rectangle2D.Double(treeBounds.getX(), y, treeBounds.getWidth(), 0.0);
+        totalScaleBounds = new Rectangle2D.Double(0, y, treeBounds.getWidth(), 0.0);
         for (ScalePainter scalePainter : scalePainters) {
             if (scalePainter.isVisible()) {
                 scalePainter.calibrate(g2, this);
@@ -2239,6 +2264,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     private Rectangle2D treeBounds = new Rectangle2D.Double();
     private double treeScale;
+    private double maxTreeHeight;
 
     private ScaleAxis scaleAxis = new ScaleAxis(ScaleAxis.AT_DATA, ScaleAxis.AT_DATA);
     private double axisOrigin = 0.0;
