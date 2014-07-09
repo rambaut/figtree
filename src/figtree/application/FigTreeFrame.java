@@ -1222,6 +1222,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                     case PNG:
                     case GIF:
                     case BMP:
+                    case JPEG:
                         exportGraphicsFile(format, comp, file);
                         break;
                     case EPS:
@@ -1232,6 +1233,9 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                     case PDF:
                         exportPDFFile(comp, file);
                         break;
+                    default:
+                        throw new UnsupportedOperationException("Format not handled: " + format);
+
                 }
             } catch (IOException ioe) {
                 JOptionPane.showMessageDialog(this, "Error writing tree file: " + ioe.getMessage(),
@@ -1256,8 +1260,8 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         if (format != GraphicFormat.PNG) {
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, bi.getWidth(), bi.getHeight());
-            component.paint(g);
         }
+        component.paint(g);
         g.dispose();
         ImageIO.write(bi, format.getName(), file);
     }
