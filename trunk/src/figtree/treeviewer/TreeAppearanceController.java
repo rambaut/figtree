@@ -36,6 +36,7 @@ import java.util.*;
 import java.util.prefs.Preferences;
 
 import figtree.treeviewer.decorators.*;
+import jebl.evolution.trees.RootedTree;
 
 /**
  * @author Andrew Rambaut
@@ -226,7 +227,8 @@ public class TreeAppearanceController extends AbstractController {
     private void setupBranchDecorators() {
 
         Decorator colourDecorator = colourController.getColourDecorator(branchColourAttributeCombo, userBranchColourDecorator);
-
+//        DiversityContinuousColourDecorator colourDecorator = new DiversityContinuousColourDecorator();
+//        colourDecorator.setTree((RootedTree)treeViewer.getCurrentTree());
 
 //                if (colourDecorator == null) {
 //                    if (attribute.endsWith("*")) {
@@ -264,11 +266,11 @@ public class TreeAppearanceController extends AbstractController {
 
         treeViewer.setBranchDecorator(compoundDecorator, branchColourIsGradient);
 
-        colourDecorator = null;
+        Decorator backgroundDecorator = null;
         if (backgroundColourAttributeCombo.getSelectedIndex() > 1) {
-            colourDecorator = colourController.getColourDecorator(backgroundColourAttributeCombo, null);
+            backgroundDecorator = colourController.getColourDecorator(backgroundColourAttributeCombo, null);
         }
-        treeViewer.setNodeBackgroundDecorator(colourDecorator);
+        treeViewer.setNodeBackgroundDecorator(backgroundDecorator);
 
     }
 
