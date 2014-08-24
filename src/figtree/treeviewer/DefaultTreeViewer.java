@@ -140,7 +140,8 @@ public class DefaultTreeViewer extends TreeViewer {
     }
 
     public Tree getCurrentTree() {
-        return trees.get(currentTreeIndex);
+//        return trees.get(currentTreeIndex);
+        return treePane.getTree();
     }
 
     public List<Tree> getTreesAsViewed() {

@@ -1925,7 +1925,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         if (maintainAspectRatio) {
             // If the tree is laid out in both dimensions then we
             // need to find out which axis has the least space and scale
-            // the tree to that (to keep the aspect ratio.
+            // the tree to that (to keep the aspect ratio).
 
             if ((w / treeBounds.getWidth()) < (h / treeBounds.getHeight())) {
                 xScale = w / treeBounds.getWidth();
