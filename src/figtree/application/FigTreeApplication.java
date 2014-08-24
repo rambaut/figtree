@@ -73,10 +73,10 @@ public class FigTreeApplication extends MultiDocApplication {
 
     public static FigTreeApplication application;
 
-    public FigTreeApplication(MenuBarFactory menuBarFactory, String nameString, String aboutString, Icon icon,
+    public FigTreeApplication(MenuBarFactory menuBarFactory, String nameString,  String titleString, String aboutString, Icon icon,
                               String websiteURLString,
                               String helpURLString) {
-        super(menuBarFactory, nameString, aboutString, icon, websiteURLString, helpURLString);
+        super(menuBarFactory, nameString, titleString, aboutString, icon, websiteURLString, helpURLString);
 
 //        addPreferencesSection(new GeneralPreferencesSection());
         addPreferencesSection(new AppearancePreferencesSection());
@@ -405,10 +405,16 @@ public class FigTreeApplication extends MultiDocApplication {
             icon = new ImageIcon(url);
         }
 
-        final String nameString = "FigTree";
+        final String nameString = "FigTree " + VERSION;
+        String titleString = "<html>" +
+                "<div style=\"font-family:'Helvetica Neue', Helvetica, Arial, 'Lucida Grande',sans-serif\">" +
+                "<p style=\"font-weight: 100; font-size: 36px\">FigTree</p>" +
+                "<p style=\"font-weight: 200; font-size: 14px\">Tree Figure Drawing Tool</p>" +
+                "<p style=\"font-weight: 300; font-size: 12px\">Version " + VERSION + "</p>" +
+                "</div></html>";
         String aboutString = "<html>" +
-                "<div style=\"font-family:HelveticaNeue-Light, 'Helvetica Neue Light', Helvetica, Arial, 'Lucida Grande',sans-serif; font-weight: 100\">" +
-                "<center>Tree Figure Drawing Tool<br>Version " + VERSION + "<br>" + DATES + ", Andrew Rambaut<br>" +
+                "<div style=\"font-family:'Helvetica Neue', Helvetica, Arial, 'Lucida Grande',sans-serif\">" +
+                "<center>"+ DATES + ", Andrew Rambaut<br>" +
                 "Institute of Evolutionary Biology, University of Edinburgh.<br>" +
                 "<a href=\"http://tree.bio.ed.ac.uk/\">http://tree.bio.ed.ac.uk/</a><br><br>" +
                 "Source code available from:<br>" +
@@ -421,7 +427,7 @@ public class FigTreeApplication extends MultiDocApplication {
         String websiteURLString = "http://tree.bio.ed.ac.uk/software/figtree/";
         String helpURLString = "http://tree.bio.ed.ac.uk/software/figtree/";
 
-        FigTreeApplication.application = new FigTreeApplication(new FigTreeMenuBarFactory(), nameString, aboutString, icon,
+        FigTreeApplication.application = new FigTreeApplication(new FigTreeMenuBarFactory(), nameString, titleString, aboutString, icon,
                 websiteURLString, helpURLString);
 
         application.setDocumentFrameFactory(new DocumentFrameFactory() {
