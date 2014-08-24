@@ -68,7 +68,7 @@ import ch.randelshofer.quaqua.QuaquaManager;
  */
 public class FigTreeApplication extends MultiDocApplication {
 
-    public static final String VERSION = "1.4.1";
+    public static final String VERSION = "1.4.2";
     public static final String DATES = "2006-2014";
 
     public static FigTreeApplication application;
@@ -256,13 +256,19 @@ public class FigTreeApplication extends MultiDocApplication {
     // Main entry point
     static public void main(String[] args) {
 
+        // There is a major issue with languages that use the comma as a decimal separator.
+        // To ensure compatibility between programs in the package, enforce the US locale.
+        //Locale.setDefault(Locale.US);
+
         Arguments arguments = new Arguments(
                 new Arguments.Option[] {
                         new Arguments.StringOption("graphic", new String[] {
-                                "PDF", "SVG", "SWF", "PS", "EMF",
-                                // "PNG",
+                                "PDF",
+                                // "SVG",
+                                // "SWF", "PS", "EMF",
+                                "PNG",
                                 "GIF",
-                                // "JPEG"
+                                "JPEG"
                         }, false, "produce a graphic with the given format"),
                         new Arguments.IntegerOption("width", "the width of the graphic in pixels"),
                         new Arguments.IntegerOption("height", "the height of the graphic in pixels"),
@@ -400,14 +406,17 @@ public class FigTreeApplication extends MultiDocApplication {
         }
 
         final String nameString = "FigTree";
-        String aboutString = "<html><center>Tree Figure Drawing Tool<br>Version " + VERSION + "<br>" + DATES + ", Andrew Rambaut<br>" +
+        String aboutString = "<html>" +
+                "<div style=\"font-family:HelveticaNeue-Light, 'Helvetica Neue Light', Helvetica, Arial, 'Lucida Grande',sans-serif; font-weight: 100\">" +
+                "<center>Tree Figure Drawing Tool<br>Version " + VERSION + "<br>" + DATES + ", Andrew Rambaut<br>" +
                 "Institute of Evolutionary Biology, University of Edinburgh.<br>" +
                 "<a href=\"http://tree.bio.ed.ac.uk/\">http://tree.bio.ed.ac.uk/</a><br><br>" +
                 "Source code available from:<br>" +
                 "<a href=\"https://figtree.googlecode.com/\">http://figtree.googlecode.com/</a><br><br>" +
                 "Uses the Java Evolutionary Biology 2 Library (JEBL2)<br>" +
                 "<a href=\"https://jebl2.googlecode.com/\">http://jebl2.googlecode.com/</a><br><br>" +
-                "Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, <br>Tulio de Oliveira, Oliver Pybus, Beth Shapiro & Marc Suchard</center></html>";
+                "Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, <br>Tulio de Oliveira, Oliver Pybus, Beth Shapiro & Marc Suchard</center>" +
+                "</div></html>";
 
         String websiteURLString = "http://tree.bio.ed.ac.uk/software/figtree/";
         String helpURLString = "http://tree.bio.ed.ac.uk/software/figtree/";
