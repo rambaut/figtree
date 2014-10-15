@@ -288,6 +288,8 @@ public class DefaultTreeViewer extends TreeViewer {
         }
 
         selectTaxa(attributeName, searchType, searchString, caseSensitive);
+
+        scrollToSelectedTips();
     }
 
     public void selectTaxa(String attributeName, TextSearchType searchType, String searchString, boolean caseSensitive) {
@@ -502,6 +504,14 @@ public class DefaultTreeViewer extends TreeViewer {
             }
         }
         return false;
+    }
+
+    public void scrollToSelectedTips() {
+        Set<Node> selectedTips = treePane.getSelectedTips();
+        if (selectedTips.size() > 0) {
+            Point point = treePane.getLocationOfTip(selectedTips.iterator().next());
+            treePane.scrollPointToVisible(point);
+        }
     }
 
     public void cartoonSelectedNodes() {

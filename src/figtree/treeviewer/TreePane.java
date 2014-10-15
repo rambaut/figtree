@@ -1277,6 +1277,14 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         this.rulerHeight = rulerHeight;
     }
 
+    public Point getLocationOfTip(Node tip) {
+        if (tip == null) {
+            return new Point(0,0);
+        }
+        Shape path = transform.createTransformedShape(treeLayoutCache.getTipLabelPath(tip));
+        return path.getBounds().getLocation();
+    }
+
     public void scrollPointToVisible(Point point) {
         scrollRectToVisible(new Rectangle(point.x, point.y, 0, 0));
     }
@@ -2274,7 +2282,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     private Insets insets = new Insets(6, 6, 6, 6);
 
     private Set<Node> selectedNodes = new HashSet<Node>();
-    private Set<Node> selectedTips = new HashSet<Node>();
+    private Set<Node> selectedTips = new LinkedHashSet<Node>();
 
     private double rulerHeight = -1.0;
     private Rectangle2D dragRectangle = null;
