@@ -196,7 +196,7 @@
                     vmoptions="-Xmx1024M"
                     arguments=""
                     version="${version} SL"
-                    infostring="${name} v${version} SL, Copyright 2006-2013, Andrew Rambaut"
+                    infostring="${name} v${version} SL, Copyright 2006-2014, Andrew Rambaut"
                     bundleid="figtree" >
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
             <jarfileset dir="${dist}">
