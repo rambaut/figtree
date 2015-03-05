@@ -91,7 +91,7 @@
 
     </target>
 
-    <property name="version" value="1.4.2" />
+    <property name="version" value="1.4.3" />
     <property name="release_dir" value="release" />
     <property name="name" value="FigTree" />
 
@@ -101,7 +101,6 @@
     <property name="Linux_dir" value="${release_dir}/Linux" />
     <property name="Windows_dir" value="${release_dir}/Windows" />
 
-    <property name="Mac_package_dir_SL" value="${Mac_dir}/${name} v${version}" />
     <property name="Mac_package_dir" value="${Mac_dir}/${name} v${version}" />
     <property name="Linux_package_dir" value="${Linux_dir}/${name}_v${version}" />
     <property name="Windows_package_dir" value="${Windows_dir}/${name} v${version}" />
@@ -170,33 +169,34 @@
         <echo message="Linux/Unix version release is finished." />
     </target>
 
-    <target name="mac_sl_release"
-            description="release Mac Snow Leopard version of FigTree">
-        <delete dir="${Mac_package_dir_SL}" />
+    <target name="mac_release"
+            description="release Mac version of FigTree">
+        <delete dir="${Mac_package_dir}" />
         <!-- Create the release directory -->
-        <mkdir dir="${Mac_package_dir_SL}" />
+        <mkdir dir="${Mac_package_dir}" />
 
-        <copy file="${dist}/figtree.jar" todir="${Mac_package_dir_SL}/lib"/>
-        <copy file="${dist}/figtree-pdf.jar" todir="${Mac_package_dir_SL}/QuickLook Plugin/FigTreeQuickLookPlugin.qlgenerator/Contents/Resources"/>
-        <copy todir="${Mac_package_dir_SL}">
+        <copy file="${dist}/figtree.jar" todir="${Mac_package_dir}/lib"/>
+        <copy file="${dist}/figtree-pdf.jar" todir="${Mac_package_dir}/QuickLook Plugin/FigTreeQuickLookPlugin.qlgenerator/Contents/Resources"/>
+        <copy todir="${Mac_package_dir}">
             <fileset dir="${common_dir}/"/>
         </copy>
-        <copy todir="${Mac_package_dir_SL}/QuickLook Plugin">
+        <copy todir="${Mac_package_dir}/QuickLook Plugin">
             <fileset dir="${Mac_dir}/QuickLook Plugin"/>
         </copy>
 
         <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler"/>
 
         <!-- create a jar bundle for the mac -->
-        <jarbundler dir="${Mac_package_dir_SL}"
+        <jarbundler dir="${Mac_package_dir}"
                     name="${name} v${version}"
                     mainclass="figtree.application.FigTreeApplication"
                     icon="${Mac_dir}/icons/FigTree.icns"
                     jvmversion="1.6+"
                     vmoptions="-Xmx1024M"
+                    stubfile="${Mac_dir}/universalJavaApplicationStub"
                     arguments=""
-                    version="${version} SL"
-                    infostring="${name} v${version} SL, Copyright 2006-2014, Andrew Rambaut"
+                    version="${version}"
+                    infostring="${name} v${version}, Copyright 2006-2015, Andrew Rambaut"
                     bundleid="figtree" >
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
             <jarfileset dir="${dist}">
@@ -215,13 +215,15 @@
         </jarbundler>
 
         <!-- remove code signing -->
+        <!--
         <exec executable="/usr/bin/codesign">
             <arg value="-s"/>
             <arg value="-"/>
-            <arg value="--force"/>
+            <arg value="- -force"/> remove space from between minus signs
             <arg value="${Mac_dir}/${name} v${version}/${name} v${version}.app"/>
         </exec>
-
+		-->
+		
         <echo message="Building disk image." />
 
         <!-- create disk image -->
