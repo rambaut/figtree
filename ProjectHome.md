@@ -1,0 +1,1 @@
+FigTree is designed as a graphical viewer of phylogenetic trees and as a program for producing publication-ready figures
