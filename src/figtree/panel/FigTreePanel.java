@@ -121,7 +121,8 @@ public class FigTreePanel extends JPanel {
                         treeViewer,
                         "tipLabels", tipLabelPainter,
                         "nodeLabels", nodeLabelPainter,
-                        "branchLabels", branchLabelPainter));
+                        "branchLabels", branchLabelPainter,
+                        true, true));
 
                 controlPalette1.addController(new LabelPainterController(
                         "tipLabels", tipLabelPainter,
@@ -139,7 +140,7 @@ public class FigTreePanel extends JPanel {
                         "tipLabels", tipLabelPainter,
                         "nodeLabels", nodeLabelPainter,
                         "branchLabels", branchLabelPainter,
-                        true));
+                        true, false));
 
                 controlPalette1.addController(new LabelPainterController(
                         "tipLabels", tipLabelPainter,
@@ -160,7 +161,7 @@ public class FigTreePanel extends JPanel {
                         "tipLabels", tipLabelPainter,
                         "nodeLabels", nodeLabelPainter,
                         "branchLabels", branchLabelPainter,
-                        true));
+                        true, false));
 
                 controlPalette2.addController(new TreeColouringController(treeViewer, "Clustering:"));
                 add(controlPalette2.getPanel(), BorderLayout.NORTH);

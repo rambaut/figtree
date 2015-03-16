@@ -60,69 +60,87 @@ public class TreesController extends AbstractController {
 
 
     public TreesController(final TreeViewer treeViewer) {
+        this(treeViewer, true, true, true);
+    }
+    public TreesController(final TreeViewer treeViewer,
+                           final boolean rooting,
+                           final boolean ordering,
+                           final boolean transforming) {
         this.treeViewer = treeViewer;
 
         titleLabel = new JLabel(CONTROLLER_TITLE);
 
         optionsPanel = new OptionsPanel();
 
-        rootingCheck = new JCheckBox("Midpoint root");
-        rootingCheck.setOpaque(false);
-        optionsPanel.addComponent(rootingCheck);
+        if (rooting) {
+            rootingCheck = new JCheckBox("Midpoint root");
+            rootingCheck.setOpaque(false);
+            optionsPanel.addComponent(rootingCheck);
 
-        rootingCheck.setSelected(treeViewer.isRootingOn());
+            rootingCheck.setSelected(treeViewer.isRootingOn());
 
-        rootingCheck.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                if (rootingCheck.isSelected()) {
-                    treeViewer.setRootingOn(true);
-                    treeViewer.setRootingType(TreePane.RootingType.MID_POINT);
-                } else {
-                    treeViewer.setRootingOn(false);
-                    treeViewer.setRootingType(TreePane.RootingType.USER_ROOTING);
+            rootingCheck.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    if (rootingCheck.isSelected()) {
+                        treeViewer.setRootingOn(true);
+                        treeViewer.setRootingType(TreePane.RootingType.MID_POINT);
+                    } else {
+                        treeViewer.setRootingOn(false);
+                        treeViewer.setRootingType(TreePane.RootingType.USER_ROOTING);
+                    }
+
                 }
+            });
+        } else {
+            rootingCheck = null;
+        }
 
-            }
-        });
-
-        orderCombo = new JComboBox(new String[] {"Off",
-                SortedRootedTree.BranchOrdering.INCREASING_NODE_DENSITY.toString(),
-                SortedRootedTree.BranchOrdering.DECREASING_NODE_DENSITY.toString()});
-        orderCombo.setOpaque(false);
-        orderCombo.setSelectedItem(treeViewer.isOrderBranchesOn() ?
-                treeViewer.getBranchOrdering().ordinal() + 1 : 0);
-        orderCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
-                if (orderCombo.getSelectedIndex() == 0) {
-                    treeViewer.setOrderBranchesOn(false);
-                } else {
-                    treeViewer.setOrderBranchesOn(true);
-                    treeViewer.setBranchOrdering(SortedRootedTree.BranchOrdering.values()[orderCombo.getSelectedIndex() - 1]);
+        if (ordering) {
+            orderCombo = new JComboBox(new String[]{"Off",
+                    SortedRootedTree.BranchOrdering.INCREASING_NODE_DENSITY.toString(),
+                    SortedRootedTree.BranchOrdering.DECREASING_NODE_DENSITY.toString()});
+            orderCombo.setOpaque(false);
+            orderCombo.setSelectedItem(treeViewer.isOrderBranchesOn() ?
+                    treeViewer.getBranchOrdering().ordinal() + 1 : 0);
+            orderCombo.addItemListener(new ItemListener() {
+                public void itemStateChanged(ItemEvent itemEvent) {
+                    if (orderCombo.getSelectedIndex() == 0) {
+                        treeViewer.setOrderBranchesOn(false);
+                    } else {
+                        treeViewer.setOrderBranchesOn(true);
+                        treeViewer.setBranchOrdering(SortedRootedTree.BranchOrdering.values()[orderCombo.getSelectedIndex() - 1]);
+                    }
                 }
-            }
-        });
+            });
 
-        optionsPanel.addComponentWithLabel("Order:", orderCombo);
+            optionsPanel.addComponentWithLabel("Order:", orderCombo);
+        } else {
+            orderCombo = null;
+        }
 
-        transformCombo = new JComboBox(new String[] {"Off",
-                TransformedRootedTree.Transform.CLADOGRAM.toString(),
-                TransformedRootedTree.Transform.PROPORTIONAL.toString(),
-                TransformedRootedTree.Transform.EQUAL_LENGTHS.toString()});
-        transformCombo.setOpaque(false);
-        transformCombo.setSelectedItem(treeViewer.isOrderBranchesOn() ?
-                treeViewer.getBranchTransform().ordinal() + 1 : 0);
-        transformCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
-                if (transformCombo.getSelectedIndex() == 0) {
-                    treeViewer.setTransformBranchesOn(false);
-                } else {
-                    treeViewer.setTransformBranchesOn(true);
-                    treeViewer.setBranchTransform(TransformedRootedTree.Transform.values()[transformCombo.getSelectedIndex() - 1]);
+        if (transforming) {
+            transformCombo = new JComboBox(new String[]{"Off",
+                    TransformedRootedTree.Transform.CLADOGRAM.toString(),
+                    TransformedRootedTree.Transform.PROPORTIONAL.toString(),
+                    TransformedRootedTree.Transform.EQUAL_LENGTHS.toString()});
+            transformCombo.setOpaque(false);
+            transformCombo.setSelectedItem(treeViewer.isOrderBranchesOn() ?
+                    treeViewer.getBranchTransform().ordinal() + 1 : 0);
+            transformCombo.addItemListener(new ItemListener() {
+                public void itemStateChanged(ItemEvent itemEvent) {
+                    if (transformCombo.getSelectedIndex() == 0) {
+                        treeViewer.setTransformBranchesOn(false);
+                    } else {
+                        treeViewer.setTransformBranchesOn(true);
+                        treeViewer.setBranchTransform(TransformedRootedTree.Transform.values()[transformCombo.getSelectedIndex() - 1]);
+                    }
                 }
-            }
-        });
-        optionsPanel.addComponentWithLabel("Transform:", transformCombo);
+            });
+            optionsPanel.addComponentWithLabel("Transform:", transformCombo);
+        } else {
+            transformCombo = null;
+        }
     }
 
     public JComponent getTitleComponent() {

@@ -20,6 +20,7 @@
 
 package figtree.panel;
 
+import jebl.evolution.trees.SortedRootedTree;
 import jebl.evolution.trees.Tree;
 import jebl.evolution.graphs.Node;
 import figtree.treeviewer.TreeViewer;
@@ -94,7 +95,7 @@ public class TreeAppearanceController extends AbstractController {
 	                                final LabelPainter nodeLabelPainter,
 	                                String branchKey,
 	                                final LabelPainter branchLabelPainter) {
-		this(treeViewer, tipKey, tipLabelPainter, nodeKey, nodeLabelPainter, branchKey, branchLabelPainter, true);
+		this(treeViewer, tipKey, tipLabelPainter, nodeKey, nodeLabelPainter, branchKey, branchLabelPainter, true, false);
 	}
 
 	public TreeAppearanceController(final TreeViewer treeViewer,
@@ -104,7 +105,8 @@ public class TreeAppearanceController extends AbstractController {
 	                                final LabelPainter nodeLabelPainter,
 	                                String branchKey,
 	                                final LabelPainter branchLabelPainter,
-	                                boolean hideColouring) {
+	                                boolean hideColouring,
+                                    boolean ordering) {
 		this.treeViewer = treeViewer;
 
 		this.hideColouring = hideColouring;
@@ -247,7 +249,30 @@ public class TreeAppearanceController extends AbstractController {
 				}
 			});
 		}
-	}
+
+        if (ordering) {
+            orderCombo = new JComboBox(new String[]{"Off",
+                    SortedRootedTree.BranchOrdering.INCREASING_NODE_DENSITY.toString(),
+                    SortedRootedTree.BranchOrdering.DECREASING_NODE_DENSITY.toString()});
+            orderCombo.setOpaque(false);
+            orderCombo.setSelectedItem(treeViewer.isOrderBranchesOn() ?
+                    treeViewer.getBranchOrdering().ordinal() + 1 : 0);
+            orderCombo.addItemListener(new ItemListener() {
+                public void itemStateChanged(ItemEvent itemEvent) {
+                    if (orderCombo.getSelectedIndex() == 0) {
+                        treeViewer.setOrderBranchesOn(false);
+                    } else {
+                        treeViewer.setOrderBranchesOn(true);
+                        treeViewer.setBranchOrdering(SortedRootedTree.BranchOrdering.values()[orderCombo.getSelectedIndex() - 1]);
+                    }
+                }
+            });
+
+            optionsPanel.addComponentWithLabel("Order:", orderCombo);
+        } else {
+            orderCombo = null;
+        }
+    }
 
 	private void setupAttributes(Collection<? extends Tree> trees) {
 		Object selected = branchColourAttributeCombo.getSelectedItem();
@@ -361,7 +386,9 @@ public class TreeAppearanceController extends AbstractController {
 	private final JSpinner fontSizeSpinner;
 	private final JSpinner digitsSpinner;
 
-	private final TreeViewer treeViewer;
+    private final JComboBox orderCombo;
+
+    private final TreeViewer treeViewer;
 
 	private final String tipKey;
 	private final String nodeKey;

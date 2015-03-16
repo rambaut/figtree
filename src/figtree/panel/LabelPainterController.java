@@ -22,6 +22,7 @@ package figtree.panel;
 
 import figtree.treeviewer.TreeViewer;
 import figtree.treeviewer.painters.AttributeComboHelper;
+import figtree.treeviewer.painters.AttributeComboHelperListener;
 import jam.controlpalettes.AbstractController;
 import jam.panels.OptionsPanel;
 
@@ -48,11 +49,11 @@ public class LabelPainterController extends AbstractController {
     private static final String DISPLAY_ATTRIBUTE_KEY = "displayAttribute";
 
     public LabelPainterController(String tipKey,
-                                  final LabelPainter tipLabelPainter,
+                                  final SimpleLabelPainter tipLabelPainter,
                                   String nodeKey,
-                                  final LabelPainter nodeLabelPainter,
+                                  final SimpleLabelPainter nodeLabelPainter,
                                   String branchKey,
-                                  final LabelPainter branchLabelPainter,
+                                  final SimpleLabelPainter branchLabelPainter,
                                   final TreeViewer treeViewer) {
 
         this.tipKey = tipKey;
@@ -68,17 +69,20 @@ public class LabelPainterController extends AbstractController {
 
     }
 
-    private JComboBox setupComboBox(String title, final LabelPainter labelPainter, final TreeViewer treeViewer) {
+    private JComboBox setupComboBox(String title, final SimpleLabelPainter labelPainter, final TreeViewer treeViewer) {
 //		String[] attributes = labelPainter.getAttributes();
         final JComboBox displayAttributeCombo = new JComboBox();
         displayAttributeCombo.addItem("None");
-        new AttributeComboHelper(displayAttributeCombo, treeViewer, "None");
+        for (String attribute : labelPainter.getAttributes()) {
+            displayAttributeCombo.addItem(attribute);
+        }
+        new AttributeComboHelper(displayAttributeCombo, treeViewer, "None", labelPainter.getIntent());
         optionsPanel.addComponentWithLabel(title, displayAttributeCombo);
 
         displayAttributeCombo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
                 String attribute = (String)displayAttributeCombo.getSelectedItem();
-                if (attribute.equals("none")) {
+                if (attribute == null || attribute.equalsIgnoreCase("none")) {
                     labelPainter.setVisible(false);
                 } else {
                     labelPainter.setDisplayAttribute(attribute);
