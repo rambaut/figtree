@@ -43,7 +43,7 @@ public class ContinuousScale {
      */
     public ContinuousScale(String settings) {
         if (settings.startsWith("{")) {
-           settings = settings.substring(1, settings.length());
+            settings = settings.substring(1, settings.length());
         }
         if (settings.endsWith("}")) {
             settings = settings.substring(0, settings.length() - 1);
@@ -88,47 +88,46 @@ public class ContinuousScale {
 
         // First collect the set of all attribute values
         Set<Object> values = new TreeSet<Object>();
-        for (Attributable item : items) {
-            Object value = item.getAttribute(attributeName);
-            if (value != null) {
-                values.add(value);
-            }
-        }
 
         boolean isNumber = true;
 
         // Find the range of numbers
-        for (Object value : values) {
-            double realValue = -1.0;
+        for (Attributable item : items) {
+            Object value = item.getAttribute(attributeName);
+            if (value != null) {
 
-            if (value instanceof Boolean) {
-                realValue = ((Boolean)value ? 1 : 0);
-            } else if (value instanceof Number) {
-                realValue = ((Number)value).doubleValue();
-            } else if (value instanceof String) {
-                // it is a string but it could still code for
-                // a boolean, integer or real
-                if (value.toString().equalsIgnoreCase("true")) {
-                    realValue = 1;
-                } else if (value.toString().equalsIgnoreCase("false")) {
-                    realValue = 0;
-                } else {
-                    try {
-                        realValue = Double.parseDouble(value.toString());
-                    } catch(NumberFormatException nfe) {
-                        isNumber = false;
+                double realValue = -1.0;
+
+                if (value instanceof Boolean) {
+                    realValue = ((Boolean)value ? 1 : 0);
+                } else if (value instanceof Number) {
+                    realValue = ((Number)value).doubleValue();
+                } else if (value instanceof String) {
+                    // it is a string but it could still code for
+                    // a boolean, integer or real
+                    if (value.toString().equalsIgnoreCase("true")) {
+                        realValue = 1;
+                    } else if (value.toString().equalsIgnoreCase("false")) {
+                        realValue = 0;
+                    } else {
+                        try {
+                            realValue = Double.parseDouble(value.toString());
+                        } catch(NumberFormatException nfe) {
+                            isNumber = false;
+                        }
                     }
                 }
-            }
 
-            if (isNumber) {
-                if (realValue < minValue) {
-                    minValue = realValue;
-                }
-                if (realValue > maxValue) {
-                    maxValue = realValue;
-                }
+                if (isNumber) {
+                    if (realValue < minValue) {
+                        minValue = realValue;
+                    }
+                    if (realValue > maxValue) {
+                        maxValue = realValue;
+                    }
 
+                }
+                values.add(realValue);
             }
         }
 
