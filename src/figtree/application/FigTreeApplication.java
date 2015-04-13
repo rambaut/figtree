@@ -181,21 +181,6 @@ public class FigTreeApplication extends MultiDocApplication {
                 format = GraphicFormat.PNG;
             } else if (graphicFormat.equals("JPEG")) {
                 format = GraphicFormat.JPEG;
-//            } else if (graphicFormat.equals("PS")) {
-//                if (graphicFileName != null) {
-//                    System.out.println("Creating PS graphic: " + graphicFileName);
-//                }
-//                g = new PSGraphics2D(stream, new Dimension(width, height));
-//            } else if (graphicFormat.equals("EMF")) {
-//                if (graphicFileName != null) {
-//                    System.out.println("Creating EMF graphic: " + graphicFileName);
-//                }
-//                g = new EMFGraphics2D(stream, new Dimension(width, height));
-//            } else if (graphicFormat.equals("SWF")) {
-//                if (graphicFileName != null) {
-//                    System.out.println("Creating SWF graphic: " + graphicFileName);
-//                }
-//                g = new SWFGraphics2D(stream, new Dimension(width, height));
             } else {
                 throw new RuntimeException("Unknown graphic format");
             }
