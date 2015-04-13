@@ -29,6 +29,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import figtree.treeviewer.decorators.DiscreteColourDecorator;
 import figtree.treeviewer.decorators.HSBDiscreteColourDecorator;
 import figtree.treeviewer.painters.StatesPainter;
+import jebl.evolution.align.Output;
 import jebl.evolution.alignments.Alignment;
 import jebl.evolution.alignments.BasicAlignment;
 import jebl.evolution.graphs.Node;
@@ -288,7 +289,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                     public void actionPerformed(ActionEvent e){
                         if (treeViewer.isRootingOn() && treeViewer.getRootingType() == TreePane.RootingType.USER_ROOTING) {
                             JOptionPane.showMessageDialog(FigTreeFrame.this, "Cannot switch trees when user rooting option is on.\n" +
-                                    "Turn this option off to switch trees",
+                                            "Turn this option off to switch trees",
                                     "Unable to switch trees",
                                     JOptionPane.ERROR_MESSAGE);
 
@@ -308,7 +309,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                     public void actionPerformed(ActionEvent e){
                         if (treeViewer.isRootingOn() && treeViewer.getRootingType() == TreePane.RootingType.USER_ROOTING) {
                             JOptionPane.showMessageDialog(FigTreeFrame.this, "Cannot switch trees when user rooting option is on.\n" +
-                                    "Turn this option off to switch trees",
+                                            "Turn this option off to switch trees",
                                     "Unable to switch trees",
                                     JOptionPane.ERROR_MESSAGE);
 
@@ -1216,27 +1217,16 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
             File file = new File(dialog.getDirectory(), dialog.getFile());
 
             try {
-                JComponent comp = treeViewer.getContentPane();
-                switch (format) {
+                OutputStream stream = new FileOutputStream(file);
 
-                    case PNG:
-                    case GIF:
-                    case BMP:
-                    case JPEG:
-                        exportGraphicsFile(format, comp, file);
-                        break;
-                    case EPS:
-                        throw new UnsupportedOperationException("EPS not handled");
-                    case SVG:
-                        exportSVGFile(comp, file);
-                        break;
-                    case PDF:
-                        exportPDFFile(comp, file);
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("Format not handled: " + format);
+                exportGraphics(format, treeViewer.getContentPane(), stream);
 
-                }
+                stream.flush();
+                stream.close();
+            } catch(DocumentException de) {
+                JOptionPane.showMessageDialog(this, "Error writing PDF file: " + de,
+                        "Export PDF Error",
+                        JOptionPane.ERROR_MESSAGE);
             } catch (IOException ioe) {
                 JOptionPane.showMessageDialog(this, "Error writing tree file: " + ioe.getMessage(),
                         "Export Error",
@@ -1247,7 +1237,30 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
     }
 
-    private final void exportGraphicsFile(GraphicFormat format, JComponent component, File file) throws IOException {
+    public final static void exportGraphics(GraphicFormat format, JComponent comp, OutputStream stream) throws IOException, DocumentException {
+        switch (format) {
+
+            case PNG:
+            case GIF:
+            case BMP:
+            case JPEG:
+                exportGraphicsFile(format, comp, stream);
+                break;
+            case EPS:
+                throw new UnsupportedOperationException("EPS not handled");
+            case SVG:
+                exportSVGFile(comp, stream);
+                break;
+            case PDF:
+                exportPDFFile(comp, stream);
+                break;
+            default:
+                throw new UnsupportedOperationException("Format not handled: " + format);
+
+        }
+
+    }
+    private final static void exportGraphicsFile(GraphicFormat format, JComponent component, OutputStream stream) throws IOException {
         int imageType = BufferedImage.TYPE_INT_RGB;
 
         if (format == GraphicFormat.PNG) {
@@ -1263,10 +1276,10 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         }
         component.paint(g);
         g.dispose();
-        ImageIO.write(bi, format.getName(), file);
+        ImageIO.write(bi, format.getName(), stream);
     }
 
-    private final void exportSVGFile(JComponent component, File file) throws IOException {
+    private final static void exportSVGFile(JComponent component, OutputStream stream) throws IOException {
         // Get a DOMImplementation and create an XML document
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
         org.w3c.dom.Document document = domImpl.createDocument(null, "svg", null);
@@ -1277,41 +1290,27 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         component.paint(svgGenerator);
 
         // Write svg file
-        OutputStream outputStream = new FileOutputStream(file);
-        Writer out = new OutputStreamWriter(outputStream, "UTF-8");
+        Writer out = new OutputStreamWriter(stream, "UTF-8");
         svgGenerator.stream(out, true /* use css */);
-        outputStream.flush();
-        outputStream.close();
     }
 
-    public final void exportPDFFile(JComponent component, File file) {
-        Rectangle2D bounds = treeViewer.getContentPane().getBounds();
+    public final static void exportPDFFile(JComponent component, OutputStream stream) throws DocumentException {
+        Rectangle2D bounds = component.getBounds();
         Document document = new Document(new com.itextpdf
                 .text.Rectangle((float)bounds.getWidth(), (float)bounds.getHeight()));
-        try {
-            // step 2
-            PdfWriter writer;
-            writer = PdfWriter.getInstance(document, new FileOutputStream(file));
-            // step 3
-            document.open();
-            // step 4
-            PdfContentByte cb = writer.getDirectContent();
-            PdfTemplate tp = cb.createTemplate((float)bounds.getWidth(), (float)bounds.getHeight());
-            Graphics2D g2d = tp.createGraphics((float)bounds.getWidth(), (float)bounds.getHeight(), new DefaultFontMapper());
-            component.print(g2d);
-            g2d.dispose();
-            cb.addTemplate(tp, 0, 0);
-        }
-        catch(DocumentException de) {
-            JOptionPane.showMessageDialog(this, "Error writing PDF file: " + de,
-                    "Export PDF Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-        catch (FileNotFoundException e) {
-            JOptionPane.showMessageDialog(this, "Error writing PDF file: " + e,
-                    "Export PDF Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+        // step 2
+        PdfWriter writer;
+        writer = PdfWriter.getInstance(document, stream);
+        // step 3
+        document.open();
+        // step 4
+        PdfContentByte cb = writer.getDirectContent();
+        PdfTemplate tp = cb.createTemplate((float)bounds.getWidth(), (float)bounds.getHeight());
+        Graphics2D g2d = tp.createGraphics((float)bounds.getWidth(), (float)bounds.getHeight(), new DefaultFontMapper());
+        component.print(g2d);
+        g2d.dispose();
+        cb.addTemplate(tp, 0, 0);
+
         document.close();
     }
 

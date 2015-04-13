@@ -30,6 +30,11 @@
 
 package figtree.application;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfTemplate;
+import com.itextpdf.text.pdf.PdfWriter;
 import figtree.application.preferences.*;
 import figtree.treeviewer.ExtendedTreeViewer;
 import jam.framework.*;
@@ -52,6 +57,9 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import ch.randelshofer.quaqua.QuaquaManager;
+import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.batik.svggen.SVGGraphics2D;
+import org.w3c.dom.DOMImplementation;
 
 /**
  * Application class for FigTree including main() method for invoking it.
@@ -164,10 +172,15 @@ public class FigTreeApplication extends MultiDocApplication {
 
             GraphicFormat format = null;
             if (graphicFormat.equals("PDF")) {
-                if (graphicFileName != null) {
-                    System.out.println("Creating PDF graphic: " + graphicFileName);
-                }
                 format = GraphicFormat.PDF;
+            } else if (graphicFormat.equals("SVG")) {
+                format = GraphicFormat.SVG;
+            } else if (graphicFormat.equals("GIF")) {
+                format = GraphicFormat.GIF;
+            } else if (graphicFormat.equals("PNG")) {
+                format = GraphicFormat.PNG;
+            } else if (graphicFormat.equals("JPEG")) {
+                format = GraphicFormat.JPEG;
 //            } else if (graphicFormat.equals("PS")) {
 //                if (graphicFileName != null) {
 //                    System.out.println("Creating PS graphic: " + graphicFileName);
@@ -178,40 +191,27 @@ public class FigTreeApplication extends MultiDocApplication {
 //                    System.out.println("Creating EMF graphic: " + graphicFileName);
 //                }
 //                g = new EMFGraphics2D(stream, new Dimension(width, height));
-//            } else if (graphicFormat.equals("SVG")) {
-//                if (graphicFileName != null) {
-//                    System.out.println("Creating SVG graphic: " + graphicFileName);
-//                }
-//                g = new SVGGraphics2D(stream, new Dimension(width, height));
 //            } else if (graphicFormat.equals("SWF")) {
 //                if (graphicFileName != null) {
 //                    System.out.println("Creating SWF graphic: " + graphicFileName);
 //                }
 //                g = new SWFGraphics2D(stream, new Dimension(width, height));
-            } else if (graphicFormat.equals("GIF")) {
-                if (graphicFileName != null) {
-                    System.out.println("Creating GIF graphic: " + graphicFileName);
-                }
-                format = GraphicFormat.GIF;
-            } else if (graphicFormat.equals("PNG")) {
-                format = GraphicFormat.PNG;
-            } else if (graphicFormat.equals("JPEG")) {
-                format = GraphicFormat.JPEG;
             } else {
                 throw new RuntimeException("Unknown graphic format");
             }
 
-            JComponent comp = treeViewer.getContentPane();
-            BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-            Graphics g = bi.createGraphics();
-            comp.paint(g);
-            g.dispose();
-            ImageIO.write(bi, format.getName(), stream);
+            if (graphicFileName != null) {
+                System.out.println("Creating " + graphicFormat + " graphic: " + graphicFileName);
+            }
+
+            FigTreeFrame.exportGraphics(format, treeViewer.getContentPane(), stream);
 
         } catch(ImportException ie) {
-            throw new RuntimeException("Error writing graphic file: " + ie);
+            throw new RuntimeException("Error writing graphic file: " + ie.getMessage());
         } catch(IOException ioe) {
-            throw new RuntimeException("Error writing graphic file: " + ioe);
+            throw new RuntimeException("Error writing graphic file: " + ioe.getMessage());
+        } catch (DocumentException de) {
+            throw new RuntimeException("Error writing graphic file: " + de.getMessage());
         }
 
     }
@@ -264,10 +264,10 @@ public class FigTreeApplication extends MultiDocApplication {
                 new Arguments.Option[] {
                         new Arguments.StringOption("graphic", new String[] {
                                 "PDF",
-                                // "SVG",
+                                "SVG",
                                 // "SWF", "PS", "EMF",
                                 "PNG",
-                                "GIF",
+                                // "GIF",
                                 "JPEG"
                         }, false, "produce a graphic with the given format"),
                         new Arguments.IntegerOption("width", "the width of the graphic in pixels"),
