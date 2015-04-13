@@ -60,17 +60,6 @@
             </manifest>
         </jar>
 
-        <jar jarfile="${dist}/figtree-pdf.jar">
-            <zipgroupfileset dir="${lib}" includes="jebl.jar"/>
-            <zipgroupfileset dir="${lib}" includes="jam.jar"/>
-            <zipgroupfileset dir="${lib}" includes="iText.jar"/>
-            <fileset dir="${build}" includes="**/*.class,**/*.properties,**/*.png,**/*.gif"/>
-            <manifest>
-                <attribute name="Built-By" value="${user.name}"/>
-                <attribute name="Main-Class" value="figtree.application.FigTreePDF"/>
-            </manifest>
-        </jar>
-
         <war destfile="${dist}/figtree.war"
              webxml="WebRoot/WEB-INF/web.xml">
             <fileset dir="WebRoot"/>
