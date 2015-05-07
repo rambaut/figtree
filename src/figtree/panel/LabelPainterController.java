@@ -32,7 +32,6 @@ import java.awt.event.ItemListener;
 import java.util.Map;
 
 import figtree.treeviewer.painters.LabelPainter;
-import sun.jvm.hotspot.tools.FinalizerInfo;
 
 /**
  * @author Andrew Rambaut
