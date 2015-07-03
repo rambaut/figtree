@@ -117,6 +117,20 @@ public class NodeShapePainter extends NodePainter {
         firePainterChanged();
     }
 
+    public void setNodeType(boolean external, boolean internal) {
+        this.external = external;
+        this.internal = internal;
+        firePainterChanged();
+    }
+
+    public boolean isExternal() {
+        return external;
+    }
+
+    public boolean isInternal() {
+        return internal;
+    }
+
     public double getPreferredWidth() {
         return 1.0;
     }
@@ -246,6 +260,9 @@ public class NodeShapePainter extends NodePainter {
     private ShapeType shapeType = ShapeType.CIRCLE;
     private ScaleType scaleType = ScaleType.WIDTH;
     private String sizeAttribute = null;
+
+    private boolean external = true;
+    private boolean internal = false;
 
     private Decorator colourDecorator = null;
     private ContinuousScale sizeScale = null;

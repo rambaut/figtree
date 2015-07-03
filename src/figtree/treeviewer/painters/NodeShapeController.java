@@ -51,6 +51,8 @@ public class NodeShapeController extends AbstractController {
 
     private static Preferences PREFS = Preferences.userNodeForPackage(NodeBarController.class);
 
+    private static final String IS_EXTERNAL = "isExternal";
+    private static final String IS_INTERNAL = "isInternal";
     private static final String NODE_SHAPE_KEY = "nodeShape";
     public static final String SHAPE_TYPE_KEY = "shapeType";
     public static final String SCALE_TYPE_KEY = "scaleType";
@@ -78,6 +80,20 @@ public class NodeShapeController extends AbstractController {
                 nodeShapePainter.setVisible(selected);
             }
         });
+
+        externalNodeCheck = new JCheckBox("external");
+        internalNodeCheck = new JCheckBox("internal");
+        ActionListener listener = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                nodeShapePainter.setNodeType(externalNodeCheck.isSelected(), internalNodeCheck.isSelected());
+            }
+        };
+        externalNodeCheck.addActionListener(listener);
+        internalNodeCheck.addActionListener(listener);
+        ControllerOptionsPanel nodeCheckPanel = new ControllerOptionsPanel(2, 2);
+        nodeCheckPanel.setBorder(BorderFactory.createEmptyBorder());
+        nodeCheckPanel.addSpanningComponent(externalNodeCheck);
+        nodeCheckPanel.addSpanningComponent(internalNodeCheck);
 
         shapeTypeCombo = new JComboBox(NodeShapePainter.ShapeType.values());
         shapeTypeCombo.addActionListener(new ActionListener() {
@@ -116,7 +132,7 @@ public class NodeShapeController extends AbstractController {
             }
         });
 
-
+        final JLabel label8 = optionsPanel.addComponentWithLabel("Show:", nodeCheckPanel);
         final JLabel label1 = optionsPanel.addComponentWithLabel("Shape:", shapeTypeCombo);
         final JLabel label2 = optionsPanel.addComponentWithLabel("Max size:", shapeSizeSpinner);
         final JLabel label3 = optionsPanel.addComponentWithLabel("Size by:", sizeAttributeCombo);
@@ -162,6 +178,9 @@ public class NodeShapeController extends AbstractController {
 
         addComponent(label1);
         addComponent(shapeTypeCombo);
+        addComponent(label8);
+        addComponent(externalNodeCheck);
+        addComponent(internalNodeCheck);
         addComponent(label2);
         addComponent(shapeSizeSpinner);
         addComponent(label3);
@@ -208,6 +227,8 @@ public class NodeShapeController extends AbstractController {
     public void setSettings(Map<String,Object> settings) {
         titleCheckBox.setSelected((Boolean)settings.get(NODE_SHAPE_KEY + "." + IS_SHOWN));
 
+        externalNodeCheck.setSelected((Boolean)settings.get(NODE_SHAPE_KEY + "." + IS_EXTERNAL));
+        internalNodeCheck.setSelected((Boolean)settings.get(NODE_SHAPE_KEY + "." + IS_INTERNAL));
         shapeTypeCombo.setSelectedItem((NodeShapePainter.ShapeType.valueOf(settings.get(NODE_SHAPE_KEY + "." + SHAPE_TYPE_KEY).toString().toUpperCase())));
         scaleTypeCombo.setSelectedItem((NodeShapePainter.ScaleType.valueOf(settings.get(NODE_SHAPE_KEY + "." + SCALE_TYPE_KEY).toString().toUpperCase())));
         colourAttributeCombo.setSelectedItem((String) settings.get(NODE_SHAPE_KEY + "." + COLOUR_ATTRIBUTE_KEY));
@@ -218,6 +239,8 @@ public class NodeShapeController extends AbstractController {
 
     public void getSettings(Map<String, Object> settings) {
         settings.put(NODE_SHAPE_KEY + "." + IS_SHOWN, titleCheckBox.isSelected());
+        settings.put(NODE_SHAPE_KEY + "." + IS_EXTERNAL, externalNodeCheck.isSelected());
+        settings.put(NODE_SHAPE_KEY + "." + IS_INTERNAL, internalNodeCheck.isSelected());
         settings.put(NODE_SHAPE_KEY + "." + SHAPE_TYPE_KEY, shapeTypeCombo.getSelectedItem());
         settings.put(NODE_SHAPE_KEY + "." + SCALE_TYPE_KEY, scaleTypeCombo.getSelectedItem());
         settings.put(NODE_SHAPE_KEY + "." + COLOUR_ATTRIBUTE_KEY, colourAttributeCombo.getSelectedItem());
@@ -229,6 +252,8 @@ public class NodeShapeController extends AbstractController {
     private final JCheckBox titleCheckBox;
     private final OptionsPanel optionsPanel;
 
+    private final JCheckBox externalNodeCheck;
+    private final JCheckBox internalNodeCheck;
     private final JComboBox shapeTypeCombo;
     private final JComboBox scaleTypeCombo;
     private final JComboBox sizeAttributeCombo;

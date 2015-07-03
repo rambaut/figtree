@@ -60,6 +60,17 @@
             </manifest>
         </jar>
 
+        <jar jarfile="${dist}/figtreepanel.jar">
+            <fileset dir="${build}"
+                     includes="figtree/panel/**/*.class,figtree/treeviewer/**/*.class,**/*.properties,**/*.png,**/*.gif"
+                    />
+
+            <manifest>
+                <attribute name="Built-By" value="${user.name}"/>
+            </manifest>
+        </jar>
+
+
         <war destfile="${dist}/figtree.war"
              webxml="WebRoot/WEB-INF/web.xml">
             <fileset dir="WebRoot"/>
@@ -109,9 +120,11 @@
                  classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
 
         <copy file="${dist}/figtree.jar" todir="${Windows_package_dir}/lib"/>
+        <!--
         <copy todir="${Windows_package_dir}/lib">
             <fileset dir="${Windows_dir}/lib"/>
         </copy>
+        -->
         <copy todir="${Windows_package_dir}">
             <fileset dir="${common_dir}/"/>
         </copy>

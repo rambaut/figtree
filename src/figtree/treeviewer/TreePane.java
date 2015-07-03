@@ -1835,14 +1835,28 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
             nodePoints.clear();
             // Iterate though the nodes
-            for (Node node : tree.getNodes()) {
+            if (nodeShapePainter.isExternal()) {
+                for (Node node : tree.getExternalNodes()) {
 
-                Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
-                if (shapeBounds != null) {
-                    totalTreeBounds.add(shapeBounds);
+                    Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
+                    if (shapeBounds != null) {
+                        totalTreeBounds.add(shapeBounds);
 
-                    // just at the centroid in here as the actual shape will be reconstructed when drawing
-                    nodePoints.put(node, new Point2D.Double(shapeBounds.getCenterX(), shapeBounds.getCenterY()));
+                        // just at the centroid in here as the actual shape will be reconstructed when drawing
+                        nodePoints.put(node, new Point2D.Double(shapeBounds.getCenterX(), shapeBounds.getCenterY()));
+                    }
+                }
+            }
+            if (nodeShapePainter.isInternal()) {
+                for (Node node : tree.getInternalNodes()) {
+
+                    Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
+                    if (shapeBounds != null) {
+                        totalTreeBounds.add(shapeBounds);
+
+                        // just at the centroid in here as the actual shape will be reconstructed when drawing
+                        nodePoints.put(node, new Point2D.Double(shapeBounds.getCenterX(), shapeBounds.getCenterY()));
+                    }
                 }
             }
         }
