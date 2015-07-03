@@ -63,7 +63,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
 
-    public final static boolean DEBUG_OUTLINE = false;
+    public final static boolean DEBUG_OUTLINE = true;
 
     public final String CARTOON_ATTRIBUTE_NAME = "!cartoon";
     public final String COLLAPSE_ATTRIBUTE_NAME = "!collapse";
@@ -1886,15 +1886,6 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             totalTreeBounds.add(legendBounds);
         }
 
-//        // translate treeBounds to the inset within totalTreeBounds
-//        treeBounds.setRect(-totalTreeBounds.getX(), -totalTreeBounds.getY(), treeBounds.getWidth(), treeBounds.getHeight());
-//
-//        // translate totalTreeBounds so it is at 0, 0
-//        totalTreeBounds.setRect(0, 0,
-//                totalTreeBounds.getWidth(),
-//                totalTreeBounds.getHeight());
-
-
         final double availableW = width - insets.left - insets.right;
         final double availableH = height - insets.top - insets.bottom;
 
@@ -1972,7 +1963,6 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             // and set the origin in the top left corner
             xOffset = - treeBounds.getX() * xScale;
             yOffset = - treeBounds.getY() * yScale;
-
             treeScale = xScale;
         }
 
@@ -1980,7 +1970,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
         // Create the overall transform
         transform = new AffineTransform();
-        transform.translate(xOffset + insets.left, yOffset + insets.top);
+        transform.translate(xOffset + insets.left - totalTreeBounds.getX(), yOffset + insets.top - totalTreeBounds.getY());
         transform.scale(xScale, yScale);
 
         // Get the bounds for the newly scaled tree
@@ -2158,7 +2148,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         if (legendPainter != null && legendPainter.isVisible()) {
             legendPainter.calibrate(g2, this);
             final double w2 = legendPainter.getPreferredWidth();
-            legendBounds = new Rectangle2D.Double(0, 0, w2, treeBounds.getHeight());
+            legendBounds = new Rectangle2D.Double(insets.left, insets.top, w2, treeBounds.getHeight());
         }
 
         calloutPaths.clear();

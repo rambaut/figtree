@@ -122,6 +122,11 @@ public class LegendPainter extends LabelPainter<TreePane> implements ScalePainte
         }
         String attribute = colourDecorator.getAttributeName();
 
+        if (TreePane.DEBUG_OUTLINE) {
+            g2.setPaint(Color.red);
+            g2.draw(bounds);
+        }
+
         Font oldFont = g2.getFont();
         Paint oldPaint = g2.getPaint();
         Stroke oldStroke = g2.getStroke();
