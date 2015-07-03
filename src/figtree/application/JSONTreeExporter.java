@@ -56,7 +56,8 @@ import java.util.*;
 public class JSONTreeExporter implements TreeExporter {
     public static final String treeNameAttributeKey = "name";
 
-    public final static Set<String> ATTRIBUTE_NAMES = new TreeSet<String>(Arrays.asList(new String[] { "location", "host", "Hx", "Nx", "posterior" }));
+    public final static Set<String> ATTRIBUTE_NAMES = new TreeSet<String>(Arrays.asList(new String[] {
+            "location", "host", "Hx", "Nx", "posterior", "country", "region" }));
     public final static String ORIGIN = "2013.34520547945";
 
     public JSONTreeExporter(Writer writer) {

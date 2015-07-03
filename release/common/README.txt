@@ -1,4 +1,4 @@
-                  FigTree v1.4 2006-2012
+                  FigTree v1.4.3 2006-2015
                         Andrew Rambaut
 
               Institute of Evolutionary Biology
@@ -7,7 +7,7 @@
 
 
 UNIX/Linux/Mac OS X (command-line) version README
-Last updated: a.rambaut@ed.ac.uk - 8th October 2012
+Last updated: a.rambaut@ed.ac.uk - 13th April 2015
 
 Contents:
 1) INTRODUCTION
@@ -26,6 +26,45 @@ FigTree is designed as a graphical viewer of phylogenetic trees and as a program
 
 ___________________________________________________________________________
 2) VERSION HISTORY
+
+v1.4.3 Released 13th April 2015
+
+New features:
+	Node shape option can now show shapes for internal or external nodes or both.
+	
+Bugs fixed:
+	Issue 93:	Command-line PDF/SVG export options not working 
+	Issue 92:	Reading a file with a mix of integer and real node labels causes exception. 
+	Issue 79:	Export of .SVG produces corrupt files 
+
+v1.4.2 Released 9th July 2014
+
+New features:
+	New -url command line option allows reading of trees from URLs in pipelines.
+	
+Bugs fixed:
+	Issue 76:	Scale axis should only show as many decimal places as necessary.
+	Issue 75:	Export PNG & JPEG produce blank images.
+	Issue 64:	Putting node bars on translates the tree to the right (now really fixed, I think).
+
+v1.4.1 Released 14th June 2014
+
+New features:
+	Copy selected subtrees to clipboard as NEXUS format.
+	
+	New graphics export options (PDF, SVG, PNG & JPEG).
+	
+	Control panel now scrolls and can be resized.
+	
+Bugs fixed:
+	Issue 23:	Find bar opens slowly with big trees.
+	Issue 28:	Filtering should work on currently display labels.
+	Issue 53:	Option Tip Labels: "Colour By" does not render Names in colour.
+	Issue 57:	Midpoint rooting not working correctly.
+	Issue 59:	Clear Highlighting/Cartoon etc doesn't seem to work on individual branches.
+	Issue 62:	When all clades are 'collapsed', the top triangle is clipped.
+	Issue 64:	Putting node bars on translates the tree to the right.
+	Issue 69:	Import annotation causes crash.
 
 v1.4 Released 8th October 2012.
 
