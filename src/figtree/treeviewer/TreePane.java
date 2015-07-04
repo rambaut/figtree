@@ -62,7 +62,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
 
-    public final static boolean DEBUG_OUTLINE = true;
+    public final static boolean DEBUG_OUTLINE = false;
 
     public final String CARTOON_ATTRIBUTE_NAME = "!cartoon";
     public final String COLLAPSE_ATTRIBUTE_NAME = "!collapse";
@@ -1458,6 +1458,14 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
         }
 
+        if (scaleGridPainter != null && scaleGridPainter.isVisible()) {
+            Rectangle2D gridBounds = new Rectangle2D.Double(
+                    treeBounds.getX(), 0.0,
+                    treeBounds.getWidth(), treeBounds.getHeight());
+            scaleGridPainter.paint(g2, this, null, gridBounds);
+        }
+
+
         // Paint backgrounds
         if (nodeBackgroundDecorator != null) {
             for (Node node : treeLayoutCache.getNodeAreaMap().keySet() ) {
@@ -1509,15 +1517,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
         }
 
-        if (scaleGridPainter != null && scaleGridPainter.isVisible()) {
-            Rectangle2D gridBounds = new Rectangle2D.Double(
-                    treeBounds.getX(), 0.0,
-                    treeBounds.getWidth(), treeBounds.getHeight());
-            scaleGridPainter.paint(g2, this, null, gridBounds);
-        }
-
         if (DEBUG_OUTLINE) {
-            g2.setPaint(Color.red);
+            g2.setPaint(Color.blue);
             g2.draw(treeBounds);
         }
 
@@ -1792,11 +1793,10 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
         if (tipLabelPainter != null && tipLabelPainter.isVisible()) {
 
-            tipLabelWidth = 0.0;
-            final double tipLabelHeight = tipLabelPainter.getPreferredHeight();
+            calculateMaxTipLabelWidth(g2, tree.getRootNode());
 
             // put this in a recursive function to allow for collapsed node labels
-            calibrateTipLabels(g2, tree.getRootNode(), tipLabelHeight, totalTreeBounds);
+            calibrateTipLabels(g2, tree.getRootNode(), totalTreeBounds);
         }
 
         if (nodeLabelPainter != null && nodeLabelPainter.isVisible()) {
@@ -1877,8 +1877,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             if (scalePainter.isVisible()) {
                 scalePainter.calibrate(g2, this);
                 Rectangle2D sb = new Rectangle2D.Double(
-                        totalTreeBounds.getX(), y,
-                        totalTreeBounds.getWidth(), scalePainter.getPreferredHeight());
+                        treeBounds.getX(), y,
+                        treeBounds.getWidth(), scalePainter.getPreferredHeight());
                 y += sb.getHeight();
                 bottomPanelBounds.add(sb);
                 scaleBounds.put(scalePainter, sb);
@@ -2012,13 +2012,12 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
                 Rectangle2D shapeBounds = nodeBarPainter.calibrate(g2, node);
                 if (shapeBounds != null) {
+                    shapeBounds = transform.createTransformedShape(shapeBounds).getBounds2D();
                     treeBounds.add(shapeBounds);
                     nodeBars.put(node, nodeBarPainter.getNodeBar());
                 }
             }
         }
-
-        //treeBounds = new Rectangle2D.Double(insets.left, insets.top, treeBounds.getWidth(), treeBounds.getHeight());
 
         // Clear the map of individual taxon label bounds and transforms
         tipLabelBounds.clear();
@@ -2134,7 +2133,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
         }
 
-        y = height;
+        y = availableH;
         for (ScalePainter scalePainter : scalePainters) {
             if (scalePainter.isVisible()) {
                 scalePainter.calibrate(g2, this);
@@ -2169,28 +2168,40 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         calibrated = true;
     }
 
-    private void calibrateTipLabels(final Graphics2D g2, final Node node, final double tipLabelHeight, final Rectangle2D totalTreeBounds) {
+    private void calculateMaxTipLabelWidth(final Graphics2D g2, final Node node) {
 
         if (tree.isExternal(node) || node.getAttribute(COLLAPSE_ATTRIBUTE_NAME) != null) {
             tipLabelPainter.calibrate(g2, node);
             double width = tipLabelPainter.getPreferredWidth();
             tipLabelWidth = Math.max(tipLabelWidth, width);
+        } else {
+            for (Node child : tree.getChildren(node)) {
+                calculateMaxTipLabelWidth(g2, child);
+            }
+        }
+    }
 
-            Rectangle2D labelBounds = new Rectangle2D.Double(0.0, 0.0, width, tipLabelHeight);
+    private void calibrateTipLabels(final Graphics2D g2, final Node node, final Rectangle2D totalTreeBounds) {
+
+        if (tree.isExternal(node) || node.getAttribute(COLLAPSE_ATTRIBUTE_NAME) != null) {
+            tipLabelPainter.calibrate(g2, node);
+            double height = tipLabelPainter.getPreferredHeight();
+
+            Rectangle2D labelBounds = new Rectangle2D.Double(0.0, 0.0, tipLabelWidth, height);
 
             // Get the line that represents the path for the taxon label
             Line2D taxonPath = treeLayoutCache.getTipLabelPath(node);
 
             if (taxonPath != null) {
                 // Work out how it is rotated and create a transform that matches that
-                AffineTransform taxonTransform = calculateTransform(null, taxonPath, tipLabelWidth, tipLabelHeight, true);
+                AffineTransform taxonTransform = calculateTransform(null, taxonPath, tipLabelWidth, height, true);
 
                 // and add the translated bounds to the overall bounds
                 totalTreeBounds.add(taxonTransform.createTransformedShape(labelBounds).getBounds2D());
             }
         } else {
             for (Node child : tree.getChildren(node)) {
-                calibrateTipLabels(g2, child, tipLabelHeight, totalTreeBounds);
+                calibrateTipLabels(g2, child, totalTreeBounds);
             }
         }
     }

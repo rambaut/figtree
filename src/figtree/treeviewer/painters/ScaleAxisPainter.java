@@ -192,55 +192,55 @@ public class ScaleAxisPainter extends LabelPainter<TreePane> implements ScalePai
 
 	protected void paintAxis(Graphics2D g2, Rectangle2D axisBounds)
 	{
-		ScaleAxis axis = treePane.getScaleAxis();
+        ScaleAxis axis = treePane.getScaleAxis();
 
-		g2.setPaint(getForeground());
-		g2.setStroke(getScaleBarStroke());
+        g2.setPaint(getForeground());
+        g2.setStroke(getScaleBarStroke());
 
-		double minX = treePane.scaleOnAxis(axis.getMinAxis());
-		double maxX = treePane.scaleOnAxis(axis.getMaxAxis());
+        double minX = treePane.scaleOnAxis(axis.getMinAxis());
+        double maxX = treePane.scaleOnAxis(axis.getMaxAxis());
 
-		Line2D line = new Line2D.Double(minX, axisBounds.getMinY(), maxX, axisBounds.getMinY());
-		g2.draw(line);
+        Line2D line = new Line2D.Double(minX, axisBounds.getY() + topMargin, maxX, axisBounds.getY() + topMargin);
+        g2.draw(line);
 
-		int n1 = axis.getMajorTickCount();
-		int n2, i, j;
+        int n1 = axis.getMajorTickCount();
+        int n2, i, j;
 
-		n2 = axis.getMinorTickCount(-1);
-		if (axis.getLabelFirst()) { // Draw first minor tick as a major one (with a label)
+        n2 = axis.getMinorTickCount(-1);
+        if (axis.getLabelFirst()) { // Draw first minor tick as a major one (with a label)
 
-			paintMajorTick(g2, axisBounds, axis, axis.getMinorTickValue(0, -1));
+            paintMajorTick(g2, axisBounds, axis, axis.getMinorTickValue(0, -1));
 
-			for (j = 1; j < n2; j++) {
-				paintMinorTick(g2, axisBounds, axis.getMinorTickValue(j, -1));
-			}
-		} else {
+            for (j = 1; j < n2; j++) {
+                paintMinorTick(g2, axisBounds, axis.getMinorTickValue(j, -1));
+            }
+        } else {
 
-			for (j = 0; j < n2; j++) {
-				paintMinorTick(g2, axisBounds, axis.getMinorTickValue(j, -1));
-			}
-		}
+            for (j = 0; j < n2; j++) {
+                paintMinorTick(g2, axisBounds, axis.getMinorTickValue(j, -1));
+            }
+        }
 
-		for (i = 0; i < n1; i++) {
+        for (i = 0; i < n1; i++) {
 
-			paintMajorTick(g2, axisBounds, axis, axis.getMajorTickValue(i));
-			n2 = axis.getMinorTickCount(i);
+            paintMajorTick(g2, axisBounds, axis, axis.getMajorTickValue(i));
+            n2 = axis.getMinorTickCount(i);
 
-			if (i == (n1-1) && axis.getLabelLast()) { // Draw last minor tick as a major one
+            if (i == (n1-1) && axis.getLabelLast()) { // Draw last minor tick as a major one
 
-				paintMajorTick(g2, axisBounds, axis, axis.getMinorTickValue(0, i));
+                paintMajorTick(g2, axisBounds, axis, axis.getMinorTickValue(0, i));
 
-				for (j = 1; j < n2; j++) {
-					paintMinorTick(g2, axisBounds, axis.getMinorTickValue(j, i));
-				}
-			} else {
+                for (j = 1; j < n2; j++) {
+                    paintMinorTick(g2, axisBounds, axis.getMinorTickValue(j, i));
+                }
+            } else {
 
-				for (j = 0; j <  n2; j++) {
-					paintMinorTick(g2, axisBounds, axis.getMinorTickValue(j, i));
-				}
-			}
-		}
-	}
+                for (j = 0; j <  n2; j++) {
+                    paintMinorTick(g2, axisBounds, axis.getMinorTickValue(j, i));
+                }
+            }
+        }
+    }
 
 	protected void paintMajorTick(Graphics2D g2, Rectangle2D axisBounds, ScaleAxis axis, double value)
 	{
@@ -251,12 +251,12 @@ public class ScaleAxisPainter extends LabelPainter<TreePane> implements ScalePai
 		String label = getNumberFormat().format(value);
 		double pos = treePane.scaleOnAxis(value);
 
-		Line2D line = new Line2D.Double(pos, axisBounds.getMinY(), pos, axisBounds.getMinY() + majorTickSize);
+		Line2D line = new Line2D.Double(pos, axisBounds.getMinY() + topMargin, pos, axisBounds.getMinY() + majorTickSize + topMargin);
 		g2.draw(line);
 
 		g2.setPaint(getForeground());
 		double width = g2.getFontMetrics().stringWidth(label);
-		g2.drawString(label, (float)(pos - (width / 2)), (float)(axisBounds.getMinY() + tickLabelOffset));
+		g2.drawString(label, (float)(pos - (width / 2)), (float)(axisBounds.getMinY() + tickLabelOffset + topMargin));
 	}
 
 	protected void paintMinorTick(Graphics2D g2, Rectangle2D axisBounds, double value)
@@ -267,7 +267,7 @@ public class ScaleAxisPainter extends LabelPainter<TreePane> implements ScalePai
 
 		double pos = treePane.scaleOnAxis(value);
 
-		Line2D line = new Line2D.Double(pos, axisBounds.getMinY(), pos, axisBounds.getMinY() + minorTickSize);
+		Line2D line = new Line2D.Double(pos, axisBounds.getMinY() + topMargin, pos, axisBounds.getMinY() + minorTickSize + topMargin);
 		g2.draw(line);
 	}
 

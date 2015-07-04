@@ -57,7 +57,7 @@ public class ScaleGridPainter extends LabelPainter<TreePane> implements ScalePai
 		preferredWidth = treePane.getTreeBounds().getWidth();
 		preferredHeight = treePane.getTreeBounds().getHeight();
 
-		return new Rectangle2D.Double(0.0, 0.0, preferredWidth, preferredHeight);
+        return new Rectangle2D.Double(0.0, 0.0, preferredWidth, preferredHeight);
 	}
 
 	public void paint(Graphics2D g2, TreePane treePane, Justification justification, Rectangle2D bounds) {
@@ -66,7 +66,7 @@ public class ScaleGridPainter extends LabelPainter<TreePane> implements ScalePai
 		Stroke oldStroke = g2.getStroke();
 
 		if (TreePane.DEBUG_OUTLINE) {
-			g2.setPaint(Color.red);
+			g2.setPaint(Color.blue);
 			g2.draw(bounds);
 		}
 
