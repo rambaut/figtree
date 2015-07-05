@@ -47,7 +47,7 @@ import java.util.List;
  * $LastChangedRevision$
  */
 public class TreePane extends JComponent implements PainterListener, Printable {
-    public final static boolean DEBUG_OUTLINE = true;
+    public final static boolean DEBUG_OUTLINE = false;
 
     public enum RootingType {
         USER_ROOTING("User Selection"),
@@ -304,7 +304,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     public double scaleOnAxis(double value) {
         double height = timeScale.getHeight(value, tree);
         if (isAxisReversed()) {
-            return treeBounds.getX() + treeBounds.getWidth() - (height * treeScale);
+            return (treeBounds.getX() + treeBounds.getWidth()) - (height * treeScale);
         } else {
             return treeBounds.getX() + (height * treeScale);
         }
@@ -1152,8 +1152,6 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         for (Node node : tree.getExternalNodes()) {
             Shape taxonLabelBound = tipLabelBounds.get(node);
 
-            taxonLabelBound = taxonLabelBound.getBounds2D();
-
             if (taxonLabelBound != null && g2.hit(rect, taxonLabelBound, false)) {
                 return node;
             }
@@ -1340,14 +1338,14 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     public void paint(Graphics graphics) {
         if (tree == null) return;
 
-        final Graphics2D g2 = (Graphics2D) graphics;
-        g2.translate(insets.left, insets.top);
-
         graphics.setColor(Color.white);
         Rectangle r = graphics.getClipBounds();
         if (r != null) {
             graphics.fillRect(r.x,  r.y, r.width, r.height);
         }
+
+        final Graphics2D g2 = (Graphics2D) graphics;
+        g2.translate(insets.left, insets.top);
 
         if (!calibrated) {
             calibrate(g2, getWidth(), getHeight());
