@@ -35,15 +35,6 @@ import java.util.Set;
  */
 public abstract class AbstractTreeLayout implements TreeLayout {
 	private double rootLength = 0.0;
-    private boolean isAxisReversed;
-
-    public boolean isAxisReversed() {
-        return isAxisReversed;
-    }
-
-    public void setAxisReversed(final boolean axisReversed) {
-        isAxisReversed = axisReversed;
-    }
 
     public double getRootLength() {
 		return rootLength;

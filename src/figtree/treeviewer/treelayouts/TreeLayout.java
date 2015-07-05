@@ -82,11 +82,6 @@ public interface TreeLayout {
 
     void setRootLength(double rootLength);
 
-    boolean isAxisReversed();
-
-    void setAxisReversed(final boolean axisReversed);
-
-
     /**
      * Return whether this layout is showing a branch colouring
      * @return showing colouring?

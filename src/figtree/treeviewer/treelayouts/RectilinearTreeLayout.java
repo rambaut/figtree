@@ -85,9 +85,6 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 
     public Shape getAxisLine(double height) {
         double x = height;
-        if (isAxisReversed()) {
-            x = maxXPosition - x;
-        }
         double y1 = 0.0;
         double y2 = 1.0;
         return new Line2D.Double(x, y1, x, y2);
@@ -95,9 +92,6 @@ public class RectilinearTreeLayout extends AbstractTreeLayout {
 
     public Shape getHeightArea(double height1, double height2) {
         double x = height1;
-        if (isAxisReversed()) {
-            x = maxXPosition - x;
-        }
         double y = 0.0;
         double w = Math.abs(height2 - height1);
         double h = 1.0;
