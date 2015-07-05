@@ -46,8 +46,7 @@ public class TreePaneRollOver extends StatusProvider.Helper implements MouseMoti
 	public TreePaneRollOver(TreePane treePane) {
 		this.treePane = treePane;
 		treePane.addMouseMotionListener(this);
-
-	}
+    }
 
 	public void mouseEntered(MouseEvent mouseEvent) {
 	}
@@ -60,24 +59,28 @@ public class TreePaneRollOver extends StatusProvider.Helper implements MouseMoti
 		if (tree != null) {
 			Node node = treePane.getNodeAt((Graphics2D) treePane.getGraphics(), mouseEvent.getPoint());
 			if (node != null) {
-				StringBuilder sb = new StringBuilder();
-				if (!tree.isExternal(node)) {
-					int n = RootedTreeUtils.getTipCount(tree, node);
-					sb.append("Subtree: ").append(n).append(" tips");
-				} else {
-					sb.append("Tip: \"").append(tree.getTaxon(node).toString()).append("\"");
-				}
-				sb.append(" [height = ").append(formatter.getFormattedValue(tree.getHeight(node)));
-				sb.append(", length = ").append(formatter.getFormattedValue(tree.getLength(node)));
-				sb.append("]");
-				fireStatusChanged(StatusPanel.NORMAL, sb.toString());
+				fireStatusChanged(StatusPanel.NORMAL, getNodeText(tree, node));
 			} else {
-				fireStatusChanged(StatusPanel.NORMAL, " ");
+				fireStatusChanged(StatusPanel.NORMAL, getNodeText(tree, tree.getRootNode()));
 			}
 		} else {
 			fireStatusChanged(StatusPanel.NORMAL, " ");
 		}
 	}
+
+    private String getNodeText(RootedTree tree, Node node) {
+        StringBuilder sb = new StringBuilder();
+        if (!tree.isExternal(node)) {
+            int n = RootedTreeUtils.getTipCount(tree, node);
+            sb.append(tree.isRoot(node) ? "Tree: " : "Subtree: ").append(n).append(" tips");
+        } else {
+            sb.append("Tip: \"").append(tree.getTaxon(node).toString()).append("\"");
+        }
+        sb.append(" [height = ").append(formatter.getFormattedValue(tree.getHeight(node)));
+        sb.append(", length = ").append(formatter.getFormattedValue(tree.getLength(node)));
+        sb.append("]");
+        return sb.toString();
+    }
 
 	public void mouseDragged(MouseEvent mouseEvent) {
 	}

@@ -47,6 +47,8 @@ import java.util.List;
  * $LastChangedRevision$
  */
 public class TreePane extends JComponent implements PainterListener, Printable {
+    public final static boolean DEBUG_OUTLINE = true;
+
     public enum RootingType {
         USER_ROOTING("User Selection"),
         MID_POINT("Midpoint");
@@ -61,8 +63,6 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         private String name;
     }
 
-
-    public final static boolean DEBUG_OUTLINE = false;
 
     public final String CARTOON_ATTRIBUTE_NAME = "!cartoon";
     public final String COLLAPSE_ATTRIBUTE_NAME = "!collapse";
@@ -1147,9 +1147,12 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     public Node getNodeAt(Graphics2D g2, Point point) {
         Rectangle rect = new Rectangle(point.x - 1, point.y - 1, 3, 3);
+        rect.translate(-insets.left, -insets.top);
 
         for (Node node : tree.getExternalNodes()) {
             Shape taxonLabelBound = tipLabelBounds.get(node);
+
+            taxonLabelBound = taxonLabelBound.getBounds2D();
 
             if (taxonLabelBound != null && g2.hit(rect, taxonLabelBound, false)) {
                 return node;
@@ -1789,8 +1792,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
 
             if (nodeBarPainter.getMaxHeight() > maxTreeHeight) {
-                rootHeightOffset = Math.max
-                        (nodeBarPainter.getMaxHeight() - maxTreeHeight, 0.0);
+                rootHeightOffset = Math.max(nodeBarPainter.getMaxHeight() - maxTreeHeight, 0.0);
                 maxTreeHeight = nodeBarPainter.getMaxHeight();
             }
         }
