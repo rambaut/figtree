@@ -47,7 +47,7 @@ import java.util.List;
  * $LastChangedRevision$
  */
 public class TreePane extends JComponent implements PainterListener, Printable {
-    public final static boolean DEBUG_OUTLINE = false;
+    public final static boolean DEBUG_OUTLINE = true;
 
     public enum RootingType {
         USER_ROOTING("User Selection"),
@@ -1661,8 +1661,9 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                 Painter.Justification tipLabelJustification = tipLabelJustifications.get(node);
                 g2.transform(tipLabelTransform);
 
+                double labelWidth = tipLabelWidths.get(node);
                 tipLabelPainter.paint(g2, node, tipLabelJustification,
-                        new Rectangle2D.Double(0.0, 0.0, tipLabelWidth, tipLabelPainter.getPreferredHeight()));
+                        new Rectangle2D.Double(0.0, 0.0, labelWidth, tipLabelPainter.getPreferredHeight()));
 
                 g2.setTransform(oldTransform);
 
@@ -1803,9 +1804,11 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         final Rectangle2D totalTreeBounds = treeBounds.getBounds2D();
 //        final Rectangle2D totalTreeBounds = new Rectangle2D.Double(0.0, 0.0,treeBounds.getWidth(),treeBounds.getHeight());
 
+        tipLabelWidths.clear();
+
         if (tipLabelPainter != null && tipLabelPainter.isVisible()) {
 
-            calculateMaxTipLabelWidth(g2, tree.getRootNode());
+//            calculateMaxTipLabelWidth(g2, tree.getRootNode());
 
             // put this in a recursive function to allow for collapsed node labels
             calibrateTipLabels(g2, tree.getRootNode(), totalTreeBounds);
@@ -2038,15 +2041,17 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
         if (tipLabelPainter != null && tipLabelPainter.isVisible()) {
             final double labelHeight = tipLabelPainter.getPreferredHeight();
-            Rectangle2D labelBounds = new Rectangle2D.Double(0.0, 0.0, tipLabelWidth, labelHeight);
 
             // Iterate though the external nodes with tip labels
             for (Node node : treeLayoutCache.getTipLabelPathMap().keySet()) {
                 // Get the line that represents the path for the tip label
                 Line2D tipPath = treeLayoutCache.getTipLabelPath(node);
 
+                final double labelWidth = tipLabelWidths.get(node);
+                Rectangle2D labelBounds = new Rectangle2D.Double(0.0, 0.0, labelWidth, labelHeight);
+
                 // Work out how it is rotated and create a transform that matches that
-                AffineTransform taxonTransform = calculateTransform(transform, tipPath, tipLabelWidth, labelHeight, true);
+                AffineTransform taxonTransform = calculateTransform(transform, tipPath, labelWidth, labelHeight, true);
 
                 // Store the transformed bounds in the map for use when selecting
                 tipLabelBounds.put(node, taxonTransform.createTransformedShape(labelBounds));
@@ -2180,33 +2185,36 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         calibrated = true;
     }
 
-    private void calculateMaxTipLabelWidth(final Graphics2D g2, final Node node) {
-
-        if (tree.isExternal(node) || node.getAttribute(COLLAPSE_ATTRIBUTE_NAME) != null) {
-            tipLabelPainter.calibrate(g2, node);
-            double width = tipLabelPainter.getPreferredWidth();
-            tipLabelWidth = Math.max(tipLabelWidth, width);
-        } else {
-            for (Node child : tree.getChildren(node)) {
-                calculateMaxTipLabelWidth(g2, child);
-            }
-        }
-    }
+//    private void calculateMaxTipLabelWidth(final Graphics2D g2, final Node node) {
+//
+//        if (tree.isExternal(node) || node.getAttribute(COLLAPSE_ATTRIBUTE_NAME) != null) {
+//            tipLabelPainter.calibrate(g2, node);
+//            double labelWidth = tipLabelPainter.getPreferredWidth();
+//            tipLabelWidths.put(node, labelWidth);
+//            maxTipLabelWidth = Math.max(maxTipLabelWidth, labelWidth);
+//        } else {
+//            for (Node child : tree.getChildren(node)) {
+//                calculateMaxTipLabelWidth(g2, child);
+//            }
+//        }
+//    }
 
     private void calibrateTipLabels(final Graphics2D g2, final Node node, final Rectangle2D totalTreeBounds) {
 
         if (tree.isExternal(node) || node.getAttribute(COLLAPSE_ATTRIBUTE_NAME) != null) {
             tipLabelPainter.calibrate(g2, node);
-            double height = tipLabelPainter.getPreferredHeight();
+            double labelWidth = tipLabelPainter.getPreferredWidth();
+            double labelHeight = tipLabelPainter.getPreferredHeight();
 
-            Rectangle2D labelBounds = new Rectangle2D.Double(0.0, 0.0, tipLabelWidth, height);
+            tipLabelWidths.put(node, labelWidth);
+            Rectangle2D labelBounds = new Rectangle2D.Double(0.0, 0.0, labelWidth, labelHeight);
 
             // Get the line that represents the path for the taxon label
             Line2D taxonPath = treeLayoutCache.getTipLabelPath(node);
 
             if (taxonPath != null) {
                 // Work out how it is rotated and create a transform that matches that
-                AffineTransform taxonTransform = calculateTransform(null, taxonPath, tipLabelWidth, height, true);
+                AffineTransform taxonTransform = calculateTransform(null, taxonPath, labelWidth, labelHeight, true);
 
                 // and add the translated bounds to the overall bounds
                 totalTreeBounds.add(taxonTransform.createTransformedShape(labelBounds).getBounds2D());
@@ -2219,7 +2227,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
     private AffineTransform calculateTransform(AffineTransform globalTransform, Line2D line,
-                                               double width, double height, boolean just) {
+                                               double width, double height, boolean justify) {
         final Point2D origin = line.getP1();
         if (globalTransform != null) {
             globalTransform.transform(origin, origin);
@@ -2240,7 +2248,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         // to shift it by the entire width of the string.
         final double ty = origin.getY() - (height / 2.0);
         double tx = origin.getX();
-        if( just) {
+        if (justify) {
             if (line.getX2() > line.getX1()) {
                 tx += labelXOffset;
             } else {
@@ -2342,7 +2350,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     private float labelXOffset = 10.0F;
     private LabelPainter<Node> tipLabelPainter = null;
-    private double tipLabelWidth;
+    //private double maxTipLabelWidth;
     private LabelPainter<Node> nodeLabelPainter = null;
     private LabelPainter<Node> branchLabelPainter = null;
 
@@ -2378,7 +2386,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     private Map<Node, AffineTransform> tipLabelTransforms = new HashMap<Node, AffineTransform>();
     private Map<Node, Shape> tipLabelBounds = new HashMap<Node, Shape>();
-
+    private Map<Node, Double> tipLabelWidths = new HashMap<Node, Double>();
     private Map<Node, Painter.Justification> tipLabelJustifications = new HashMap<Node, Painter.Justification>();
 
     private Map<Node, AffineTransform> nodeLabelTransforms = new HashMap<Node, AffineTransform>();
