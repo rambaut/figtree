@@ -49,7 +49,7 @@ import figtree.treeviewer.ControllerOptionsPanel;
  */
 public class NodeShapeController extends AbstractController {
 
-    private static Preferences PREFS = Preferences.userNodeForPackage(NodeBarController.class);
+    private static Preferences PREFS = Preferences.userNodeForPackage(TreeViewer.class);
 
     private static final String IS_EXTERNAL = "isExternal";
     private static final String IS_INTERNAL = "isInternal";
@@ -94,6 +94,9 @@ public class NodeShapeController extends AbstractController {
         nodeCheckPanel.setBorder(BorderFactory.createEmptyBorder());
         nodeCheckPanel.addSpanningComponent(externalNodeCheck);
         nodeCheckPanel.addSpanningComponent(internalNodeCheck);
+
+        externalNodeCheck.setSelected(nodeShapePainter.isExternal());
+        internalNodeCheck.setSelected(nodeShapePainter.isInternal());
 
         shapeTypeCombo = new JComboBox(NodeShapePainter.ShapeType.values());
         shapeTypeCombo.addActionListener(new ActionListener() {

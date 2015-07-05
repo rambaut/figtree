@@ -262,7 +262,7 @@ public class NodeShapePainter extends NodePainter {
     private String sizeAttribute = null;
 
     private boolean external = true;
-    private boolean internal = false;
+    private boolean internal = true;
 
     private Decorator colourDecorator = null;
     private ContinuousScale sizeScale = null;

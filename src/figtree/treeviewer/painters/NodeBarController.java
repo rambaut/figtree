@@ -50,7 +50,7 @@ import jebl.util.Attributable;
  */
 public class NodeBarController extends AbstractController {
 
-    private static Preferences PREFS = Preferences.userNodeForPackage(NodeBarController.class);
+    private static Preferences PREFS = Preferences.userNodeForPackage(TreeViewer.class);
 
     private static final String NODE_BARS_KEY = "nodeBars";
     public static final String DISPLAY_ATTRIBUTE_KEY = "displayAttribute";
