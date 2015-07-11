@@ -314,7 +314,7 @@ public class ScaleAxisPainterController extends AbstractController {
         titleCheckBox.setSelected((Boolean)settings.get(SCALE_AXIS_KEY + "." + IS_SHOWN));
         reverseAxisCheck.setSelected((Boolean)settings.get(SCALE_AXIS_KEY + "." + REVERSE_AXIS_KEY));
         showGridCheck.setSelected((Boolean)settings.get(SCALE_AXIS_KEY + "." + SHOW_GRID_KEY));
-//		minorTicksText.setValue((Double)settings.get(SCALE_AXIS_KEY + "." + MINOR_TICKS_KEY));
+		minorTicksText.setValue((Double)settings.get(SCALE_AXIS_KEY + "." + MINOR_TICKS_KEY));
         majorTicksText.setValue((Double)settings.get(SCALE_AXIS_KEY + "." + MAJOR_TICKS_KEY));
         originText.setValue((Double)settings.get(SCALE_AXIS_KEY + "." + ORIGIN_KEY));
         autoScaleCheck.setSelected((Boolean)settings.get(SCALE_AXIS_KEY + "." + AUTOMATIC_SCALE_KEY));
@@ -329,7 +329,7 @@ public class ScaleAxisPainterController extends AbstractController {
         settings.put(SCALE_AXIS_KEY + "." + REVERSE_AXIS_KEY, reverseAxisCheck.isSelected());
         settings.put(SCALE_AXIS_KEY + "." + SHOW_GRID_KEY, showGridCheck.isSelected());
         settings.put(SCALE_AXIS_KEY + "." + AUTOMATIC_SCALE_KEY, autoScaleCheck.isSelected());
-//		settings.put(SCALE_AXIS_KEY + "." + MINOR_TICKS_KEY, minorTicksText.getValue());
+		settings.put(SCALE_AXIS_KEY + "." + MINOR_TICKS_KEY, minorTicksText.getValue());
         settings.put(SCALE_AXIS_KEY + "." + MAJOR_TICKS_KEY, majorTicksText.getValue());
         settings.put(SCALE_AXIS_KEY + "." + ORIGIN_KEY, originText.getValue());
         settings.put(SCALE_AXIS_KEY + "." + FONT_SIZE_KEY, fontSizeSpinner.getValue());
