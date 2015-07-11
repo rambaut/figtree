@@ -666,6 +666,10 @@ public class ScaleAxis {
         if (!isCalibrated)
             calibrate();
 
+        if (minorTick <= 0) {
+            return 0;
+        }
+
         if (majorTickIndex == majorTickCount-1)
             return (int)((maxAxis-maxTick)/minorTick);
         else if (majorTickIndex==-1)
