@@ -34,7 +34,9 @@ import jebl.evolution.trees.RootedTree;
  */
 public class TimeScale {
 
-	public TimeScale(double rootAge) {
+    private boolean isReversed = false;
+
+    public TimeScale(double rootAge) {
 		this.rootAge = rootAge;
 		this.scaleFactor = Double.NaN;
 		this.offsetAge = 0.0;
@@ -50,7 +52,7 @@ public class TimeScale {
 		if (Double.isNaN(scaleFactor)) {
 			return rootAge / tree.getHeight(tree.getRootNode());
 		}
-		return scaleFactor;
+		return scaleFactor * (isReversed ? -1.0 : 1.0);
 	}
 
 	public double getAge(double height, RootedTree tree) {
@@ -71,7 +73,12 @@ public class TimeScale {
         return (time / getScaleFactor(tree));
     }
 
-	private final double rootAge;
+    public void setReversed(boolean isReversed) {
+        this.isReversed = isReversed;
+    }
+
+    private final double rootAge;
 	private final double offsetAge;
 	private final double scaleFactor;
+
 }

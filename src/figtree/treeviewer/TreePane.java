@@ -170,6 +170,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     public void setTimeScale(TimeScale timeScale) {
         this.timeScale = timeScale;
+        this.timeScale.setReversed(isAxisReversed());
         recalibrate();
         repaint();
     }
@@ -341,6 +342,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     public void setAxisReversed(final boolean isAxisReversed) {
         this.isAxisReversed = isAxisReversed;
+        this.timeScale.setReversed(isAxisReversed());
         recalibrate();
         repaint();
     }
@@ -1488,7 +1490,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                     g2.setPaint(background);
                     g2.fill(transNodePath);
 
-//                  Experimental outlining - requires order of drawing to be pre-order 
+//                  Experimental outlining - requires order of drawing to be pre-order
 //                    g2.setStroke(new BasicStroke(8, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
 //                    g2.draw(transNodePath);
                 }
