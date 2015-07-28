@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" output="demo/SimpleApp/build" path="demo/SimpleApp/src"/>
+	<classpathentry kind="src" output="demo/ConsoleApp/build" path="demo/ConsoleApp/src"/>
+	<classpathentry kind="lib" path="lib/formsrt.jar"/>
+	<classpathentry kind="lib" path="lib/xstream.jar"/>
+	<classpathentry kind="lib" path="lib/commons-beanutils.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
+	<classpathentry kind="lib" path="lib/foxtrot.jar"/>
+	<classpathentry kind="lib" path="lib/ant.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6"/>
+	<classpathentry kind="lib" path="lib/jgoodies-common.jar"/>
+	<classpathentry kind="lib" path="lib/jgoodies-forms.jar"/>
+	<classpathentry kind="lib" path="lib/jgoodies-looks.jar"/>
+	<classpathentry kind="output" path="build"/>
+</classpath>

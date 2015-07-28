@@ -390,7 +390,7 @@ public class FigTreeApplication extends MultiDocApplication {
             icon = new ImageIcon(url);
         }
 
-        final String nameString = "FigTree " + VERSION;
+        final String nameString = "FigTree";
         String titleString = "<html>" +
                 "<div style=\"font-family:'Helvetica Neue', Helvetica, Arial, 'Lucida Grande',sans-serif\">" +
                 "<p style=\"font-weight: 100; font-size: 36px\">FigTree</p>" +

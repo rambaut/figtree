@@ -12,6 +12,7 @@
 
     <property name="lib" location="lib"/>
     <property name="dist" location="dist"/>
+    <property name="packaging_tools" value="packaging_tools" />
 
     <property environment="env"/>
 
@@ -91,7 +92,8 @@
 
     </target>
 
-    <property name="version" value="1.4.3" />
+    <property name="version" value="1.4.3pre" />
+    <property name="version_number" value="1.4.3" />
     <property name="release_dir" value="release" />
     <property name="name" value="FigTree" />
 
@@ -132,9 +134,9 @@
         <launch4j configFile="${Windows_dir}/FigTree_launch4j.xml"
                   jar="${dist}/figtree.jar"
                   outfile="${Windows_package_dir}/${name} v${version}.exe"
-                  fileVersion="${version}.0"
+                  fileVersion="${version_number}.0"
                   txtFileVersion="${version}"
-                  productVersion="${version}.0"
+                  productVersion="${version_number}.0"
                   txtProductVersion="${version}"
                 />
 
@@ -157,9 +159,11 @@
 
         <copy file="${Linux_dir}/icons/figtree.png" todir="${Linux_package_dir}/images"/>
         <copy file="${dist}/figtree.jar" todir="${Linux_package_dir}/lib"/>
+        <!--
         <copy todir="${Linux_package_dir}/lib">
             <fileset dir="${Linux_dir}/lib"/>
         </copy>
+        -->
         <copy todir="${Linux_package_dir}">
             <fileset dir="${common_dir}/"/>
         </copy>
@@ -195,10 +199,10 @@
                     icon="${Mac_dir}/icons/FigTree.icns"
                     jvmversion="1.6+"
                     vmoptions="-Xmx1024M"
-                    stubfile="${Mac_dir}/universalJavaApplicationStub"
+                    stubfile="${packaging_tools}/mac/universalJavaApplicationStub"
                     arguments=""
                     version="${version}"
-                    infostring="${name} v${version}, Copyright 2006-2015, Andrew Rambaut"
+                    copyright="${name} v${version}, Copyright 2006-2015, Andrew Rambaut"
                     bundleid="figtree" >
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
             <jarfileset dir="${dist}">

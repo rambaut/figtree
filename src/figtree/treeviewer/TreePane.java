@@ -47,7 +47,7 @@ import java.util.List;
  * $LastChangedRevision$
  */
 public class TreePane extends JComponent implements PainterListener, Printable {
-    public final static boolean DEBUG_OUTLINE = true;
+    public final static boolean DEBUG_OUTLINE = false;
 
     public enum RootingType {
         USER_ROOTING("User Selection"),
