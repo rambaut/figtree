@@ -161,9 +161,11 @@ public class NodeShapePainter extends NodePainter {
         g2.setPaint(paint);
         g2.fill(nodeShape);
 
-        g2.setPaint(Color.black);
-        g2.setStroke(new BasicStroke(0.5F));
-        g2.draw(nodeShape);
+        if (outlineStroke > 0.0F) {
+            g2.setPaint(outlinePaint);
+            g2.setStroke(new BasicStroke(outlineStroke));
+            g2.draw(nodeShape);
+        }
     }
 
     /**
@@ -195,6 +197,12 @@ public class NodeShapePainter extends NodePainter {
 
     public void setColourDecorator(Decorator colourDecorator) {
         this.colourDecorator = colourDecorator;
+        firePainterChanged();
+    }
+
+    public void setOutline(final float outlineStroke, final Paint outlinePaint) {
+        this.outlineStroke = outlineStroke;
+        this.outlinePaint = outlinePaint;
         firePainterChanged();
     }
 
@@ -266,6 +274,9 @@ public class NodeShapePainter extends NodePainter {
 
     private Decorator colourDecorator = null;
     private ContinuousScale sizeScale = null;
+
+    private float outlineStroke = 0.5f;
+    private Paint outlinePaint = Color.black;
 
     private TreePane treePane;
 }

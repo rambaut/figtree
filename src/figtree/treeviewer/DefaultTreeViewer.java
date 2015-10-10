@@ -639,6 +639,10 @@ public class DefaultTreeViewer extends TreeViewer {
 //        nodeBarPainter.setupAttributes(trees);
     }
 
+    public void setTipShapePainter(NodeShapePainter tipShapePainter) {
+        treePane.setTipShapePainter(tipShapePainter);
+    }
+
     public void setNodeShapePainter(NodeShapePainter nodeShapePainter) {
         treePane.setNodeShapePainter(nodeShapePainter);
     }

@@ -71,6 +71,16 @@
             </manifest>
         </jar>
 
+        <jar jarfile="${dist}/figtree-pdf.jar">
+            <fileset dir="${build}"
+                     includes="figtree/panel/**/*.class,figtree/treeviewer/**/*.class,**/*.properties,**/*.png,**/*.gif"
+                    />
+
+            <manifest>
+                <attribute name="Built-By" value="${user.name}"/>
+            </manifest>
+        </jar>
+
 
         <war destfile="${dist}/figtree.war"
              webxml="WebRoot/WEB-INF/web.xml">

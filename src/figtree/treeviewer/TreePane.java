@@ -1050,6 +1050,22 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         return nodeBarPainter;
     }
 
+    public void setTipShapePainter(NodeShapePainter tipShapePainter) {
+        tipShapePainter.setTreePane(this);
+        if (this.tipShapePainter != null) {
+            this.tipShapePainter.removePainterListener(this);
+        }
+        this.tipShapePainter = tipShapePainter;
+        if (this.tipShapePainter != null) {
+            this.tipShapePainter.addPainterListener(this);
+        }
+        recalibrate();
+        repaint();
+    }
+
+    public NodeShapePainter getTipShapePainter() {
+        return tipShapePainter;
+    }
 
     public void setNodeShapePainter(NodeShapePainter nodeShapePainter) {
         nodeShapePainter.setTreePane(this);
@@ -1340,12 +1356,12 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     public void paint(Graphics graphics) {
         if (tree == null) return;
 
-        graphics.setColor(Color.white);
-        Rectangle r = graphics.getClipBounds();
-        if (r != null) {
-            graphics.fillRect(r.x,  r.y, r.width, r.height);
-        }
-
+//        graphics.setColor(Color.white);
+//        Rectangle r = graphics.getClipBounds();
+//        if (r != null) {
+//            graphics.fillRect(r.x,  r.y, r.width, r.height);
+//        }
+//
         final Graphics2D g2 = (Graphics2D) graphics;
         g2.translate(insets.left, insets.top);
 
@@ -1653,6 +1669,14 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
         }
 
+        if (tipShapePainter != null && tipShapePainter.isVisible()) {
+            for (Node node : tipPoints.keySet()) {
+                Point2D point = tipPoints.get(node);
+                point = transform.transform(point, null);
+                tipShapePainter.paint(g2, node, point, nodeShapeTransforms.get(node));
+            }
+        }
+
         // Paint tip labels
         if (tipLabelPainter != null && tipLabelPainter.isVisible()) {
 
@@ -1856,31 +1880,31 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         }
 
         // bounds on nodeShapes
-        if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
-            nodePoints.clear();
-            // Iterate though the nodes
-            if (nodeShapePainter.isExternal()) {
-                for (Node node : tree.getExternalNodes()) {
+        if (tipShapePainter != null && tipShapePainter.isVisible()) {
+            tipPoints.clear();
+            // Iterate though the external nodes
+            for (Node node : tree.getExternalNodes()) {
 
-                    Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
-                    if (shapeBounds != null) {
-                        totalTreeBounds.add(shapeBounds);
+                Rectangle2D shapeBounds = tipShapePainter.calibrate(g2, node);
+                if (shapeBounds != null) {
+                    totalTreeBounds.add(shapeBounds);
 
-                        // just at the centroid in here as the actual shape will be reconstructed when drawing
-                        nodePoints.put(node, new Point2D.Double(shapeBounds.getCenterX(), shapeBounds.getCenterY()));
-                    }
+                    // just at the centroid in here as the actual shape will be reconstructed when drawing
+                    tipPoints.put(node, new Point2D.Double(shapeBounds.getCenterX(), shapeBounds.getCenterY()));
                 }
             }
-            if (nodeShapePainter.isInternal()) {
-                for (Node node : tree.getInternalNodes()) {
+        }
+        if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
+            nodePoints.clear();
+            // Iterate though the internal nodes
+            for (Node node : tree.getInternalNodes()) {
 
-                    Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
-                    if (shapeBounds != null) {
-                        totalTreeBounds.add(shapeBounds);
+                Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
+                if (shapeBounds != null) {
+                    totalTreeBounds.add(shapeBounds);
 
-                        // just at the centroid in here as the actual shape will be reconstructed when drawing
-                        nodePoints.put(node, new Point2D.Double(shapeBounds.getCenterX(), shapeBounds.getCenterY()));
-                    }
+                    // just at the centroid in here as the actual shape will be reconstructed when drawing
+                    nodePoints.put(node, new Point2D.Double(shapeBounds.getCenterX(), shapeBounds.getCenterY()));
                 }
             }
         }
@@ -2141,8 +2165,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
         }
 
+        nodeShapeTransforms.clear();
         if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
-            nodeShapeTransforms.clear();
             // Iterate though the nodes
             for (Node node : nodePoints.keySet()) {
                 Line2D shapePath = getTreeLayoutCache().getNodeShapePath(node);
@@ -2151,6 +2175,16 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                 }
             }
         }
+        if (tipShapePainter != null && tipShapePainter.isVisible()) {
+            // Iterate though the nodes
+            for (Node node : tipPoints.keySet()) {
+                Line2D shapePath = getTreeLayoutCache().getNodeShapePath(node);
+                if (shapePath != null) {
+                    nodeShapeTransforms.put(node, calculateTransform(transform, shapePath));
+                }
+            }
+        }
+
 
         y = availableH;
         for (ScalePainter scalePainter : scalePainters) {
@@ -2359,6 +2393,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     private NodeBarPainter nodeBarPainter = null;
 
     private NodeShapePainter nodeShapePainter = null;
+    private NodeShapePainter tipShapePainter = null;
 
     private List<ScalePainter> scalePainters = new ArrayList<ScalePainter>();
     private Map<ScalePainter, Rectangle2D> scaleBounds = new HashMap<ScalePainter, Rectangle2D>();
@@ -2400,6 +2435,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     private Map<Node, Painter.Justification> branchLabelJustifications = new HashMap<Node, Painter.Justification>();
 
     private Map<Node, Shape> nodeBars = new HashMap<Node, Shape>();
+    private Map<Node, Point2D> tipPoints = new HashMap<Node, Point2D>();
     private Map<Node, Point2D> nodePoints = new HashMap<Node, Point2D>();
     private Map<Node, AffineTransform> nodeShapeTransforms = new HashMap<Node, AffineTransform>();
 

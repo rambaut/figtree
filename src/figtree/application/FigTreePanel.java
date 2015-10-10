@@ -48,6 +48,8 @@ public class FigTreePanel extends JPanel {
 
     public final static int CONTROL_PALETTE_WIDTH = 200;
 
+    private final static boolean SEPARATE_NODE_SHAPE_PANELS = true;
+
     public FigTreePanel(JFrame frame, final ExtendedTreeViewer treeViewer, ControlPalette controlPalette) {
 
         this.treeViewer = treeViewer;
@@ -80,11 +82,29 @@ public class FigTreePanel extends JPanel {
         controlPalette.addController(new LabelPainterController("Tip Labels", "tipLabels", tipLabelPainter, frame, attributeColourController, treeViewer));
         treeViewer.setTipLabelPainter(tipLabelPainter);
 
+        // Create a node shape painter and its controller
+        if (SEPARATE_NODE_SHAPE_PANELS) {
+            final NodeShapePainter tipNodeShapePainter = new NodeShapePainter();
+            tipNodeShapePainter.setVisible(false);
+            controlPalette.addController(new NodeShapeController("Tip Shapes", NodeShapeController.NodeType.EXTERNAL, tipNodeShapePainter, attributeColourController, treeViewer));
+            treeViewer.setTipShapePainter(tipNodeShapePainter);
+        }
         // Create a node label painter and its controller
         final BasicLabelPainter nodeLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.NODE);
         nodeLabelPainter.setVisible(false);
         controlPalette.addController(new LabelPainterController("Node Labels", "nodeLabels", nodeLabelPainter, frame, attributeColourController, treeViewer));
         treeViewer.setNodeLabelPainter(nodeLabelPainter);
+
+        // Create a node shape painter and its controller
+        final NodeShapePainter nodeShapePainter = new NodeShapePainter();
+        nodeShapePainter.setVisible(false);
+        controlPalette.addController(new NodeShapeController("Node Shapes",
+                (SEPARATE_NODE_SHAPE_PANELS ? NodeShapeController.NodeType.INTERNAL : NodeShapeController.NodeType.BOTH),
+                nodeShapePainter, attributeColourController, treeViewer));
+        if (!SEPARATE_NODE_SHAPE_PANELS) {
+            treeViewer.setTipShapePainter(nodeShapePainter);
+        }
+        treeViewer.setNodeShapePainter(nodeShapePainter);
 
         // Create a node bar painter and its controller
         final NodeBarPainter nodeBarPainter = new NodeBarPainter();
@@ -92,12 +112,6 @@ public class FigTreePanel extends JPanel {
         nodeBarPainter.setVisible(false);
         controlPalette.addController(new NodeBarController("Node Bars", nodeBarPainter, treeViewer));
         treeViewer.setNodeBarPainter(nodeBarPainter);
-
-        // Create a node shape painter and its controller
-        final NodeShapePainter nodeShapePainter = new NodeShapePainter();
-        nodeShapePainter.setVisible(false);
-        controlPalette.addController(new NodeShapeController("Node Shapes", nodeShapePainter, attributeColourController, treeViewer));
-        treeViewer.setNodeShapePainter(nodeShapePainter);
 
         // Create a branch label painter and its controller
         final BasicLabelPainter branchLabelPainter = new BasicLabelPainter(BasicLabelPainter.PainterIntent.BRANCH);
@@ -193,17 +207,17 @@ public class FigTreePanel extends JPanel {
         if (utilityPanel == null) {
             return;
         }
-		slideOpenPanel.showUtilityPanel(utilityPanel);
+        slideOpenPanel.showUtilityPanel(utilityPanel);
     }
 
-	public void hideUtilityPanel() {
-		slideOpenPanel.hideUtilityPanel();
-	}
+    public void hideUtilityPanel() {
+        slideOpenPanel.hideUtilityPanel();
+    }
 
 
-	public JPanel getUtilityPanel() {
-		return slideOpenPanel.getUtilityPanel();
-	}
+    public JPanel getUtilityPanel() {
+        return slideOpenPanel.getUtilityPanel();
+    }
 
     public void toggleMidpointRoot() {
         treesController.toggleMidpointRoot();
