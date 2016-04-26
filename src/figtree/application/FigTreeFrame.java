@@ -53,6 +53,7 @@ import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.svggen.SVGGraphics2DIOException;
 import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Element;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -1288,10 +1289,16 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
 
         component.paint(svgGenerator);
+        Element svgRoot = svgGenerator.getRoot();
+        Rectangle2D bounds = component.getBounds();
+        String viewBox = "0 0 " + bounds.getWidth() + " " + bounds.getHeight();
+        svgRoot.setAttributeNS(null, svgGenerator.SVG_VIEW_BOX_ATTRIBUTE, viewBox);
+        svgRoot.setAttributeNS(null, svgGenerator.SVG_WIDTH_ATTRIBUTE, Double.toString(bounds.getWidth()));
+        svgRoot.setAttributeNS(null, svgGenerator.SVG_HEIGHT_ATTRIBUTE, Double.toString(bounds.getHeight()));
 
         // Write svg file
         Writer out = new OutputStreamWriter(stream, "UTF-8");
-        svgGenerator.stream(out, true /* use css */);
+        svgGenerator.stream(svgRoot, out, true /* use css */, false /* escaped */);
     }
 
     public final static void exportPDFFile(JComponent component, OutputStream stream) throws DocumentException {
