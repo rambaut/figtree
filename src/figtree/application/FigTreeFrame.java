@@ -1324,7 +1324,11 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
     public void doCopy() {
         StringWriter writer = new StringWriter();
         try {
-            writeTreeFile(writer, ExportTreeDialog.Format.NEXUS, true, false, false, true, true);
+            if (treeViewer.getSelectionMode() == TreePaneSelector.SelectionMode.TAXA) {
+                writeTaxa(writer);
+            } else {
+                writeTreeFile(writer, ExportTreeDialog.Format.NEXUS, true, false, false, true, true);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1386,6 +1390,14 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
     public void doSelectAll() {
         treeViewer.selectAll();
+    }
+
+    protected void writeTaxa(Writer writer) throws IOException {
+        PrintWriter printWriter = new PrintWriter(writer);
+        for (Taxon taxon : treeViewer.getSelectedTaxa()) {
+            printWriter.println(taxon.getName());
+        }
+        writer.close();
     }
 
     protected void writeTreeFile(Writer writer, ExportTreeDialog.Format format,

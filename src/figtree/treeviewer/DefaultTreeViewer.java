@@ -274,6 +274,10 @@ public class DefaultTreeViewer extends TreeViewer {
         return treePane.getSelectedTips();
     }
 
+    public Set<Taxon> getSelectedTaxa() {
+        return treePane.getSelectedTaxa();
+    }
+
     /**
      * Select taxa with a search string matching the currently displayed attribute
      * @param searchType
@@ -600,6 +604,11 @@ public class DefaultTreeViewer extends TreeViewer {
     public void removeTreeSelectionListener(TreeSelectionListener treeSelectionListener) {
         treePane.removeTreeSelectionListener(treeSelectionListener);
     }
+
+    public TreePaneSelector.SelectionMode getSelectionMode() {
+        return treePaneSelector.getSelectionMode();
+    }
+
 
     public void setSelectionMode(TreePaneSelector.SelectionMode selectionMode) {
         TreePaneSelector.SelectionMode oldSelectionMode = treePaneSelector.getSelectionMode();

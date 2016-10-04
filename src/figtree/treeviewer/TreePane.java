@@ -1223,6 +1223,14 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         return selectedTips;
     }
 
+    public Set<Taxon> getSelectedTaxa() {
+        Set<Taxon> selectedTaxa = new LinkedHashSet<Taxon>();
+        for (Node node : getSelectedTips()) {
+            selectedTaxa.add(tree.getTaxon(node));
+        }
+        return selectedTaxa;
+    }
+
     public RootedTree getSelectedSubtree() {
         if (selectedNodes.size() == 0 && selectedTips.size() == 0) {
             // nothing selected so return the whole tree
