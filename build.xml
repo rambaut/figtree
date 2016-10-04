@@ -102,7 +102,7 @@
 
     </target>
 
-    <property name="version" value="1.4.3pre" />
+    <property name="version" value="1.4.3" />
     <property name="version_number" value="1.4.3" />
     <property name="release_dir" value="release" />
     <property name="name" value="FigTree" />
@@ -207,11 +207,13 @@
                     name="${name} v${version}"
                     mainclass="figtree.application.FigTreeApplication"
                     icon="${Mac_dir}/icons/FigTree.icns"
+                    stubfile="${packaging_tools}/mac/universalJavaApplicationStub"
+					useJavaXKey="true"
                     jvmversion="1.6+"
                     vmoptions="-Xmx1024M"
-                    stubfile="${packaging_tools}/mac/universalJavaApplicationStub"
                     arguments=""
                     version="${version}"
+                    build="1"
                     copyright="${name} v${version}, Copyright 2006-2015, Andrew Rambaut"
                     bundleid="figtree" >
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
