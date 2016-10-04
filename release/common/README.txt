@@ -1,4 +1,4 @@
-                  FigTree v1.4.3 2006-2015
+                  FigTree v1.4.3 2006-2016
                         Andrew Rambaut
 
               Institute of Evolutionary Biology
@@ -7,7 +7,7 @@
 
 
 UNIX/Linux/Mac OS X (command-line) version README
-Last updated: a.rambaut@ed.ac.uk - 13th April 2015
+Last updated: a.rambaut@ed.ac.uk - 4th October 2016
 
 Contents:
 1) INTRODUCTION
@@ -27,14 +27,21 @@ FigTree is designed as a graphical viewer of phylogenetic trees and as a program
 ___________________________________________________________________________
 2) VERSION HISTORY
 
-v1.4.3 Released 13th April 2015
+v1.4.3 Released 4th October 2016
 
 New features:
 	Node shape option can now show shapes for internal or external nodes or both.
+	Copying selected taxon labels when these are selected, subtree when branches are selected.
+	Selecting 'reverse axis' should automatically reverse the Time Scale scale factor. Previously the user needed to set this to -1.0.
+	When searching for text, scrolls to show highlighted tip. 
 	
 Bugs fixed:
+	Issue 102:	Large SVG files from figtree are broken
+	Issue 95: 	Changing the origin value for the Scale Axis does not work
+	Issue 94:	The trait legend overlaps the tree.
 	Issue 93:	Command-line PDF/SVG export options not working 
 	Issue 92:	Reading a file with a mix of integer and real node labels causes exception. 
+	Issue 90:	Export picture cuts the top of the higest tip label
 	Issue 79:	Export of .SVG produces corrupt files 
 
 v1.4.2 Released 9th July 2014
