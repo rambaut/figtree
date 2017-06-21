@@ -9,7 +9,7 @@ So now zoom the tree in the vertical axis only using the 'Expand' slider until t
 ![shot3](https://github.com/rambaut/figtree/blob/master/doc/shot3.png)
 
 Now export as a PDF and you get a PDF of the same aspect ratio:
-![shot4](https://github.com/rambaut/figtree/blob/master/doc/shot4.png)
+![shot5](https://github.com/rambaut/figtree/blob/master/doc/shot5.png)
 
 You can zoom in or create a multi-page print out (or a long poster on a continuous roll printer):
-![shot5](https://github.com/rambaut/figtree/blob/master/doc/shot5.png)
+![shot4](https://github.com/rambaut/figtree/blob/master/doc/shot4.png)
