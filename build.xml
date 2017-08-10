@@ -263,6 +263,13 @@
             <arg value="${release_dir}/${name} v${version}.dmg"/>
         </exec>
 
+        <exec executable="codesign">
+            <arg value="-s"/>
+            <arg value="${AppleSigner}"/>
+            <arg value="-v"/>
+            <arg value="${release_dir}/${name} v${version}.dmg"/>
+        </exec>
+
         <echo message="Mac version release is finished." />
     </target>
 
