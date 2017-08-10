@@ -185,6 +185,8 @@
         <echo message="Linux/Unix version release is finished." />
     </target>
 
+    <property name="AppleSigner" value="Developer ID Application: Andrew Rambaut (9E4WXAQ6SE)" />
+
     <target name="mac_release"
             description="release Mac version of FigTree">
         <delete dir="${Mac_package_dir}" />
@@ -214,7 +216,7 @@
                     arguments=""
                     version="${version}"
                     build="1"
-                    copyright="${name} v${version}, Copyright 2006-2015, Andrew Rambaut"
+                    copyright="${name} v${version}, Copyright 2006-2017, Andrew Rambaut"
                     bundleid="figtree" >
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
             <jarfileset dir="${dist}">
@@ -232,17 +234,21 @@
                           role="Editor"/>
         </jarbundler>
 
-        <!-- remove code signing -->
-        <!--
-        <exec executable="/usr/bin/codesign">
+        <!-- code signing -->
+        <exec executable="codesign">
+            <arg value="--deep"/>
             <arg value="-s"/>
-            <arg value="-"/>
-            <arg value="- -force"/> remove space from between minus signs
-            <arg value="${Mac_dir}/${name} v${version}/${name} v${version}.app"/>
+            <arg value="${AppleSigner}"/>
+            <arg value="-v"/>
+            <arg value="${Mac_package_dir}/${name} v${version}.app"/>
         </exec>
-		-->
-		
-        <echo message="Building disk image." />
+
+        <!-- checking code signing -->
+        <exec executable="spctl">
+            <arg value="--assess"/>
+            <arg value="--verbose=4"/>
+            <arg value="${Mac_package_dir}/${name} v${version}.app"/>
+        </exec>
 
         <!-- create disk image -->
         <exec executable="/usr/bin/hdiutil">
