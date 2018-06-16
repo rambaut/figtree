@@ -20,14 +20,8 @@
 
 package figtree.treeviewer.painters;
 
-import com.sun.tools.corba.se.idl.InterfaceEntry;
-import jebl.evolution.trees.Tree;
-import jebl.util.Attributable;
-
 import java.awt.*;
 import java.text.NumberFormat;
-import java.util.Collection;
-import java.util.Set;
 
 import figtree.treeviewer.decorators.Decorator;
 

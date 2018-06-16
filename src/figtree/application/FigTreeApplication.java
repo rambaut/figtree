@@ -30,36 +30,26 @@
 
 package figtree.application;
 
-import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfTemplate;
-import com.itextpdf.text.pdf.PdfWriter;
-import figtree.application.preferences.*;
+import figtree.application.preferences.AppearancePreferencesSection;
+import figtree.application.preferences.FontsPreferencesSection;
 import figtree.treeviewer.ExtendedTreeViewer;
-import jam.framework.*;
 import jam.controlpalettes.BasicControlPalette;
 import jam.controlpalettes.ControlPalette;
+import jam.framework.*;
 import jam.mac.Utils;
+import jebl.evolution.io.ImportException;
+import jebl.evolution.io.NewickImporter;
+import jebl.evolution.trees.Tree;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
 
-import jebl.evolution.io.ImportException;
-import jebl.evolution.io.NewickImporter;
-import jebl.evolution.trees.Tree;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-
 import ch.randelshofer.quaqua.QuaquaManager;
-import org.apache.batik.dom.GenericDOMImplementation;
-import org.apache.batik.svggen.SVGGraphics2D;
-import org.w3c.dom.DOMImplementation;
 
 /**
  * Application class for FigTree including main() method for invoking it.
@@ -77,7 +67,7 @@ import org.w3c.dom.DOMImplementation;
 public class FigTreeApplication extends MultiDocApplication {
 
     public static final String VERSION = "1.4.4pre";
-    public static final String DATES = "2006-2017";
+    public static final String DATES = "2006-2018";
 
     public static FigTreeApplication application;
 
@@ -221,6 +211,12 @@ public class FigTreeApplication extends MultiDocApplication {
         centreLine("http://tree.bio.ed.ac.uk/", 60);
         centreLine("Uses the Java Evolutionary Biology 2 Library (JEBL2)", 60);
         centreLine("http://jebl2.googlecode.com/", 60);
+        centreLine("Uses the iText PDF Library", 60);
+        centreLine("http://itextpdf.com/", 60);
+        centreLine("Uses the Apache Batik Library", 60);
+        centreLine("http://xmlgraphics.apache.org/batik/", 60);
+        centreLine("Uses the JDOM XML Library", 60);
+        centreLine("http://www.jdom.org/", 60);
         centreLine("Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, ", 60);
         centreLine("Tulio de Oliveira, Oliver Pybus, Beth Shapiro & Marc Suchard", 60);
         System.out.println();
