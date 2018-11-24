@@ -202,7 +202,7 @@
             <fileset dir="${Mac_dir}/QuickLook Plugin"/>
         </copy>
 
-        <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler"/>
+        <taskdef name="jarbundler" classname="com.ultramixer.jarbundler.JarBundler" classpath="${packaging_tools}/mac/jarbundler-core-3.3.0.jar"/>
 
         <!-- create a jar bundle for the mac -->
         <jarbundler dir="${Mac_package_dir}"
@@ -212,11 +212,11 @@
                     stubfile="${packaging_tools}/mac/universalJavaApplicationStub"
 					useJavaXKey="true"
                     jvmversion="1.6+"
-                    vmoptions="-Xmx1024M"
+                    vmoptions="-Xmx4096M"
                     arguments=""
                     version="${version}"
                     build="1"
-                    copyright="${name} v${version}, Copyright 2006-2017, Andrew Rambaut"
+                    copyright="${name} v${version}, Copyright 2006-2018, Andrew Rambaut"
                     bundleid="figtree" >
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
             <jarfileset dir="${dist}">

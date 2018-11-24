@@ -1170,7 +1170,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         for (Node node : tree.getExternalNodes()) {
             Shape taxonLabelBound = tipLabelBounds.get(node);
 
-            if (taxonLabelBound != null && g2.hit(rect, taxonLabelBound, false)) {
+            if (taxonLabelBound != null && taxonLabelBound.intersects(rect.x, rect.y, rect.height, rect.width)) {
                 return node;
             }
         }
@@ -1179,11 +1179,11 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
         for (Node node : tree.getNodes()) {
             Shape branchPath = transform.createTransformedShape(treeLayoutCache.getBranchPath(node));
-            if (branchPath != null && g2.hit(rect, branchPath, true)) {
+            if (branchPath != null && branchPath.intersects(rect.x, rect.y, rect.height, rect.width)) {
                 return node;
             }
             Shape collapsedShape = transform.createTransformedShape(treeLayoutCache.getCollapsedShape(node));
-            if (collapsedShape != null && g2.hit(rect, collapsedShape, false)) {
+            if (collapsedShape != null && collapsedShape.intersects(rect.x, rect.y, rect.height, rect.width)) {
                 return node;
             }
         }
@@ -1196,18 +1196,18 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         Set<Node> nodes = new HashSet<Node>();
         for (Node node : tree.getExternalNodes()) {
             Shape taxonLabelBound = tipLabelBounds.get(node);
-            if (taxonLabelBound != null && g2.hit(rect, taxonLabelBound, false)) {
+            if (taxonLabelBound != null && taxonLabelBound.intersects(rect.x, rect.y, rect.height, rect.width)) {
                 nodes.add(node);
             }
         }
 
         for (Node node : tree.getNodes()) {
             Shape branchPath = transform.createTransformedShape(treeLayoutCache.getBranchPath(node));
-            if (branchPath != null && g2.hit(rect, branchPath, true)) {
+            if (branchPath != null && branchPath.intersects(rect.x, rect.y, rect.height, rect.width)) {
                 nodes.add(node);
             }
             Shape collapsedShape = transform.createTransformedShape(treeLayoutCache.getCollapsedShape(node));
-            if (collapsedShape != null && g2.hit(rect, collapsedShape, false)) {
+            if (collapsedShape != null && collapsedShape.intersects(rect.x, rect.y, rect.height, rect.width)) {
                 nodes.add(node);
             }
         }
