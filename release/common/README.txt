@@ -1,4 +1,4 @@
-                  FigTree v1.4.3 2006-2016
+                  FigTree v1.4.4 2006-2018
                         Andrew Rambaut
 
               Institute of Evolutionary Biology
@@ -7,7 +7,7 @@
 
 
 UNIX/Linux/Mac OS X (command-line) version README
-Last updated: a.rambaut@ed.ac.uk - 4th October 2016
+Last updated: a.rambaut@ed.ac.uk - 25th November 2018
 
 Contents:
 1) INTRODUCTION
@@ -26,6 +26,12 @@ FigTree is designed as a graphical viewer of phylogenetic trees and as a program
 
 ___________________________________________________________________________
 2) VERSION HISTORY
+
+v1.4.4 Released 25th November 2018
+
+Bugs fixed:
+	Issue 119: Various issues launching FigTree in Java 9
+    Issue 125: Cannot select nodes on HiDPI screens with scaling (thanks to Serafim Nenarokov for the fix)
 
 v1.4.3 Released 4th October 2016
 

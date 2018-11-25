@@ -2,6 +2,8 @@
   <headerType>gui</headerType>
   <icon>icons/FigTree.ico</icon>
   <cmdLine/>
+  <jar>./lib/figtree.jar</jar>
+  <dontWrapJar>true</dontWrapJar>
   <jre>
     <minVersion>1.6.0</minVersion>
     <initialHeapSize>64</initialHeapSize>
@@ -15,3 +17,4 @@
     <originalFilename>FigTree.exe</originalFilename>    
   </versionInfo>
 </launch4jConfig>
+

@@ -45,11 +45,11 @@ import jebl.evolution.trees.Tree;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
-
-import ch.randelshofer.quaqua.QuaquaManager;
 
 /**
  * Application class for FigTree including main() method for invoking it.
@@ -66,7 +66,7 @@ import ch.randelshofer.quaqua.QuaquaManager;
  */
 public class FigTreeApplication extends MultiDocApplication {
 
-    public static final String VERSION = "1.4.4pre";
+    public static final String VERSION = "1.4.4";
     public static final String DATES = "2006-2018";
 
     public static FigTreeApplication application;
@@ -228,7 +228,7 @@ public class FigTreeApplication extends MultiDocApplication {
         System.out.println();
         System.out.println("  Example: figtree test.tree");
         System.out.println("  Example: figtree -graphic PDF test.tree test.pdf");
-        System.out.println("  Example: figtree -graphic GIF -width 320 -height 320 test.tree test.gif");
+        System.out.println("  Example: figtree -graphic PNG -width 320 -height 320 test.tree test.png");
         System.out.println();
     }
 
@@ -322,6 +322,7 @@ public class FigTreeApplication extends MultiDocApplication {
                 javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
                     public void run() {
                         try {
+
                             // Only override the UI's necessary for ColorChooser and
                             // FileChooser:
                             Set includes = new HashSet();
@@ -333,23 +334,20 @@ public class FigTreeApplication extends MultiDocApplication {
                             includes.add("SplitPane");
                             includes.add("TitledBorder");
 
-                            try {
-                                QuaquaManager.setIncludedUIs(includes);
-                            } catch (java.lang.NoClassDefFoundError ncdfe) {
-                                // this is to protect against the figtree.jar being
-                                // run on Mac OS without Quaqua on the classpath
-                            }
+                            Class<?> qm = Class.forName("ch.randelshofer.quaqua.QuaquaManager");
+                            Method method = qm.getMethod("setIncludedUIs", Set.class);
+                            method.invoke(null, includes);
 
                             UIManager.setLookAndFeel(
                                     "ch.randelshofer.quaqua.QuaquaLookAndFeel"
                             );
 
                             lafLoaded = true;
-                        } catch (Exception e) {
+                        } catch (Exception ignored) {
                         }
                     }
                 });
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
 
             UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
@@ -399,9 +397,9 @@ public class FigTreeApplication extends MultiDocApplication {
                 "Institute of Evolutionary Biology, University of Edinburgh.<br>" +
                 "<a href=\"http://tree.bio.ed.ac.uk/\">http://tree.bio.ed.ac.uk/</a><br><br>" +
                 "Source code available from:<br>" +
-                "<a href=\"https://figtree.googlecode.com/\">http://figtree.googlecode.com/</a><br><br>" +
+                "<a href=\"https://github.com/rambaut/figtree\">http://github.com/rambaut/figtree/</a><br><br>" +
                 "Uses the Java Evolutionary Biology 2 Library (JEBL2)<br>" +
-                "<a href=\"https://jebl2.googlecode.com/\">http://jebl2.googlecode.com/</a><br><br>" +
+                "<a href=\"https://github.com/rambaut/jebl2/\">http://github.com/rambaut/jebl2/</a><br><br>" +
                 "Thanks to Alexei Drummond, Joseph Heled, Philippe Lemey, <br>Tulio de Oliveira, Oliver Pybus, Beth Shapiro & Marc Suchard</center>" +
                 "</div></html>";
 

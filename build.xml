@@ -102,7 +102,7 @@
 
     </target>
 
-    <property name="version" value="1.4.4pre20170810" />
+    <property name="version" value="1.4.4" />
     <property name="version_number" value="1.4.4" />
     <property name="release_dir" value="release" />
     <property name="name" value="FigTree" />
@@ -126,29 +126,25 @@
         <!-- Create the release directory -->
         <mkdir dir="${Windows_package_dir}" />
 
-        <property name="launch4j.dir" location="./launch4j" />
-
+        <property name="launch4j.dir" location="${packaging_tools}/windows/launch4j" />
         <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
-                 classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
+                 classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar"/>
 
         <copy file="${dist}/figtree.jar" todir="${Windows_package_dir}/lib"/>
-        <!--
         <copy todir="${Windows_package_dir}/lib">
             <fileset dir="${Windows_dir}/lib"/>
         </copy>
-        -->
+
         <copy todir="${Windows_package_dir}">
             <fileset dir="${common_dir}/"/>
         </copy>
 
         <launch4j configFile="${Windows_dir}/FigTree_launch4j.xml"
-                  jar="${dist}/figtree.jar"
                   outfile="${Windows_package_dir}/${name} v${version}.exe"
                   fileVersion="${version_number}.0"
                   txtFileVersion="${version}"
                   productVersion="${version_number}.0"
-                  txtProductVersion="${version}"
-                />
+                  txtProductVersion="${version}"/>
 
         <zip destfile="${release_dir}/${name} v${version}.zip">
             <zipfileset dir="${Windows_package_dir}" prefix="${name} v${version}"/>
@@ -157,7 +153,7 @@
         <echo message="Windows version release is finished." />
     </target>
 
-    <target name="linux_unix_Release"
+    <target name="linux_unix_Release" depends="dist"
             description="release Linux/Unix version of FigTree">
         <delete dir="${Linux_package_dir}" />
         <!-- Create the release directory -->
@@ -187,7 +183,7 @@
 
     <property name="AppleSigner" value="Developer ID Application: Andrew Rambaut (9E4WXAQ6SE)" />
 
-    <target name="mac_release"
+    <target name="mac_release" depends="dist"
             description="release Mac version of FigTree">
         <delete dir="${Mac_package_dir}" />
         <!-- Create the release directory -->
@@ -202,7 +198,7 @@
             <fileset dir="${Mac_dir}/QuickLook Plugin"/>
         </copy>
 
-        <taskdef name="jarbundler" classname="com.ultramixer.jarbundler.JarBundler" classpath="${packaging_tools}/mac/jarbundler-core-3.3.0.jar"/>
+        <taskdef name="jarbundler" classname="com.ultramixer.jarbundler.JarBundler"/>
 
         <!-- create a jar bundle for the mac -->
         <jarbundler dir="${Mac_package_dir}"
@@ -213,6 +209,7 @@
 					useJavaXKey="true"
                     jvmversion="1.6+"
                     vmoptions="-Xmx4096M"
+                    highresolutioncapable="true"
                     arguments=""
                     version="${version}"
                     build="1"
