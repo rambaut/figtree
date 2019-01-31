@@ -1,4 +1,4 @@
 #!/bin/sh
-FIGTREEPATH=`realpath $0 | sed 's/figtree$/\.\.\//'`
-java -Xms64m -Xmx512m -jar ${FIGTREEPATH}lib/figtree.jar "$@"
+FIGTREEPATH=`realpath $0 | sed 's/figtree$/\.\.\/\.\.\/\.\.\//'`
+java -Xms64m -Xmx512m -jar ${FIGTREEPATH}dist/figtree.jar "$@"
 
