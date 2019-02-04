@@ -1697,10 +1697,6 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
                 double labelWidth = tipLabelWidths.get(node);
 
-                if (BasicLabelPainter.SHAPE_HACK) {
-                    showingTipCallouts = false;
-                }
-
                 tipLabelPainter.paint(g2, node, tipLabelJustification,
                         new Rectangle2D.Double(0.0, 0.0, labelWidth, tipLabelPainter.getPreferredHeight()));
 

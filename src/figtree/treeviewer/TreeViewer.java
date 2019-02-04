@@ -163,6 +163,7 @@ public abstract class TreeViewer extends JPanel implements Printable {
 
     public abstract void setRootingType(TreePane.RootingType rootingType);
 
+    public abstract void setShowingTipCallouts(boolean tipCallouts);
 
     public abstract JComponent getContentPane();
 
