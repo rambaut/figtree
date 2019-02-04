@@ -216,6 +216,9 @@ public class BasicLabelPainter extends LabelPainter<Node> {
         return preferredHeight + yOffset;
     }
 
+    public static final boolean SHAPE_HACK = true;
+    public static final double BOX_LENGTH = 20.0;
+
     public void paint(Graphics2D g2, Node item, Justification justification, Rectangle2D bounds) {
         Tree tree = treePane.getTree();
 
@@ -288,8 +291,12 @@ public class BasicLabelPainter extends LabelPainter<Node> {
                 default:
                     throw new IllegalArgumentException("Unrecognized alignment enum option");
             }
-
-            g2.drawString(label, xOffset, y);
+            
+            if (BasicLabelPainter.SHAPE_HACK) {
+                g2.fill(bounds);
+            } else {
+                g2.drawString(label, xOffset, y);
+            }
         }
 
         g2.setFont(oldFont);
