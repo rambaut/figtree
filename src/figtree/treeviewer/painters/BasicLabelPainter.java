@@ -112,6 +112,10 @@ public class BasicLabelPainter extends LabelPainter<Node> {
             }
         }
 
+        if (displayAttribute.equalsIgnoreCase(SOLID_BOX)) {
+            return SOLID_BOX_ENCODED + boxSize;
+        }
+
         if ( tree instanceof RootedTree) {
             final RootedTree rtree = (RootedTree) tree;
 
@@ -193,8 +197,15 @@ public class BasicLabelPainter extends LabelPainter<Node> {
         preferredWidth = 0;
 
         if (label != null) {
-            Rectangle2D rect = fm.getStringBounds(label, g2);
-            preferredWidth = rect.getWidth();
+
+            if (label.startsWith(SOLID_BOX_ENCODED)) {
+                int boxLength = Integer.parseInt(
+                        label.substring(SOLID_BOX_ENCODED.length()));
+                preferredWidth = boxLength;
+            } else {
+                Rectangle2D rect = fm.getStringBounds(label, g2);
+                preferredWidth = rect.getWidth();
+            }
         }
 
         yOffset = (float)fm.getAscent();
@@ -215,9 +226,6 @@ public class BasicLabelPainter extends LabelPainter<Node> {
     public double getHeightBound() {
         return preferredHeight + yOffset;
     }
-
-    public static final boolean SHAPE_HACK = true;
-    public static final double BOX_LENGTH = 20.0;
 
     public void paint(Graphics2D g2, Node item, Justification justification, Rectangle2D bounds) {
         Tree tree = treePane.getTree();
@@ -291,8 +299,8 @@ public class BasicLabelPainter extends LabelPainter<Node> {
                 default:
                     throw new IllegalArgumentException("Unrecognized alignment enum option");
             }
-            
-            if (BasicLabelPainter.SHAPE_HACK) {
+
+            if (label.startsWith(SOLID_BOX_ENCODED)) {
                 g2.fill(bounds);
             } else {
                 g2.drawString(label, xOffset, y);
@@ -319,8 +327,14 @@ public class BasicLabelPainter extends LabelPainter<Node> {
         firePainterChanged();
     }
 
+    public void setBoxSize(int size) {
+        boxSize = size;
+        firePainterChanged();
+    }
+
     private double preferredWidth;
     private double preferredHeight;
+    private int boxSize = 10;
     private float yOffset;
 
     protected String displayAttribute;
