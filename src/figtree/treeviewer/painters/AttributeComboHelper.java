@@ -206,6 +206,7 @@ public class AttributeComboHelper {
             switch( intent ) {
                 case TIP: {
                     attributeNames.add(LabelPainter.NAMES);
+                    attributeNames.add(LabelPainter.SOLID_BOX);
                     attributeNames.add(LabelPainter.NODE_AGES);
                     attributeNames.add(LabelPainter.NODE_HEIGHTS);
                     attributeNames.add(LabelPainter.BRANCH_TIMES);

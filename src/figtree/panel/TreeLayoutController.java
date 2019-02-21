@@ -56,7 +56,7 @@ public class TreeLayoutController extends AbstractController {
 
         alignTipLabelsCheck.setSelected(treeLayout.isAlignTipLabels());
         alignTipLabelsCheck.addActionListener(new ActionListener() {
-            @Override
+            
             public void actionPerformed(ActionEvent actionEvent) {
                 treeLayout.setAlignTipLabels(alignTipLabelsCheck.isSelected());
             }

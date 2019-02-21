@@ -754,6 +754,11 @@ public class DefaultTreeViewer extends TreeViewer {
         treePane.setRootingType(rootingType);
     }
 
+    @Override
+    public void setShowingTipCallouts(boolean tipCallouts) {
+        treePane.setShowingTipCallouts(tipCallouts);
+    }
+
     public void setToolMode(TreePaneSelector.ToolMode toolMode) {
         treePaneSelector.setToolMode(toolMode);
     }

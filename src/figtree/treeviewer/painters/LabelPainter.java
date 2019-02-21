@@ -41,6 +41,8 @@ public abstract class LabelPainter<T> extends AbstractPainter<T> {
     public static final String NODE_HEIGHTS = "Node heights (raw)";
     public static final String BRANCH_TIMES = "Branch times";
     public static final String BRANCH_LENGTHS = "Branch lengths (raw)";
+    public static final String SOLID_BOX = "Solid box";
+    public static final String SOLID_BOX_ENCODED = "_SOLID_BOX_";
 
     public enum PainterIntent {
         NODE,
@@ -117,6 +119,10 @@ public abstract class LabelPainter<T> extends AbstractPainter<T> {
 	public void setNumberFormat(NumberFormat numberFormat) {
 		this.numberFormat = numberFormat;
 	    firePainterChanged();
+	}
+
+	public void setBoxSize(int size) {
+		// Do nothing
 	}
 
 	public void setVisible(boolean visible) {

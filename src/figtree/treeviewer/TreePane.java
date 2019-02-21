@@ -1696,6 +1696,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                 g2.transform(tipLabelTransform);
 
                 double labelWidth = tipLabelWidths.get(node);
+
                 tipLabelPainter.paint(g2, node, tipLabelJustification,
                         new Rectangle2D.Double(0.0, 0.0, labelWidth, tipLabelPainter.getPreferredHeight()));
 
@@ -2249,7 +2250,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             tipLabelPainter.calibrate(g2, node);
             double labelWidth = tipLabelPainter.getPreferredWidth();
             double labelHeight = tipLabelPainter.getPreferredHeight();
-
+            
             tipLabelWidths.put(node, labelWidth);
             Rectangle2D labelBounds = new Rectangle2D.Double(0.0, 0.0, labelWidth, labelHeight);
 

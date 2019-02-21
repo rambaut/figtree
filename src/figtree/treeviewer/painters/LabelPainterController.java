@@ -65,6 +65,8 @@ public class LabelPainterController extends AbstractController {
 
     public static final String DISPLAY_ATTRIBUTE_KEY = "displayAttribute";
     public static final String SIGNIFICANT_DIGITS_KEY = "significantDigits";
+    public static final String BOX_SIZE = "boxSize";
+    public static final String TIP_PATH = "tipPath";
 
     // The defaults if there is nothing in the preferences
     public static String DEFAULT_FONT_NAME = "sansserif";
@@ -85,8 +87,7 @@ public class LabelPainterController extends AbstractController {
         this.title = title;
         this.key = key;
         this.labelPainter = labelPainter;
-
-        LabelPainter.PainterIntent intent = labelPainter.getIntent();
+        this.intent = labelPainter.getIntent();
 
         userLabelDecorator = new AttributableDecorator();
         userLabelDecorator.setPaintAttributeName("!color");
@@ -202,6 +203,29 @@ public class LabelPainterController extends AbstractController {
             }
         });
 
+        if (intent == LabelPainter.PainterIntent.TIP) {
+
+            boxSizeSpinner = new JSpinner(new SpinnerNumberModel(digits, defaultSignificantDigits, 99, 1));
+            boxSizeSpinner.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent changeEvent) {
+                    final int size = (Integer) boxSizeSpinner.getValue();
+                    labelPainter.setBoxSize(size);
+                }
+            });
+
+            tipPathCheck = new JCheckBox("Show tip callouts");
+            tipPathCheck.setSelected(true);
+            tipPathCheck.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent changeEvent) {
+                    final boolean tipPath = tipPathCheck.isSelected();
+                    treeViewer.setShowingTipCallouts(tipPathCheck.isSelected());
+                }
+            });
+        } else {
+            boxSizeSpinner = null;
+            tipPathCheck = null;
+        }
+
 //        labelPainter.addPainterListener(new PainterListener() {
 //            public void painterChanged() {
 //
@@ -220,6 +244,12 @@ public class LabelPainterController extends AbstractController {
         final JLabel label5 = optionsPanel.addComponentWithLabel("Format:", numericalFormatCombo);
         final JLabel label6 = optionsPanel.addComponentWithLabel("Sig. Digits:", digitsSpinner);
 
+        JLabel label7 = null;
+        if (intent == LabelPainter.PainterIntent.TIP) {
+            label7 = optionsPanel.addComponentWithLabel("Box Size:", boxSizeSpinner);
+            optionsPanel.addComponent(tipPathCheck, true);
+        }
+
         addComponent(label1);
         addComponent(displayAttributeCombo);
         addComponent(label2);
@@ -233,6 +263,11 @@ public class LabelPainterController extends AbstractController {
         addComponent(numericalFormatCombo);
         addComponent(label6);
         addComponent(digitsSpinner);
+        if (intent == LabelPainter.PainterIntent.TIP) {
+            addComponent(label7);
+            addComponent(boxSizeSpinner);
+            addComponent(tipPathCheck);
+        }
         enableComponents(titleCheckBox.isSelected());
 
         titleCheckBox.addChangeListener(new ChangeListener() {
@@ -282,6 +317,10 @@ public class LabelPainterController extends AbstractController {
         int style = (Integer)settings.get(key + "." + FONT_STYLE_KEY);
         labelPainter.setFont(new Font(name, style, size));
         digitsSpinner.setValue((Integer) settings.get(key + "." + SIGNIFICANT_DIGITS_KEY));
+        if (intent == LabelPainter.PainterIntent.TIP) {
+            boxSizeSpinner.setValue((Integer) settings.get(key + "." + BOX_SIZE));
+            tipPathCheck.setSelected((Boolean) settings.get(key + "." + TIP_PATH));
+        }
     }
 
     public void getSettings(Map<String, Object> settings) {
@@ -293,6 +332,10 @@ public class LabelPainterController extends AbstractController {
         settings.put(key+"."+FONT_SIZE_KEY, font.getSize());
         settings.put(key+"."+FONT_STYLE_KEY, font.getStyle());
         settings.put(key+"."+SIGNIFICANT_DIGITS_KEY, digitsSpinner.getValue());
+        if (intent == LabelPainter.PainterIntent.TIP) {
+            settings.put(key + "." + BOX_SIZE, boxSizeSpinner.getValue());
+            settings.put(key + "." + TIP_PATH, tipPathCheck.isSelected());
+        }
     }
 
     public String getTitle() {
@@ -311,9 +354,12 @@ public class LabelPainterController extends AbstractController {
 
     private final JComboBox numericalFormatCombo;
     private final JSpinner digitsSpinner;
+    private final JSpinner boxSizeSpinner;
+    private final JCheckBox tipPathCheck;
 
     private final String title;
     private final String key;
+    private final LabelPainter.PainterIntent intent;
 
     private final LabelPainter labelPainter;
 

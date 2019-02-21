@@ -43,7 +43,7 @@ import jam.panels.StatusProvider;
  * $LastChangedDate$
  * $LastChangedRevision$
  */
-public class MultiPaneTreeViewer extends TreeViewer {
+					public class MultiPaneTreeViewer extends TreeViewer {
 
 	private final static double MAX_ZOOM = 20;
 	private final static double MAX_VERTICAL_EXPANSION = 20;
@@ -522,6 +522,12 @@ public class MultiPaneTreeViewer extends TreeViewer {
         }
         fireTreeSettingsChanged();
     }
+
+	public void setShowingTipCallouts(boolean tipCallouts) {
+		for (TreePane pane : treePanes) {
+			pane.setShowingTipCallouts(tipCallouts);
+		}
+	}
 
 	public JComponent getContentPane() {
 		return treePanePanel;
