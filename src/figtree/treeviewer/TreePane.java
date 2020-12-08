@@ -794,7 +794,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
     public void recalculateCollapsedNodes() {
-        recalculateCollapsedNodes(tree.getRootNode());
+//        recalculateCollapsedNodes(tree.getRootNode());
     }
 
     private void recalculateCollapsedNodes(Node node) {

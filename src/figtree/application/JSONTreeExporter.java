@@ -80,13 +80,13 @@ public class JSONTreeExporter implements TreeExporter {
      * @throws java.io.IOException
      */
     @Override
-    public void exportTree(Tree tree) throws IOException {
+    public void exportTree(Tree tree) {
         java.util.List<Tree> trees = new ArrayList<Tree>();
         trees.add(tree);
         exportTrees(trees);
     }
 
-    private void writeTrees(Collection<? extends Tree> trees) throws IOException {
+    private void writeTrees(Collection<? extends Tree> trees) {
         int indent = 0;
         int treeCount = 0;
 
@@ -178,7 +178,7 @@ public class JSONTreeExporter implements TreeExporter {
     }
 
     @Override
-    public void exportTrees(Collection<? extends Tree> trees) throws IOException {
+    public void exportTrees(Collection<? extends Tree> trees) {
         writeTrees(trees);
     }
 
@@ -299,7 +299,10 @@ public class JSONTreeExporter implements TreeExporter {
         return builder.append(value);
     }
 
-
+    @Override
+    public void close() {
+        writer.close();
+    }
 
     private Set<Taxon> taxa = null;
     protected final PrintWriter writer;
