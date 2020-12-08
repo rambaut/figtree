@@ -50,6 +50,8 @@ public class FigTreeNexusExporter extends NexusExporter {
 	 * Writes a 'FigTree' block.
 	 */
 	public void writeFigTreeBlock(Map<String, Object> settings) throws IOException {
+		closeBlock();
+
 		writer.println("\nbegin figtree;");
 		for (String key : settings.keySet()) {
 			Object value = settings.get(key);
