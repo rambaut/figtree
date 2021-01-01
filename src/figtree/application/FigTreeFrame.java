@@ -1429,6 +1429,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                 case NEWICK:
                     NewickExporter newickExporter = new NewickExporter(writer);
                     newickExporter.exportTrees(trees);
+                    newickExporter.close();
                     break;
                 case NEXUS:
                     FigTreeNexusExporter nexusExporter = new FigTreeNexusExporter(writer, writeAnnotations);
@@ -1436,15 +1437,15 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                     if (settings != null) {
                         nexusExporter.writeFigTreeBlock(settings);
                     }
+                    nexusExporter.close();
                     break;
                 case JSON:
                     JSONTreeExporter jsonExporter = new JSONTreeExporter(writer, writeAnnotations);
                     jsonExporter.exportTrees(trees);
+                    jsonExporter.close();
                     break;
             }
         }
-
-        writer.close();
     }
 
     public final void doFind() {
