@@ -254,6 +254,7 @@ public class FigTreeApplication extends MultiDocApplication {
                         new Arguments.IntegerOption("width", "the width of the graphic in pixels"),
                         new Arguments.IntegerOption("height", "the height of the graphic in pixels"),
                         new Arguments.Option("url", "the input file is a URL"),
+                        new Arguments.Option("fast", "use fast mode for big tree (disables some features)"),
                         new Arguments.Option("help", "option to print this message")
                 });
 
@@ -306,6 +307,8 @@ public class FigTreeApplication extends MultiDocApplication {
                 System.exit(0);
             }
         }
+
+        final boolean fastMode = arguments.hasOption("fast");
 
         if (Utils.isMacOSX()) {
             if (Utils.getMacOSXMajorVersionNumber() >= 5) {
@@ -411,7 +414,7 @@ public class FigTreeApplication extends MultiDocApplication {
 
         application.setDocumentFrameFactory(new DocumentFrameFactory() {
             public DocumentFrame createDocumentFrame(Application app, MenuBarFactory menuBarFactory) {
-                return new FigTreeFrame(nameString + " v" + VERSION);
+                return new FigTreeFrame(nameString + " v" + VERSION, fastMode);
             }
         });
 

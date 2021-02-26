@@ -58,7 +58,15 @@ public class SimpleTreeViewer extends DefaultTreeViewer implements StatusProvide
 		// setTreesPerPage(1);
 
 		setBackground(Color.white);
+	}
 
+	/** Creates new AlignmentPanel */
+	public SimpleTreeViewer(boolean fastMode) {
+		super(fastMode);
+
+		// setTreesPerPage(1);
+
+		setBackground(Color.white);
 	}
 
 	private List<AnnotationsListener> listeners = new ArrayList<AnnotationsListener>();

@@ -81,6 +81,9 @@ import java.util.List;
  * $LastChangedRevision: 232 $
  */
 public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandler, TreeMenuHandler {
+
+    private final static boolean FAST_MODE = false;
+
     private final ExtendedTreeViewer treeViewer;
     private final ControlPalette controlPalette;
     private final FigTreePanel figTreePanel;
@@ -90,7 +93,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
     private SearchPanel filterPanel;
     private JPopupMenu filterPopup;
 
-    public FigTreeFrame(String title) {
+    public FigTreeFrame(String title, boolean fastMode) {
         super();
 
         setTitle(title);
@@ -99,7 +102,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         //       setImportAction(importCharactersAction);
         setExportAction(exportTreesAction);
 
-        treeViewer = new ExtendedTreeViewer(this);
+        treeViewer = new ExtendedTreeViewer(this, fastMode);
         controlPalette = new BasicControlPalette(200, BasicControlPalette.DisplayMode.ONLY_ONE_OPEN);
 
         figTreePanel = new FigTreePanel(this, treeViewer, controlPalette);

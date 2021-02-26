@@ -55,10 +55,21 @@ public class DefaultTreeViewer extends TreeViewer {
         this(null);
     }
 
+    public DefaultTreeViewer(boolean fastMode) {
+        this(null, fastMode);
+    }
+
     /**
      * Creates new TreeViewer
      */
     public DefaultTreeViewer(JFrame frame) {
+        this(frame, false);
+    }
+
+    /**
+          * Creates new TreeViewer
+          */
+    public DefaultTreeViewer(JFrame frame, boolean fastMode) {
         this.frame = frame;
 
         setLayout(new BorderLayout());
@@ -83,7 +94,10 @@ public class DefaultTreeViewer extends TreeViewer {
         // This overrides MouseListener and MouseMotionListener to allow selection in the TreePane -
         // It installs itself within the constructor.
         treePaneSelector = new TreePaneSelector(treePane);
-        treePaneRollOver = new TreePaneRollOver(treePane);
+        if (!fastMode) {
+            // for fast mode, don't do roll-over info
+            treePaneRollOver = new TreePaneRollOver(treePane);
+        }
 
         setFocusable(true);
 

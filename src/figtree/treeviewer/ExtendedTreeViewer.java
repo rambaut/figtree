@@ -49,11 +49,15 @@ import java.util.List;
 public class ExtendedTreeViewer extends DefaultTreeViewer implements StatusProvider {
 
     public ExtendedTreeViewer() {
-       this(null);
+       this(null, false);
     }
 
-    public ExtendedTreeViewer(JFrame frame) {
-        super(frame);
+    public ExtendedTreeViewer(boolean fastMode) {
+        this(null, fastMode);
+    }
+
+    public ExtendedTreeViewer(JFrame frame, boolean fastMode) {
+        super(frame, fastMode);
 
         // setTreesPerPage(1);
 
