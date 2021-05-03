@@ -52,4 +52,4 @@ sync
 sync
 hdiutil detach ${device}
 hdiutil convert "pack.temp.dmg" -format UDZO -imagekey zlib-level=9 -o "../${finalDMGName}"
-rm -f /pack.temp.dmg
+rm -f pack.temp.dmg
