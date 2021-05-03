@@ -314,39 +314,21 @@ public class FigTreeApplication extends MultiDocApplication {
             if (Utils.getMacOSXMajorVersionNumber() >= 5) {
                 System.setProperty("apple.awt.brushMetalLook","true");
             }
-
             System.setProperty("apple.laf.useScreenMenuBar","true");
             System.setProperty("apple.awt.draggableWindowBackground","true");
             System.setProperty("apple.awt.showGrowBox","true");
             System.setProperty("apple.awt.graphics.UseQuartz","true");
 
             try {
-                // set the Quaqua Look and Feel in the UIManager
+                // set the VAqua Look and Feel in the UIManager
+                // This is a more modern L&F than the default Mac one
                 javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
                     public void run() {
                         try {
-
-                            // Only override the UI's necessary for ColorChooser and
-                            // FileChooser:
-                            Set includes = new HashSet();
-                            includes.add("ColorChooser");
-                            includes.add("FileChooser");
-                            includes.add("Component");
-                            includes.add("Browser");
-                            includes.add("Tree");
-                            includes.add("SplitPane");
-                            includes.add("TitledBorder");
-
-                            Class<?> qm = Class.forName("ch.randelshofer.quaqua.QuaquaManager");
-                            Method method = qm.getMethod("setIncludedUIs", Set.class);
-                            method.invoke(null, includes);
-
-                            UIManager.setLookAndFeel(
-                                    "ch.randelshofer.quaqua.QuaquaLookAndFeel"
-                            );
-
+                            UIManager.setLookAndFeel("org.violetlib.aqua.AquaLookAndFeel");
                             lafLoaded = true;
-                        } catch (Exception ignored) {
+                        } catch (Exception e) {
+                            System.err.println("Failed to load AquaLookAndFeel");
                         }
                     }
                 });
