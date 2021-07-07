@@ -1,4 +1,2 @@
-#!/bin/sh
-
-java -Xms64m -Xmx512m -jar lib/figtree.jar "$@"
-
+#!/usr/bin/env bash
+java -Xms64m -Xmx512m -jar "$(echo $0 | rev | cut -d'/' -f3- | rev)/lib/figtree.jar" "$@"
