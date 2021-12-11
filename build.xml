@@ -35,8 +35,8 @@
 
     <target name="compile" depends="init">
         <!-- Compile the java code from ${src} into ${build} -->
-        <javac source="1.6" target="1.6" srcdir="${src}" destdir="${build}"
-               classpath="${lib}/jebl.jar:${lib}/jam.jar:${lib}/batik-awt-util.jar:${lib}/batik-dom.jar:${lib}/batik-ext.jar:${lib}/batik-svggen.jar:${lib}/batik-util.jar:${lib}/batik-xml.jar:${lib}/xml-apis.jar:${lib}/iText.jar:${lib}/quaqua.jar:${lib}/jwt/servlet-api-2.5-6.0.2.jar:${lib}/jwt/jwt-3.1.7pre1.jar">
+        <javac source="8" target="8" srcdir="${src}" destdir="${build}"
+            classpath="${lib}/activation.jar:${lib}/jebl.jar:${lib}/jam.jar:${lib}/batik-awt-util.jar:${lib}/batik-dom.jar:${lib}/batik-ext.jar:${lib}/batik-svggen.jar:${lib}/batik-util.jar:${lib}/batik-xml.jar:${lib}/xml-apis.jar:${lib}/iText.jar:${lib}/quaqua.jar:${lib}/jwt/servlet-api-2.5-6.0.2.jar:${lib}/jwt/jwt-3.1.7pre1.jar">
             <include name="figtree/**"/>
         </javac>
         <copy todir="${build}" verbose="true">
