@@ -102,8 +102,8 @@
 
     </target>
 
-    <property name="version" value="1.4.4" />
-    <property name="version_number" value="1.4.4" />
+    <property name="version" value="1.4.5_pre" />
+    <property name="version_number" value="1.4.5" />
     <property name="release_dir" value="release" />
     <property name="name" value="FigTree" />
 

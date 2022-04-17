@@ -66,8 +66,8 @@ import java.util.List;
  */
 public class FigTreeApplication extends MultiDocApplication {
 
-    public static final String VERSION = "1.4.4";
-    public static final String DATES = "2006-2018";
+    public static final String VERSION = "1.4.5_pre";
+    public static final String DATES = "2006-2022";
 
     public static FigTreeApplication application;
 
