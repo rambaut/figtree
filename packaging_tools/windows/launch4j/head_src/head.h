@@ -28,10 +28,13 @@
 	THE SOFTWARE.
 */
 
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+#endif // _WIN32_WINNT
+
 #ifndef _LAUNCH4J_HEAD__INCLUDED_
 #define _LAUNCH4J_HEAD__INCLUDED_
 
-#define _WIN32_WINNT 0x0501
 #define WIN32_LEAN_AND_MEAN		// VC - Exclude rarely-used stuff from Windows headers
 
 // Windows Header Files:
@@ -51,7 +54,9 @@
 #include <process.h>
 
 #define LAUNCH4j "Launch4j"
-#define VERSION "3.8"
+#define VERSION "3.14"
+
+#define JRE_VER_MAX_DIGITS_PER_PART 3
 
 #define NO_JAVA_FOUND 0
 #define FOUND_JRE 1
@@ -88,6 +93,7 @@
 
 #define ERROR_FORMAT "Error:\t\t%s\n"
 #define debug(args...) if (hLog != NULL) fprintf(hLog, ## args);
+#define debugAll(args...) if (debugAll && hLog != NULL) fprintf(hLog, ## args);
 
 typedef void (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
 
@@ -102,6 +108,7 @@ BOOL loadBool(const int resID);
 int loadInt(const int resID);
 BOOL regQueryValue(const char* regPath, unsigned char* buffer,
 		unsigned long bufferLength);
+void formatJavaVersion(char* version, const char* originalVersion);
 void regSearch(const char* keyName, const int searchType);
 BOOL isJavaHomeValid(const char* keyName, const int searchType);
 BOOL isLauncherPathValid(const char* path);
@@ -120,6 +127,7 @@ void appendHeapSize(char *dst, const int megabytesID, const int percentID,
 void setJvmOptions(char *jvmOptions, const char *exePath);
 BOOL createMutex();
 void setWorkingDirectory(const char *exePath, const int pathLen);
+void removeChar(char *src, const char toRemove);
 BOOL bundledJreSearch(const char *exePath, const int pathLen);
 BOOL installedJreSearch();
 void createJreSearchError();
@@ -132,5 +140,8 @@ void setCommandLineArgs(const char *lpCmdLine);
 int prepare(const char *lpCmdLine);
 void closeProcessHandles();
 BOOL execute(const BOOL wait, DWORD *dwExitCode);
+const char* getJavaHome();
+const char* getMainClass();
+const char* getLauncherArgs();
 
 #endif // _LAUNCH4J_HEAD__INCLUDED_

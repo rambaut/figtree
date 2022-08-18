@@ -91,6 +91,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 					splashTimeout = DEFAULT_SPLASH_TIMEOUT;
 				}
 			}
+			splashTimeout = splashTimeout * 1000; // to millis
 			splashTimeoutErr = loadBool(SPLASH_TIMEOUT_ERR)
 					&& strstr(lpCmdLine, "--l4j-no-splash-err") == NULL;
 			waitForWindow = loadBool(SPLASH_WAITS_FOR_WINDOW);
@@ -120,7 +121,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	{
 		if (splash || stayAlive)
 		{
-			if (!SetTimer (hWnd, ID_TIMER, 1000 /* 1s */, TimerProc))
+			if (!SetTimer (hWnd, ID_TIMER, TIMER_PROC_INTERVAL, TimerProc))
 			{
 				signalError();
 				return 1;
@@ -222,7 +223,7 @@ VOID CALLBACK TimerProc(
 		}
 		else
 		{
-			splashTimeout--;
+			splashTimeout -= TIMER_PROC_INTERVAL;
 			if (waitForWindow)
 			{
 				EnumWindows(enumwndfn, 0);

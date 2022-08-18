@@ -82,6 +82,10 @@ public class Builder {
 		FileOutputStream os = null;
 		final RcBuilder rcb = new RcBuilder();
 		try {
+			if (c.isJniApplication()) {
+				_log.append("WARNING: Some features are not implemented in JNI headers, see documentation.");
+			}
+
 			rc = rcb.build(c);
 			ro = Util.createTempFile("o");
 			outfile = ConfigPersister.getInstance().getOutputFile();
@@ -102,8 +106,7 @@ public class Builder {
 					.add("--dynamicbase")
 					.add("--nxcompat")
 					.add("--no-seh")
-					.add((c.getHeaderType().equals(Config.GUI_HEADER))
-							? "--subsystem windows" : "--subsystem console")
+					.add(c.isGuiApplication() ? "--subsystem windows" : "--subsystem console")
 					.add("-s")		// strip symbols
 					.addFiles(c.getHeaderObjects())
 					.addAbsFile(ro)

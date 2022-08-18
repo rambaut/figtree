@@ -73,8 +73,7 @@ public class Msg implements IValidatable {
 
 	public String getBundledJreErr() {
 		return !Validator.isEmpty(bundledJreErr) ? bundledJreErr
-				: "This application was configured to use a bundled Java Runtime" +
-						" Environment but the runtime is missing or corrupted.";
+				: "This application requires a Java Runtime Environment.";
 	}
 
 	public void setBundledJreErr(String bundledJreErr) {

@@ -54,13 +54,13 @@ import net.sf.launch4j.config.Jre;
 public class JreFormImpl extends JreForm {
 
 	public JreFormImpl(Bindings bindings, JFileChooser fc) {
-		_jdkPreferenceCombo.setModel(new DefaultComboBoxModel(new String[] {
+		_jdkPreferenceCombo.setModel(new DefaultComboBoxModel<String>(new String[] {
 				Messages.getString("jdkPreference.jre.only"),
 				Messages.getString("jdkPreference.prefer.jre"),
 				Messages.getString("jdkPreference.prefer.jdk"),
 				Messages.getString("jdkPreference.jdk.only")}));
 
-		_runtimeBitsCombo.setModel(new DefaultComboBoxModel(new String[] {
+		_runtimeBitsCombo.setModel(new DefaultComboBoxModel<String>(new String[] {
 				Messages.getString("runtimeBits.64"),
 				Messages.getString("runtimeBits.64And32"),
 				Messages.getString("runtimeBits.32And64"),
@@ -79,7 +79,7 @@ public class JreFormImpl extends JreForm {
 				.add("jre.maxHeapPercent", _maxHeapPercentField)
 				.add("jre.options", _jvmOptionsTextArea);
 
-		_varCombo.setModel(new DefaultComboBoxModel(new String[] {
+		_varCombo.setModel(new DefaultComboBoxModel<String>(new String[] {
 				"EXEDIR", "EXEFILE", "PWD", "OLDPWD", "JREHOMEDIR",
 				"HKEY_CLASSES_ROOT", "HKEY_CURRENT_USER", "HKEY_LOCAL_MACHINE",
 				"HKEY_USERS", "HKEY_CURRENT_CONFIG" }));

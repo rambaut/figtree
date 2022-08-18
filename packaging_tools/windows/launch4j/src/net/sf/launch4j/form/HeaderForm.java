@@ -4,6 +4,7 @@ import com.jeta.forms.components.separator.TitledSeparator;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import javax.swing.Box;
@@ -27,6 +28,8 @@ public abstract class HeaderForm extends JPanel
    protected final JCheckBox _headerObjectsCheck = new JCheckBox();
    protected final JCheckBox _libsCheck = new JCheckBox();
    protected final TitledSeparator _linkerOptionsSeparator = new TitledSeparator();
+   protected final JRadioButton _jniGuiHeaderRadio = new JRadioButton();
+   protected final JRadioButton _jniConsoleHeaderRadio = new JRadioButton();
 
    /**
     * Default constructor
@@ -106,7 +109,7 @@ public abstract class HeaderForm extends JPanel
    public JPanel createPanel()
    {
       JPanel jpanel1 = new JPanel();
-      FormLayout formlayout1 = new FormLayout("FILL:7DLU:NONE,RIGHT:MAX(65DLU;DEFAULT):NONE,FILL:3DLU:NONE,FILL:DEFAULT:NONE,FILL:7DLU:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:GROW(1.0),FILL:7DLU:NONE","CENTER:9DLU:NONE,CENTER:DEFAULT:NONE,CENTER:9DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,FILL:DEFAULT:GROW(0.2),CENTER:3DLU:NONE,FILL:DEFAULT:GROW(1.0),CENTER:9DLU:NONE");
+      FormLayout formlayout1 = new FormLayout("FILL:7DLU:NONE,RIGHT:MAX(65DLU;DEFAULT):NONE,FILL:3DLU:NONE,FILL:DEFAULT:NONE,FILL:7DLU:NONE,FILL:DEFAULT:NONE,FILL:7DLU:NONE,FILL:DEFAULT:NONE,FILL:7DLU:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:GROW(1.0),FILL:7DLU:NONE","CENTER:9DLU:NONE,CENTER:DEFAULT:NONE,CENTER:9DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,FILL:DEFAULT:GROW(0.2),CENTER:3DLU:NONE,FILL:DEFAULT:GROW(1.0),CENTER:9DLU:NONE");
       CellConstraints cc = new CellConstraints();
       jpanel1.setLayout(formlayout1);
 
@@ -117,12 +120,14 @@ public abstract class HeaderForm extends JPanel
       _guiHeaderRadio.setActionCommand("GUI");
       _guiHeaderRadio.setName("guiHeaderRadio");
       _guiHeaderRadio.setText(Messages.getString("gui"));
+      _guiHeaderRadio.setToolTipText(Messages.getString("guiTooltip"));
       _headerButtonGroup.add(_guiHeaderRadio);
       jpanel1.add(_guiHeaderRadio,cc.xy(4,2));
 
       _consoleHeaderRadio.setActionCommand("Console");
       _consoleHeaderRadio.setName("consoleHeaderRadio");
       _consoleHeaderRadio.setText(Messages.getString("console"));
+      _consoleHeaderRadio.setToolTipText(Messages.getString("consoleTooltip"));
       _headerButtonGroup.add(_consoleHeaderRadio);
       jpanel1.add(_consoleHeaderRadio,cc.xy(6,2));
 
@@ -131,14 +136,14 @@ public abstract class HeaderForm extends JPanel
       jscrollpane1.setViewportView(_headerObjectsTextArea);
       jscrollpane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
       jscrollpane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-      jpanel1.add(jscrollpane1,cc.xywh(4,6,4,1));
+      jpanel1.add(jscrollpane1,cc.xywh(4,6,8,1));
 
       _libsTextArea.setName("libsTextArea");
       JScrollPane jscrollpane2 = new JScrollPane();
       jscrollpane2.setViewportView(_libsTextArea);
       jscrollpane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
       jscrollpane2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-      jpanel1.add(jscrollpane2,cc.xywh(4,8,4,1));
+      jpanel1.add(jscrollpane2,cc.xywh(4,8,8,1));
 
       _headerObjectsCheck.setActionCommand("Object files");
       _headerObjectsCheck.setName("headerObjectsCheck");
@@ -152,9 +157,25 @@ public abstract class HeaderForm extends JPanel
 
       _linkerOptionsSeparator.setName("linkerOptionsSeparator");
       _linkerOptionsSeparator.setText(Messages.getString("linkerOptions"));
-      jpanel1.add(_linkerOptionsSeparator,cc.xywh(2,4,6,1));
+      jpanel1.add(_linkerOptionsSeparator,cc.xywh(2,4,10,1));
 
-      addFillComponents(jpanel1,new int[]{ 1,2,3,4,5,6,7,8 },new int[]{ 1,2,3,4,5,6,7,8,9 });
+      _jniGuiHeaderRadio.setActionCommand(Messages.getString("jniGui"));
+      _jniGuiHeaderRadio.setForeground(new Color(255,102,0));
+      _jniGuiHeaderRadio.setName("jniGuiHeaderRadio");
+      _jniGuiHeaderRadio.setText(Messages.getString("jniGui"));
+      _jniGuiHeaderRadio.setToolTipText(Messages.getString("jniGuiTooltip"));
+      _headerButtonGroup.add(_jniGuiHeaderRadio);
+      jpanel1.add(_jniGuiHeaderRadio,cc.xy(8,2));
+
+      _jniConsoleHeaderRadio.setActionCommand(Messages.getString("jniConsole"));
+      _jniConsoleHeaderRadio.setForeground(new Color(255,102,0));
+      _jniConsoleHeaderRadio.setName("jniConsoleHeaderRadio");
+      _jniConsoleHeaderRadio.setText(Messages.getString("jniConsole"));
+      _jniConsoleHeaderRadio.setToolTipText(Messages.getString("jniConsoleTooltip"));
+      _headerButtonGroup.add(_jniConsoleHeaderRadio);
+      jpanel1.add(_jniConsoleHeaderRadio,cc.xy(10,2));
+
+      addFillComponents(jpanel1,new int[]{ 1,2,3,4,5,6,7,8,9,10,11,12 },new int[]{ 1,2,3,4,5,6,7,8,9 });
       return jpanel1;
    }
 

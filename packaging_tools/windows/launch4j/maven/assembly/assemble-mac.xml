@@ -44,7 +44,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			<outputDirectory>${finalName}-workdir-mac</outputDirectory>
 			<includes>
 				<include>w32api/**/*</include>
+				<include>w32api_jni/**/*</include>
 				<include>head/**/*</include>
+				<include>head_jni_BETA/**/*</include>
 			</includes>
 		</fileSet>
 	</fileSets>

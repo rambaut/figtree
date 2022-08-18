@@ -14,13 +14,14 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 
 public abstract class ClassPathForm extends JPanel
 {
    protected final JTextField _classpathField = new JTextField();
    protected final JLabel _classpathFieldLabel = new JLabel();
    protected final JLabel _classpathListLabel = new JLabel();
-   protected final JList _classpathList = new JList();
+   protected final JList<String> _classpathList = new JList<String>();
    protected final JLabel _mainclassLabel = new JLabel();
    protected final JTextField _mainclassField = new JTextField();
    protected final JButton _acceptClasspathButton = new JButton();
@@ -152,7 +153,7 @@ public abstract class ClassPathForm extends JPanel
       _removeClasspathButton.setText(Messages.getString("remove"));
       jpanel1.add(_removeClasspathButton,cc.xy(10,13));
 
-      _importClasspathButton.setIcon(loadImage("images/open16.png"));
+      _importClasspathButton.setIcon(UIManager.getIcon("Tree.closedIcon"));
       _importClasspathButton.setName("importClasspathButton");
       _importClasspathButton.setToolTipText(Messages.getString("importClassPath"));
       jpanel1.add(_importClasspathButton,cc.xy(12,4));

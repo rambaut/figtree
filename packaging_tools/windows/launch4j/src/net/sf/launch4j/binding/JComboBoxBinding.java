@@ -45,13 +45,13 @@ import org.apache.commons.beanutils.PropertyUtils;
 /**
  * @author Copyright (C) 2007 Ian Roberts
  */
-public class JComboBoxBinding implements Binding {
+public class JComboBoxBinding<T> implements Binding {
 	private final String _property;
-	private final JComboBox _combo;
+	private final JComboBox<T> _combo;
 	private final int _defaultValue;
 	private final Color _validColor;
 
-	public JComboBoxBinding(String property, JComboBox combo, int defaultValue) {
+	public JComboBoxBinding(String property, JComboBox<T> combo, int defaultValue) {
 		if (property == null || combo == null) {
 			throw new NullPointerException();
 		}

@@ -3,15 +3,20 @@ package net.sf.launch4j.form;
 import com.jeta.forms.components.separator.TitledSeparator;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+
+import net.sf.launch4j.config.LanguageID;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
 
 public abstract class VersionInfoForm extends JPanel
 {
@@ -37,6 +42,10 @@ public abstract class VersionInfoForm extends JPanel
    protected final JTextField _internalNameField = new JTextField();
    protected final JLabel _companyNameLabel = new JLabel();
    protected final JTextField _companyNameField = new JTextField();
+   protected final JLabel _languageLabel = new JLabel();
+   protected final JComboBox<LanguageID> _languageCombo = new JComboBox<LanguageID>();
+   protected final JLabel _trademarksLabel = new JLabel();
+   protected final JTextField _trademarksField = new JTextField();
 
    /**
     * Default constructor
@@ -116,7 +125,7 @@ public abstract class VersionInfoForm extends JPanel
    public JPanel createPanel()
    {
       JPanel jpanel1 = new JPanel();
-      FormLayout formlayout1 = new FormLayout("FILL:7DLU:NONE,RIGHT:MAX(65DLU;DEFAULT):NONE,FILL:3DLU:NONE,FILL:60DLU:NONE,FILL:7DLU:NONE,RIGHT:DEFAULT:NONE,FILL:3DLU:NONE,FILL:DEFAULT:GROW(1.0),FILL:7DLU:NONE","CENTER:9DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:9DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:9DLU:NONE");
+      FormLayout formlayout1 = new FormLayout("FILL:7DLU:NONE,RIGHT:MAX(65DLU;DEFAULT):NONE,FILL:3DLU:NONE,FILL:60DLU:NONE,FILL:7DLU:NONE,RIGHT:DEFAULT:NONE,FILL:3DLU:NONE,FILL:DEFAULT:GROW(1.0),FILL:7DLU:NONE","CENTER:9DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:9DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:3DLU:NONE,CENTER:DEFAULT:NONE,CENTER:9DLU:NONE");
       CellConstraints cc = new CellConstraints();
       jpanel1.setLayout(formlayout1);
 
@@ -215,7 +224,21 @@ public abstract class VersionInfoForm extends JPanel
       _companyNameField.setName("companyNameField");
       jpanel1.add(_companyNameField,cc.xywh(4,16,5,1));
 
-      addFillComponents(jpanel1,new int[]{ 1,2,3,4,5,6,7,8,9 },new int[]{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21 });
+      _languageLabel.setName("languageLabel");
+      _languageLabel.setText(Messages.getString("language"));
+      jpanel1.add(_languageLabel,cc.xy(2,24));
+
+      _languageCombo.setName("languageCombo");
+      jpanel1.add(_languageCombo,cc.xywh(4,24,3,1));
+
+      _trademarksLabel.setName("trademarksLabel");
+      _trademarksLabel.setText(Messages.getString("trademarks"));
+      jpanel1.add(_trademarksLabel,cc.xy(2,22));
+
+      _trademarksField.setName("trademarksField");
+      jpanel1.add(_trademarksField,cc.xywh(4,22,5,1));
+
+      addFillComponents(jpanel1,new int[]{ 1,2,3,4,5,6,7,8,9 },new int[]{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25 });
       return jpanel1;
    }
 

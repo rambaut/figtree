@@ -45,6 +45,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -53,9 +54,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
 
-import com.jgoodies.looks.Options;
-import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
-import com.jgoodies.looks.windows.WindowsLookAndFeel;
+import com.formdev.flatlaf.FlatLightLaf;
 
 import foxtrot.Task;
 import foxtrot.Worker;
@@ -69,7 +68,6 @@ import net.sf.launch4j.Util;
 import net.sf.launch4j.binding.Binding;
 import net.sf.launch4j.binding.BindingException;
 import net.sf.launch4j.binding.InvariantViolationException;
-import net.sf.launch4j.config.Config;
 import net.sf.launch4j.config.ConfigPersister;
 import net.sf.launch4j.config.ConfigPersisterException;
 
@@ -88,17 +86,7 @@ public class MainFrame extends JFrame {
 
 	public static void createInstance() {
 		try {
-			Toolkit.getDefaultToolkit().setDynamicLayout(true);
-			System.setProperty("sun.awt.noerasebackground","true");
-	
-			// JGoodies
-			Options.setDefaultIconSize(new Dimension(16, 16));		// menu icons
-			Options.setUseNarrowButtons(false);
-			Options.setPopupDropShadowEnabled(true);
-
-			UIManager.setLookAndFeel(System.getProperty("os.name").toLowerCase().startsWith("windows")
-					? new WindowsLookAndFeel() : new PlasticXPLookAndFeel());
-
+			FlatLightLaf.install();
 			_instance = new MainFrame();
 		} catch (Exception e) {
 			System.err.println(e);
@@ -121,21 +109,21 @@ public class MainFrame extends JFrame {
 		_toolBar = new JToolBar();
 		_toolBar.setFloatable(false);
 		_toolBar.setRollover(true);
-		addButton("images/new.png",	Messages.getString("MainFrame.new.config"),
+		addButton(UIManager.getIcon("Tree.leafIcon"), Messages.getString("MainFrame.new.config"),
 				new NewActionListener());
-		addButton("images/open.png", Messages.getString("MainFrame.open.config"),
+		addButton(UIManager.getIcon("Tree.openIcon"), Messages.getString("MainFrame.open.config"),
 				new OpenActionListener());
-		addButton("images/save.png", Messages.getString("MainFrame.save.config"),
+		addButton(UIManager.getIcon("FileView.floppyDriveIcon"), Messages.getString("MainFrame.save.config"),
 				new SaveActionListener());
 		_toolBar.addSeparator();
-		addButton("images/build.png", Messages.getString("MainFrame.build.wrapper"),
+		addButton(getLocalIcon("images/build.png"), Messages.getString("MainFrame.build.wrapper"),
 				new BuildActionListener());
-		_runButton = addButton("images/run.png",
+		_runButton = addButton(getLocalIcon("images/run.png"),
 				Messages.getString("MainFrame.test.wrapper"),
 				new RunActionListener());
 		setRunEnabled(false);
 		_toolBar.addSeparator();
-		addButton("images/info.png", Messages.getString("MainFrame.about.launch4j"),
+		addButton(UIManager.getIcon("HelpButton.icon"), Messages.getString("MainFrame.about.launch4j"),
 				new AboutActionListener());
 
 		_configForm = new ConfigFormImpl();
@@ -145,16 +133,18 @@ public class MainFrame extends JFrame {
 		pack();
 		Dimension scr = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension fr = getSize();
-		fr.width += 25;
+		fr.width = 900;
 		fr.height += 100;
 		setBounds((scr.width - fr.width) / 2, (scr.height - fr.height) / 2,
 				fr.width, fr.height);
 		setVisible(true);
 	}
+	
+	private ImageIcon getLocalIcon(String iconPath) {
+		return  new ImageIcon(MainFrame.class.getClassLoader().getResource(iconPath));
+	}
 
-	private JButton addButton(String iconPath, String tooltip, ActionListener l) {
-		ImageIcon icon = new ImageIcon(MainFrame.class.getClassLoader()
-				.getResource(iconPath));
+	private JButton addButton(Icon icon, String tooltip, ActionListener l) {
 		JButton b = new JButton(icon);
 		b.setToolTipText(tooltip);
 		b.addActionListener(l);
@@ -226,7 +216,7 @@ public class MainFrame extends JFrame {
 	}
 
 	private void showConfigName(File config) {
-		setTitle(Main.getName() + " - " 	+ (config != null ? config.getName()
+		setTitle(Main.getName() + " - " + (config != null ? config.getName()
 						: Messages.getString("MainFrame.untitled")));
 	}
 
@@ -309,8 +299,8 @@ public class MainFrame extends JFrame {
 				ConfigPersister.getInstance().getConfig().checkInvariants();
 				Builder b = new Builder(log);
 				_outfile = b.build();
-				setRunEnabled(ConfigPersister.getInstance().getConfig()
-						.getHeaderType() == Config.GUI_HEADER	// TODO fix console app test
+				setRunEnabled(ConfigPersister.getInstance().getConfig().isGuiApplication()
+						// TODO fix console app test
 						&& (Util.WINDOWS_OS || !ConfigPersister.getInstance()
 												.getConfig().isDontWrapJar()));
 			} catch (InvariantViolationException ex) {

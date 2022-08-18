@@ -32,9 +32,9 @@ public abstract class JreForm extends JPanel
    protected final JTextField _maxHeapSizeField = new JTextField();
    protected final JTextField _maxHeapPercentField = new JTextField();
    protected final JTextField _initialHeapPercentField = new JTextField();
-   protected final JComboBox _jdkPreferenceCombo = new JComboBox();
-   protected final JComboBox _runtimeBitsCombo = new JComboBox();
-   protected final JComboBox _varCombo = new JComboBox();
+   protected final JComboBox<String> _jdkPreferenceCombo = new JComboBox<String>();
+   protected final JComboBox<String> _runtimeBitsCombo = new JComboBox<String>();
+   protected final JComboBox<String> _varCombo = new JComboBox<String>();
    protected final JButton _propertyButton = new JButton();
    protected final JButton _optionButton = new JButton();
    protected final JButton _envPropertyButton = new JButton();

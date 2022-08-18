@@ -44,6 +44,7 @@ import net.sf.launch4j.binding.Validator;
  */
 public class VersionInfo implements IValidatable {
 	public static final String VERSION_PATTERN = "(\\d+\\.){3}\\d+";
+	public static final int DEFAULT_LANGUAGE_INDEX = LanguageID.ENGLISH_US.getIndex();
 
 	private String fileVersion;
 	private String txtFileVersion;
@@ -55,6 +56,8 @@ public class VersionInfo implements IValidatable {
 	private String companyName;
 	private String internalName;
 	private String originalFilename;
+	private String trademarks;
+	private LanguageID language;
 
 	public void checkInvariants() {
 		Validator.checkString(fileVersion, 20, VERSION_PATTERN,
@@ -77,6 +80,8 @@ public class VersionInfo implements IValidatable {
 				Messages.getString("VersionInfo.company.name"));
 		Validator.checkString(internalName, 50, 	"versionInfo.internalName",
 				Messages.getString("VersionInfo.internal.name"));
+		Validator.checkOptString(trademarks, 150, "versionInfo.trademarks",
+				Messages.getString("VersionInfo.trademarks"));
 		Validator.checkTrue(!internalName.endsWith(".exe"), "versionInfo.internalName",
 				Messages.getString("VersionInfo.internal.name.not.exe"));
 		Validator.checkString(originalFilename, 50, "versionInfo.originalFilename",
@@ -164,5 +169,29 @@ public class VersionInfo implements IValidatable {
 
 	public void setTxtProductVersion(String txtProductVersion) {
 		this.txtProductVersion = txtProductVersion;
+	}
+
+	public String getTrademarks() {
+		return trademarks;
+	}
+
+	public void setTrademarks(String trademarks) {
+		this.trademarks = trademarks;
+	}
+
+	public LanguageID getLanguage() {
+		return (language == null) ? LanguageID.sortedValues()[DEFAULT_LANGUAGE_INDEX] : language;
+	}
+
+	public void setLanguage(LanguageID language) {
+		this.language = language;
+	}
+
+	public int getLanguageIndex() {
+		return (language == null) ? DEFAULT_LANGUAGE_INDEX : language.getIndex();
+	}
+
+	public void setLanguageIndex(int index) {
+		language = LanguageID.sortedValues()[index];
 	}
 }

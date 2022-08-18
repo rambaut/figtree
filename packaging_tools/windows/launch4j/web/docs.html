@@ -11,7 +11,7 @@
 	<body>
 		<div id="container">
 			<div id="top">
-				<img style="width: 249px; height: 58px;" src="launch4j.gif" alt="launch4j"> <span class="version">3.8</span>
+				<img style="width: 249px; height: 58px;" src="launch4j.gif" alt="launch4j"> <span class="version">3.14</span>
 			</div>
 			<div id="leftnav">
 				<ul>
@@ -19,14 +19,14 @@
 					<li><a href="docs.html">Docs</a></li>
 					<li><a href="changelog.html">Changelog</a></li>
 					<li><a href="http://sourceforge.net/project/screenshots.php?group_id=95944">Screenshots</a></li>
-					<li><a href="http://sourceforge.net/projects/launch4j/files/launch4j-3/3.8">Download</a></li>
+					<li><a href="http://sourceforge.net/projects/launch4j/files/launch4j-3/3.14">Download</a></li>
 					<li><a href="http://sourceforge.net/projects/launch4j/support">Support</a></li>
 					<li><a href="http://sourceforge.net/projects/launch4j">Project summary</a></li>
 					<li><a href="http://sourceforge.net/tracker/?atid=613100&amp;group_id=95944">Bug tracker</a></li>
 					<li><a href="links.html">Links</a></li>
 				</ul>
 				<br />
-				<a class="button" href="https://sourceforge.net/projects/launch4j/files/launch4j-3/3.8" rel="nofollow"><img alt="Downloads" src="https://img.shields.io/sourceforge/dm/launch4j.svg"></a>
+				<a class="button" href="https://sourceforge.net/projects/launch4j/files/launch4j-3/3.14" rel="nofollow"><img alt="Downloads" src="https://img.shields.io/sourceforge/dm/launch4j.svg"></a>
 				<a class="button" href="https://sourceforge.net/p/launch4j/" rel="nofollow"><img alt="Download Launch4j" src="https://sourceforge.net/sflogo.php?type=10&group_id=95944"></a>
 			</div>
 			<div id="content">
@@ -67,7 +67,7 @@ may be absolute paths or relative to the configuration file path.
   %VAR% expands environment/special variables and registry keys.
 --&gt;
 <strong>&lt;launch4jConfig&gt;</strong>
-  <strong>&lt;headerType&gt;</strong><span class="codeword">gui|console</span><strong>&lt;/headerType&gt;</strong>
+  <strong>&lt;headerType&gt;</strong><span class="codeword">gui|console|jniGui32|jniConsole32</span><strong>&lt;/headerType&gt;</strong>
   <strong>&lt;outfile&gt;</strong><span class="codeword">file.exe</span><strong><span class="codeword"></span>&lt;/outfile&gt;</strong>
   &lt;jar&gt;<span class="codeword">file</span><span class="codeword"></span>&lt;/jar&gt;
   &lt;dontWrapJar&gt;<span class="codeword">true|<u>false</u></span>&lt;/dontWrapJar&gt;
@@ -100,8 +100,8 @@ may be absolute paths or relative to the configuration file path.
     <strong>&lt;path&gt;</strong><span class="codeword">bundled JRE path (%VAR%)</span><strong>&lt;/path&gt;</strong>
     &lt;bundledJre64Bit&gt;<span class="codeword">true|<u>false</u></span>&lt;/bundledJre64Bit&gt;
     &lt;bundledJreAsFallback&gt;<span class="codeword">true|<u>false</u></span>&lt;/bundledJreAsFallback&gt;
-    <strong>&lt;minVersion&gt;</strong><span class="codeword">x.x.x[_xx]</span><strong>&lt;/minVersion&gt;</strong>
-    &lt;maxVersion&gt;<span class="codeword">x.x.x[_xx]</span>&lt;/maxVersion&gt;
+    <strong>&lt;minVersion&gt;</strong><span class="codeword">1.x.x[_xxx]|xxx[.xxx[.xxx]]</span><strong>&lt;/minVersion&gt;</strong>
+    &lt;maxVersion&gt;<span class="codeword">1.x.x[_xxx]|xxx[.xxx[.xxx]]</span>&lt;/maxVersion&gt;
     &lt;jdkPreference&gt;<span class="codeword">jreOnly|<u>preferJre</u>|preferJdk|jdkOnly</span>&lt;/jdkPreference&gt;
     &lt;runtimeBits&gt;<span class="codeword">64|<u>64/32</u>|32/64|32</span>&lt;/runtimeBits&gt;
     &lt;!-- Heap sizes in MB and % of available memory. --&gt;
@@ -129,6 +129,18 @@ may be absolute paths or relative to the configuration file path.
     &lt;companyName&gt;<span class="codeword">text</span>&lt;/companyName&gt;
     <strong>&lt;internalName&gt;</strong><span class="codeword">filename</span><strong>&lt;/internalName&gt;</strong>
     <strong>&lt;originalFilename&gt;</strong><span class="codeword">filename.exe</span><strong>&lt;/originalFilename&gt;</strong>
+    &lt;trademarks&gt;<span class="codeword">text</span>&lt;/trademarks&gt;
+    &lt;language&gt;<span class="codeword">
+      ALBANIAN|ARABIC|BAHASA|DUTCH_BELGIAN|FRENCH_BELGIAN|BULGARIAN|
+      FRENCH_CANADIAN|CASTILIAN_SPANISH|CATALAN|CROATO_SERBIAN_LATIN|
+      CZECH|DANISH|DUTCH|ENGLISH_UK|<u>ENGLISH_US</u>|FINNISH|FRENCH|GERMAN|
+      GREEK|HEBREW|HUNGARIAN|ICELANDIC|ITALIAN|JAPANESE|KOREAN|
+      NORWEGIAN_BOKMAL|NORWEGIAN_NYNORSK|POLISH|PORTUGUESE_BRAZIL|
+      PORTUGUESE_PORTUGAL|RHAETO_ROMANIC|ROMANIAN|RUSSIAN|
+      SERBO_CROATIAN_CYRILLIC|SIMPLIFIED_CHINESE|SLOVAK|SPANISH_MEXICO|
+      SWEDISH|FRENCH_SWISS|GERMAN_SWISS|ITALIAN_SWISS|THAI|
+      TRADITIONAL_CHINESE|TURKISH|URDU
+    </span>&lt;/language&gt;
   &lt;/versionInfo&gt;
   &lt;messages&gt;
     <strong>&lt;startupErr&gt;</strong>text<strong>&lt;/startupErr&gt;</strong>
@@ -170,8 +182,37 @@ may be absolute paths or relative to the configuration file path.
 		    		<td>no</td>
 		    		<td class="description">always waits and returns application's exit code.</td>
 		    	</tr>
+		    	<tr>
+		    		<td>jniGui32 <strong style="color: red">(beta)</strong></td>
+		    		<td>launch4j</td>
+		    		<td>yes</td>
+		    		<td class="description">always waits and returns application's exit code.</td>
+		    	</tr>
+		    	<tr>
+		    		<td>jniConsole32 <strong style="color: red">(beta)</strong></td>
+		    		<td>launch4j</td>
+		    		<td>no</td>
+		    		<td class="description">always waits and returns application's exit code.</td>
+		    	</tr>
 		    </tbody>
 		</table>
+		<br />
+		When JNI headers are used the JVM is created directly by the launch4j wrapper executable instead of running java/javaw launchers.
+		The process name will be the same as the wrapper. The JNI headers are in BETA and some features are not available which is signaled 
+		during wrapper build based on the configuration.
+		For production use consider the classic gui/console headers.
+		<br />
+		Missing features:
+		<ul>
+			<li>Only '.' is allowed in change directory (chdir).</li>
+			<li>Command line arguments cannot be passed to the executable.</li>
+			<li>Constant command line arguments (cmdLine).</li>
+			<li>stayAlive should be ignored by JNI headers.</li>
+			<li>Restart of appplication based on exit code (restartOnCrash).</li>
+			<li>Process priority - only normal is supported (priority).</li>
+			<li>Jar manifest is ignored, mainclass and classpath must be defined.</li>
+			<li>64-bit JRE are not supported.</li>
+		</ul>
 	</dd>
 </dl>
 <dl>
@@ -280,7 +321,7 @@ may be absolute paths or relative to the configuration file path.
     		use the <em>&lt;minVersion&gt;</em> property, you may also specify
     		the <em>&lt;maxVersion&gt;</em> to prevent it from using higher Java versions.
     		Launch4j will always use the highest version available (in the min/max range of course).
-    		If a Sun's JRE is not available or does not satisfy the search criteria,
+    		If an Oracle's JRE is not available or does not satisfy the search criteria,
     		the search will be repeated on IBM runtimes.
     		You can also combine these properties to change the startup process...
     	</dd>
@@ -288,10 +329,25 @@ may be absolute paths or relative to the configuration file path.
 	<blockquote>
         <dl>
         	<dt>&lt;path&gt;</dt>
-        	<dd>Run if bundled JRE and javaw.exe are present, otherwise stop with error.</dd>
+        	<dd>Run if bundled JRE and javaw.exe are present, otherwise stop with error.
+        	Starting with version 3.13 it is possible to use the JAVA_HOME or PATH environment 
+        	variables to search for a runtime that was installed without adding registry keys
+        	used for searching JREs. This can be particularly useful in combination with 
+        	&lt;minVersion&gt;&nbsp; and &lt;bundledJreAsFallback&gt;. If a registered
+        	runtime is not found, then as a fallback option launch4j will try to locate
+        	it using the environment variables. However, the minVersion does not apply 
+        	in such case.<br /><br />
+        	Bundled example: &lt;path&gtjre&lt;/path&gt;<br />
+            Fallback example: &lt;path&gt;%JAVA_HOME%;%PATH%&lt;/path&gt;
+        	</dd>
             <dt>&lt;path&gt; + &lt;minVersion&gt;&nbsp; [+ &lt;maxVersion&gt;]</dt>
             <dd>Use bundled JRE first, if it cannot be located search for Java,
         		if that fails display error message and open the Java download page.
+        	</dd>
+        	<dt>&lt;path&gt; + &lt;minVersion&gt;&nbsp; [+ &lt;maxVersion&gt;] + &lt;bundledJreAsFallback&gt;</dt>
+            <dd>Search for Java, if an appropriate version cannot be found 
+         	   try &lt;path&gt; as fallback option without version check.
+               If that fails display error message and open the Java download page.
         	</dd>
             <dt>&lt;minVersion&gt;&nbsp; [+ &lt;maxVersion&gt;]</dt>
             <dd>Search for Java, if an appropriate version cannot be found display
@@ -299,6 +355,30 @@ may be absolute paths or relative to the configuration file path.
         	</dd>
         </dl>
 	</blockquote>
+</blockquote>
+<blockquote>
+    <dl>
+    	<dt>&lt;minVersion&gt;, &lt;maxVersion&gt; format - Java < 9</dt>
+        <dd>The traditional version scheme supported by launch4j is 1.x.x[_xxx] and requires at least 3 parts, for example:
+<pre>
+1.6.0
+1.7.0_51
+1.8.0_121
+</pre>
+    	</dd>
+	</dl>
+</blockquote>
+<blockquote>
+    <dl>
+    	<dt>&lt;minVersion&gt;, &lt;maxVersion&gt; format - Java >= 9</dt>
+        <dd>The new version format is xxx[.xxx[.xxx]] where only 1 part is required and the update version after the underscore is not allowed.
+<pre>
+1.6
+9
+10.0.1
+</pre>
+    	</dd>
+	</dl>
 </blockquote>
 <blockquote>
 	<dl>
@@ -442,7 +522,8 @@ may be absolute paths or relative to the configuration file path.
 
 <dl>
 	<dt>&lt;versionInfo&gt;</dt>
-	<dd>Optional, version information to be displayed by the Windows Explorer.</dd>
+	<dd>Optional, <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa381058%28v=vs.85%29.aspx">version information</a>
+	to be displayed by the Windows Explorer.</dd>
 </dl>
 <blockquote>
 	<dl>
@@ -486,6 +567,14 @@ may be absolute paths or relative to the configuration file path.
 		<dd>Original name of the file without the path. Allows to determine
 			whether a file has been renamed by a user.
 		</dd>
+	</dl>
+	<dl>
+		<dt>&lt;trademarks&gt;</dt>
+		<dd>Trademarks that apply to the file.</dd>
+	</dl>
+	<dl>
+		<dt>&lt;language&gt;</dt>
+		<dd>One of the language codes.</dd>
 	</dl>
 </blockquote>
 
@@ -658,7 +747,7 @@ These settings are only used during building of the launcher or wrapper, not dur
 			</div>
 			<div class="footer">
 			    All trademarks mentioned are properties of their respective owners.<br />
-            	Copyright &copy; 2005-2015 Grzegorz Kowal
+            	Copyright &copy; 2005-2018 Grzegorz Kowal
             	<p style="margin-top: 0.5em">
             	    <a href="https://sourceforge.net/p/launch4j/" rel="nofollow"><img alt="Download Launch4j Executable Wrapper" src="https://sourceforge.net/sflogo.php?type=16&group_id=95944"></a>
             	</p>

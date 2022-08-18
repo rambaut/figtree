@@ -30,6 +30,7 @@
 #define ID_TIMER 1
 #define DEFAULT_SPLASH_TIMEOUT	60			/* 60 seconds */
 #define MAX_SPLASH_TIMEOUT		60 * 15		/* 15 minutes */
+#define TIMER_PROC_INTERVAL	100			/* interval in ms between calls to EnumWindows */
 
 HWND getInstanceWindow();
 

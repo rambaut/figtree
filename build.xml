@@ -102,8 +102,8 @@
 
     </target>
 
-    <property name="version" value="1.4.4" />
-    <property name="version_number" value="1.4.4" />
+    <property name="version" value="1.4.5pre" />
+    <property name="version_number" value="1.4.5" />
     <property name="release_dir" value="release" />
     <property name="name" value="FigTree" />
 
@@ -213,7 +213,7 @@
                     arguments=""
                     version="${version}"
                     build="1"
-                    copyright="${name} v${version}, Copyright 2006-2018, Andrew Rambaut"
+                    copyright="${name} v${version}, Copyright 2006-2022, Andrew Rambaut"
                     bundleid="figtree" >
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
             <jarfileset dir="${dist}">

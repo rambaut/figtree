@@ -54,8 +54,8 @@ public class Jre implements IValidatable {
 	public static final String ARGS = "jvmArgs";
 
 	// __________________________________________________________________________________
-	public static final String VERSION_PATTERN = "(\\d\\.){2}\\d(_\\d+)?";
-
+	public static final String VERSION_PATTERN = "(1\\.\\d\\.\\d(_\\d{1,3})?)|[1-9][0-9]{0,2}(\\.\\d{1,3}){0,2}";
+	
 	public static final String JDK_PREFERENCE_JRE_ONLY = "jreOnly";
 	public static final String JDK_PREFERENCE_PREFER_JRE = "preferJre";
 	public static final String JDK_PREFERENCE_PREFER_JDK = "preferJdk";
@@ -98,9 +98,9 @@ public class Jre implements IValidatable {
 	private List<String> options;
 
 	public void checkInvariants() {
-		Validator.checkOptString(minVersion, 10, VERSION_PATTERN,
+		Validator.checkOptString(minVersion, 20, VERSION_PATTERN,
 				"jre.minVersion", Messages.getString("Jre.min.version"));
-		Validator.checkOptString(maxVersion, 10, VERSION_PATTERN,
+		Validator.checkOptString(maxVersion, 20, VERSION_PATTERN,
 				"jre.maxVersion", Messages.getString("Jre.max.version"));
 		if (Validator.isEmpty(path)) {
 			Validator.checkFalse(bundledJre64Bit, "jre.bundledJre64Bit",
@@ -116,7 +116,7 @@ public class Jre implements IValidatable {
 		if (!Validator.isEmpty(maxVersion)) {
 			Validator.checkFalse(Validator.isEmpty(minVersion),
 					"jre.minVersion", Messages.getString("Jre.specify.min.version"));
-			Validator.checkTrue(minVersion.compareTo(maxVersion) < 0,
+			Validator.checkTrue(JreVersion.parseString(minVersion).compareTo(JreVersion.parseString(maxVersion)) < 0,
 					"jre.maxVersion", Messages.getString("Jre.max.greater.than.min"));
 		}
 		Validator.checkTrue(initialHeapSize == null || maxHeapSize != null,
@@ -155,7 +155,7 @@ public class Jre implements IValidatable {
 		Validator.checkOptStrings(options,
 				Validator.MAX_ARGS,
 				Validator.MAX_ARGS,
-				"[^%]*|([^%]*([^%]*%[^%]+%[^%]*)+[^%]*)*",
+				"[^%]*|([^%]*([^%]*%[^%]*%[^%]*)+[^%]*)*",
 				"jre.options",
 				Messages.getString("Jre.jvm.options"),
 				Messages.getString("Jre.jvm.options.variable"));

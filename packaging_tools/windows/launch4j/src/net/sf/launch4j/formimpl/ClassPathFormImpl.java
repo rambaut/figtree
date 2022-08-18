@@ -76,7 +76,7 @@ public class ClassPathFormImpl extends ClassPathForm {
 		_classpathCheck.addChangeListener(cpl);
 		cpl.stateChanged(null);
 
-		_classpathList.setModel(new DefaultListModel());
+		_classpathList.setModel(new DefaultListModel<String>());
 		_classpathList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		_classpathList.addListSelectionListener(new ClasspathSelectionListener());
 
@@ -121,7 +121,7 @@ public class ClassPathFormImpl extends ClassPathForm {
 				signalViolation(Messages.getString("specifyClassPath"));
 				return;
 			}
-			DefaultListModel model = (DefaultListModel) _classpathList.getModel();
+			DefaultListModel<String> model = (DefaultListModel<String>) _classpathList.getModel();
 			if (_classpathList.isSelectionEmpty()) {
 				model.addElement(cp);
 				clear();
@@ -152,7 +152,7 @@ public class ClassPathFormImpl extends ClassPathForm {
 							Messages.getString("confirmClassPathRemoval"))) {
 				return;
 			}
-			DefaultListModel model = (DefaultListModel) _classpathList.getModel();
+			DefaultListModel<String> model = (DefaultListModel<String>) _classpathList.getModel();
 			while (!_classpathList.isSelectionEmpty()) {
 				model.remove(_classpathList.getSelectedIndex());
 			}
@@ -165,24 +165,24 @@ public class ClassPathFormImpl extends ClassPathForm {
 			if (x < 1) {
 				return;
 			}
-			DefaultListModel model = (DefaultListModel) _classpathList.getModel();
-			Object o = model.get(x - 1);
+			DefaultListModel<String> model = (DefaultListModel<String>) _classpathList.getModel();
+			String s = model.get(x - 1);
 			model.set(x - 1, model.get(x));
-			model.set(x, o);
+			model.set(x, s);
 			_classpathList.setSelectedIndex(x - 1);
 		}
 	}
 	
 	private class MoveDownListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			DefaultListModel model = (DefaultListModel) _classpathList.getModel();
+			DefaultListModel<String> model = (DefaultListModel<String>) _classpathList.getModel();
 			int x = _classpathList.getSelectedIndex();
 			if (x == -1 || x >= model.getSize() - 1) {
 				return;
 			}
-			Object o = model.get(x + 1);
+			String s = model.get(x + 1);
 			model.set(x + 1, model.get(x));
-			model.set(x, o);
+			model.set(x, s);
 			_classpathList.setSelectedIndex(x + 1);
 		}
 	}
@@ -205,7 +205,7 @@ public class ClassPathFormImpl extends ClassPathForm {
 					String classPath = (String) attr.getValue("Class-Path");
 					jar.close();
 					_mainclassField.setText(mainClass != null ? mainClass : "");
-					DefaultListModel model = new DefaultListModel();
+					DefaultListModel<String> model = new DefaultListModel<String>();
 					if (classPath != null) {
 						String[] paths = classPath.split(" ");
 						for (int i = 0; i < paths.length; i++) {

@@ -43,6 +43,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
@@ -57,6 +58,7 @@ import net.sf.launch4j.Util;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.thoughtworks.xstream.security.*;
 
 /**
  * @author Copyright (C) 2014 Grzegorz Kowal
@@ -71,6 +73,13 @@ public class ConfigPersister {
 
 	private ConfigPersister() {
 		_xstream = new XStream(new DomDriver());
+		
+		_xstream.addPermission(NoTypePermission.NONE);
+		_xstream.addPermission(NullPermission.NULL);
+		_xstream.addPermission(PrimitiveTypePermission.PRIMITIVES);
+		_xstream.allowTypeHierarchy(Collection.class);
+		_xstream.allowTypesByWildcard(new String[] { "net.sf.launch4j.config.*" });
+		
     	_xstream.alias("launch4jConfig", Config.class);
     	_xstream.alias("classPath", ClassPath.class);
     	_xstream.alias("jre", Jre.class);

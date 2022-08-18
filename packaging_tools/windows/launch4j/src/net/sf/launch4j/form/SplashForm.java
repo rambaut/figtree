@@ -12,6 +12,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 
 public abstract class SplashForm extends JPanel
 {
@@ -135,7 +136,7 @@ public abstract class SplashForm extends JPanel
       _timeoutField.setToolTipText(Messages.getString("timeoutTip"));
       jpanel1.add(_timeoutField,cc.xy(4,8));
 
-      _splashFileButton.setIcon(loadImage("images/open16.png"));
+      _splashFileButton.setIcon(UIManager.getIcon("Tree.closedIcon"));
       _splashFileButton.setName("splashFileButton");
       jpanel1.add(_splashFileButton,cc.xy(7,4));
 

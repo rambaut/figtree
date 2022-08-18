@@ -310,24 +310,24 @@ public class Bindings implements PropertyChangeListener, ActionListener {
 	/**
 	 * Handles JList
 	 */
-	public Bindings add(String property, JList list) {
+	public <T> Bindings add(String property, JList<T> list) {
 		registerPropertyChangeListener(list);
-		return add(new JListBinding(property, list));
+		return add(new JListBinding<T>(property, list));
 	}
 
 	/**
 	 * Handles JComboBox
 	 */
-	public Bindings add(String property, JComboBox combo, int defaultValue) {
+	public <T> Bindings add(String property, JComboBox<T> combo, int defaultValue) {
 		combo.addActionListener(this);
-		return add(new JComboBoxBinding(property, combo, defaultValue));
+		return add(new JComboBoxBinding<T>(property, combo, defaultValue));
 	}
 
 	/**
 	 * Handles JComboBox
 	 */
-	public Bindings add(String property, JComboBox combo) {
+	public <T> Bindings add(String property, JComboBox<T> combo) {
 		combo.addActionListener(this);
-		return add(new JComboBoxBinding(property, combo, 0));
+		return add(new JComboBoxBinding<T>(property, combo, 0));
 	}
 }

@@ -3,7 +3,7 @@ FileName=guihead.dev
 Name=guihead
 UnitCount=5
 Type=0
-Ver=1
+Ver=2
 ObjFiles=
 Includes=
 Libs=
@@ -22,12 +22,14 @@ OverrideOutputName=guihead.exe
 HostApplication=
 Folders=
 CommandLine=
-UseCustomMakefile=1
+UseCustomMakefile=0
 CustomMakefile=Makefile.win
 IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
-CompilerSettings=0000000001001000000100
+CompilerSettings=000000d000000000000001000
+LogOutput=
+LogOutputEnabled=0
 
 [Unit1]
 FileName=guihead.c
@@ -66,6 +68,7 @@ OriginalFilename=
 ProductName=
 ProductVersion=
 AutoIncBuildNr=0
+SyncProduct=0
 
 [Unit4]
 FileName=..\head.h
@@ -95,7 +98,7 @@ Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CC) -c head.c -o ../../head/head.o $(CFLAGS)
 
 [Unit5]
 FileName=..\resource.h

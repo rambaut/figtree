@@ -17,7 +17,7 @@
 	</target>
 
 	<target name="compile" depends="init" description="compile the source">
-		<javac srcdir="${src}" destdir="${build}" classpathref="dist.classpath" source="1.6" debug="on" includeantruntime="false" />
+		<javac srcdir="${src}" destdir="${build}" classpathref="dist.classpath" source="1.8" debug="on" includeantruntime="false" />
 	</target>
 
 	<target name="jar" depends="compile" description="create the jar">
@@ -42,9 +42,9 @@
 		<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.dir}/launch4j.jar
 		    :${launch4j.dir}/lib/xstream.jar" />
 		<launch4j>
-			<config headerType="console" jar="ConsoleApp.jar" outfile="ConsoleApp.exe" errTitle="ConsoleApp" chdir="." icon="l4j/ConsoleApp.ico">
+			<config headerType="console" jarPath="ConsoleApp.jar" dontWrapJar="true" outfile="ConsoleApp.exe" errTitle="ConsoleApp" chdir="." icon="l4j/ConsoleApp.ico">
 				<singleInstance mutexName="net.sf.launch4j.example.ConsoleApp" />
-				<jre minVersion="1.6.0" />
+				<jre minVersion="1.8.0" />
 			</config>
 		</launch4j>
 	</target>

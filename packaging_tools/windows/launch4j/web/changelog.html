@@ -11,7 +11,7 @@
 	<body>
 		<div id="container">
 			<div id="top">
-				<img style="width: 249px; height: 58px;" src="launch4j.gif" alt="launch4j"> <span class="version">3.8</span>
+				<img style="width: 249px; height: 58px;" src="launch4j.gif" alt="launch4j"> <span class="version">3.14</span>
 			</div>
 			<div id="leftnav">
 				<ul>
@@ -19,18 +19,68 @@
 					<li><a href="docs.html">Docs</a></li>
 					<li><a href="changelog.html">Changelog</a></li>
 					<li><a href="http://sourceforge.net/project/screenshots.php?group_id=95944">Screenshots</a></li>
-					<li><a href="http://sourceforge.net/projects/launch4j/files/launch4j-3/3.8">Download</a></li>
+					<li><a href="http://sourceforge.net/projects/launch4j/files/launch4j-3/3.14">Download</a></li>
 					<li><a href="http://sourceforge.net/projects/launch4j/support">Support</a></li>
 					<li><a href="http://sourceforge.net/projects/launch4j">Project summary</a></li>
 					<li><a href="http://sourceforge.net/tracker/?atid=613100&amp;group_id=95944">Bug tracker</a></li>
 					<li><a href="links.html">Links</a></li>
 				</ul>
 				<br />
-				<a class="button" href="https://sourceforge.net/projects/launch4j/files/launch4j-3/3.8" rel="nofollow"><img alt="Downloads" src="https://img.shields.io/sourceforge/dm/launch4j.svg"></a>
+				<a class="button" href="https://sourceforge.net/projects/launch4j/files/launch4j-3/3.14" rel="nofollow"><img alt="Downloads" src="https://img.shields.io/sourceforge/dm/launch4j.svg"></a>
 				<a class="button" href="https://sourceforge.net/p/launch4j/" rel="nofollow"><img alt="Download Launch4j" src="https://sourceforge.net/sflogo.php?type=10&group_id=95944"></a>
 			</div>
 			<div id="content">
 <h2>Changelog</h2>
+
+<h4>Changes in version 3.14 (07-03-2021)</h4>
+<ul class="changes">
+	<li>Updated dependencies and switched to Java 1.8.</li>
+	<li>Ticket #120 Switched to FlatLaf and removed WindowsLookAndFeel for multi-platform compatibility.</li>
+</ul>
+
+<h4>Changes in version 3.13 (03-02-2021)</h4>
+<ul class="changes">
+	<li>FR #127 Added multiple bundled JRE path search (%JAVA_HOME%).</li>
+	<li>Allow equal sign in environment variable assignments.</li>
+	<li>Fix sign4j warnings for implicit definition of lseek, read, write, close, and access (foss1024).</li>
+	<li>Add launch4j console mode launch script for *nix (Luke S).</li>
+	<li>Tickets #172, #186, #198, #200, #206 Launch4j GUI supports also Java 1.9 and up.</li>
+</ul>
+
+<h4>Changes in version 3.12 (17-05-2018)</h4>
+<ul class="changes">
+	<li>Ticket #179, #183 The generated executable fully supports Java 9 and newer (Sergey Karpushin).</li>
+	<li>Ticket #161 Support of update version higher than 99 (Sergey Karpushin).</li>
+	<li>Ticket #177 Launching on Java 9 JDK and newer is now possible (not just JRE).</li>
+	<li>Known issue: launch4j itself does not support Java 9 Early Access, use a public release instead or Java 10.</li>
+</ul>
+
+<h4>Changes in version 3.11 (27-06-2017)</h4>
+<ul class="changes">
+	<li>Log more regarding Java search and missing resources.</li>
+  	<li>Log resource file during build.</li>
+  	<li>Added basic Java 9 support (only major version is detected right now due to version scheme change).</li>
+  	<li>Ticket #145 Allow literal use of % in JRE options and set environment variables, use %% (blueskyhigh).</li>
+  	<li>Added Linux 64-bit binaries (Sebastian Bögl).</li>
+  	<li>Added IBM Java 1.8 support.</li>
+  	<li>JNI header: fixed a crash where launch4j would try to `free` non-heap memory (Alexander Floh).</li>
+  	<li>Ticket #160 Removed old Mac OS X package which caused problems on newer versions of the system.</li>
+</ul>
+
+<h4>Changes in version 3.9 (20-07-2016)</h4>
+<ul class="changes">
+	<li>Ticket #146 Fixed java version check where the update number was greater than 99 (e.g. 1.8.0_101).</li>
+	<li>Enlarged the total classpath length to 30KB.</li>
+	<li>Ticket #142 Unbound VersionInfo returns wrong LanguageID (Sebastian Bögl).</li>
+	<li>Ticket #141 Ensure encoding of resource file to be iso-8859-1 (Thomas Scheithauer).</li>
+	<li>More reactive splash screen response to main window appearance (Federico Fissore).</li>
+	<li>FR #95 Launch4j should return an exit value (Sebastian Bögl).</li>
+	<li>FR #94 Add the working directory classifier for OS X (Sebastian Bögl).</li>
+	<li>FR #39 Launch Java VM through JNI (Ryan Rusaw) - BETA!</li>
+	<li>FR #69 Configure the language property of generated executables (Sebastian Bögl).</li>
+	<li>FR #77 Add legal trademarks as an additional field in version info tab (Sebastian Bögl).</li>
+	<li>Added a simple example how to use the Maven plugin (demo/ExitCodeApp).</li>
+</ul>
 
 <h4>Changes in version 3.8 (09-05-2015)</h4>
 <ul class="changes">
@@ -49,7 +99,6 @@
 	<li>FR #70 Java search sequence - bundled JRE can be used before or after the min/max version search (bundledJreAsFallback).</li>
 	<li>Fixed: Crash when classpath contained wildcard patterns where the dependency was in the same directory as the launcher.</li>
 	<li>Fixed launch4j GUI application closing - the process was still running.</li>
-	<li style="text-decoration: line-through">Updated to Dev-Cpp 5.7.1, MinGW 4.8.1 (head_src and w32api files).</li>
 </ul>
 
 <h4>Changes in version 3.5 (09-10-2014)</h4>
@@ -424,7 +473,7 @@
 			</div>
 			<div class="footer">
 			    All trademarks mentioned are properties of their respective owners.<br />
-            	Copyright &copy; 2005-2015 Grzegorz Kowal
+            	Copyright &copy; 2005-2018 Grzegorz Kowal
             	<p style="margin-top: 0.5em">
             	    <a href="https://sourceforge.net/p/launch4j/" rel="nofollow"><img alt="Download Launch4j Executable Wrapper" src="https://sourceforge.net/sflogo.php?type=16&group_id=95944"></a>
             	</p>

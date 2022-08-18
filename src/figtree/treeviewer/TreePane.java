@@ -1320,8 +1320,11 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         if (tip == null) {
             return new Point(0,0);
         }
-        Shape path = transform.createTransformedShape(treeLayoutCache.getTipLabelPath(tip));
-        return path.getBounds().getLocation();
+        Shape path = treeLayoutCache.getTipLabelPath(tip);
+        if (path == null) {
+            return new Point(0,0);
+        }
+        return transform.createTransformedShape(path).getBounds().getLocation();
     }
 
     public void scrollPointToVisible(Point point) {

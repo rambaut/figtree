@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.launch4j</groupId>
 	<artifactId>launch4j</artifactId>
-	<version>3.8.0</version>
+	<version>${launch4j.version}</version>
 	<name>Launch4j</name>
 	<description>Cross-platform Java executable wrapper for creating lightweight Windows native EXEs. Provides advanced JRE search, application startup configuration and better user experience.</description>
 	<url>http://sourceforge.net/projects/launch4j/</url>
@@ -43,8 +44,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<versionNumber>3.8.0.0</versionNumber>
-		<version>3.8</version>
+		<versionNumber>${launch4j.version}.0.0</versionNumber>
+		<version>${launch4j.version}</version>
 	</properties>
 
 	<dependencies>
@@ -57,7 +58,7 @@
 					<groupId>commons-collections</groupId>
 				</exclusion>
 			</exclusions>
-			<version>1.7.0</version>
+			<version>1.9.4</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -131,19 +132,19 @@
 			<version>1.2.1</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jgoodies</groupId>
-			<artifactId>looks</artifactId>
-			<version>2.2.2</version>
+  			<groupId>com.formdev</groupId>
+  			<artifactId>flatlaf</artifactId>
+  			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.4.8</version>
+			<version>1.4.15</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ant</groupId>
 			<artifactId>ant</artifactId>
-			<version>1.8.2</version>
+			<version>1.10.9</version>
 		</dependency>
 
 	</dependencies>
@@ -161,10 +162,10 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.8.1</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -236,6 +237,7 @@
 						<configuration>
 							<descriptors>
 								<descriptor>assembly/assemble-linux.xml</descriptor>
+								<descriptor>assembly/assemble-linux64.xml</descriptor>
 								<descriptor>assembly/assemble-win32.xml</descriptor>
 								<descriptor>assembly/assemble-mac.xml</descriptor>
 							</descriptors>
@@ -320,7 +322,10 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.9.1</version>
+						<version>3.2.0</version>
+						<configuration>
+                			<doclint>none</doclint>
+              			</configuration>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
@@ -359,13 +364,6 @@
 				</plugins>
 			</build>
 		</profile>
-		<!-- Macosx-x86 10.8 Profile -->
-		<profile>
-			<id>macosx-x86-10.8</id>
-			<properties>
-				<bin.dir>bin-macosx-x86-10.8</bin.dir>
-			</properties>
-		</profile>
 		<!-- Macosx-x86 Profile -->
 		<profile>
 			<id>macosx-x86</id>
@@ -387,12 +385,12 @@
 				<bin.dir>bin-win32</bin.dir>
 			</properties>
 			<build>
-				<plugins>					
+				<plugins>
 					<!-- Creates Launch4j executable -->
 					<plugin>
 						<groupId>com.akathist.maven.plugins.launch4j</groupId>
 						<artifactId>launch4j-maven-plugin</artifactId>
-						<version>1.6</version>
+						<version>1.7.25</version>
 						<executions>
 							<execution>
 								<id>launch4j</id>
@@ -410,7 +408,7 @@
 									<stayAlive>false</stayAlive>
 
 									<jre>
-										<minVersion>1.6.0</minVersion>
+										<minVersion>1.8.0</minVersion>
 									</jre>
 									<versionInfo>
 										<fileVersion>${versionNumber}</fileVersion>
@@ -418,7 +416,7 @@
 										<productVersion>${versionNumber}</productVersion>
 										<txtProductVersion>${version}</txtProductVersion>
 										<fileDescription>Cross-platform Java application wrapper</fileDescription>
-										<copyright>Copyright (C) 2004, 2014 Grzegorz Kowal</copyright>
+										<copyright>Copyright (C) 2004, 2017 Grzegorz Kowal</copyright>
 										<productName>launch4j</productName>
 										<companyName>http://launch4j.sourceforge.net/</companyName>
 										<internalName>GUI launcher</internalName>
@@ -433,7 +431,7 @@
 		</profile>
 		<!-- Generic distribution profile -->
 		<profile>
-			<id>dist</id>			
+			<id>dist</id>
 			<build>
 				<plugins>
 					<!-- Clean -->
@@ -441,7 +439,7 @@
 						<artifactId>maven-clean-plugin</artifactId>
 						<version>2.6</version>
 						<configuration>
-							<filesets>								
+							<filesets>
 								<fileset>
 									<directory>${basedir}/bin</directory>
 									<includes>
@@ -456,7 +454,7 @@
 									<includes>
 										<incude>launch4j.exe</incude>
 									</includes>
-								</fileset>		
+								</fileset>
 								<fileset>
 									<directory>${basedir}</directory>
 									<includes>
@@ -511,8 +509,8 @@
 				</plugins>
 			</build>
 		</profile>
-	
-	
+
+
 	</profiles>
 
 </project>

@@ -528,7 +528,9 @@ public class DefaultTreeViewer extends TreeViewer {
         Set<Node> selectedTips = treePane.getSelectedTips();
         if (selectedTips.size() > 0) {
             Point point = treePane.getLocationOfTip(selectedTips.iterator().next());
-            treePane.scrollPointToVisible(point);
+            if (point != null) {
+                treePane.scrollPointToVisible(point);
+            }
         }
     }
 

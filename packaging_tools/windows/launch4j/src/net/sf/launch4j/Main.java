@@ -68,6 +68,7 @@ public class Main {
 			}
 		} catch (Exception e) {
 			Log.getConsoleLog().append(e.getMessage());
+			System.exit(1);
 		} 
 	}
 
@@ -85,7 +86,7 @@ public class Main {
 				" (http://launch4j.sourceforge.net/)\n" +
 				"Cross-platform Java application wrapper" +
 						" for creating Windows native executables.\n\n" +
-				"Copyright (C) 2004, 2015 Grzegorz Kowal\n\n" +
+				"Copyright (C) 2004, 2019 Grzegorz Kowal\n\n" +
 				"Launch4j comes with ABSOLUTELY NO WARRANTY.\n" +
 				"This is free software, licensed under the BSD License.\n" +
 				"This product includes software developed by the Apache Software Foundation" +

@@ -17,7 +17,7 @@
 	</target>
 
 	<target name="compile" depends="init" description="compile the source">
-		<javac srcdir="${src}" destdir="${build}" classpathref="dist.classpath" source="1.6" debug="on" includeantruntime="false" />
+		<javac srcdir="${src}" destdir="${build}" classpathref="dist.classpath" source="1.8" debug="on" includeantruntime="false" />
 	</target>
 
 	<target name="jar" depends="compile" description="create the jar">

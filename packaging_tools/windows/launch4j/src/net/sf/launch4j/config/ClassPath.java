@@ -53,7 +53,7 @@ public class ClassPath implements IValidatable {
 				Messages.getString("ClassPath.mainClass"));
 		Validator.checkOptStrings(paths,
 				Validator.MAX_PATH,
-				Validator.MAX_BIG_STR,
+				Validator.MAX_ARGS,
 				"paths",
 				Messages.getString("ClassPath.path"));
 	}

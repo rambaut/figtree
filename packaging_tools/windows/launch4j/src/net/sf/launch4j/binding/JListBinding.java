@@ -48,12 +48,12 @@ import org.apache.commons.beanutils.PropertyUtils;
 /**
  * @author Copyright (C) 2006 Grzegorz Kowal
  */
-public class JListBinding implements Binding {
+public class JListBinding<T> implements Binding {
 	private final String _property;
-	private final JList _list;
+	private final JList<T> _list;
 	private final Color _validColor;
 
-	public JListBinding(String property, JList list) {
+	public JListBinding(String property, JList<T> list) {
 		if (property == null || list == null) {
 			throw new NullPointerException();
 		}
@@ -70,17 +70,18 @@ public class JListBinding implements Binding {
 	}
 
 	public void clear(IValidatable bean) {
-		_list.setModel(new DefaultListModel());
+		_list.setModel(new DefaultListModel<T>());
 	}
 
 	public void put(IValidatable bean) {
 		try {
-			DefaultListModel model = new DefaultListModel();
-			List<?> list = (List<?>) PropertyUtils.getProperty(bean, _property);
+			DefaultListModel<T> model = new DefaultListModel<T>();
+			@SuppressWarnings("unchecked")
+			List<T> list = (List<T>) PropertyUtils.getProperty(bean, _property);
 
 			if (list != null) {
-				for (Object o : list) {
-					model.addElement(o);
+				for (T item : list) {
+					model.addElement(item);
 				}
 			}
 
@@ -92,7 +93,7 @@ public class JListBinding implements Binding {
 
 	public void get(IValidatable bean) {
 		try {
-			DefaultListModel model = (DefaultListModel) _list.getModel();
+			DefaultListModel<T> model = (DefaultListModel<T>) _list.getModel();
 			final int size = model.getSize();
 			List<Object> list = new ArrayList<Object>(size);
 
