@@ -83,6 +83,7 @@ import java.util.List;
 public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandler, TreeMenuHandler {
 
     private final static boolean FAST_MODE = false;
+    private static final boolean WARN_ANNOTATE_MULTIPLE = false;
 
     private final ExtendedTreeViewer treeViewer;
     private final ControlPalette controlPalette;
@@ -589,13 +590,15 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                 item = tips.iterator().next();
             }
         } else {
-            int result = JOptionPane.showConfirmDialog(this,
-                    "More than one node selected for annotation. This operation\n" +
-                            "may overwrite existing annotations. Do you wish to continue?" ,
-                    "Annotating Tree",
-                    JOptionPane.WARNING_MESSAGE);
-            if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
-                return;
+            if (WARN_ANNOTATE_MULTIPLE) {
+                int result = JOptionPane.showConfirmDialog(this,
+                        "More than one node selected for annotation. This operation\n" +
+                                "may overwrite existing annotations. Do you wish to continue?",
+                        "Annotating Tree",
+                        JOptionPane.WARNING_MESSAGE);
+                if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
+                    return;
+                }
             }
         }
         if (annotationDialog.showDialog(definitions, item) != JOptionPane.CANCEL_OPTION) {
