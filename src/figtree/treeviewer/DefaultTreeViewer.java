@@ -285,7 +285,7 @@ public class DefaultTreeViewer extends TreeViewer {
     }
 
     public Set<Node> getSelectedTips() {
-        return treePane.getSelectedTips();
+        return treePane.getSelectedTipLabels();
     }
 
     public Set<Taxon> getSelectedTaxa() {
@@ -525,7 +525,7 @@ public class DefaultTreeViewer extends TreeViewer {
     }
 
     public void scrollToSelectedTips() {
-        Set<Node> selectedTips = treePane.getSelectedTips();
+        Set<Node> selectedTips = treePane.getSelectedTipLabels();
         if (selectedTips.size() > 0) {
             Point point = treePane.getLocationOfTip(selectedTips.iterator().next());
             treePane.scrollPointToVisible(point);

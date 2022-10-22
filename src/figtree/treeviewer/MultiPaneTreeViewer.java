@@ -265,7 +265,7 @@ public class MultiPaneTreeViewer extends TreeViewer {
 
 	public Set<Node> getSelectedTips() {
 		for (TreePane treePane : treePanes) {
-			if (treePane.hasSelection()) return treePane.getSelectedTips();
+			if (treePane.hasSelection()) return treePane.getSelectedTipLabels();
 		}
 		return Collections.emptySet();
 	}
