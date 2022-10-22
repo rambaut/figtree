@@ -632,9 +632,9 @@ public class DefaultTreeViewer extends TreeViewer {
         }
 
         if (oldSelectionMode == TreePaneSelector.SelectionMode.TAXA) {
-            treePane.selectNodesFromSelectedTips();
+            treePane.selectNodesFromSelectedTipLabels();
         } else if (selectionMode == TreePaneSelector.SelectionMode.TAXA) {
-            treePane.selectTipsFromSelectedNodes();
+            treePane.selectTipLabelsFromSelectedNodes();
         } else if (selectionMode == TreePaneSelector.SelectionMode.CLADE) {
             treePane.selectCladesFromSelectedNodes();
         }

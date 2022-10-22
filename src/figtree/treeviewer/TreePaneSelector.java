@@ -41,8 +41,9 @@ import java.util.Set;
  */
 public class TreePaneSelector implements MouseListener, MouseMotionListener, KeyListener {
     public enum SelectionMode {
-        NODE,
         CLADE,
+        NODE,
+        TIPS,
         TAXA
     };
 
