@@ -332,13 +332,13 @@ public class DefaultTreeViewer extends TreeViewer {
             if (attributeName == null) {
                 Object target = taxon.getName();
                 if (matchesItem(searchType, target, query, caseSensitive)) {
-                    treePane.addSelectedTip(node);
+                    treePane.addSelectedTipLabel(node);
                     break;
                 }
                 for (String name : taxon.getAttributeNames()) {
                     target = taxon.getAttribute(name);
                     if (matchesItem(searchType, target, query, caseSensitive)) {
-                        treePane.addSelectedTip(node);
+                        treePane.addSelectedTipLabel(node);
                         break;
                     }
                 }
@@ -354,7 +354,7 @@ public class DefaultTreeViewer extends TreeViewer {
                     }
                 }
                 if (matchesItem(searchType, target, query, caseSensitive)) {
-                    treePane.addSelectedTip(node);
+                    treePane.addSelectedTipLabel(node);
                 }
             }
         }
@@ -445,7 +445,7 @@ public class DefaultTreeViewer extends TreeViewer {
                 value = taxon.getAttribute(attributeName);
             }
             if (matchesItem(value, searchType, searchValue)) {
-                treePane.addSelectedTip(node);
+                treePane.addSelectedTipLabel(node);
             }
         }
     }
@@ -478,7 +478,7 @@ public class DefaultTreeViewer extends TreeViewer {
         for (Node node : tree.getExternalNodes()) {
             Object value = null;
             if (taxonNames.contains(tree.getTaxon(node).getName())) {
-                treePane.addSelectedTip(node);
+                treePane.addSelectedTipLabel(node);
             }
         }
     }

@@ -525,7 +525,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         selectedNodes.clear();
         selectedTipLabels.clear();
         selectedTips.clear();
-        addSelectedTip(selectedTip, false, false);
+        addSelectedTipLabel(selectedTip, false, false);
     }
 
     public void setSelectedClade(Node selectedNode) {
@@ -557,11 +557,11 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         repaint();
     }
 
-    public void addSelectedTip(Node selectedTip) {
-        addSelectedTip(selectedTip, false, false);
+    public void addSelectedTipLabel(Node selectedTip) {
+        addSelectedTipLabel(selectedTip, false, false);
     }
 
-    public void addSelectedTip(Node selectedTip, boolean toggle, boolean extend) {
+    public void addSelectedTipLabel(Node selectedTip, boolean toggle, boolean extend) {
         amendNodeSelection(selectedTip, toggle, extend);
         selectTipLabelsFromSelectedNodes();
         fireSelectionChanged();
