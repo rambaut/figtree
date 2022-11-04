@@ -42,7 +42,7 @@ import java.util.Set;
 public class TreePaneSelector implements MouseListener, MouseMotionListener, KeyListener {
     public enum SelectionMode {
         CLADE,
-        NODE,
+        NODES,
         TIPS,
         TAXA
     };
@@ -147,19 +147,22 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
 
             SelectionMode mode = selectionMode;
             if (mouseEvent.isAltDown()) {
-                if (mode == SelectionMode.NODE) {
+                if (mode == SelectionMode.NODES) {
                     mode = SelectionMode.CLADE;
                 } else if (mode == SelectionMode.CLADE) {
-                    mode = SelectionMode.NODE;
+                    mode = SelectionMode.NODES;
                 }
             }
 
             switch (mode) {
-                case NODE:
+                case NODES:
                     treePane.addSelectedNode(selectedNode, invertSelection, extendSelection);
                     break;
                 case CLADE:
                     treePane.addSelectedClade(selectedNode, invertSelection, extendSelection);
+                    break;
+                case TIPS:
+                    treePane.addSelectedTip(selectedNode, invertSelection, extendSelection);
                     break;
                 case TAXA:
                     treePane.addSelectedTipLabel(selectedNode, invertSelection, extendSelection);
@@ -198,20 +201,23 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
 
                 SelectionMode mode = selectionMode;
                 if (mouseEvent.isAltDown()) {
-                    if (mode == SelectionMode.NODE) {
+                    if (mode == SelectionMode.NODES) {
                         mode = SelectionMode.CLADE;
                     } else if (mode == SelectionMode.CLADE) {
-                        mode = SelectionMode.NODE;
+                        mode = SelectionMode.NODES;
                     }
                 }
 
                 for (Node selectedNode : selectedNodes) {
                     switch (mode) {
-                        case NODE:
+                        case NODES:
                             treePane.addSelectedNode(selectedNode, invertSelection, extendSelection);
                             break;
                         case CLADE:
                             treePane.addSelectedClade(selectedNode, invertSelection, extendSelection);
+                            break;
+                        case TIPS:
+                            treePane.addSelectedTip(selectedNode, invertSelection, extendSelection);
                             break;
                         case TAXA:
                             treePane.addSelectedTipLabel(selectedNode, invertSelection, extendSelection);
@@ -312,12 +318,12 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
         }
         if (isOptionKeyDown(event)) {
             switch (defaultSelectionMode) {
-                case NODE:
+                case NODES:
                 case CLADE:
                     selectionMode = SelectionMode.TAXA;
                     break;
                 case TAXA:
-                    selectionMode = SelectionMode.NODE               ;
+                    selectionMode = SelectionMode.NODES;
                     break;
             }
         } else {
@@ -337,8 +343,8 @@ public class TreePaneSelector implements MouseListener, MouseMotionListener, Key
 
     private TreePane treePane;
 
-    private SelectionMode defaultSelectionMode = SelectionMode.NODE;
-    private SelectionMode selectionMode = SelectionMode.NODE;
+    private SelectionMode defaultSelectionMode = SelectionMode.NODES;
+    private SelectionMode selectionMode = SelectionMode.NODES;
 
     private ToolMode toolMode = ToolMode.SELECT;
 

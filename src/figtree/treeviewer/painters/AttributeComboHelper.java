@@ -106,6 +106,7 @@ public class AttributeComboHelper {
 
                 if (defaultOption != null) {
                     attributeComboBox.addItem(defaultOption);
+                    attributeComboBox.setSelectedItem(defaultOption);
                 }
 
                 if (trees == null) {

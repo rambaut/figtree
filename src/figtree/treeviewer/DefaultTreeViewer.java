@@ -67,8 +67,8 @@ public class DefaultTreeViewer extends TreeViewer {
     }
 
     /**
-          * Creates new TreeViewer
-          */
+     * Creates new TreeViewer
+     */
     public DefaultTreeViewer(JFrame frame, boolean fastMode) {
         this.frame = frame;
 
@@ -186,7 +186,7 @@ public class DefaultTreeViewer extends TreeViewer {
     public void showTree(int index) {
         if (isRootingOn() && getRootingType() == TreePane.RootingType.USER_ROOTING) {
             JOptionPane.showMessageDialog(frame, "Cannot switch trees when user rooting option is on.\n" +
-                    "Turn this option off to switch trees",
+                            "Turn this option off to switch trees",
                     "Unable to switch trees",
                     JOptionPane.ERROR_MESSAGE);
             return;
@@ -631,13 +631,37 @@ public class DefaultTreeViewer extends TreeViewer {
             return;
         }
 
-        if (oldSelectionMode == TreePaneSelector.SelectionMode.TAXA) {
-            treePane.selectNodesFromSelectedTipLabels();
-        } else if (selectionMode == TreePaneSelector.SelectionMode.TAXA) {
-            treePane.selectTipLabelsFromSelectedNodes();
-        } else if (selectionMode == TreePaneSelector.SelectionMode.CLADE) {
-            treePane.selectCladesFromSelectedNodes();
+        switch (selectionMode) {
+            case CLADE:
+                if (oldSelectionMode == TreePaneSelector.SelectionMode.TAXA) {
+                    treePane.selectTipsFromSelectedTipLabels();
+                }
+                treePane.selectNodesFromSelectedTips();
+                treePane.selectCladesFromSelectedNodes();
+                break;
+            case NODES:
+                if (oldSelectionMode == TreePaneSelector.SelectionMode.TAXA) {
+                    treePane.selectTipsFromSelectedTipLabels();
+                }
+                treePane.selectNodesFromSelectedTips();
+                break;
+            case TIPS:
+                if (oldSelectionMode == TreePaneSelector.SelectionMode.TAXA) {
+                    treePane.selectTipsFromSelectedTipLabels();
+                } else { // either NODES or CLADES
+                    treePane.selectTipsFromSelectedNodes();
+                }
+                break;
+            case TAXA:
+                if (oldSelectionMode != TreePaneSelector.SelectionMode.TIPS) {
+                    treePane.selectTipsFromSelectedNodes();
+                }
+                treePane.selectTipLabelsFromSelectedTips();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown selection mode enum value");
         }
+
         treePaneSelector.setSelectionMode(selectionMode);
     }
 

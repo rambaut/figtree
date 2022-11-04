@@ -26,10 +26,6 @@ import com.itextpdf.text.pdf.DefaultFontMapper;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
-import figtree.treeviewer.decorators.DiscreteColourDecorator;
-import figtree.treeviewer.decorators.HSBDiscreteColourDecorator;
-import figtree.treeviewer.painters.StatesPainter;
-import jebl.evolution.align.Output;
 import jebl.evolution.alignments.Alignment;
 import jebl.evolution.alignments.BasicAlignment;
 import jebl.evolution.graphs.Node;
@@ -51,7 +47,6 @@ import figtree.treeviewer.TreeSelectionListener;
 import figtree.treeviewer.annotations.*;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
-import org.apache.batik.svggen.SVGGraphics2DIOException;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Element;
 
@@ -237,54 +232,61 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         toolBar.addSeparator();
 
         Box box1 = Box.createHorizontalBox();
-        final JToggleButton toggle1 = new JToggleButton("Node");
+        final JToggleButton toggle1 = new JToggleButton("Clade");
         toggle1.setFocusable(false);
         toggle1.putClientProperty("JButton.buttonType", "segmentedTextured");
         toggle1.putClientProperty("JButton.segmentPosition", "first");
         toggle1.putClientProperty( "Quaqua.Button.style", "toggleWest");
 
-        final JToggleButton toggle2 = new JToggleButton("Clade");
+        final JToggleButton toggle2 = new JToggleButton("Node");
         toggle2.setFocusable(false);
         toggle2.putClientProperty("JButton.buttonType", "segmentedTextured");
         toggle2.putClientProperty("JButton.segmentPosition", "middle");
         toggle2.putClientProperty( "Quaqua.Button.style", "toggleCenter");
 
-        final JToggleButton toggle3 = new JToggleButton("Taxa");
+        final JToggleButton toggle3 = new JToggleButton("Tips");
         toggle3.setFocusable(false);
         toggle3.putClientProperty("JButton.buttonType", "segmentedTextured");
-        toggle3.putClientProperty("JButton.segmentPosition", "last");
-        toggle3.putClientProperty( "Quaqua.Button.style", "toggleEast");
+        toggle3.putClientProperty("JButton.segmentPosition", "middle");
+        toggle3.putClientProperty( "Quaqua.Button.style", "toggleCenter");
+
+        final JToggleButton toggle4 = new JToggleButton("Taxa");
+        toggle4.setFocusable(false);
+        toggle4.putClientProperty("JButton.buttonType", "segmentedTextured");
+        toggle4.putClientProperty("JButton.segmentPosition", "last");
+        toggle4.putClientProperty( "Quaqua.Button.style", "toggleEast");
 
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(toggle1);
         buttonGroup.add(toggle2);
         buttonGroup.add(toggle3);
+        buttonGroup.add(toggle4);
         toggle1.setSelected(true);
-        toggle1.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    treeViewer.setSelectionMode(TreePaneSelector.SelectionMode.NODE);
-                }
+        toggle1.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                treeViewer.setSelectionMode(TreePaneSelector.SelectionMode.CLADE);
             }
         });
-        toggle2.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    treeViewer.setSelectionMode(TreePaneSelector.SelectionMode.CLADE);
-                }
+        toggle2.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                treeViewer.setSelectionMode(TreePaneSelector.SelectionMode.NODES);
             }
         });
-        toggle3.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    treeViewer.setSelectionMode(TreePaneSelector.SelectionMode.TAXA);
-                }
+        toggle3.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                treeViewer.setSelectionMode(TreePaneSelector.SelectionMode.TIPS);
+            }
+        });
+        toggle4.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                treeViewer.setSelectionMode(TreePaneSelector.SelectionMode.TAXA);
             }
         });
         box1.add(Box.createVerticalStrut(annotationToolIcon.getIconHeight()));
         box1.add(toggle1);
         box1.add(toggle2);
         box1.add(toggle3);
+        box1.add(toggle4);
         toolBar.addComponent(new GenericToolbarItem("Selection Mode", "What aspect of the tree is selected when it is clicked", box1));
 
         toolBar.addFlexibleSpace();
