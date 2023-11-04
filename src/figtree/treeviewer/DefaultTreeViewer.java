@@ -602,6 +602,8 @@ public class DefaultTreeViewer extends TreeViewer {
     public void selectAll() {
         if (treePaneSelector.getSelectionMode() == TreePaneSelector.SelectionMode.TAXA) {
             treePane.selectAllTaxa();
+        } else if (treePaneSelector.getSelectionMode() == TreePaneSelector.SelectionMode.TIPS) {
+            treePane.selectAllTips();
         } else {
             treePane.selectAllNodes();
         }

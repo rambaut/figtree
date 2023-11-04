@@ -48,6 +48,7 @@ import java.util.List;
  */
 public class TreePane extends JComponent implements PainterListener, Printable {
     public final static boolean DEBUG_OUTLINE = false;
+    private static final double DEFAULT_TIP_SELECTION_SIZE = 4;
 
     public enum RootingType {
         USER_ROOTING("User Selection"),
@@ -525,7 +526,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         selectedNodes.clear();
         selectedTipLabels.clear();
         selectedTips.clear();
-        addSelectedTipLabel(selectedTip, false, false);
+        addSelectedTip(selectedTip, false, false);
     }
 
     public void setSelectedClade(Node selectedNode) {
@@ -562,7 +563,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
     public void addSelectedTip(Node selectedTip, boolean toggle, boolean extend) {
-        amendNodeSelection(selectedTip, toggle, extend);
+        amendTipSelection(selectedTip, toggle, extend);
         selectTipsFromSelectedNodes();
         fireSelectionChanged();
         clearSelectionPaths();
@@ -777,8 +778,16 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         repaint();
     }
 
+    public void selectAllTips() {
+        selectedTips.addAll(tree.getExternalNodes());
+        fireSelectionChanged();
+        clearSelectionPaths();
+        repaint();
+    }
+
     public void clearSelection() {
         selectedNodes.clear();
+        selectedTips.clear();
         selectedTipLabels.clear();
         fireSelectionChanged();
         clearSelectionPaths();
@@ -1491,8 +1500,16 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         if (tipSelection == null) {
             tipSelection = new GeneralPath();
             for (Node selectedTip : selectedTips) {
-                // @todo - create selection for tip shapes
-                Shape tipShape = tipShapePainter.getNodeShape(selectedTip);
+                Shape tipShape = null;
+
+                if (tipShapePainter.isVisible()) {
+                    tipShape = tipShapePainter.getNodeShape(selectedTip);
+                } else {
+                    Point2D p = tipPoints.get(selectedTip);
+                    tipShape = new Ellipse2D.Double(p.getX() - DEFAULT_TIP_SELECTION_SIZE / 2, 
+                            p.getY() - DEFAULT_TIP_SELECTION_SIZE / 2, 
+                            DEFAULT_TIP_SELECTION_SIZE, DEFAULT_TIP_SELECTION_SIZE);
+                }
                 if (tipShape != null) {
                     tipSelection.append(tipShape, false);
                 }
@@ -1512,6 +1529,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         g2.setPaint(selectionPaint);
         g2.setStroke(selectionStroke);
         g2.draw(branchSelection);
+        g2.draw(tipSelection);
         g2.fill(tipSelection);
         g2.fill(labelSelection);
 
@@ -1996,28 +2014,33 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         }
 
         // bounds on nodeShapes
-        if (tipShapePainter != null && tipShapePainter.isVisible()) {
+        if (tipShapePainter != null /*&& tipShapePainter.isVisible()*/) {
             tipPoints.clear();
             // Iterate though the external nodes
             for (Node node : tree.getExternalNodes()) {
 
                 Rectangle2D shapeBounds = tipShapePainter.calibrate(g2, node);
                 if (shapeBounds != null) {
-                    totalTreeBounds.add(shapeBounds);
+                    if (tipShapePainter.isVisible()) {
+                        totalTreeBounds.add(shapeBounds);
+                    }
 
                     // just at the centroid in here as the actual shape will be reconstructed when drawing
                     tipPoints.put(node, new Point2D.Double(shapeBounds.getCenterX(), shapeBounds.getCenterY()));
                 }
             }
         }
-        if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
+        
+        if (nodeShapePainter != null /* && nodeShapePainter.isVisible()*/) {
             nodePoints.clear();
             // Iterate though the internal nodes
             for (Node node : tree.getInternalNodes()) {
 
                 Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
                 if (shapeBounds != null) {
-                    totalTreeBounds.add(shapeBounds);
+                    if (nodeShapePainter.isVisible()) {
+                        totalTreeBounds.add(shapeBounds);
+                    }
 
                     // just at the centroid in here as the actual shape will be reconstructed when drawing
                     nodePoints.put(node, new Point2D.Double(shapeBounds.getCenterX(), shapeBounds.getCenterY()));
@@ -2068,8 +2091,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                     (treeBounds.getWidth() + treeBounds.getX());
             assert topDiff >= 0 && leftDiff >= 0 && bottomDiff >= 0 && rightDiff >= 0;
 
-            xDiff = 2.0 * (leftDiff > rightDiff ? leftDiff : rightDiff);
-            yDiff = 2.0 * (topDiff > bottomDiff ? topDiff : bottomDiff);
+            xDiff = 2.0 * (Math.max(leftDiff, rightDiff));
+            yDiff = 2.0 * (Math.max(topDiff, bottomDiff));
         } else {
             xDiff = totalTreeBounds.getWidth() - treeBounds.getWidth();
             yDiff = totalTreeBounds.getHeight() - treeBounds.getHeight();
