@@ -1634,21 +1634,22 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         }
 
         // Paint scales
-        for (ScalePainter scalePainter : scalePainters) {
+        if (!transformBranchesOn) {
+            for (ScalePainter scalePainter : scalePainters) {
 
-            if (scalePainter.isVisible()) {
-                Rectangle2D scaleBounds = this.scaleBounds.get(scalePainter);
-                scalePainter.paint(g2, this, Painter.Justification.CENTER, scaleBounds);
+                if (scalePainter.isVisible()) {
+                    Rectangle2D scaleBounds = this.scaleBounds.get(scalePainter);
+                    scalePainter.paint(g2, this, Painter.Justification.CENTER, scaleBounds);
+                }
+            }
+
+            if (scaleGridPainter != null && scaleGridPainter.isVisible()) {
+                Rectangle2D gridBounds = new Rectangle2D.Double(
+                        treeBounds.getX(), 0.0,
+                        treeBounds.getWidth(), treeBounds.getHeight());
+                scaleGridPainter.paint(g2, this, null, gridBounds);
             }
         }
-
-        if (scaleGridPainter != null && scaleGridPainter.isVisible()) {
-            Rectangle2D gridBounds = new Rectangle2D.Double(
-                    treeBounds.getX(), 0.0,
-                    treeBounds.getWidth(), treeBounds.getHeight());
-            scaleGridPainter.paint(g2, this, null, gridBounds);
-        }
-
 
         // Paint backgrounds
         if (nodeBackgroundDecorator != null) {
@@ -2094,7 +2095,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         bottomPanelBounds = new Rectangle2D.Double();
         double y = totalTreeBounds.getHeight();
         for (ScalePainter scalePainter : scalePainters) {
-            if (scalePainter.isVisible()) {
+            if (!transformBranchesOn && scalePainter.isVisible()) {
                 scalePainter.calibrate(g2, this);
                 Rectangle2D sb = new Rectangle2D.Double(
                         treeBounds.getX(), y,
