@@ -638,14 +638,14 @@ public class DefaultTreeViewer extends TreeViewer {
                 if (oldSelectionMode == TreePaneSelector.SelectionMode.TAXA) {
                     treePane.selectTipsFromSelectedTipLabels();
                 }
-                treePane.selectNodesFromSelectedTips();
+                treePane.selectNodesFromSelectedTips(true);
                 treePane.selectCladesFromSelectedNodes();
                 break;
             case NODES:
                 if (oldSelectionMode == TreePaneSelector.SelectionMode.TAXA) {
                     treePane.selectTipsFromSelectedTipLabels();
                 }
-                treePane.selectNodesFromSelectedTips();
+                treePane.selectNodesFromSelectedTips(false);
                 break;
             case TIPS:
                 if (oldSelectionMode == TreePaneSelector.SelectionMode.TAXA) {

@@ -596,6 +596,15 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         repaint();
     }
 
+    public void addSelectedNodes(Set<Node> selectedNodes, boolean toggle, boolean extend) {
+        for (Node node : selectedNodes) {
+            amendNodeSelection(node, toggle, extend);
+        }
+        fireSelectionChanged();
+        clearSelectionPaths();
+        repaint();
+    }
+
     private void amendTipSelection(Node selectedTip, boolean toggle, boolean extend) {
         amendSelection(selectedTips, selectedTip, toggle, extend);
     }
@@ -663,23 +672,23 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     public void addSelectedTips(Node selectedNode, boolean toggle) {
         if (selectedNode != null) {
-            addSelectedChildTips(selectedNode, toggle);
+            addSelectedChildTips(selectedNode, toggle, true);
         }
         fireSelectionChanged();
         clearSelectionPaths();
         repaint();
     }
 
-    private void addSelectedChildTips(Node selectedNode, boolean toggle) {
+    private void addSelectedChildTips(Node selectedNode, boolean toggle, boolean selectClade) {
         if (tree.isExternal(selectedNode)) {
             if (toggle && selectedTips.contains(selectedNode)) {
                 selectedTips.remove(selectedNode);
             } else {
                 selectedTips.add(selectedNode);
             }
-        } else {
+        } else if (selectClade) {
             for (Node child : tree.getChildren(selectedNode)) {
-                addSelectedChildTips(child, toggle);
+                addSelectedChildTips(child, toggle, selectClade);
             }
         }
     }
@@ -723,8 +732,17 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
     public void selectTipsFromSelectedNodes() {
+        boolean hasExternalNodes = false;
         for (Node node : selectedNodes) {
-            addSelectedChildTips(node, false);
+            if (tree.isExternal(node)) {
+                addSelectedChildTips(node, false, false);
+                hasExternalNodes = true;
+            }
+        }
+        if (!hasExternalNodes) {
+            for (Node node : selectedNodes) {
+                addSelectedChildTips(node, false, true);
+            }
         }
         selectedNodes.clear();
         fireSelectionChanged();
@@ -732,10 +750,31 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         repaint();
     }
 
-    public void selectNodesFromSelectedTips() {
+    public void selectNodesFromSelectedTips(boolean selectClade) {
         if (selectedTips.size() > 0) {
-            Node node = RootedTreeUtils.getCommonAncestorNode(tree, selectedTips);
-            addSelectedClade(node, false, false);
+            if (selectClade) {
+                Node node = RootedTreeUtils.getCommonAncestorNode(tree, selectedTips);
+                addSelectedClade(node, false, false);
+            } else {
+                Map<Node, Integer> nodes = new HashMap<>();
+                for (Node tip : selectedTips) {
+                    Node node = tip;
+                    // work to the root incrementing the counts.
+                    while (node != null) {
+                        int count = nodes.getOrDefault(node, 0);
+                        nodes.put(node, count + 1);
+
+                        node = tree.getParent(node);
+                    }
+                }
+                Set<Node> selectedNodes = new HashSet<>();
+                for (Node node: nodes.keySet()) {
+                    if (nodes.get(node) < selectedTips.size()) {
+                        selectedNodes.add(node);
+                    }
+                }
+                addSelectedNodes(selectedNodes, false, false);
+            }
         }
 
         selectedTips.clear();
@@ -746,7 +785,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     public void selectTipsFromSelectedTipLabels() {
         for (Node node : selectedTipLabels) {
-            addSelectedChildTips(node, false);
+            addSelectedChildTips(node, false, false);
         }
         selectedTipLabels.clear();
         fireSelectionChanged();
@@ -1500,14 +1539,15 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         if (tipSelection == null) {
             tipSelection = new GeneralPath();
             for (Node selectedTip : selectedTips) {
-                Shape tipShape = null;
+                Shape tipShape;
 
                 if (tipShapePainter.isVisible()) {
                     tipShape = tipShapePainter.getNodeShape(selectedTip);
                 } else {
                     Point2D p = tipPoints.get(selectedTip);
-                    tipShape = new Ellipse2D.Double(p.getX() - DEFAULT_TIP_SELECTION_SIZE / 2, 
-                            p.getY() - DEFAULT_TIP_SELECTION_SIZE / 2, 
+                    p = transform.transform(p, null);
+                    tipShape = new Ellipse2D.Double(p.getX() - DEFAULT_TIP_SELECTION_SIZE / 2,
+                            p.getY() - DEFAULT_TIP_SELECTION_SIZE / 2,
                             DEFAULT_TIP_SELECTION_SIZE, DEFAULT_TIP_SELECTION_SIZE);
                 }
                 if (tipShape != null) {
@@ -2030,7 +2070,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                 }
             }
         }
-        
+
         if (nodeShapePainter != null /* && nodeShapePainter.isVisible()*/) {
             nodePoints.clear();
             // Iterate though the internal nodes
@@ -2380,7 +2420,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             tipLabelPainter.calibrate(g2, node);
             double labelWidth = tipLabelPainter.getPreferredWidth();
             double labelHeight = tipLabelPainter.getPreferredHeight();
-            
+
             tipLabelWidths.put(node, labelWidth);
             Rectangle2D labelBounds = new Rectangle2D.Double(0.0, 0.0, labelWidth, labelHeight);
 
