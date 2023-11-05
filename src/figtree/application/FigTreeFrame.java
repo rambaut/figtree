@@ -1235,7 +1235,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                 "Export " + format.getName() + " File...",
                 FileDialog.SAVE);
 
-        String name = this.getFile().getName() + "." + format.getName().toLowerCase();
+        String name = (this.getFile() != null ? this.getFile().getName() : "untitled") + "." + format.getName().toLowerCase();
         dialog.setFile(name);
 
         dialog.setVisible(true);
