@@ -770,7 +770,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                 }
             }
 
-            if (trees.size() == 0) {
+            if (trees.isEmpty()) {
                 throw new ImportException("This file contained no trees.");
             }
 
@@ -1000,29 +1000,46 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
         BufferedReader reader = new BufferedReader(new FileReader(file));
 
-        List<String> taxa = new ArrayList<String>();
+        List<String> taxa = new ArrayList<>();
 
         String line = reader.readLine();
-        String[] labels = line.split("\t");
+        while (line != null && line.trim().startsWith("#")) {
+            // skip over comment lines
+            line = reader.readLine();
+        }
+        String delimiter = ","; // assume a csv
+        if (line.contains("\t")) {
+            delimiter = "\t";
+        }
+        String[] labels = line.split(delimiter);
         Map<String, List<String>> columns = new HashMap<String, List<String>>();
         for (int i = 1; i < labels.length; i++) {
-            columns.put(labels[i], new ArrayList<String>());
+            columns.put(labels[i], new ArrayList<>());
         }
 
         line = reader.readLine();
+        while (line != null && line.trim().startsWith("#")) {
+            line = reader.readLine();
+        }
+        int row = 0;
         while (line != null) {
-            String[] values = line.split("\t");
+            row ++;
+            String[] values = line.split(delimiter, -1);
 
             if (values.length > 0) {
+                if (values.length != labels.length) {
+                    throw new IOException("Error reading annotation file: row " + row + " is a different length from the header line");
+                }
                 taxa.add(values[0]);
                 for (int i = 1; i < values.length; i++) {
-                    if (i < labels.length) {
-                        List<String> column = columns.get(labels[i]);
-                        column.add(values[i]);
-                    }
+                    List<String> column = columns.get(labels[i]);
+                    column.add(values[i]);
                 }
             }
             line = reader.readLine();
+            while (line != null && line.trim().startsWith("#")) {
+                line = reader.readLine();
+            }
         }
 
         Map<AnnotationDefinition, Map<Taxon, Object>> annotations = new TreeMap<AnnotationDefinition, Map<Taxon, Object>>();
@@ -1051,7 +1068,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                 }
             }
 
-            Map<Taxon, Object> values = new HashMap<Taxon, Object>();
+            Map<Taxon, Object> values = new HashMap<>();
             AnnotationDefinition ad;
             int j = 0;
             for (String valueString : column) {
