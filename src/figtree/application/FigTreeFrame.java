@@ -26,10 +26,6 @@ import com.itextpdf.text.pdf.DefaultFontMapper;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
-import figtree.treeviewer.decorators.DiscreteColourDecorator;
-import figtree.treeviewer.decorators.HSBDiscreteColourDecorator;
-import figtree.treeviewer.painters.StatesPainter;
-import jebl.evolution.align.Output;
 import jebl.evolution.alignments.Alignment;
 import jebl.evolution.alignments.BasicAlignment;
 import jebl.evolution.graphs.Node;
@@ -51,7 +47,6 @@ import figtree.treeviewer.TreeSelectionListener;
 import figtree.treeviewer.annotations.*;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
-import org.apache.batik.svggen.SVGGraphics2DIOException;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Element;
 
@@ -83,6 +78,7 @@ import java.util.List;
 public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandler, TreeMenuHandler {
 
     private final static boolean FAST_MODE = false;
+    private static final boolean WARN_ANNOTATE_MULTIPLE = false;
 
     private final ExtendedTreeViewer treeViewer;
     private final ControlPalette controlPalette;
@@ -236,54 +232,61 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         toolBar.addSeparator();
 
         Box box1 = Box.createHorizontalBox();
-        final JToggleButton toggle1 = new JToggleButton("Node");
+        final JToggleButton toggle1 = new JToggleButton("Clade");
         toggle1.setFocusable(false);
         toggle1.putClientProperty("JButton.buttonType", "segmentedTextured");
         toggle1.putClientProperty("JButton.segmentPosition", "first");
         toggle1.putClientProperty( "Quaqua.Button.style", "toggleWest");
 
-        final JToggleButton toggle2 = new JToggleButton("Clade");
+        final JToggleButton toggle2 = new JToggleButton("Node");
         toggle2.setFocusable(false);
         toggle2.putClientProperty("JButton.buttonType", "segmentedTextured");
         toggle2.putClientProperty("JButton.segmentPosition", "middle");
         toggle2.putClientProperty( "Quaqua.Button.style", "toggleCenter");
 
-        final JToggleButton toggle3 = new JToggleButton("Taxa");
+        final JToggleButton toggle3 = new JToggleButton("Tips");
         toggle3.setFocusable(false);
         toggle3.putClientProperty("JButton.buttonType", "segmentedTextured");
-        toggle3.putClientProperty("JButton.segmentPosition", "last");
-        toggle3.putClientProperty( "Quaqua.Button.style", "toggleEast");
+        toggle3.putClientProperty("JButton.segmentPosition", "middle");
+        toggle3.putClientProperty( "Quaqua.Button.style", "toggleCenter");
+
+        final JToggleButton toggle4 = new JToggleButton("Taxa");
+        toggle4.setFocusable(false);
+        toggle4.putClientProperty("JButton.buttonType", "segmentedTextured");
+        toggle4.putClientProperty("JButton.segmentPosition", "last");
+        toggle4.putClientProperty( "Quaqua.Button.style", "toggleEast");
 
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(toggle1);
         buttonGroup.add(toggle2);
         buttonGroup.add(toggle3);
+        buttonGroup.add(toggle4);
         toggle1.setSelected(true);
-        toggle1.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    treeViewer.setSelectionMode(TreePaneSelector.SelectionMode.NODE);
-                }
+        toggle1.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                treeViewer.setSelectionMode(TreePaneSelector.SelectionMode.CLADE);
             }
         });
-        toggle2.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    treeViewer.setSelectionMode(TreePaneSelector.SelectionMode.CLADE);
-                }
+        toggle2.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                treeViewer.setSelectionMode(TreePaneSelector.SelectionMode.NODES);
             }
         });
-        toggle3.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    treeViewer.setSelectionMode(TreePaneSelector.SelectionMode.TAXA);
-                }
+        toggle3.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                treeViewer.setSelectionMode(TreePaneSelector.SelectionMode.TIPS);
+            }
+        });
+        toggle4.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                treeViewer.setSelectionMode(TreePaneSelector.SelectionMode.TAXA);
             }
         });
         box1.add(Box.createVerticalStrut(annotationToolIcon.getIconHeight()));
         box1.add(toggle1);
         box1.add(toggle2);
         box1.add(toggle3);
+        box1.add(toggle4);
         toolBar.addComponent(new GenericToolbarItem("Selection Mode", "What aspect of the tree is selected when it is clicked", box1));
 
         toolBar.addFlexibleSpace();
@@ -589,13 +592,15 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                 item = tips.iterator().next();
             }
         } else {
-            int result = JOptionPane.showConfirmDialog(this,
-                    "More than one node selected for annotation. This operation\n" +
-                            "may overwrite existing annotations. Do you wish to continue?" ,
-                    "Annotating Tree",
-                    JOptionPane.WARNING_MESSAGE);
-            if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
-                return;
+            if (WARN_ANNOTATE_MULTIPLE) {
+                int result = JOptionPane.showConfirmDialog(this,
+                        "More than one node selected for annotation. This operation\n" +
+                                "may overwrite existing annotations. Do you wish to continue?",
+                        "Annotating Tree",
+                        JOptionPane.WARNING_MESSAGE);
+                if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
+                    return;
+                }
             }
         }
         if (annotationDialog.showDialog(definitions, item) != JOptionPane.CANCEL_OPTION) {
@@ -765,7 +770,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                 }
             }
 
-            if (trees.size() == 0) {
+            if (trees.isEmpty()) {
                 throw new ImportException("This file contained no trees.");
             }
 
@@ -995,29 +1000,46 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
         BufferedReader reader = new BufferedReader(new FileReader(file));
 
-        List<String> taxa = new ArrayList<String>();
+        List<String> taxa = new ArrayList<>();
 
         String line = reader.readLine();
-        String[] labels = line.split("\t");
+        while (line != null && line.trim().startsWith("#")) {
+            // skip over comment lines
+            line = reader.readLine();
+        }
+        String delimiter = ","; // assume a csv
+        if (line.contains("\t")) {
+            delimiter = "\t";
+        }
+        String[] labels = line.split(delimiter);
         Map<String, List<String>> columns = new HashMap<String, List<String>>();
         for (int i = 1; i < labels.length; i++) {
-            columns.put(labels[i], new ArrayList<String>());
+            columns.put(labels[i], new ArrayList<>());
         }
 
         line = reader.readLine();
+        while (line != null && line.trim().startsWith("#")) {
+            line = reader.readLine();
+        }
+        int row = 0;
         while (line != null) {
-            String[] values = line.split("\t");
+            row ++;
+            String[] values = line.split(delimiter, -1);
 
             if (values.length > 0) {
+                if (values.length != labels.length) {
+                    throw new IOException("Error reading annotation file: row " + row + " is a different length from the header line");
+                }
                 taxa.add(values[0]);
                 for (int i = 1; i < values.length; i++) {
-                    if (i < labels.length) {
-                        List<String> column = columns.get(labels[i]);
-                        column.add(values[i]);
-                    }
+                    List<String> column = columns.get(labels[i]);
+                    column.add(values[i]);
                 }
             }
             line = reader.readLine();
+            while (line != null && line.trim().startsWith("#")) {
+                line = reader.readLine();
+            }
         }
 
         Map<AnnotationDefinition, Map<Taxon, Object>> annotations = new TreeMap<AnnotationDefinition, Map<Taxon, Object>>();
@@ -1046,7 +1068,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                 }
             }
 
-            Map<Taxon, Object> values = new HashMap<Taxon, Object>();
+            Map<Taxon, Object> values = new HashMap<>();
             AnnotationDefinition ad;
             int j = 0;
             for (String valueString : column) {
@@ -1213,7 +1235,7 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
                 "Export " + format.getName() + " File...",
                 FileDialog.SAVE);
 
-        String name = this.getFile().getName() + "." + format.getName().toLowerCase();
+        String name = (this.getFile() != null ? this.getFile().getName() : "untitled") + "." + format.getName().toLowerCase();
         dialog.setFile(name);
 
         dialog.setVisible(true);

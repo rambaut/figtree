@@ -27,6 +27,8 @@ import jebl.evolution.graphs.Node;
 
 import java.awt.*;
 import java.awt.geom.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Andrew Rambaut
@@ -92,6 +94,8 @@ public class NodeShapePainter extends NodePainter {
     }
 
     public Rectangle2D calibrate(Graphics2D g2, Node node) {
+        nodeShapeMap.clear();
+
         Line2D shapePath = treePane.getTreeLayoutCache().getNodeShapePath(node);
 
         if (shapePath != null) {
@@ -149,10 +153,7 @@ public class NodeShapePainter extends NodePainter {
      * @param node
      */
     public void paint(Graphics2D g2, Node node, Point2D point, AffineTransform transform) {
-        Shape nodeShape = createNodeShape(node, point.getX(), point.getY());
-
-        nodeShape = transform.createTransformedShape(nodeShape);
-
+        Shape nodeShape = getNodeShape(node, point, transform);
         Paint paint = getForeground();
         if (colourDecorator != null) {
             colourDecorator.setItem(node);
@@ -166,6 +167,32 @@ public class NodeShapePainter extends NodePainter {
             g2.setStroke(new BasicStroke(outlineStroke));
             g2.draw(nodeShape);
         }
+    }
+
+    /**
+     * The bounds define the shapeType of the nodeBar so just draw it
+     * @param g2
+     * @param node
+     */
+    public void paintBackground(Graphics2D g2, Node node, Point2D point, AffineTransform transform) {
+        Shape nodeShape = getNodeShape(node, point, transform);
+        g2.setPaint(getBackground());
+        g2.setStroke(new BasicStroke(backgroundStroke));
+        g2.draw(nodeShape);
+    }
+
+    /**
+     * The get the shape of the node shape
+     * @param node
+     */
+    public Shape getNodeShape(Node node, Point2D point, AffineTransform transform) {
+        return nodeShapeMap.computeIfAbsent(node,
+                k -> transform.createTransformedShape(
+                        createNodeShape(k, point.getX(), point.getY())));
+    }
+
+    public Shape getNodeShape(Node node) {
+        return nodeShapeMap.get(node);
     }
 
     /**
@@ -263,6 +290,8 @@ public class NodeShapePainter extends NodePainter {
         throw new IllegalArgumentException("Unknown node shapeType type");
     }
 
+    private Map<Node, Shape> nodeShapeMap = new HashMap<>();
+
     private double maxSize = MAX_SIZE;
     private double minSize =  MIN_SIZE;
     private ShapeType shapeType = ShapeType.CIRCLE;
@@ -275,6 +304,7 @@ public class NodeShapePainter extends NodePainter {
     private Decorator colourDecorator = null;
     private ContinuousScale sizeScale = null;
 
+    private float backgroundStroke = 3.0f;
     private float outlineStroke = 0.5f;
     private Paint outlinePaint = Color.black;
 

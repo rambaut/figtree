@@ -67,8 +67,8 @@ public class DefaultTreeViewer extends TreeViewer {
     }
 
     /**
-          * Creates new TreeViewer
-          */
+     * Creates new TreeViewer
+     */
     public DefaultTreeViewer(JFrame frame, boolean fastMode) {
         this.frame = frame;
 
@@ -186,7 +186,7 @@ public class DefaultTreeViewer extends TreeViewer {
     public void showTree(int index) {
         if (isRootingOn() && getRootingType() == TreePane.RootingType.USER_ROOTING) {
             JOptionPane.showMessageDialog(frame, "Cannot switch trees when user rooting option is on.\n" +
-                    "Turn this option off to switch trees",
+                            "Turn this option off to switch trees",
                     "Unable to switch trees",
                     JOptionPane.ERROR_MESSAGE);
             return;
@@ -285,7 +285,7 @@ public class DefaultTreeViewer extends TreeViewer {
     }
 
     public Set<Node> getSelectedTips() {
-        return treePane.getSelectedTips();
+        return treePane.getSelectedTipLabels();
     }
 
     public Set<Taxon> getSelectedTaxa() {
@@ -332,13 +332,13 @@ public class DefaultTreeViewer extends TreeViewer {
             if (attributeName == null) {
                 Object target = taxon.getName();
                 if (matchesItem(searchType, target, query, caseSensitive)) {
-                    treePane.addSelectedTip(node);
+                    treePane.addSelectedTipLabel(node);
                     break;
                 }
                 for (String name : taxon.getAttributeNames()) {
                     target = taxon.getAttribute(name);
                     if (matchesItem(searchType, target, query, caseSensitive)) {
-                        treePane.addSelectedTip(node);
+                        treePane.addSelectedTipLabel(node);
                         break;
                     }
                 }
@@ -354,7 +354,7 @@ public class DefaultTreeViewer extends TreeViewer {
                     }
                 }
                 if (matchesItem(searchType, target, query, caseSensitive)) {
-                    treePane.addSelectedTip(node);
+                    treePane.addSelectedTipLabel(node);
                 }
             }
         }
@@ -445,7 +445,7 @@ public class DefaultTreeViewer extends TreeViewer {
                 value = taxon.getAttribute(attributeName);
             }
             if (matchesItem(value, searchType, searchValue)) {
-                treePane.addSelectedTip(node);
+                treePane.addSelectedTipLabel(node);
             }
         }
     }
@@ -478,7 +478,7 @@ public class DefaultTreeViewer extends TreeViewer {
         for (Node node : tree.getExternalNodes()) {
             Object value = null;
             if (taxonNames.contains(tree.getTaxon(node).getName())) {
-                treePane.addSelectedTip(node);
+                treePane.addSelectedTipLabel(node);
             }
         }
     }
@@ -525,7 +525,7 @@ public class DefaultTreeViewer extends TreeViewer {
     }
 
     public void scrollToSelectedTips() {
-        Set<Node> selectedTips = treePane.getSelectedTips();
+        Set<Node> selectedTips = treePane.getSelectedTipLabels();
         if (selectedTips.size() > 0) {
             Point point = treePane.getLocationOfTip(selectedTips.iterator().next());
             if (point != null) {
@@ -604,6 +604,8 @@ public class DefaultTreeViewer extends TreeViewer {
     public void selectAll() {
         if (treePaneSelector.getSelectionMode() == TreePaneSelector.SelectionMode.TAXA) {
             treePane.selectAllTaxa();
+        } else if (treePaneSelector.getSelectionMode() == TreePaneSelector.SelectionMode.TIPS) {
+            treePane.selectAllTips();
         } else {
             treePane.selectAllNodes();
         }
@@ -633,13 +635,37 @@ public class DefaultTreeViewer extends TreeViewer {
             return;
         }
 
-        if (oldSelectionMode == TreePaneSelector.SelectionMode.TAXA) {
-            treePane.selectNodesFromSelectedTips();
-        } else if (selectionMode == TreePaneSelector.SelectionMode.TAXA) {
-            treePane.selectTipsFromSelectedNodes();
-        } else if (selectionMode == TreePaneSelector.SelectionMode.CLADE) {
-            treePane.selectCladesFromSelectedNodes();
+        switch (selectionMode) {
+            case CLADE:
+                if (oldSelectionMode == TreePaneSelector.SelectionMode.TAXA) {
+                    treePane.selectTipsFromSelectedTipLabels();
+                }
+                treePane.selectNodesFromSelectedTips(true);
+                treePane.selectCladesFromSelectedNodes();
+                break;
+            case NODES:
+                if (oldSelectionMode == TreePaneSelector.SelectionMode.TAXA) {
+                    treePane.selectTipsFromSelectedTipLabels();
+                }
+                treePane.selectNodesFromSelectedTips(false);
+                break;
+            case TIPS:
+                if (oldSelectionMode == TreePaneSelector.SelectionMode.TAXA) {
+                    treePane.selectTipsFromSelectedTipLabels();
+                } else { // either NODES or CLADES
+                    treePane.selectTipsFromSelectedNodes();
+                }
+                break;
+            case TAXA:
+                if (oldSelectionMode != TreePaneSelector.SelectionMode.TIPS) {
+                    treePane.selectTipsFromSelectedNodes();
+                }
+                treePane.selectTipLabelsFromSelectedTips();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown selection mode enum value");
         }
+
         treePaneSelector.setSelectionMode(selectionMode);
     }
 

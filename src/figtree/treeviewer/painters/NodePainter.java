@@ -66,6 +66,10 @@ public abstract class NodePainter extends AbstractPainter<Node> {
         return visible;
     }
 
+    public boolean hasBackground() {
+        return hasBackground;
+    }
+
     // Setters
 
     public void setStroke(Stroke stroke) {
@@ -96,10 +100,11 @@ public abstract class NodePainter extends AbstractPainter<Node> {
 
     private Stroke stroke = new BasicStroke(1.0F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
     private Paint foreground = Color.BLACK;
-    private Paint background = null;
+    private Paint background = Color.WHITE;
     private Paint borderPaint = null;
     private Stroke borderStroke = null;
 
     private boolean visible = true;
+    private boolean hasBackground = true;
 
 }

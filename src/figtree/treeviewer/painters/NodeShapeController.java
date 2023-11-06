@@ -128,7 +128,6 @@ public class NodeShapeController extends AbstractController {
                 nodeShapePainter.setScaleType((NodeShapePainter.ScaleType) scaleTypeCombo.getSelectedItem());
             }
         });
-
         sizeAttributeCombo = new JComboBox();
         // AttributeComboHelper & listener set after other controls are created...
 
@@ -152,17 +151,17 @@ public class NodeShapeController extends AbstractController {
             }
         });
 
+        final Paint[] outlinePaints = {Color.black, Color.white};
         outlineStrokeCombo = new JComboBox(new String[] {"None", "0.25", "0.5", "1.0", "2.0", "3.0", "4.0", "5.0"});
         outlineStrokeCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 nodeShapePainter.setOutline((outlineStrokeCombo.getSelectedIndex() == 0 ? 0.0f :
                     Float.parseFloat(outlineStrokeCombo.getSelectedItem().toString())),
-                        (Paint)outlinePaintCombo.getSelectedItem()
+                        outlinePaints[outlinePaintCombo.getSelectedIndex()]
                 );
             }
         });
 
-        final Paint[] outlinePaints = {Color.black, Color.white};
         outlinePaintCombo = new JComboBox(new String[] {"black", "white"});
         outlinePaintCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -256,6 +255,8 @@ public class NodeShapeController extends AbstractController {
                 enableComponents(titleCheckBox.isSelected());
             }
         });
+
+        sizeAttributeCombo.setSelectedItem(NodeShapePainter.FIXED);
     }
 
 
@@ -291,8 +292,12 @@ public class NodeShapeController extends AbstractController {
         }
         shapeTypeCombo.setSelectedItem((NodeShapePainter.ShapeType.valueOf(settings.get(key + "." + SHAPE_TYPE_KEY).toString().toUpperCase())));
         scaleTypeCombo.setSelectedItem((NodeShapePainter.ScaleType.valueOf(settings.get(key + "." + SCALE_TYPE_KEY).toString().toUpperCase())));
-        colourAttributeCombo.setSelectedItem((String) settings.get(key + "." + COLOUR_ATTRIBUTE_KEY));
-        sizeAttributeCombo.setSelectedItem((String) settings.get(key + "." + SIZE_ATTRIBUTE_KEY));
+        if (settings.get(key + "." + COLOUR_ATTRIBUTE_KEY) != null) {
+            colourAttributeCombo.setSelectedItem((String) settings.get(key + "." + COLOUR_ATTRIBUTE_KEY));
+        }
+        sizeAttributeCombo.setSelectedItem(settings.get(key + "." + SIZE_ATTRIBUTE_KEY) == null ?
+                NodeShapePainter.FIXED :
+                settings.get(key + "." + SIZE_ATTRIBUTE_KEY));
         shapeSizeSpinner.setValue((Double)settings.get(key + "." + SHAPE_SIZE_KEY));
         shapeMinSizeSpinner.setValue((Double) settings.get(key + "." + SHAPE_MIN_SIZE_KEY));
     }

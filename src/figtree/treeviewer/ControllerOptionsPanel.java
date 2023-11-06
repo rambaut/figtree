@@ -61,7 +61,7 @@ public class ControllerOptionsPanel extends OptionsPanel {
             ((JSpinner.NumberEditor)((JSpinner)comp).getEditor()).getTextField().setFont(font);
         }
         if (comp instanceof JButton) {
-            comp.putClientProperty("JButton.buttonType", "roundRect");
+            comp.putClientProperty("JButton.buttonType", "default");
         }
         if (comp instanceof JComboBox) {
             //comp.putClientProperty("JComboBox.isSquare", Boolean.TRUE);

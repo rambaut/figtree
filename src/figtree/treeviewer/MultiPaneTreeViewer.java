@@ -43,7 +43,7 @@ import jam.panels.StatusProvider;
  * $LastChangedDate$
  * $LastChangedRevision$
  */
-					public class MultiPaneTreeViewer extends TreeViewer {
+public class MultiPaneTreeViewer extends TreeViewer {
 
 	private final static double MAX_ZOOM = 20;
 	private final static double MAX_VERTICAL_EXPANSION = 20;
@@ -265,7 +265,7 @@ import jam.panels.StatusProvider;
 
 	public Set<Node> getSelectedTips() {
 		for (TreePane treePane : treePanes) {
-			if (treePane.hasSelection()) return treePane.getSelectedTips();
+			if (treePane.hasSelection()) return treePane.getSelectedTipLabels();
 		}
 		return Collections.emptySet();
 	}

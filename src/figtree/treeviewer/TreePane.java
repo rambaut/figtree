@@ -48,6 +48,7 @@ import java.util.List;
  */
 public class TreePane extends JComponent implements PainterListener, Printable {
     public final static boolean DEBUG_OUTLINE = false;
+    private static final double DEFAULT_TIP_SELECTION_SIZE = 4;
 
     public enum RootingType {
         USER_ROOTING("User Selection"),
@@ -516,26 +517,30 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     public void setSelectedNode(Node selectedNode) {
         selectedNodes.clear();
+        selectedTipLabels.clear();
         selectedTips.clear();
         addSelectedNode(selectedNode, false, false);
     }
 
     public void setSelectedTip(Node selectedTip) {
         selectedNodes.clear();
+        selectedTipLabels.clear();
         selectedTips.clear();
         addSelectedTip(selectedTip, false, false);
     }
 
     public void setSelectedClade(Node selectedNode) {
         selectedNodes.clear();
+        selectedTipLabels.clear();
         selectedTips.clear();
         addSelectedClade(selectedNode, false, false);
     }
 
-    public void setSelectedTips(Node selectedNode) {
+    public void setSelectedTipLabels(Node selectedNode) {
         selectedNodes.clear();
+        selectedTipLabels.clear();
         selectedTips.clear();
-        addSelectedTips(selectedNode, false);
+        addSelectedTipLabels(selectedNode, false);
     }
 
     private boolean canSelectNode(Node selectedNode) {
@@ -558,13 +563,25 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
     public void addSelectedTip(Node selectedTip, boolean toggle, boolean extend) {
-        amendNodeSelection(selectedTip, toggle, extend);
+        amendTipSelection(selectedTip, toggle, extend);
         selectTipsFromSelectedNodes();
         fireSelectionChanged();
         clearSelectionPaths();
         repaint();
     }
 
+    public void addSelectedTipLabel(Node selectedTip) {
+        addSelectedTipLabel(selectedTip, false, false);
+    }
+
+    public void addSelectedTipLabel(Node selectedTip, boolean toggle, boolean extend) {
+        amendNodeSelection(selectedTip, toggle, extend);
+        selectTipsFromSelectedNodes();
+        selectTipLabelsFromSelectedTips();
+        fireSelectionChanged();
+        clearSelectionPaths();
+        repaint();
+    }
 
     public void addSelectedClade(Node selectedNode) {
         addSelectedClade(selectedNode, false, false);
@@ -579,27 +596,44 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         repaint();
     }
 
-    private void amendNodeSelection(Node selectedNode, boolean toggle, boolean extend) {
+    public void addSelectedNodes(Set<Node> selectedNodes, boolean toggle, boolean extend) {
+        for (Node node : selectedNodes) {
+            amendNodeSelection(node, toggle, extend);
+        }
+        fireSelectionChanged();
+        clearSelectionPaths();
+        repaint();
+    }
+
+    private void amendTipSelection(Node selectedTip, boolean toggle, boolean extend) {
+        amendSelection(selectedTips, selectedTip, toggle, extend);
+    }
+
+    private void amendNodeSelection(Node selectedTip, boolean toggle, boolean extend) {
+        amendSelection(selectedNodes, selectedTip, toggle, extend);
+    }
+
+    private void amendSelection(Set<Node> selection, Node selectedNode, boolean toggle, boolean extend) {
         if ( !canSelectNode(selectedNode) ) {
             return;
         }
 
         if (extend) {
-            Set<Node> nodeSet = new HashSet<Node>(selectedNodes);
+            Set<Node> nodeSet = new HashSet<Node>(selection);
             nodeSet.add(selectedNode);
             Node mrca = RootedTreeUtils.getCommonAncestorNode(tree, nodeSet);
 
             for (Node node : nodeSet) {
                 while (node != null && node != mrca) {
-                    amendNodeSelection(node, false, false);
+                    amendSelection(selection, node, false, false);
                     node = tree.getParent(node);
                 }
             }
         } else {
-            if (toggle && selectedNodes.contains(selectedNode)) {
-                selectedNodes.remove(selectedNode);
+            if (toggle && selection.contains(selectedNode)) {
+                selection.remove(selectedNode);
             } else {
-                selectedNodes.add(selectedNode);
+                selection.add(selectedNode);
             }
         }
     }
@@ -638,23 +672,50 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     public void addSelectedTips(Node selectedNode, boolean toggle) {
         if (selectedNode != null) {
-            addSelectedChildTips(selectedNode, toggle);
+            addSelectedChildTips(selectedNode, toggle, true);
         }
         fireSelectionChanged();
         clearSelectionPaths();
         repaint();
     }
 
-    private void addSelectedChildTips(Node selectedNode, boolean toggle) {
+    private void addSelectedChildTips(Node selectedNode, boolean toggle, boolean selectClade) {
         if (tree.isExternal(selectedNode)) {
             if (toggle && selectedTips.contains(selectedNode)) {
                 selectedTips.remove(selectedNode);
             } else {
                 selectedTips.add(selectedNode);
             }
+        } else if (selectClade) {
+            for (Node child : tree.getChildren(selectedNode)) {
+                addSelectedChildTips(child, toggle, selectClade);
+            }
+        }
+    }
+
+    public void addSelectedTipLabels(Node selectedNode) {
+        addSelectedTipLabels(selectedNode, false);
+    }
+
+    public void addSelectedTipLabels(Node selectedNode, boolean toggle) {
+        if (selectedNode != null) {
+            addSelectedChildTipLabels(selectedNode, toggle);
+        }
+        fireSelectionChanged();
+        clearSelectionPaths();
+        repaint();
+    }
+
+    private void addSelectedChildTipLabels(Node selectedNode, boolean toggle) {
+        if (tree.isExternal(selectedNode)) {
+            if (toggle && selectedTipLabels.contains(selectedNode)) {
+                selectedTipLabels.remove(selectedNode);
+            } else {
+                selectedTipLabels.add(selectedNode);
+            }
         } else {
             for (Node child : tree.getChildren(selectedNode)) {
-                addSelectedChildTips(child, toggle);
+                addSelectedChildTipLabels(child, toggle);
             }
         }
     }
@@ -671,8 +732,17 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
     public void selectTipsFromSelectedNodes() {
+        boolean hasExternalNodes = false;
         for (Node node : selectedNodes) {
-            addSelectedChildTips(node, false);
+            if (tree.isExternal(node)) {
+                addSelectedChildTips(node, false, false);
+                hasExternalNodes = true;
+            }
+        }
+        if (!hasExternalNodes) {
+            for (Node node : selectedNodes) {
+                addSelectedChildTips(node, false, true);
+            }
         }
         selectedNodes.clear();
         fireSelectionChanged();
@@ -680,10 +750,31 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         repaint();
     }
 
-    public void selectNodesFromSelectedTips() {
+    public void selectNodesFromSelectedTips(boolean selectClade) {
         if (selectedTips.size() > 0) {
-            Node node = RootedTreeUtils.getCommonAncestorNode(tree, selectedTips);
-            addSelectedClade(node, false, false);
+            if (selectClade) {
+                Node node = RootedTreeUtils.getCommonAncestorNode(tree, selectedTips);
+                addSelectedClade(node, false, false);
+            } else {
+                Map<Node, Integer> nodes = new HashMap<>();
+                for (Node tip : selectedTips) {
+                    Node node = tip;
+                    // work to the root incrementing the counts.
+                    while (node != null) {
+                        int count = nodes.getOrDefault(node, 0);
+                        nodes.put(node, count + 1);
+
+                        node = tree.getParent(node);
+                    }
+                }
+                Set<Node> selectedNodes = new HashSet<>();
+                for (Node node: nodes.keySet()) {
+                    if (nodes.get(node) < selectedTips.size()) {
+                        selectedNodes.add(node);
+                    }
+                }
+                addSelectedNodes(selectedNodes, false, false);
+            }
         }
 
         selectedTips.clear();
@@ -692,8 +783,28 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         repaint();
     }
 
+    public void selectTipsFromSelectedTipLabels() {
+        for (Node node : selectedTipLabels) {
+            addSelectedChildTips(node, false, false);
+        }
+        selectedTipLabels.clear();
+        fireSelectionChanged();
+        clearSelectionPaths();
+        repaint();
+    }
+
+    public void selectTipLabelsFromSelectedTips() {
+        for (Node node : selectedTips) {
+            addSelectedChildTipLabels(node, false);
+        }
+        selectedTips.clear();
+        fireSelectionChanged();
+        clearSelectionPaths();
+        repaint();
+    }
+
     public void selectAllTaxa() {
-        selectedTips.addAll(tree.getExternalNodes());
+        selectedTipLabels.addAll(tree.getExternalNodes());
         fireSelectionChanged();
         clearSelectionPaths();
         repaint();
@@ -706,16 +817,24 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         repaint();
     }
 
+    public void selectAllTips() {
+        selectedTips.addAll(tree.getExternalNodes());
+        fireSelectionChanged();
+        clearSelectionPaths();
+        repaint();
+    }
+
     public void clearSelection() {
         selectedNodes.clear();
         selectedTips.clear();
+        selectedTipLabels.clear();
         fireSelectionChanged();
         clearSelectionPaths();
         repaint();
     }
 
     public boolean hasSelection() {
-        return selectedNodes.size() > 0 || selectedTips.size() > 0;
+        return selectedNodes.size() > 0 || selectedTipLabels.size() > 0;
     }
 
     public void cartoonSelectedNodes() {
@@ -947,8 +1066,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
     public void annotateSelectedTips(String name, Object value) {
-        for (Node selectedTip : selectedTips) {
-            Taxon selectedTaxon = tree.getTaxon(selectedTip);
+        for (Node selectedTipLabel : selectedTipLabels) {
+            Taxon selectedTaxon = tree.getTaxon(selectedTipLabel);
 //            if (selectedTaxon == null) {
 //                throw new IllegalArgumentException("missing taxon?");
 //            }
@@ -965,8 +1084,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     }
 
     public void clearSelectedTipAnnotation(String name) {
-        for (Node selectedTip : selectedTips) {
-            Taxon selectedTaxon = tree.getTaxon(selectedTip);
+        for (Node selectedTipLabel : selectedTipLabels) {
+            Taxon selectedTaxon = tree.getTaxon(selectedTipLabel);
             selectedTaxon.removeAttribute(name);
         }
         repaint();
@@ -1223,16 +1342,20 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         return selectedTips;
     }
 
+    public Set<Node> getSelectedTipLabels() {
+        return selectedTipLabels;
+    }
+
     public Set<Taxon> getSelectedTaxa() {
         Set<Taxon> selectedTaxa = new LinkedHashSet<Taxon>();
-        for (Node node : getSelectedTips()) {
+        for (Node node : getSelectedTipLabels()) {
             selectedTaxa.add(tree.getTaxon(node));
         }
         return selectedTaxa;
     }
 
     public RootedTree getSelectedSubtree() {
-        if (selectedNodes.size() == 0 && selectedTips.size() == 0) {
+        if (selectedNodes.size() == 0 && selectedTips.size() == 0 && selectedTipLabels.size() == 0) {
             // nothing selected so return the whole tree
             return tree;
         }
@@ -1257,11 +1380,12 @@ public class TreePane extends JComponent implements PainterListener, Printable {
      * @param isSelected
      * @return
      */
+    // todo - select subtree from selected tips as well as tip labels
     private Node getSelectedSubtree(SimpleRootedTree newTree, Node node, boolean isSelected) {
         Node newNode;
 
         if (tree.isExternal(node)) {
-            if (isSelected || selectedNodes.contains(node) || selectedTips.contains(node)) {
+            if (isSelected || selectedNodes.contains(node) || selectedTipLabels.contains(node)) {
                 newNode = newTree.createExternalNode(tree.getTaxon(node));
                 newTree.setHeight(newNode, tree.getHeight(node));
                 for (String key : node.getAttributeNames()) {
@@ -1415,10 +1539,30 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
         }
 
+        if (tipSelection == null) {
+            tipSelection = new GeneralPath();
+            for (Node selectedTip : selectedTips) {
+                Shape tipShape;
+
+                if (tipShapePainter.isVisible()) {
+                    tipShape = tipShapePainter.getNodeShape(selectedTip);
+                } else {
+                    Point2D p = tipPoints.get(selectedTip);
+                    p = transform.transform(p, null);
+                    tipShape = new Ellipse2D.Double(p.getX() - DEFAULT_TIP_SELECTION_SIZE / 2,
+                            p.getY() - DEFAULT_TIP_SELECTION_SIZE / 2,
+                            DEFAULT_TIP_SELECTION_SIZE, DEFAULT_TIP_SELECTION_SIZE);
+                }
+                if (tipShape != null) {
+                    tipSelection.append(tipShape, false);
+                }
+            }
+        }
+
         if (labelSelection == null) {
             labelSelection = new GeneralPath();
-            for (Node selectedTip : selectedTips) {
-                Shape labelBounds = tipLabelBounds.get(selectedTip);
+            for (Node selectedTipLabel : selectedTipLabels) {
+                Shape labelBounds = tipLabelBounds.get(selectedTipLabel);
                 if (labelBounds != null) {
                     labelSelection.append(labelBounds, false);
                 }
@@ -1428,6 +1572,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         g2.setPaint(selectionPaint);
         g2.setStroke(selectionStroke);
         g2.draw(branchSelection);
+        g2.draw(tipSelection);
+        g2.fill(tipSelection);
         g2.fill(labelSelection);
 
         g2.setPaint(oldPaint);
@@ -1441,11 +1587,13 @@ public class TreePane extends JComponent implements PainterListener, Printable {
 
     private void clearSelectionPaths() {
         branchSelection = null;
+        tipSelection = null;
         labelSelection = null;
     }
 
     private GeneralPath branchSelection = null;
     private GeneralPath labelSelection = null;
+    private GeneralPath tipSelection = null;
 
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
 
@@ -1489,21 +1637,22 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         }
 
         // Paint scales
-        for (ScalePainter scalePainter : scalePainters) {
+        if (!transformBranchesOn) {
+            for (ScalePainter scalePainter : scalePainters) {
 
-            if (scalePainter.isVisible()) {
-                Rectangle2D scaleBounds = this.scaleBounds.get(scalePainter);
-                scalePainter.paint(g2, this, Painter.Justification.CENTER, scaleBounds);
+                if (scalePainter.isVisible()) {
+                    Rectangle2D scaleBounds = this.scaleBounds.get(scalePainter);
+                    scalePainter.paint(g2, this, Painter.Justification.CENTER, scaleBounds);
+                }
+            }
+
+            if (scaleGridPainter != null && scaleGridPainter.isVisible()) {
+                Rectangle2D gridBounds = new Rectangle2D.Double(
+                        treeBounds.getX(), 0.0,
+                        treeBounds.getWidth(), treeBounds.getHeight());
+                scaleGridPainter.paint(g2, this, null, gridBounds);
             }
         }
-
-        if (scaleGridPainter != null && scaleGridPainter.isVisible()) {
-            Rectangle2D gridBounds = new Rectangle2D.Double(
-                    treeBounds.getX(), 0.0,
-                    treeBounds.getWidth(), treeBounds.getHeight());
-            scaleGridPainter.paint(g2, this, null, gridBounds);
-        }
-
 
         // Paint backgrounds
         if (nodeBackgroundDecorator != null) {
@@ -1671,7 +1820,24 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             }
         }
 
-        // Paint node shapes
+        // Paint node shape backgrounds
+        if (nodeShapePainter != null && nodeShapePainter.isVisible() && tipShapePainter.hasBackground()) {
+            for (Node node : nodePoints.keySet()) {
+                Point2D point = nodePoints.get(node);
+                point = transform.transform(point, null);
+                nodeShapePainter.paintBackground(g2, node, point, nodeShapeTransforms.get(node));
+            }
+        }
+
+        // Paint tip shape backgrounds
+        if (tipShapePainter != null && tipShapePainter.isVisible() && tipShapePainter.hasBackground()) {
+            for (Node node : tipPoints.keySet()) {
+                Point2D point = tipPoints.get(node);
+                point = transform.transform(point, null);
+                tipShapePainter.paintBackground(g2, node, point, nodeShapeTransforms.get(node));
+            }
+        }
+
         if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
             for (Node node : nodePoints.keySet()) {
                 Point2D point = nodePoints.get(node);
@@ -1892,28 +2058,33 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         }
 
         // bounds on nodeShapes
-        if (tipShapePainter != null && tipShapePainter.isVisible()) {
+        if (tipShapePainter != null /*&& tipShapePainter.isVisible()*/) {
             tipPoints.clear();
             // Iterate though the external nodes
             for (Node node : tree.getExternalNodes()) {
 
                 Rectangle2D shapeBounds = tipShapePainter.calibrate(g2, node);
                 if (shapeBounds != null) {
-                    totalTreeBounds.add(shapeBounds);
+                    if (tipShapePainter.isVisible()) {
+                        totalTreeBounds.add(shapeBounds);
+                    }
 
                     // just at the centroid in here as the actual shape will be reconstructed when drawing
                     tipPoints.put(node, new Point2D.Double(shapeBounds.getCenterX(), shapeBounds.getCenterY()));
                 }
             }
         }
-        if (nodeShapePainter != null && nodeShapePainter.isVisible()) {
+
+        if (nodeShapePainter != null /* && nodeShapePainter.isVisible()*/) {
             nodePoints.clear();
             // Iterate though the internal nodes
             for (Node node : tree.getInternalNodes()) {
 
                 Rectangle2D shapeBounds = nodeShapePainter.calibrate(g2, node);
                 if (shapeBounds != null) {
-                    totalTreeBounds.add(shapeBounds);
+                    if (nodeShapePainter.isVisible()) {
+                        totalTreeBounds.add(shapeBounds);
+                    }
 
                     // just at the centroid in here as the actual shape will be reconstructed when drawing
                     nodePoints.put(node, new Point2D.Double(shapeBounds.getCenterX(), shapeBounds.getCenterY()));
@@ -1927,7 +2098,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
         bottomPanelBounds = new Rectangle2D.Double();
         double y = totalTreeBounds.getHeight();
         for (ScalePainter scalePainter : scalePainters) {
-            if (scalePainter.isVisible()) {
+            if (!transformBranchesOn && scalePainter.isVisible()) {
                 scalePainter.calibrate(g2, this);
                 Rectangle2D sb = new Rectangle2D.Double(
                         treeBounds.getX(), y,
@@ -1964,8 +2135,8 @@ public class TreePane extends JComponent implements PainterListener, Printable {
                     (treeBounds.getWidth() + treeBounds.getX());
             assert topDiff >= 0 && leftDiff >= 0 && bottomDiff >= 0 && rightDiff >= 0;
 
-            xDiff = 2.0 * (leftDiff > rightDiff ? leftDiff : rightDiff);
-            yDiff = 2.0 * (topDiff > bottomDiff ? topDiff : bottomDiff);
+            xDiff = 2.0 * (Math.max(leftDiff, rightDiff));
+            yDiff = 2.0 * (Math.max(topDiff, bottomDiff));
         } else {
             xDiff = totalTreeBounds.getWidth() - treeBounds.getWidth();
             yDiff = totalTreeBounds.getHeight() - treeBounds.getHeight();
@@ -2253,7 +2424,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
             tipLabelPainter.calibrate(g2, node);
             double labelWidth = tipLabelPainter.getPreferredWidth();
             double labelHeight = tipLabelPainter.getPreferredHeight();
-            
+
             tipLabelWidths.put(node, labelWidth);
             Rectangle2D labelBounds = new Rectangle2D.Double(0.0, 0.0, labelWidth, labelHeight);
 
@@ -2379,6 +2550,7 @@ public class TreePane extends JComponent implements PainterListener, Printable {
     private Insets insets = new Insets(6, 6, 6, 6);
 
     private Set<Node> selectedNodes = new HashSet<Node>();
+    private Set<Node> selectedTipLabels = new LinkedHashSet<Node>();
     private Set<Node> selectedTips = new LinkedHashSet<Node>();
 
     private double rulerHeight = -1.0;
