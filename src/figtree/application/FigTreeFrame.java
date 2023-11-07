@@ -1192,7 +1192,6 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
         return true;
     }
-
     public final void doExport() {
 
         if (exportTreeDialog == null) {
@@ -1228,6 +1227,14 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 
             }
         }
+    }
+
+
+    public final void doExtract() {
+        RootedTree tree = treeViewer.getSelectedSubtree();
+        FigTreeFrame frame = (FigTreeFrame)FigTreeApplication.application.doNew();
+        frame.treeViewer.addTrees(Collections.singletonList(tree));
+        frame.treeViewer.showNextTree();
     }
 
     public final void doExportGraphic(GraphicFormat format) {
@@ -1562,6 +1569,15 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
         return exportColourSchemeAction;
     }
 
+    @Override
+    public Action getExtractTreeAction() {
+        return extractTreeAction;
+    }
+
+    public Action getExtactTreeAction() {
+        return exportTreesAction;
+    }
+
     public Action getExportTreesAction() {
         return exportTreesAction;
     }
@@ -1701,6 +1717,13 @@ public class FigTreeFrame extends DocumentFrame implements FigTreeFileMenuHandle
 //            doExportColourScheme();
         }
     };
+
+    private AbstractAction extractTreeAction = new AbstractAction("Extract Selected Tree...") {
+        public void actionPerformed(ActionEvent ae) {
+            doExtract();
+        }
+    };
+
 
     private AbstractAction exportTreesAction = new AbstractAction("Export Trees...") {
         public void actionPerformed(ActionEvent ae) {

@@ -37,6 +37,8 @@ public interface FigTreeFileMenuHandler {
 
     Action getExportColourSchemeAction();
 
+    Action getExtractTreeAction();
+
     Action getExportTreesAction();
 
 //	Action getExportGraphicAction();

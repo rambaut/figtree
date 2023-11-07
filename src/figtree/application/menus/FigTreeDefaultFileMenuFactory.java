@@ -98,9 +98,13 @@ public class FigTreeDefaultFileMenuFactory implements MenuFactory {
             item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExportJPEGGraphicAction());
             menu.add(item);
 
-            /* to be added ... */
-//            menu.addSeparator();
-//
+            menu.addSeparator();
+
+			item = new JMenuItem(((FigTreeFileMenuHandler)frame).getExtractTreeAction());
+			item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MenuBarFactory.MENU_MASK + KeyEvent.SHIFT_MASK));
+			menu.add(item);
+
+			/* to be added ... */
 //            item = new JMenuItem(((FigTreeFileMenuHandler)frame).getImportColourSchemeAction());
 //            menu.add(item);
 //
