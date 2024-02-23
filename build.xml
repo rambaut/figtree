@@ -81,25 +81,6 @@
             </manifest>
         </jar>
 
-
-        <war destfile="${dist}/figtree.war"
-             webxml="WebRoot/WEB-INF/web.xml">
-            <fileset dir="WebRoot"/>
-            <lib dir="${lib}/jwt">
-                <include name="commons-fileupload-1.2.1.jar" />
-                <include name="commons-io-1.4.jar" />
-                <include name="jwt-3.1.6.jar" />
-            </lib>
-            <lib dir="${lib}">
-                <include name="iText.jar" />
-                <include name="jam.jar" />
-                <include name="jdom.jar" />
-                <include name="jebl.jar" />
-            </lib>
-            <classes dir="${build}"/>
-        </war>
-
-
     </target>
 
     <property name="version" value="1.4.5_pre" />
