@@ -152,7 +152,7 @@ public class LabelPainterController extends AbstractController {
         });
 
         Font font = labelPainter.getFont();
-        fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 48, 1));
+        fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 72, 1));
 
         fontSizeSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
