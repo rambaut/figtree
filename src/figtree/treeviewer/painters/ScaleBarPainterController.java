@@ -108,7 +108,7 @@ public class ScaleBarPainterController extends AbstractController {
         scaleRangeText.setEnabled(false);
 
         Font font = scaleBarPainter.getFont();
-        fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 48, 1));
+        fontSizeSpinner = new JSpinner(new SpinnerNumberModel(font.getSize(), 0.01, 72, 1));
 
         final JLabel label2 = optionsPanel.addComponentWithLabel("Font Size:", fontSizeSpinner);
 
