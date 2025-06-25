@@ -149,7 +149,7 @@ public class AttributeComboHelper {
                                          LabelPainter.PainterIntent intent,
                                          boolean numericalOnly) {
 
-        Set<String> nodeAttributes = new TreeSet<String>();
+        Set<String> nodeAttributes = new LinkedHashSet<>();
         if (trees != null) {
             for (Tree tree : trees) {
                 if (intent == LabelPainter.PainterIntent.TIP) {
@@ -188,7 +188,7 @@ public class AttributeComboHelper {
         }
 
         if (numericalOnly) {
-            Set<String> continuousNodeAttributes = new TreeSet<String>();
+            Set<String> continuousNodeAttributes = new LinkedHashSet<>();
             for (String nodeAttributeName : nodeAttributes) {
                 boolean isNumerical = true;
                 for (Tree tree : trees) {
@@ -246,7 +246,7 @@ public class AttributeComboHelper {
 
     private static void getAttributeNames(List<String> attributeNames, Collection<? extends Tree> trees, final boolean includeLineageColourings) {
         for (Tree tree : trees) {
-            Set<String> attributes = new TreeSet<String>();
+            Set<String> attributes = new LinkedHashSet<>();
 
             for (Attributable item : tree.getNodes()) {
                 for (String name : item.getAttributeNames()) {
