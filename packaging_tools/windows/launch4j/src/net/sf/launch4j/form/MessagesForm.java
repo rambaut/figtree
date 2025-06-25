@@ -16,7 +16,7 @@ import javax.swing.JTextArea;
 public abstract class MessagesForm extends JPanel
 {
    protected final JTextArea _startupErrTextArea = new JTextArea();
-   protected final JTextArea _bundledJreErrTextArea = new JTextArea();
+   protected final JTextArea _jreNotFoundErrTextArea = new JTextArea();
    protected final JTextArea _jreVersionErrTextArea = new JTextArea();
    protected final JTextArea _launcherErrTextArea = new JTextArea();
    protected final JCheckBox _messagesCheck = new JCheckBox();
@@ -111,9 +111,9 @@ public abstract class MessagesForm extends JPanel
       jscrollpane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
       jpanel1.add(jscrollpane1,cc.xy(4,4));
 
-      _bundledJreErrTextArea.setName("bundledJreErrTextArea");
+      _jreNotFoundErrTextArea.setName("jreNotFoundErrTextArea");
       JScrollPane jscrollpane2 = new JScrollPane();
-      jscrollpane2.setViewportView(_bundledJreErrTextArea);
+      jscrollpane2.setViewportView(_jreNotFoundErrTextArea);
       jscrollpane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
       jscrollpane2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
       jpanel1.add(jscrollpane2,cc.xy(4,6));
@@ -138,7 +138,7 @@ public abstract class MessagesForm extends JPanel
       jpanel1.add(jlabel1,new CellConstraints(2,4,1,1,CellConstraints.DEFAULT,CellConstraints.TOP));
 
       JLabel jlabel2 = new JLabel();
-      jlabel2.setText(Messages.getString("bundledJreErr"));
+      jlabel2.setText(Messages.getString("jreNotFoundErr"));
       jpanel1.add(jlabel2,new CellConstraints(2,6,1,1,CellConstraints.DEFAULT,CellConstraints.TOP));
 
       JLabel jlabel3 = new JLabel();

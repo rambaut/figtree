@@ -32,8 +32,6 @@ public abstract class JreForm extends JPanel
    protected final JTextField _maxHeapSizeField = new JTextField();
    protected final JTextField _maxHeapPercentField = new JTextField();
    protected final JTextField _initialHeapPercentField = new JTextField();
-   protected final JComboBox<String> _jdkPreferenceCombo = new JComboBox<String>();
-   protected final JComboBox<String> _runtimeBitsCombo = new JComboBox<String>();
    protected final JComboBox<String> _varCombo = new JComboBox<String>();
    protected final JButton _propertyButton = new JButton();
    protected final JButton _optionButton = new JButton();
@@ -41,8 +39,8 @@ public abstract class JreForm extends JPanel
    protected final JButton _envOptionButton = new JButton();
    protected final JTextField _envVarField = new JTextField();
    protected final JTextField _jrePathField = new JTextField();
-   protected final JCheckBox _bundledJre64BitCheck = new JCheckBox();
-   protected final JCheckBox _bundledJreAsFallbackCheck = new JCheckBox();
+   protected final JCheckBox _requires64BitCheck = new JCheckBox();
+   protected final JCheckBox _requiresJdkCheck = new JCheckBox();
 
    /**
     * Default constructor
@@ -184,9 +182,6 @@ public abstract class JreForm extends JPanel
       _initialHeapPercentField.setName("initialHeapPercentField");
       jpanel1.add(_initialHeapPercentField,cc.xy(8,12));
 
-      _jdkPreferenceCombo.setName("jdkPreferenceCombo");
-      jpanel1.add(_jdkPreferenceCombo,cc.xywh(8,6,3,1));
-
       JLabel jlabel3 = new JLabel();
       jlabel3.setText(Messages.getString("availableMemory"));
       jpanel1.add(jlabel3,cc.xy(10,12));
@@ -194,10 +189,6 @@ public abstract class JreForm extends JPanel
       JLabel jlabel4 = new JLabel();
       jlabel4.setText(Messages.getString("availableMemory"));
       jpanel1.add(jlabel4,cc.xy(10,14));
-
-      _runtimeBitsCombo.setName("runtimeBitsCombo");
-      _runtimeBitsCombo.setToolTipText("");
-      jpanel1.add(_runtimeBitsCombo,cc.xywh(8,8,3,1));
 
       jpanel1.add(createPanel1(),cc.xywh(2,18,9,1));
       TitledSeparator titledseparator1 = new TitledSeparator();
@@ -209,6 +200,17 @@ public abstract class JreForm extends JPanel
       jpanel1.add(titledseparator2,cc.xywh(2,10,9,1));
 
       jpanel1.add(createPanel2(),cc.xywh(4,2,7,1));
+      _requires64BitCheck.setActionCommand(Messages.getString("requires64Bit"));
+      _requires64BitCheck.setName("requires64BitCheck");
+      _requires64BitCheck.setText(Messages.getString("requires64Bit"));
+      _requires64BitCheck.setToolTipText(Messages.getString("requires64BitTip"));
+      jpanel1.add(_requires64BitCheck,cc.xywh(8,8,3,1));
+
+      _requiresJdkCheck.setActionCommand(Messages.getString("requiresJdk"));
+      _requiresJdkCheck.setName("requiresJdkCheck");
+      _requiresJdkCheck.setText(Messages.getString("requiresJdk"));
+      jpanel1.add(_requiresJdkCheck,cc.xywh(8,6,3,1));
+
       addFillComponents(jpanel1,new int[]{ 1,2,3,4,5,6,7,8,9,10,11 },new int[]{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 });
       return jpanel1;
    }
@@ -276,21 +278,9 @@ public abstract class JreForm extends JPanel
 
       _jrePathField.setName("jrePathField");
       _jrePathField.setToolTipText(Messages.getString("jrePathTip"));
-      jpanel1.add(_jrePathField,cc.xy(1,1));
+      jpanel1.add(_jrePathField,cc.xywh(1,1,5,1));
 
-      _bundledJre64BitCheck.setActionCommand(Messages.getString("bundledJre64Bit"));
-      _bundledJre64BitCheck.setName("bundledJre64BitCheck");
-      _bundledJre64BitCheck.setText(Messages.getString("bundledJre64Bit"));
-      _bundledJre64BitCheck.setToolTipText(Messages.getString("bundledJre64BitTip"));
-      jpanel1.add(_bundledJre64BitCheck,cc.xy(3,1));
-
-      _bundledJreAsFallbackCheck.setActionCommand(Messages.getString("bundledJreAsFallback"));
-      _bundledJreAsFallbackCheck.setName("bundledJreAsFallbackCheck");
-      _bundledJreAsFallbackCheck.setText(Messages.getString("bundledJreAsFallback"));
-      _bundledJreAsFallbackCheck.setToolTipText(Messages.getString("bundledJreAsFallbackTip"));
-      jpanel1.add(_bundledJreAsFallbackCheck,cc.xy(5,1));
-
-      addFillComponents(jpanel1,new int[]{ 2,4 },new int[0]);
+      addFillComponents(jpanel1,new int[]{ 2,3,4,5 },new int[0]);
       return jpanel1;
    }
 

@@ -44,7 +44,7 @@
 		<launch4j>
 			<config headerType="console" jarPath="ConsoleApp.jar" dontWrapJar="true" outfile="ConsoleApp.exe" errTitle="ConsoleApp" chdir="." icon="l4j/ConsoleApp.ico">
 				<singleInstance mutexName="net.sf.launch4j.example.ConsoleApp" />
-				<jre minVersion="1.8.0" />
+				<jre path="%JAVA_HOME%;%PATH%" minVersion="1.8.0" />
 			</config>
 		</launch4j>
 	</target>

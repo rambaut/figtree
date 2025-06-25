@@ -59,8 +59,6 @@ public class Config implements IValidatable {
 	public static final String ICON = "icon";
 
 	// __________________________________________________________________________________
-	public static final String DOWNLOAD_URL = "http://java.com/download";
-
 	public static final String GUI_HEADER = "gui";
 	public static final String CONSOLE_HEADER = "console";
 	public static final String JNI_GUI_HEADER_32 = "jniGui32";
@@ -169,9 +167,7 @@ public class Config implements IValidatable {
 			Validator.checkIn(getPriority(), new String[] { "normal" }, "priority",
 					"Process priority is not supported,");
 			Validator.checkNotNull(classPath, "classpath", "classpath");
-			Validator.checkFalse(jre.getBundledJre64Bit(), "jre.bundledJre64Bit",
-					"64-bit bundled JRE not supported.");
-			Validator.checkTrue(Jre.RUNTIME_BITS_32.equals(jre.getRuntimeBits()), "jre.runtimeBits", 
+			Validator.checkFalse(jre.getRequires64Bit(), "jre.requires64Bit",
 					"64-bit JRE not supported.");
 		}
 	}
@@ -395,7 +391,7 @@ public class Config implements IValidatable {
 	}
 	
 	public String getDownloadUrl() {
-		return downloadUrl == null ? DOWNLOAD_URL : downloadUrl;
+		return downloadUrl;
 	}
 
 	public void setDownloadUrl(String downloadUrl) {

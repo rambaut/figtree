@@ -43,7 +43,6 @@
 #define SPLASH_TIMEOUT				6 
 #define SPLASH_TIMEOUT_ERR			7
 #define CHDIR						8
-#define SET_PROC_NAME				9
 #define ERR_TITLE					10
 #define GUI_HEADER_STAYS_ALIVE		11
 #define JVM_OPTIONS					12
@@ -52,7 +51,7 @@
 #define MAIN_CLASS					15
 #define CLASSPATH					16
 #define WRAPPER						17
-#define JDK_PREFERENCE				18
+#define REQUIRES_JDK				18
 #define ENV_VARIABLES				19
 #define PRIORITY_CLASS				20
 #define DOWNLOAD_URL				21
@@ -63,13 +62,11 @@
 #define INITIAL_HEAP_PERCENT		26
 #define MAX_HEAP_SIZE				27
 #define MAX_HEAP_PERCENT			28
-#define BUNDLED_JRE_64_BIT			29
-#define RUNTIME_BITS				30
+#define REQUIRES_64_BIT		 		29
 #define RESTART_ON_CRASH			31
-#define BUNDLED_JRE_AS_FALLBACK		32
 
 #define STARTUP_ERR					101
-#define BUNDLED_JRE_ERR				102
+#define JRE_NOT_FOUND_ERR			102
 #define JRE_VERSION_ERR				103
 #define LAUNCHER_ERR				104
 #define INSTANCE_ALREADY_EXISTS_MSG	105

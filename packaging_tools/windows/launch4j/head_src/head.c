@@ -37,6 +37,7 @@ FILE* hLog;
 BOOL debugAll = FALSE;
 BOOL console = FALSE;
 BOOL wow64 = FALSE;
+BOOL jniHeader = FALSE;
 char oldPwd[_MAX_PATH];
 
 PROCESS_INFORMATION processInformation;
@@ -51,16 +52,15 @@ struct
 
 struct
 {
-	int runtimeBits;
 	int foundJava;
-	BOOL bundledJreAsFallback;
+	BOOL requiresJdk;
+	BOOL requires64Bit;
 	BOOL corruptedJreFound;
 	char originalJavaMinVer[STR];
 	char originalJavaMaxVer[STR];
 	char javaMinVer[STR];
 	char javaMaxVer[STR];
 	char foundJavaVer[STR];
-	char foundJavaKey[_MAX_PATH];
 	char foundJavaHome[_MAX_PATH];
 } search;
 
@@ -71,8 +71,9 @@ struct
 	char args[MAX_ARGS];
 } launcher;
 
-BOOL initGlobals()
+BOOL initGlobals(BOOL jni)
 {
+	jniHeader = jni;
 	hModule = GetModuleHandle(NULL);
 
 	if (hModule == NULL)
@@ -82,9 +83,9 @@ BOOL initGlobals()
 
 	strcpy(error.title, LAUNCH4j);
 
-	search.runtimeBits = INIT_RUNTIME_BITS;
-	search.foundJava = NO_JAVA_FOUND;
-	search.bundledJreAsFallback = FALSE;
+	search.foundJava = JAVA_NOT_FOUND;
+	search.requiresJdk = FALSE;
+	search.requires64Bit = FALSE;
 	search.corruptedJreFound = FALSE;
 	
 	return TRUE;
@@ -141,7 +142,7 @@ void setWow64Flag()
 		fnIsWow64Process(GetCurrentProcess(), &wow64);
 	}
 
-	debug("WOW64:\t\t%s\n", wow64 ? "yes" : "no"); 
+	debug("WOW64:\t\t%s\n", wow64 ? "Yes" : "No"); 
 }
 
 void setConsoleFlag()
@@ -464,28 +465,23 @@ void regSearch(const char* keyName, const int searchType)
 		debug("Check:\t\t%s\n", fullKeyName);
         formatJavaVersion(version, originalVersion);
 
-		if (strcmp(version, search.javaMinVer) >= 0
-				&& (!*search.javaMaxVer || strcmp(version, search.javaMaxVer) <= 0)
-				&& strcmp(version, search.foundJavaVer) > 0
-				&& isJavaHomeValid(fullKeyName, searchType))
+		if (isJavaVersionGood(version, wow64KeyMask)
+				&& isRegistryJavaHomeValid(fullKeyName, searchType))
 		{
 			strcpy(search.foundJavaVer, version);
-			strcpy(search.foundJavaKey, fullKeyName);
 			search.foundJava = searchType;
 			debug("Match:\t\t%s\n", version);
-		}
-		else
-		{
-			debug("Ignore:\t\t%s\n", version);
+			break;
 		}
 
+		debug("Ignore:\t\t%s\n", version);
 		versionSize = _MAX_PATH;
 	}
 
 	RegCloseKey(hKey);
 }
 
-BOOL isJavaHomeValid(const char* keyName, const int searchType)
+BOOL isRegistryJavaHomeValid(const char* keyName, const int searchType)
 {
 	BOOL valid = FALSE;
 	HKEY hKey;
@@ -531,6 +527,7 @@ BOOL isLauncherPathValid(const char* path)
 {
 	struct _stat statBuf;
 	char launcherPath[_MAX_PATH] = {0};
+	char javacPath[_MAX_PATH] = {0};
 	BOOL result = FALSE;
 
 	if (*path)
@@ -538,6 +535,15 @@ BOOL isLauncherPathValid(const char* path)
 		strcpy(launcherPath, path);
 		appendLauncher(launcherPath);
 		result = _stat(launcherPath, &statBuf) == 0;
+		debug("Check launcher:\t%s %s\n", launcherPath, result ? "(OK)" : "(not found)");
+
+		if (result && search.requiresJdk)
+		{
+			strcpy(javacPath, path);
+			appendPath(javacPath, "bin\\javac.exe");
+			result = _stat(javacPath, &statBuf) == 0;
+			debug("Check javac:\t%s %s\n", javacPath, result ? "(OK)" : "(not found)");
+		}
 
 		if (!result)
 		{
@@ -546,120 +552,73 @@ BOOL isLauncherPathValid(const char* path)
 		}
 	}
 
-	debug("Check launcher:\t%s %s\n", launcherPath, result ? "(OK)" : "(not found)");
 	return result;
 }
 
-void regSearchWow(const char* keyName, const int searchType)
+void regSearchWow(const char* keyName)
 {
-	if (search.runtimeBits == INIT_RUNTIME_BITS)
+	if (search.foundJava != JAVA_NOT_FOUND)
 	{
-		search.runtimeBits = loadInt(RUNTIME_BITS);
+		return;
 	}
 
-	switch (search.runtimeBits)
+	if (wow64 && !jniHeader)
 	{
-		case USE_64_BIT_RUNTIME:
-			if (wow64)
-			{
-				regSearch(keyName, searchType | KEY_WOW64_64KEY);
-			}
-			break;
-
-		case USE_64_AND_32_BIT_RUNTIME:
-			if (wow64)
-			{
-				regSearch(keyName, searchType | KEY_WOW64_64KEY);
+		regSearch(keyName, JAVA_FOUND | KEY_WOW64_64KEY);
 				
-				if ((search.foundJava & KEY_WOW64_64KEY) != NO_JAVA_FOUND)
-				{
-					break;
-				}
-			}
+		if ((search.foundJava & KEY_WOW64_64KEY) != JAVA_NOT_FOUND)
+		{
+			return;
+		}
+	}
 
-			regSearch(keyName, searchType);
-			break;
-
-		case USE_32_AND_64_BIT_RUNTIME:
-			regSearch(keyName, searchType);
-
-			if (search.foundJava != NO_JAVA_FOUND
-				&& (search.foundJava & KEY_WOW64_64KEY) == NO_JAVA_FOUND)
-			{
-				break;
-			}
-
-			if (wow64)
-			{
-				regSearch(keyName, searchType | KEY_WOW64_64KEY);
-			}
-			break;
-
-		case USE_32_BIT_RUNTIME:
-			regSearch(keyName, searchType);
-			break;
-			
-		default:
-            debug("Runtime bits:\tFailed to load.\n");
-            break;
+	if (!search.requires64Bit)
+	{
+		regSearch(keyName, JAVA_FOUND);
 	}
 }
 
-void regSearchJreSdk(const char* jreKeyName, const char* sdkKeyName,
-		const int jdkPreference)
+BOOL findRegistryJavaHome(char* path)
 {
-	if (jdkPreference == JDK_ONLY || jdkPreference == PREFER_JDK)
-	{
-		regSearchWow(sdkKeyName, FOUND_SDK);
-		if (jdkPreference != JDK_ONLY)
-		{
-			regSearchWow(jreKeyName, FOUND_JRE);
-		}
+    debugAll("findRegistryJavaHome()\n");
+    if (!search.requiresJdk)
+    {
+		regSearchWow("SOFTWARE\\JavaSoft\\Java Runtime Environment");
 	}
-	else
-	{
-		// jdkPreference == JRE_ONLY or PREFER_JRE
-		regSearchWow(jreKeyName, FOUND_JRE);
-		if (jdkPreference != JRE_ONLY)
-		{
-			regSearchWow(sdkKeyName, FOUND_SDK);
-		}
-	}
-}
-
-BOOL findJavaHome(char* path, const int jdkPreference)
-{
-    debugAll("findJavaHome()\n");
-	regSearchJreSdk("SOFTWARE\\JavaSoft\\Java Runtime Environment",
-					"SOFTWARE\\JavaSoft\\Java Development Kit",
-					jdkPreference);
+	regSearchWow("SOFTWARE\\JavaSoft\\Java Development Kit");
 
     // Java 9 support
-	regSearchJreSdk("SOFTWARE\\JavaSoft\\JRE",
-					"SOFTWARE\\JavaSoft\\JDK",
-					jdkPreference);
+    if (!search.requiresJdk)
+    {
+		regSearchWow("SOFTWARE\\JavaSoft\\JRE");
+	}
+	regSearchWow("SOFTWARE\\JavaSoft\\JDK");
 
     // IBM Java 1.8
-	if (search.foundJava == NO_JAVA_FOUND)
+	if (search.foundJava == JAVA_NOT_FOUND)
 	{
-		regSearchJreSdk("SOFTWARE\\IBM\\Java Runtime Environment",
-						"SOFTWARE\\IBM\\Java Development Kit",
-						jdkPreference);
+		if (!search.requiresJdk)
+    	{
+			regSearchWow("SOFTWARE\\IBM\\Java Runtime Environment");
+		}
+		regSearchWow("SOFTWARE\\IBM\\Java Development Kit");
 	}
 	
 	// IBM Java 1.7 and earlier
-	if (search.foundJava == NO_JAVA_FOUND)
+	if (search.foundJava == JAVA_NOT_FOUND)
 	{
-		regSearchJreSdk("SOFTWARE\\IBM\\Java2 Runtime Environment",
-						"SOFTWARE\\IBM\\Java Development Kit",
-						jdkPreference);
+	    if (!search.requiresJdk)
+    	{
+			regSearchWow("SOFTWARE\\IBM\\Java2 Runtime Environment");
+		}
+		regSearchWow("SOFTWARE\\IBM\\Java Development Kit");
 	}
 	
-	if (search.foundJava != NO_JAVA_FOUND)
+	if (search.foundJava != JAVA_NOT_FOUND)
 	{
 		strcpy(path, search.foundJavaHome);
 		debug("Runtime used:\t%s (%s-bit)\n", search.foundJavaVer,
-				(search.foundJava & KEY_WOW64_64KEY) != NO_JAVA_FOUND ? "64" : "32");
+				(search.foundJava & KEY_WOW64_64KEY) != JAVA_NOT_FOUND ? "64" : "32");
 		return TRUE;	
 	}
 	
@@ -924,15 +883,14 @@ void removeChar(char *src, const char toRemove)
 	} while (*src++ != 0);
 }
 
-BOOL bundledJreSearch(const char *exePath, const int pathLen)
+BOOL pathJreSearch(const char *exePath, const int pathLen)
 {
-    debugAll("bundledJreSearch()\n");
+    debugAll("pathJreSearch()\n");
 	char jrePathSpec[_MAX_PATH] = {0};
-    BOOL is64BitJre = loadBool(BUNDLED_JRE_64_BIT);
 
-    if (!wow64 && is64BitJre)
+    if (!wow64 && search.requires64Bit)
     {
-        debug("Bundled JRE:\tCannot use 64-bit runtime on 32-bit OS.\n");
+        debug("JRE:\t\tCannot use 64-bit runtime on 32-bit OS.\n");
         return FALSE;
     }
     
@@ -940,7 +898,7 @@ BOOL bundledJreSearch(const char *exePath, const int pathLen)
 	{
 		char jrePath[MAX_ARGS] = {0};
 		expandVars(jrePath, jrePathSpec, exePath, pathLen);
-		debug("Bundled JRE(s):\t%s\n", jrePath);
+		debug("JRE paths:\t%s\n", jrePath);
         char* path = strtok(jrePath, ";");
         
         while (path != NULL)
@@ -973,12 +931,14 @@ BOOL bundledJreSearch(const char *exePath, const int pathLen)
     		{
     			// Relative
     			strncpy(launcher.cmd, exePath, pathLen);
+				launcher.cmd[pathLen] = 0;
     			appendPath(launcher.cmd, pathNoBin);
     		}
 
-    		if (isLauncherPathValid(launcher.cmd))
+			BOOL is64Bit;
+			if (isLauncherPathValid(launcher.cmd) && isPathJavaVersionGood(launcher.cmd, &is64Bit))
     		{
-                search.foundJava = is64BitJre ? FOUND_BUNDLED | KEY_WOW64_64KEY : FOUND_BUNDLED;
+                search.foundJava = is64Bit ? JAVA_FOUND | KEY_WOW64_64KEY : JAVA_FOUND;
     			strcpy(search.foundJavaHome, launcher.cmd);
     			return TRUE;
     		}
@@ -990,10 +950,10 @@ BOOL bundledJreSearch(const char *exePath, const int pathLen)
     return FALSE;
 }
 
-BOOL installedJreSearch()
+BOOL registryJreSearch()
 {
-    debugAll("installedJreSearch()\n");
-	return *search.javaMinVer && findJavaHome(launcher.cmd, loadInt(JDK_PREFERENCE));
+    debugAll("registryJreSearch()\n");
+	return *search.javaMinVer && findRegistryJavaHome(launcher.cmd);
 }
 
 void createJreSearchError()
@@ -1010,12 +970,9 @@ void createJreSearchError()
 			strcat(error.msg, search.originalJavaMaxVer);
 		}
 	
-		if (search.runtimeBits == USE_64_BIT_RUNTIME
-				|| search.runtimeBits == USE_32_BIT_RUNTIME)
+		if (search.requires64Bit)
 		{
-			strcat(error.msg, " (");
-			strcat(error.msg, search.runtimeBits == USE_64_BIT_RUNTIME ? "64" : "32");
-			strcat(error.msg, "-bit)");
+			strcat(error.msg, " (64-bit)");
 		}			
 		
 		if (search.corruptedJreFound)
@@ -1033,7 +990,7 @@ void createJreSearchError()
 	}
 	else
 	{
-		loadString(BUNDLED_JRE_ERR, error.msg);
+		loadString(JRE_NOT_FOUND_ERR, error.msg);
 	}
 }
 
@@ -1042,7 +999,10 @@ BOOL jreSearch(const char *exePath, const int pathLen)
     debugAll("jreSearch()\n");
 	BOOL result = TRUE;
 
-	search.bundledJreAsFallback = loadBool(BUNDLED_JRE_AS_FALLBACK);
+	search.requiresJdk = loadBool(REQUIRES_JDK);
+	debug("Requires JDK:\t%s\n", search.requiresJdk ? "Yes" : "No");
+	search.requires64Bit = loadBool(REQUIRES_64_BIT);
+	debug("Requires 64-Bit: %s\n", search.requires64Bit ? "Yes" : "No");
 	loadString(JAVA_MIN_VER, search.originalJavaMinVer);
 	formatJavaVersion(search.javaMinVer, search.originalJavaMinVer);
 	debug("Java min ver:\t%s\n", search.javaMinVer);
@@ -1050,21 +1010,11 @@ BOOL jreSearch(const char *exePath, const int pathLen)
     formatJavaVersion(search.javaMaxVer, search.originalJavaMaxVer);
     debug("Java max ver:\t%s\n", search.javaMaxVer);
 
-	if (search.bundledJreAsFallback)
+	if (!pathJreSearch(exePath, pathLen))
 	{
-		if (!installedJreSearch())
-		{
-			result = bundledJreSearch(exePath, pathLen);
-		}
+		result = registryJreSearch();
 	}
-	else
-	{
-		if (!bundledJreSearch(exePath, pathLen))
-		{
-			result = installedJreSearch();
-		}
-	}
-	
+
 	if (!result)
 	{
 		createJreSearchError();
@@ -1247,9 +1197,9 @@ void setCommandLineArgs(const char *lpCmdLine)
 	}
 }
 
-int prepare(const char *lpCmdLine)
+int prepare(const char *lpCmdLine, BOOL jni)
 {
-	if (!initGlobals())
+	if (!initGlobals(jni))
 	{
 		return FALSE;
 	}
@@ -1268,6 +1218,7 @@ int prepare(const char *lpCmdLine)
 		return FALSE;
 	}
 
+	debug("JNI:\t\t%s\n", jniHeader ? "Yes" : "No");
     setWow64Flag();
 
 	// Set default error message, title and optional support web site url.
@@ -1371,3 +1322,131 @@ const char* getLauncherArgs()
     return launcher.args;    
 }
 
+/* read java version output and save version string in version */
+void getVersionFromOutput(HANDLE outputRd, char *version, int versionLen, BOOL *is64Bit)
+{
+	CHAR chBuf[BIG_STR] = {0}, *bptr = chBuf;
+	DWORD dwRead, remain = sizeof(chBuf);
+	BOOL bSuccess = FALSE;
+
+	while (remain > 0) {
+		bSuccess = ReadFile(outputRd, bptr, remain, &dwRead, NULL);
+		if (! bSuccess || dwRead == 0) break;
+		bptr += dwRead;
+		remain -= dwRead;
+	}
+	debugAll("Java version output: %s\n", chBuf);
+	*version = '\0';
+	const char *verStartPtr = strchr(chBuf, '"');
+	if (verStartPtr == NULL)
+	{
+		debug("Cannot get version string: cannot find quote\n");
+		return;
+	}
+	const char *verEndPtr = strchr(++verStartPtr, '"');
+	if (verEndPtr == NULL)
+	{
+		debug("Cannot get version string: missing end quote\n");
+		return;
+	}
+	size_t len = verEndPtr - verStartPtr;
+	if (len >= versionLen) {
+		debug("Cannot get version string: data too large\n");
+		return;
+	}
+	memcpy(version, verStartPtr, len);
+	version[len] = '\0';
+	*is64Bit = strstr(chBuf, "64-Bit") != NULL || strstr(chBuf, "64-bit") != NULL;
+}
+
+/* create a child process with cmdline and set stderr/stdout to outputWr */
+BOOL CreateChildProcess(char *cmdline, HANDLE outputWr)
+{
+	PROCESS_INFORMATION piProcInfo;
+	STARTUPINFO siStartInfo;
+	BOOL bSuccess = FALSE;
+
+	ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
+	ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
+	siStartInfo.cb = sizeof(STARTUPINFO);
+	siStartInfo.hStdError = outputWr;
+	siStartInfo.hStdOutput = outputWr;
+	siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+
+	debugAll("Create process: %s\n", cmdline);
+	bSuccess = CreateProcess(NULL, cmdline, NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &siStartInfo, &piProcInfo);   
+	if (!bSuccess)
+	{
+		debug("Cannot create process %s\n", cmdline);
+	}
+	else
+	{
+		CloseHandle(piProcInfo.hProcess);
+		CloseHandle(piProcInfo.hThread);
+	}
+	CloseHandle(outputWr);
+	return bSuccess;
+}
+
+BOOL isJavaVersionGood(const char *version, BOOL is64Bit)
+{
+	BOOL result = (!*search.javaMinVer || strcmp(version, search.javaMinVer) >= 0)
+		&& (!*search.javaMaxVer || strcmp(version, search.javaMaxVer) <= 0)
+		&& (!search.requires64Bit || is64Bit)
+		&& (!jniHeader || !is64Bit);
+	debug("Version string: %s / %s-Bit (%s)\n", version, is64Bit ? "64" : "32", result ? "OK" : "Ignore");
+	return result;
+}
+
+/*
+ * Run <path>/bin/java(w) -version. Return TRUE if version is good.
+ */
+BOOL isPathJavaVersionGood(const char *path, BOOL *is64Bit)
+{
+	SECURITY_ATTRIBUTES saAttr;
+	HANDLE outputRd = NULL;
+	HANDLE outputWr = NULL;
+
+	debugAll("Check Java Version: %s min=%s max=%s\n", path, search.javaMinVer, search.javaMaxVer);
+
+	saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
+	saAttr.bInheritHandle = TRUE;
+	saAttr.lpSecurityDescriptor = NULL;
+
+	// Create a pipe for the child process's STDOUT.
+	if (!CreatePipe(&outputRd, &outputWr, &saAttr, 0))
+	{
+		debug("Cannot create pipe\n");
+		return FALSE;
+	}
+	// Ensure the read handle to the pipe for STDOUT is not inherited.
+	if (!SetHandleInformation(outputRd, HANDLE_FLAG_INHERIT, 0))
+	{
+		debug("Cannot set handle information\n");
+		CloseHandle(outputRd);
+		CloseHandle(outputWr);
+		return FALSE;
+	}
+	// create child process
+	char cmdline[MAX_ARGS] = {0};
+	char launcherPath[_MAX_PATH] = {0};
+	strcpy(launcherPath, path);
+	appendLauncher(launcherPath);
+	snprintf(cmdline, MAX_ARGS, "\"%s\" -version", launcherPath);
+	if (!CreateChildProcess(cmdline, outputWr))
+	{
+		debug("Cannot run java(w) -version\n");
+		CloseHandle(outputRd);
+		return FALSE;
+	}
+	char version[STR] = {0}, formattedVersion[STR] = {0};
+	
+	getVersionFromOutput(outputRd, version, sizeof(version), is64Bit);
+	CloseHandle(outputRd);
+	if (*version != '\0')
+	{
+		formatJavaVersion(formattedVersion, version);
+		return isJavaVersionGood(formattedVersion, *is64Bit);
+	}
+	return FALSE;
+}

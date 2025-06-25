@@ -54,16 +54,4 @@ public class AntJre extends Jre {
 	public void unwrap() {
 		setOptions(StringWrapper.unwrap(wrappedOptions));
 	}
-
-	/**
-	 * For backwards compatibility.
-	 */
-	public void setDontUsePrivateJres(boolean dontUse) {
-		if (dontUse) {
-			setJdkPreference(JDK_PREFERENCE_JRE_ONLY);
-		}
-		else {
-			setJdkPreference(JDK_PREFERENCE_PREFER_JRE);
-		}
-	}
 }

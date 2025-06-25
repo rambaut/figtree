@@ -52,7 +52,7 @@ import net.sf.launch4j.config.Splash;
 import net.sf.launch4j.config.VersionInfo;
 
 /**
- * @author Copyright (C) 2005 Grzegorz Kowal
+ * @author Copyright (C) 2022 Grzegorz Kowal
  */
 public class RcBuilder {
 
@@ -88,7 +88,7 @@ public class RcBuilder {
 	public static final int MAIN_CLASS = 15;
 	public static final int CLASSPATH = 16;
 	public static final int WRAPPER = 17;
-	public static final int JDK_PREFERENCE = 18;
+	public static final int REQUIRES_JDK = 18;
 	public static final int ENV_VARIABLES = 19;
 	public static final int PRIORITY_CLASS = 20;
 	public static final int	DOWNLOAD_URL = 	21;
@@ -99,13 +99,11 @@ public class RcBuilder {
 	public static final int INITIAL_HEAP_PERCENT = 26;
 	public static final int MAX_HEAP_SIZE = 27;
 	public static final int MAX_HEAP_PERCENT = 28;
-	public static final int BUNDLED_JRE_64_BIT = 29;
-	public static final int RUNTIME_BITS = 30;
+	public static final int REQUIRES_64_BIT = 29;
 	public static final int RESTART_ON_CRASH = 31;
-	public static final int BUNDLED_JRE_AS_FALLBACK	= 32;
 
 	public static final int STARTUP_ERR = 101;
-	public static final int BUNDLED_JRE_ERR = 102;
+	public static final int JRE_NOT_FOUND_ERR = 102;
 	public static final int JRE_VERSION_ERR = 103;
 	public static final int LAUNCHER_ERR = 104;
 	public static final int INSTANCE_ALREADY_EXISTS_MSG = 105;
@@ -252,13 +250,11 @@ public class RcBuilder {
 
 	private void addJre(Jre jre) {
 		addWindowsPath(JRE_PATH, jre.getPath());
-		addTrue(BUNDLED_JRE_64_BIT, jre.getBundledJre64Bit());
-		addTrue(BUNDLED_JRE_AS_FALLBACK, jre.getBundledJreAsFallback());
+		addTrue(REQUIRES_JDK, jre.getRequiresJdk());
+		addTrue(REQUIRES_64_BIT, jre.getRequires64Bit());
 		addText(JAVA_MIN_VER, jre.getMinVersion());
 		addText(JAVA_MAX_VER, jre.getMaxVersion());
-		addText(JDK_PREFERENCE, String.valueOf(jre.getJdkPreferenceIndex()));
 
-		addInteger(RUNTIME_BITS, jre.getRuntimeBitsIndex() + 1);
 		addInteger(INITIAL_HEAP_SIZE, jre.getInitialHeapSize());
 		addInteger(INITIAL_HEAP_PERCENT, jre.getInitialHeapPercent());
 		addInteger(MAX_HEAP_SIZE, jre.getMaxHeapSize());
@@ -294,7 +290,7 @@ public class RcBuilder {
 		}
 
 		addText(STARTUP_ERR, msg.getStartupErr());
-		addText(BUNDLED_JRE_ERR, msg.getBundledJreErr());
+		addText(JRE_NOT_FOUND_ERR, msg.getJreNotFoundErr());
 		addText(JRE_VERSION_ERR, msg.getJreVersionErr());
 		addText(LAUNCHER_ERR, msg.getLauncherErr());
 

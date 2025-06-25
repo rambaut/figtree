@@ -49,7 +49,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
                      LPSTR     lpCmdLine,
                      int       nCmdShow)
 {
-	int result = prepare(lpCmdLine);
+	int result = prepare(lpCmdLine, FALSE);
 
 	if (result == ERROR_ALREADY_EXISTS)
 	{

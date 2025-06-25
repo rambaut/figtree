@@ -36,7 +36,6 @@
  */
 package net.sf.launch4j.config;
 
-import java.util.Arrays;
 import java.util.List;
 
 import net.sf.launch4j.binding.IValidatable;
@@ -47,50 +46,14 @@ import net.sf.launch4j.binding.Validator;
  */
 public class Jre implements IValidatable {
 
-	// 1.x config properties_____________________________________________________________
-	public static final String PATH = "jrepath";
-	public static final String MIN_VERSION = "javamin";
-	public static final String MAX_VERSION = "javamax";
-	public static final String ARGS = "jvmArgs";
-
-	// __________________________________________________________________________________
 	public static final String VERSION_PATTERN = "(1\\.\\d\\.\\d(_\\d{1,3})?)|[1-9][0-9]{0,2}(\\.\\d{1,3}){0,2}";
-	
-	public static final String JDK_PREFERENCE_JRE_ONLY = "jreOnly";
-	public static final String JDK_PREFERENCE_PREFER_JRE = "preferJre";
-	public static final String JDK_PREFERENCE_PREFER_JDK = "preferJdk";
-	public static final String JDK_PREFERENCE_JDK_ONLY = "jdkOnly";
-	
-	public static final String RUNTIME_BITS_64 = "64";
-	public static final String RUNTIME_BITS_64_AND_32 = "64/32";
-	public static final String RUNTIME_BITS_32_AND_64 = "32/64";
-	public static final String RUNTIME_BITS_32 = "32";
-
-	private static final String[] JDK_PREFERENCE_NAMES = new String[] {
-			JDK_PREFERENCE_JRE_ONLY,
-			JDK_PREFERENCE_PREFER_JRE,
-			JDK_PREFERENCE_PREFER_JDK,
-			JDK_PREFERENCE_JDK_ONLY };
-
-	private static final String[] RUNTIME_BITS_OPTIONS = new String[] {
-			RUNTIME_BITS_64,
-			RUNTIME_BITS_64_AND_32,
-			RUNTIME_BITS_32_AND_64,
-			RUNTIME_BITS_32	};
-
-	public static final int DEFAULT_JDK_PREFERENCE_INDEX
-			= Arrays.asList(JDK_PREFERENCE_NAMES).indexOf(JDK_PREFERENCE_PREFER_JRE);
-
-	public static final int DEFAULT_RUNTIME_BITS_INDEX
-			= Arrays.asList(RUNTIME_BITS_OPTIONS).indexOf(RUNTIME_BITS_64_AND_32);
+	public static final String DEFAULT_PATH = "%JAVA_HOME%;%PATH%";
 
 	private String path;
-	private boolean bundledJre64Bit;
-	private boolean bundledJreAsFallback;
+	private boolean requiresJdk;
+	private boolean requires64Bit;
 	private String minVersion;
 	private String maxVersion;
-	private String jdkPreference;
-	private String runtimeBits;
 	private Integer initialHeapSize;
 	private Integer initialHeapPercent;
 	private Integer maxHeapSize;
@@ -98,66 +61,43 @@ public class Jre implements IValidatable {
 	private List<String> options;
 
 	public void checkInvariants() {
-		Validator.checkOptString(minVersion, 20, VERSION_PATTERN,
-				"jre.minVersion", Messages.getString("Jre.min.version"));
-		Validator.checkOptString(maxVersion, 20, VERSION_PATTERN,
-				"jre.maxVersion", Messages.getString("Jre.max.version"));
-		if (Validator.isEmpty(path)) {
-			Validator.checkFalse(bundledJre64Bit, "jre.bundledJre64Bit",
-					Messages.getString("Jre.bundled.64bit.invalid"));
-			Validator.checkFalse(bundledJreAsFallback, "jre.bundledJreAsFallback",
-					Messages.getString("Jre.bundled.fallback.invalid"));
-			Validator.checkFalse(Validator.isEmpty(minVersion),
-					"jre.minVersion", Messages.getString("Jre.specify.jre.min.version.or.path"));
-		} else {
-			Validator.checkString(path, Validator.MAX_PATH,
-					"jre.path", Messages.getString("Jre.bundled.path"));
-		}
+		Validator.checkOptString(minVersion, 20, VERSION_PATTERN, "jre.minVersion",
+				Messages.getString("Jre.min.version"));
+		Validator.checkOptString(maxVersion, 20, VERSION_PATTERN, "jre.maxVersion",
+				Messages.getString("Jre.max.version"));
+		Validator.checkString(path, Validator.MAX_PATH, "jre.path", Messages.getString("Jre.path"));
 		if (!Validator.isEmpty(maxVersion)) {
-			Validator.checkFalse(Validator.isEmpty(minVersion),
-					"jre.minVersion", Messages.getString("Jre.specify.min.version"));
+			Validator.checkFalse(Validator.isEmpty(minVersion), "jre.minVersion",
+					Messages.getString("Jre.specify.min.version"));
 			Validator.checkTrue(JreVersion.parseString(minVersion).compareTo(JreVersion.parseString(maxVersion)) < 0,
 					"jre.maxVersion", Messages.getString("Jre.max.greater.than.min"));
 		}
-		Validator.checkTrue(initialHeapSize == null || maxHeapSize != null,
-				"jre.maxHeapSize", Messages.getString("Jre.initial.and.max.heap"));
-		Validator.checkTrue(initialHeapSize == null || initialHeapSize.intValue() > 0,
-				"jre.initialHeapSize", Messages.getString("Jre.initial.heap"));
-		Validator.checkTrue(maxHeapSize == null || (maxHeapSize.intValue()
-				>= ((initialHeapSize != null) ? initialHeapSize.intValue() : 1)),
+		Validator.checkTrue(initialHeapSize == null || maxHeapSize != null, "jre.maxHeapSize",
+				Messages.getString("Jre.initial.and.max.heap"));
+		Validator.checkTrue(initialHeapSize == null || initialHeapSize.intValue() > 0, "jre.initialHeapSize",
+				Messages.getString("Jre.initial.heap"));
+		Validator.checkTrue(
+				maxHeapSize == null
+						|| (maxHeapSize.intValue() >= ((initialHeapSize != null) ? initialHeapSize.intValue() : 1)),
 				"jre.maxHeapSize", Messages.getString("Jre.max.heap"));
-		Validator.checkTrue(initialHeapPercent == null || maxHeapPercent != null,
-				"jre.maxHeapPercent", Messages.getString("Jre.initial.and.max.heap"));
+		Validator.checkTrue(initialHeapPercent == null || maxHeapPercent != null, "jre.maxHeapPercent",
+				Messages.getString("Jre.initial.and.max.heap"));
 		if (initialHeapPercent != null) {
-			Validator.checkRange(initialHeapPercent.intValue(), 1, 100,
-					"jre.initialHeapPercent",
+			Validator.checkRange(initialHeapPercent.intValue(), 1, 100, "jre.initialHeapPercent",
 					Messages.getString("Jre.initial.heap.percent"));
 		}
 		if (maxHeapPercent != null) {
 			Validator.checkRange(maxHeapPercent.intValue(),
-					initialHeapPercent != null ? initialHeapPercent.intValue() : 1, 100,
-					"jre.maxHeapPercent",
+					initialHeapPercent != null ? initialHeapPercent.intValue() : 1, 100, "jre.maxHeapPercent",
 					Messages.getString("Jre.max.heap.percent"));
 		}
-		Validator.checkIn(getJdkPreference(), JDK_PREFERENCE_NAMES,
-				"jre.jdkPreference", Messages.getString("Jre.jdkPreference"));
-		Validator.checkIn(getRuntimeBits(), RUNTIME_BITS_OPTIONS,
-				"jre.runtimeBits", Messages.getString("Jre.runtimeBits"));
-		Validator.checkOptStrings(options,
-				Validator.MAX_ARGS,
-				Validator.MAX_ARGS,
-				"[^\"]*|([^\"]*\"[^\"]*\"[^\"]*)*",
-				"jre.options",
-				Messages.getString("Jre.jvm.options"),
+		Validator.checkOptStrings(options, Validator.MAX_ARGS, Validator.MAX_ARGS, "[^\"]*|([^\"]*\"[^\"]*\"[^\"]*)*",
+				"jre.options", Messages.getString("Jre.jvm.options"),
 				Messages.getString("Jre.jvm.options.unclosed.quotation"));
 
 		// Quoted variable references: "[^%]*|([^%]*\"([^%]*%[^%]+%[^%]*)+\"[^%]*)*"
-		Validator.checkOptStrings(options,
-				Validator.MAX_ARGS,
-				Validator.MAX_ARGS,
-				"[^%]*|([^%]*([^%]*%[^%]*%[^%]*)+[^%]*)*",
-				"jre.options",
-				Messages.getString("Jre.jvm.options"),
+		Validator.checkOptStrings(options, Validator.MAX_ARGS, Validator.MAX_ARGS,
+				"[^%]*|([^%]*([^%]*%[^%]*%[^%]*)+[^%]*)*", "jre.options", Messages.getString("Jre.jvm.options"),
 				Messages.getString("Jre.jvm.options.variable"));
 	}
 
@@ -188,67 +128,29 @@ public class Jre implements IValidatable {
 		this.minVersion = minVersion;
 	}
 
-	/** Preference for standalone JRE or JDK-private JRE */
-	public String getJdkPreference() {
-		return Validator.isEmpty(jdkPreference) ? JDK_PREFERENCE_PREFER_JRE
-												: jdkPreference;
+	public boolean getRequiresJdk() {
+		return this.requiresJdk;
 	}
 
-	public void setJdkPreference(String jdkPreference) {
-		this.jdkPreference = jdkPreference;
-	}
-
-	/** Preference for standalone JRE or JDK-private JRE */
-	public int getJdkPreferenceIndex() {
-		int x = Arrays.asList(JDK_PREFERENCE_NAMES).indexOf(getJdkPreference());
-		return x != -1 ? x : DEFAULT_JDK_PREFERENCE_INDEX;
-	}
-	
-	public void setJdkPreferenceIndex(int x) {
-		this.jdkPreference = JDK_PREFERENCE_NAMES[x];
-	}
-	
-	public String getRuntimeBits() {
-		return Validator.isEmpty(runtimeBits) ? RUNTIME_BITS_64_AND_32
-												: runtimeBits;
-	}
-
-	public void setRuntimeBits(String runtimeBits) {
-		this.runtimeBits = runtimeBits;
-	}
-	
-	public int getRuntimeBitsIndex() {
-		int x = Arrays.asList(RUNTIME_BITS_OPTIONS).indexOf(getRuntimeBits());
-		return x != -1 ? x : DEFAULT_RUNTIME_BITS_INDEX;
-	}
-	
-	public void setRuntimeBitsIndex(int x) {
-		this.runtimeBits = RUNTIME_BITS_OPTIONS[x];
+	public void setRequiresJdk(boolean requiresJdk) {
+		this.requiresJdk = requiresJdk;
 	}
 
 	/** JRE path */
 	public String getPath() {
-		return path;
+		return this.path;
 	}
 
 	public void setPath(String path) {
 		this.path = path;
 	}
-	
-	public boolean getBundledJre64Bit() {
-		return bundledJre64Bit;
+
+	public boolean getRequires64Bit() {
+		return requires64Bit;
 	}
-	
-	public void setBundledJre64Bit(boolean bundledJre64Bit) {
-		this.bundledJre64Bit = bundledJre64Bit;	
-	}
-	
-	public boolean getBundledJreAsFallback() {
-		return bundledJreAsFallback;
-	}
-	
-	public void setBundledJreAsFallback(boolean bundledJreAsFallback) {
-		this.bundledJreAsFallback = bundledJreAsFallback;
+
+	public void setRequires64Bit(boolean requires64Bit) {
+		this.requires64Bit= requires64Bit;
 	}
 
 	/** Initial heap size in MB */

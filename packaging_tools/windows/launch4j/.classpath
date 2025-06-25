@@ -8,7 +8,6 @@
 	<classpathentry kind="lib" path="lib/xstream.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
-	<classpathentry kind="lib" path="lib/foxtrot.jar"/>
 	<classpathentry kind="lib" path="lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/jgoodies-common.jar"/>
 	<classpathentry kind="lib" path="lib/jgoodies-forms.jar"/>

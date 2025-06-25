@@ -38,14 +38,10 @@ package net.sf.launch4j.config;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -54,11 +50,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 
-import net.sf.launch4j.Util;
-
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.security.*;
+
+import net.sf.launch4j.binding.Validator;
 
 /**
  * @author Copyright (C) 2014 Grzegorz Kowal
@@ -141,69 +137,14 @@ public class ConfigPersister {
 		    LSSerializer lsSerializer = domImplementation.createLSSerializer();
 		    String configString = lsSerializer.writeToString(doc);
 
-	    	_config = (Config) _xstream.fromXML(convertToCurrent(configString));
+	    	_config = convertToCurrent(configString);
 	    	setConfigPath(f);
 		} catch (Exception e) {
 			throw new ConfigPersisterException(e);
 		}
 	}
 
-	/**
-	 * Imports launch4j 1.x.x config file.
-	 */
-	public void loadVersion1(File f) throws ConfigPersisterException {
-		try {
-			Props props = new Props(f);
-			_config = new Config();
-			String header = props.getProperty(Config.HEADER);
-			_config.setHeaderType(header == null
-					|| header.toLowerCase().equals("guihead.bin") ? Config.GUI_HEADER
-															: Config.CONSOLE_HEADER);
-			_config.setJar(props.getFile(Config.JAR));
-			_config.setOutfile(props.getFile(Config.OUTFILE));
-			_config.setJre(new Jre());
-			_config.getJre().setPath(props.getProperty(Jre.PATH));
-			_config.getJre().setMinVersion(props.getProperty(Jre.MIN_VERSION));
-			_config.getJre().setMaxVersion(props.getProperty(Jre.MAX_VERSION));
-
-			String args = props.getProperty(Jre.ARGS);
-
-			if (args != null) {
-				List<String> jreOptions = new ArrayList<String>();
-				jreOptions.add(args);
-				_config.getJre().setOptions(jreOptions);
-			}
-
-			_config.setCmdLine(props.getProperty(Config.JAR_ARGS));
-			_config.setChdir("true".equals(props.getProperty(Config.CHDIR))
-					? "." : null);
-			_config.setStayAlive("true".equals(props.getProperty(Config.STAY_ALIVE)));
-			_config.setErrTitle(props.getProperty(Config.ERR_TITLE));
-			_config.setIcon(props.getFile(Config.ICON));
-
-			File splashFile = props.getFile(Splash.SPLASH_FILE);
-
-			if (splashFile != null) {
-				_config.setSplash(new Splash());
-				_config.getSplash().setFile(splashFile);
-				String waitfor = props.getProperty("waitfor");		// 1.x
-				_config.getSplash().setWaitForWindow(waitfor != null
-													&& !waitfor.equals(""));
-				String splashTimeout = props.getProperty(Splash.TIMEOUT);
-				if (splashTimeout != null) {
-					_config.getSplash().setTimeout(Integer.parseInt(splashTimeout));	
-				}
-				_config.getSplash().setTimeoutErr("true".equals(
-						props.getProperty(Splash.TIMEOUT_ERR)));
-			} else {
-				_config.setSplash(null);
-			}
-			setConfigPath(f);
-		} catch (IOException e) {
-			throw new ConfigPersisterException(e);
-		}
-	}
-
+	
 	public void save(File f) throws ConfigPersisterException {
 		try {
 			BufferedWriter w = new BufferedWriter(
@@ -220,66 +161,40 @@ public class ConfigPersister {
 	/**
 	 * Converts 2.x config to current format.
 	 */
-	private String convertToCurrent(String configString) {
-    	return configString
+	private Config convertToCurrent(String configString) {
+		boolean requires64Bit = configString.contains("<bundledJre64Bit>true</bundledJre64Bit>")
+				|| configString.contains("<runtimeBits>64</runtimeBits>");
+
+    	String updatedConfigString = configString
     			.replaceAll("<headerType>0<", "<headerType>gui<")
     			.replaceAll("<headerType>1<", "<headerType>console<")
     			.replaceAll("jarArgs>", "cmdLine>")
     			.replaceAll("<jarArgs[ ]*/>", "<cmdLine/>")
     			.replaceAll("args>", "opt>")
     			.replaceAll("<args[ ]*/>", "<opt/>")
-    			.replaceAll("<dontUsePrivateJres>false</dontUsePrivateJres>",
-    					"<jdkPreference>" + Jre.JDK_PREFERENCE_PREFER_JRE + "</jdkPreference>")
-    			.replaceAll("<dontUsePrivateJres>true</dontUsePrivateJres>",
-    					"<jdkPreference>" + Jre.JDK_PREFERENCE_JRE_ONLY + "</jdkPreference>")
+    			.replaceAll("<jdkPreference>jdkOnly</jdkPreference>", "<requiresJdk>true</requiresJdk>")
     			.replaceAll("<initialHeapSize>0</initialHeapSize>", "")
     			.replaceAll("<maxHeapSize>0</maxHeapSize>", "")
-    			.replaceAll("<customProcName>.*</customProcName>", "");
+    			.replaceAll("<customProcName>.*</customProcName>", "")
+    			.replaceAll("<bundledJre64Bit>.*</bundledJre64Bit>", "")
+    			.replaceAll("<bundledJreAsFallback>.*</bundledJreAsFallback>", "")
+    			.replaceAll("<jdkPreference>.*</jdkPreference>", "")
+    			.replaceAll("<runtimeBits>.*</runtimeBits>", "");
+    	
+    	Config config = (Config) _xstream.fromXML(updatedConfigString);
+    
+    	if (Validator.isEmpty(config.getJre().getPath())) {
+    		config.getJre().setPath(Jre.DEFAULT_PATH);
+    	}
+    	
+    	if (requires64Bit) {
+    		config.getJre().setRequires64Bit(true);
+    	}
+    	
+    	return config;
 	}
 
 	private void setConfigPath(File configFile) {
 		_configPath = configFile.getAbsoluteFile().getParentFile();
-	}
-
-	private class Props {
-		final Properties _properties = new Properties();
-
-		public Props(File f) throws IOException {
-			FileInputStream is = null;
-			try {
-				is = new FileInputStream(f);
-				_properties.load(is);
-			} finally {
-				Util.close(is);
-			}
-		}
-
-		/**
-		 * Get property and remove trailing # comments.
-		 */
-		public String getProperty(String key) {
-			String p = _properties.getProperty(key);
-
-			if (p == null) {
-				return null;
-			}
-
-			int x = p.indexOf('#');
-			
-			if (x == -1) {
-				return p;
-			}
-			
-			do {
-				x--;
-			} while (x > 0 && (p.charAt(x) == ' ' || p.charAt(x) == '\t'));
-			
-			return (x == 0) ? "" : p.substring(0, x + 1);
-		}
-
-		public File getFile(String key) {
-			String value = getProperty(key);
-			return value != null ? new File(value) : null;
-		}
 	}
 }

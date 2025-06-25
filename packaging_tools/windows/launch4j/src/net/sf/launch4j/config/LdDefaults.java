@@ -52,13 +52,13 @@ public class LdDefaults {
 			"head/head.o" });
 	
 	private static final List<String> JNI_GUI_32_OBJECTS = Arrays.asList(new String[] {
-			"w32api_jni/crt2.o",
+			"w32api/crt2.o",
 			"head_jni_BETA/jniguihead.o",
 			"head_jni_BETA/head.o",
 			"head_jni_BETA/jnihead.o" });
 
 	private static final List<String> JNI_CONSOLE_32_OBJECTS = Arrays.asList(new String[] {
-			"w32api_jni/crt2.o",
+			"w32api/crt2.o",
 			"head_jni_BETA/jniconsolehead.o",
 			"head_jni_BETA/head.o",
 			"head_jni_BETA/jnihead.o" });

@@ -43,7 +43,6 @@ import javax.swing.event.ChangeListener;
 
 import net.sf.launch4j.FileChooserFilter;
 import net.sf.launch4j.binding.Bindings;
-import net.sf.launch4j.config.Config;
 import net.sf.launch4j.form.BasicForm;
 
 /**
@@ -59,7 +58,7 @@ public class BasicFormImpl extends BasicForm {
 				.add("icon", _iconField)
 				.add("cmdLine", _cmdLineField)
 				.add("errTitle", _errorTitleField)
-				.add("downloadUrl", _downloadUrlField, Config.DOWNLOAD_URL)
+				.add("downloadUrl", _downloadUrlField)
 				.add("supportUrl", _supportUrlField)
 				.add("chdir", _chdirField, ".")
 				.add("priorityIndex", new JRadioButton[] { _normalPriorityRadio,

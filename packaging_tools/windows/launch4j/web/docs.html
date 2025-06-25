@@ -6,28 +6,37 @@
 		<meta name="keywords" content="java executable wrapper, java application wrapper, exe wrapper, jar wrapper, wrap, wraps, wrapping, free software, launch, launcher, linux, mac, windows, open source, ant, native splash screen, deploy, build tool">
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="author" content="Grzegorz Kowal" >
-		<link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" type="text/css" href="style-13112022.css">
 	</head>
 	<body>
 		<div id="container">
 			<div id="top">
-				<img style="width: 249px; height: 58px;" src="launch4j.gif" alt="launch4j"> <span class="version">3.14</span>
+				<img style="width: 249px; height: 58px;" src="launch4j.gif" alt="launch4j"> <span class="version">3.50</span>
 			</div>
-			<div id="leftnav">
-				<ul>
-					<li><a href="index.html">Home</a></li>
-					<li><a href="docs.html">Docs</a></li>
-					<li><a href="changelog.html">Changelog</a></li>
-					<li><a href="http://sourceforge.net/project/screenshots.php?group_id=95944">Screenshots</a></li>
-					<li><a href="http://sourceforge.net/projects/launch4j/files/launch4j-3/3.14">Download</a></li>
-					<li><a href="http://sourceforge.net/projects/launch4j/support">Support</a></li>
-					<li><a href="http://sourceforge.net/projects/launch4j">Project summary</a></li>
-					<li><a href="http://sourceforge.net/tracker/?atid=613100&amp;group_id=95944">Bug tracker</a></li>
-					<li><a href="links.html">Links</a></li>
-				</ul>
-				<br />
-				<a class="button" href="https://sourceforge.net/projects/launch4j/files/launch4j-3/3.14" rel="nofollow"><img alt="Downloads" src="https://img.shields.io/sourceforge/dm/launch4j.svg"></a>
-				<a class="button" href="https://sourceforge.net/p/launch4j/" rel="nofollow"><img alt="Download Launch4j" src="https://sourceforge.net/sflogo.php?type=10&group_id=95944"></a>
+			<div class="sidebar">
+				<div id="leftnav">
+					<ul>
+						<li><a href="index.html">Home</a></li>
+						<li><a href="docs.html">Docs</a></li>
+						<li><a href="changelog.html">Changelog</a></li>
+						<li><a href="http://sourceforge.net/project/screenshots.php?group_id=95944">Screenshots</a></li>
+						<li><a href="http://sourceforge.net/projects/launch4j/files/launch4j-3/3.50">Download</a></li>
+						<li><a href="http://sourceforge.net/projects/launch4j/support">Support</a></li>
+						<li><a href="http://sourceforge.net/projects/launch4j">Project summary</a></li>
+						<li><a href="http://sourceforge.net/tracker/?atid=613100&amp;group_id=95944">Bug tracker</a></li>
+						<li><a href="links.html">Links</a></li>
+					</ul>		
+				</div>
+				<div style="margin: 30px 0px 10px 10px">
+					<a class="button" href="https://sourceforge.net/projects/launch4j/files/latest/download"><img alt="Download Launch4j Executable Wrapper" src="https://img.shields.io/sourceforge/dt/launch4j.svg" ></a>
+				</div>
+				<!-- Begin SF Tag -->
+				<div class="sf-root" data-id="95944" data-badge="oss-open-source-excellence-white" data-metadata="achievement=oss-open-source-excellence" style="width:125px">
+				    <a href="https://sourceforge.net/projects/launch4j/" target="_blank">Launch4j Executable Wrapper</a>
+				</div>
+				<script>(function () {var sc=document.createElement('script');sc.async=true;sc.src='https://b.sf-syn.com/badge_js?sf_id=95944';var p=document.getElementsByTagName('script')[0];p.parentNode.insertBefore(sc, p);})();
+				</script>
+				<!-- End SF Tag -->
 			</div>
 			<div id="content">
 <a href="#Running_launch4j">Running launch4j</a><br>
@@ -58,7 +67,18 @@ Launch4j requires an xml configuration file for each output executable.
 You can create and edit it conveniently using the graphic user
 interface or your favorite editor. Alternatively it's possible to pass
 all of the configuration parameters through the Ant task. All files
-may be absolute paths or relative to the configuration file path.
+may be absolute paths or relative to the configuration file path.<br />
+<strong class="warn">Launch4j 3.50</strong> Configuration changes:
+<ul>
+  <li>Removed <em>&lt;bundledJreAsFallback&gt;</em>, path search is always first and registry search second
+  in order to improve compatibility with modern runtimes.</li>
+  <li>Replaced <em>&lt;bundledJre64Bit&gt;</em> and <em>&lt;runtimeBits&gt;</em> with <em>&lt;requires64Bit&gt;</em>
+   which works during path and registry search.</li>
+  <li>Replaced <em>&lt;jdkPreference&gt;</em> with <em>&lt;requiresJdk&gt;</em> which works during path and registry search.</li>
+  <li>Replaced <em>&lt;bundledJreErr&gt;</em> with <em>&lt;jreNotFoundErr&gt;</em>.
+  <li><em>&lt;minVersion&gt;</em> and <em>&lt;maxVersion&gt;</em> are now used during path and registry search, previously
+  they were only checked during registry search.</li>
+</ul>
 
 <pre>
 &lt;!--
@@ -96,14 +116,11 @@ may be absolute paths or relative to the configuration file path.
     &lt;windowTitle&gt;<span class="codeword">text</span>&lt;/windowTitle&gt;
   &lt;/singleInstance&gt; 
   <strong>&lt;jre&gt;</strong>
-    &lt;!-- Specify <strong>path</strong> or <strong>minVersion</strong> or both. --&gt;
-    <strong>&lt;path&gt;</strong><span class="codeword">bundled JRE path (%VAR%)</span><strong>&lt;/path&gt;</strong>
-    &lt;bundledJre64Bit&gt;<span class="codeword">true|<u>false</u></span>&lt;/bundledJre64Bit&gt;
-    &lt;bundledJreAsFallback&gt;<span class="codeword">true|<u>false</u></span>&lt;/bundledJreAsFallback&gt;
-    <strong>&lt;minVersion&gt;</strong><span class="codeword">1.x.x[_xxx]|xxx[.xxx[.xxx]]</span><strong>&lt;/minVersion&gt;</strong>
+    <strong>&lt;path&gt;</strong><span class="codeword">JRE path (%VAR%)</span><strong>&lt;/path&gt;</strong>
+    &lt;requiresJdk&gt;<span class="codeword">true|<u>false</u></span>&lt;/requiresJdk&gt;
+    &lt;requires64Bit&gt;<span class="codeword">true|<u>false</u></span>&lt;/requires64Bit&gt;
+    &lt;minVersion&gt;<span class="codeword">1.x.x[_xxx]|xxx[.xxx[.xxx]]</span>&lt;/minVersion&gt;
     &lt;maxVersion&gt;<span class="codeword">1.x.x[_xxx]|xxx[.xxx[.xxx]]</span>&lt;/maxVersion&gt;
-    &lt;jdkPreference&gt;<span class="codeword">jreOnly|<u>preferJre</u>|preferJdk|jdkOnly</span>&lt;/jdkPreference&gt;
-    &lt;runtimeBits&gt;<span class="codeword">64|<u>64/32</u>|32/64|32</span>&lt;/runtimeBits&gt;
     &lt;!-- Heap sizes in MB and % of available memory. --&gt;
     &lt;initialHeapSize&gt;<span class="codeword">MB</span>&lt;/initialHeapSize&gt;
     &lt;initialHeapPercent&gt;<span class="codeword">%</span>&lt;/initialHeapPercent&gt;
@@ -144,7 +161,7 @@ may be absolute paths or relative to the configuration file path.
   &lt;/versionInfo&gt;
   &lt;messages&gt;
     <strong>&lt;startupErr&gt;</strong>text<strong>&lt;/startupErr&gt;</strong>
-    <strong>&lt;bundledJreErr&gt;</strong>text<strong>&lt;/bundledJreErr&gt;</strong>
+    <strong>&lt;jreNotFoundErr&gt;</strong>text<strong>&lt;/jreNotFoundErr&gt;</strong>
     <strong>&lt;jreVersionErr&gt;</strong>text<strong>&lt;/jreVersionErr&gt;</strong>
     <strong>&lt;launcherErr&gt;</strong>text<strong>&lt;/launcherErr&gt;</strong>
     &lt;!-- Used by console header only. --&gt;
@@ -314,44 +331,28 @@ may be absolute paths or relative to the configuration file path.
     <dl>
     	<dt>&lt;path&gt;, &lt;minVersion&gt;, &lt;maxVersion&gt;</dt>
         <dd>The <em>&lt;path&gt;</em> property is used
-    		to specify the absolute or relative path (to the executable) of a bundled JRE, it
+    		to specify absolute or relative JRE paths, it
     		does not rely on the current directory or <em>&lt;chdir&gt;</em>.
-    		Note that this path is not checked until the actual application execution.
-    		If you'd like the wrapper to search for a JRE (public or SDK private)
-    		use the <em>&lt;minVersion&gt;</em> property, you may also specify
-    		the <em>&lt;maxVersion&gt;</em> to prevent it from using higher Java versions.
-    		Launch4j will always use the highest version available (in the min/max range of course).
-    		If an Oracle's JRE is not available or does not satisfy the search criteria,
-    		the search will be repeated on IBM runtimes.
-    		You can also combine these properties to change the startup process...
+    		Note that this path is not checked until the actual application execution.<br />
+    		<strong class="warn">Launch4j 3.50</strong> <em>&lt;path&gt;</em> is now required and 
+    		always used for searching before the registry in order to ensure compatibility
+    		with latest runtimes which by default do not add registry keys during installation.<br />
+    		<strong class="warn">Launch4j 3.50</strong> <em>&lt;minVersion&gt;</em> and <em>&lt;maxVersion&gt;</em>
+    		are now considered during path and registry search, previously the version was checked only 
+    		during registry search. The first runtime version matching the given range will be used. 
     	</dd>
 	</dl>
 	<blockquote>
         <dl>
-        	<dt>&lt;path&gt;</dt>
-        	<dd>Run if bundled JRE and javaw.exe are present, otherwise stop with error.
-        	Starting with version 3.13 it is possible to use the JAVA_HOME or PATH environment 
-        	variables to search for a runtime that was installed without adding registry keys
-        	used for searching JREs. This can be particularly useful in combination with 
-        	&lt;minVersion&gt;&nbsp; and &lt;bundledJreAsFallback&gt;. If a registered
-        	runtime is not found, then as a fallback option launch4j will try to locate
-        	it using the environment variables. However, the minVersion does not apply 
-        	in such case.<br /><br />
-        	Bundled example: &lt;path&gtjre&lt;/path&gt;<br />
-            Fallback example: &lt;path&gt;%JAVA_HOME%;%PATH%&lt;/path&gt;
+        	<dt>&lt;path&gt; alone</dt>
+        	<dd>Search for JREs using specified paths, if not found stop with error.<br /><br />
+        	Default: &lt;path&gt;%JAVA_HOME%;%PATH%&lt;/path&gt;<br />
+        	Bundled: &lt;path&gtjre&lt;/path&gt;<br />
+        	Advanced: &lt;path&gt;%HKEY_LOCAL_MACHINE\SOFTWARE\UnusualJavaVendor\JavaHome%;%JAVA_HOME%;%PATH%&lt;/path&gt;
         	</dd>
             <dt>&lt;path&gt; + &lt;minVersion&gt;&nbsp; [+ &lt;maxVersion&gt;]</dt>
-            <dd>Use bundled JRE first, if it cannot be located search for Java,
-        		if that fails display error message and open the Java download page.
-        	</dd>
-        	<dt>&lt;path&gt; + &lt;minVersion&gt;&nbsp; [+ &lt;maxVersion&gt;] + &lt;bundledJreAsFallback&gt;</dt>
-            <dd>Search for Java, if an appropriate version cannot be found 
-         	   try &lt;path&gt; as fallback option without version check.
-               If that fails display error message and open the Java download page.
-        	</dd>
-            <dt>&lt;minVersion&gt;&nbsp; [+ &lt;maxVersion&gt;]</dt>
-            <dd>Search for Java, if an appropriate version cannot be found display
-        		error message and open the Java download page.
+            <dd>Use path search first, if Java cannot be located then perform a registry search.
+        		If that fails display an error message and optionally open the Java download page.
         	</dd>
         </dl>
 	</blockquote>
@@ -382,75 +383,30 @@ may be absolute paths or relative to the configuration file path.
 </blockquote>
 <blockquote>
 	<dl>
-		<dt>&lt;bundledJre64Bit&gt;</dt>
-		<dd>Optional, defaults to false which limits the calculated heap size to the 32-bit maximum.
-			Set to true in order to use the available memory without this limit. This option works 
-			in combination with the HeapSize and HeapPercent options only if the found JRE is a bundled one.
-			In the standard JRE search based on registry the wrapper detects the type of JRE itself
-			and uses the 32-bit heap limit when needed. 
+		<dt>&lt;requiresJdk&gt;</dt>
+		<dd>Optional, defaults to false. When true only a JDK will be used for execution.<br />
+		<strong class="warn">Launch4j 3.50</strong> An additional check will be performed if javac is available
+		during path and registry search.
 		</dd>
 	</dl>
 </blockquote>
 <blockquote>
 	<dl>
-		<dt>&lt;bundledJreAsFallback&gt;</dt>
-		<dd>Optional, defaults to false which treats the bundled JRE as the primary runtime.
-			When set to true, the bundled JRE will only be used in case the mix/max version search fails.
-			This can be used as a fallback option if the user does not have the required Java installed
-			and the bundled JRE	is provided on a CD or shared network location.
+		<dt>&lt;requires64Bit&gt;</dt>
+		<dd>Optional, defaults to false. True limits the runtimes to 64-Bit only, false will use
+		64-Bit or 32-Bit depending on which is found.<br />
+		<strong class="warn">Launch4j 3.50</strong> This option works with path and registry search.
 		</dd>
 	</dl>
 </blockquote>
 <blockquote>
-	<dl>
-		<dt>&lt;jdkPreference&gt;</dt>
-		<dd>Optional, defaults to preferJre; Allows you to specify a preference
-			for a public JRE or a private JDK runtime. Valid values are:
-		</dd>
-	</dl>
-	<blockquote>
-		<dl>
-			<dt>jreOnly</dt>
-			<dd>Always use a public JRE (equivalent to the
-				old option dontUsePrivateJres=true)</dd>
-			<dt>preferJre</dt>
-			<dd>Prefer a public JRE, but use a JDK private
-				runtime if it is newer than the public
-				JRE (equivalent to the old option
-				dontUsePrivateJres=false)</dd>
-			<dt>preferJdk</dt>
-			<dd>Prefer a JDK private runtime, but use a
-				public JRE if it is newer than the JDK
-			</dd>
-			<dt>jdkOnly</dt>
-			<dd>Always use a private JDK runtime (fails
-				if there is no JDK installed)
-			</dd>
-		</dl>
-	</blockquote>
-	<dl>
-		<dt>&lt;runtimeBits&gt;</dt>
-		<dd>Optional, defaults to 64/32; Allows to select between 64-bit and 32-bit runtimes.
-			Valid values are:
-		</dd>
-	</dl>
-	<blockquote>
-		<dl>
-			<dt>64</dt>
-			<dd>Use only 64-bit runtimes</dd>
-			<dt>64/32</dt>
-			<dd>Use 64-bit runtimes if available, otherwise use 32-bit</dd>
-			<dt>32/64</dt>
-			<dd>Use 32-bit runtimes if available, otherwise use 64-bit</dd>
-			<dt>32</dt>
-			<dd>Use only 32-bit runtimes</dd>
-		</dl>
-	</blockquote>
 	<dl>
 		<dt>HeapSize, HeapPercent</dt>
 		<dd>If size and percent are specified, then the setting which yields
 			more memory will be chosen at runtime. In other words, setting both values
-			means: percent of available memory no less than size in MB.
+			means: percent of available memory no less than size in MB.<br />
+			<strong class="warn">Launch4j 3.50</strong> If the runtime is 32-Bit then a 32-Bit limit
+			will be imposed even if more memory is available during path and registry search.
 		</dd>
 	</dl>
 	<blockquote>
@@ -578,10 +534,13 @@ may be absolute paths or relative to the configuration file path.
 	</dl>
 </blockquote>
 
-<h2 id="Importing_1.x_configuration">Importing 1.x configuration</h2>
-It's possible to import a 1.x configuration file using the GUI
-interface. Open the file, correct the paths and save it as a new xml
-configuration.
+<h3 id="Importing_1.x_configuration">Importing 1.x configuration</h3>
+1.x configuration is no longer supported by launch4j 3.50. You can convert it to 3.14 and then to 3.50.
+
+<h3 id="Importing_3.x_configuration">Importing 2.x/3.x configuration to 3.50</h3>
+It's possible to import a 2.x/3.x configuration file using the GUI interface.
+Open the file, review all settings carefully as some of them cannot always
+be imported automatically and the search algorithm has changed in version 3.50.
 
 <h2 id="Ant_task">Ant task</h2>
 You may set a launch4j directory property or change the task definition.
@@ -633,7 +592,7 @@ are calculated using the <em>basedir</em> project attribute.
         &lt;cp&gt;./lib/looks.jar&lt;/cp&gt;
         &lt;cp&gt;%USER_LIBS%/*.jar&lt;/cp&gt;
     &lt;/classPath&gt;
-    &lt;jre minVersion="1.4.0"&gt;
+    &lt;jre path="%JAVA_HOME%;%PATH%" minVersion="1.8.0"&gt;
         &lt;opt&gt;-Dlaunch4j.exedir="%EXEDIR%"&lt;/opt&gt;
         &lt;opt&gt;-Dlaunch4j.exefile="%EXEFILE%"&lt;/opt&gt;
     &lt;/jre&gt;
@@ -747,9 +706,9 @@ These settings are only used during building of the launcher or wrapper, not dur
 			</div>
 			<div class="footer">
 			    All trademarks mentioned are properties of their respective owners.<br />
-            	Copyright &copy; 2005-2018 Grzegorz Kowal
+            	Copyright &copy; 2005-2022 Grzegorz Kowal
             	<p style="margin-top: 0.5em">
-            	    <a href="https://sourceforge.net/p/launch4j/" rel="nofollow"><img alt="Download Launch4j Executable Wrapper" src="https://sourceforge.net/sflogo.php?type=16&group_id=95944"></a>
+            	    <a href="https://sourceforge.net/p/launch4j/"><img alt="Download Launch4j Executable Wrapper" src="https://sourceforge.net/sflogo.php?type=17&group_id=95944" width=200></a>
             	</p>
 			</div>
 		</div>

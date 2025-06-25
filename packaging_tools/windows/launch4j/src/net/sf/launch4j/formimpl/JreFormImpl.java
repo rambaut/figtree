@@ -45,8 +45,8 @@ import javax.swing.JTextField;
 
 import net.sf.launch4j.binding.Bindings;
 import net.sf.launch4j.binding.Validator;
-import net.sf.launch4j.form.JreForm;
 import net.sf.launch4j.config.Jre;
+import net.sf.launch4j.form.JreForm;
 
 /**
  * @author Copyright (C) 2006 Grzegorz Kowal
@@ -54,25 +54,11 @@ import net.sf.launch4j.config.Jre;
 public class JreFormImpl extends JreForm {
 
 	public JreFormImpl(Bindings bindings, JFileChooser fc) {
-		_jdkPreferenceCombo.setModel(new DefaultComboBoxModel<String>(new String[] {
-				Messages.getString("jdkPreference.jre.only"),
-				Messages.getString("jdkPreference.prefer.jre"),
-				Messages.getString("jdkPreference.prefer.jdk"),
-				Messages.getString("jdkPreference.jdk.only")}));
-
-		_runtimeBitsCombo.setModel(new DefaultComboBoxModel<String>(new String[] {
-				Messages.getString("runtimeBits.64"),
-				Messages.getString("runtimeBits.64And32"),
-				Messages.getString("runtimeBits.32And64"),
-				Messages.getString("runtimeBits.32")}));
-
-		bindings.add("jre.path", _jrePathField)
-				.add("jre.bundledJre64Bit", _bundledJre64BitCheck)
-				.add("jre.bundledJreAsFallback", _bundledJreAsFallbackCheck)
+		bindings.add("jre.path", _jrePathField, Jre.DEFAULT_PATH)
+				.add("jre.requiresJdk", _requiresJdkCheck)
+				.add("jre.requires64Bit", _requires64BitCheck)
 				.add("jre.minVersion", _jreMinField)
 				.add("jre.maxVersion", _jreMaxField)
-				.add("jre.jdkPreferenceIndex", _jdkPreferenceCombo,	Jre.DEFAULT_JDK_PREFERENCE_INDEX)
-				.add("jre.runtimeBitsIndex", _runtimeBitsCombo, Jre.DEFAULT_JDK_PREFERENCE_INDEX)
 				.add("jre.initialHeapSize", _initialHeapSizeField)
 				.add("jre.initialHeapPercent", _initialHeapPercentField)
 				.add("jre.maxHeapSize", _maxHeapSizeField)

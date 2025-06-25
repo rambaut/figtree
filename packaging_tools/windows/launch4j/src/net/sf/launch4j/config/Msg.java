@@ -44,7 +44,7 @@ import net.sf.launch4j.binding.Validator;
  */
 public class Msg implements IValidatable {
 	private String startupErr;
-	private String bundledJreErr;
+	private String jreNotFoundErr;
 	private String jreVersionErr;
 	private String launcherErr;
 	private String instanceAlreadyExistsMsg;
@@ -52,8 +52,8 @@ public class Msg implements IValidatable {
 	public void checkInvariants() {
 		Validator.checkOptString(startupErr, 1024, "startupErr",
 				Messages.getString("Msg.startupErr"));
-		Validator.checkOptString(bundledJreErr, 1024, "bundledJreErr",
-				Messages.getString("Msg.bundledJreErr"));
+		Validator.checkOptString(jreNotFoundErr, 1024, "jreNotFoundErr",
+				Messages.getString("Msg.jreNotFoundErr"));
 		Validator.checkOptString(jreVersionErr, 1024, "jreVersionErr",
 				Messages.getString("Msg.jreVersionErr"));
 		Validator.checkOptString(launcherErr, 1024, "launcherErr",
@@ -71,13 +71,13 @@ public class Msg implements IValidatable {
 		this.startupErr = startupErr;
 	}
 
-	public String getBundledJreErr() {
-		return !Validator.isEmpty(bundledJreErr) ? bundledJreErr
+	public String getJreNotFoundErr() {
+		return !Validator.isEmpty(jreNotFoundErr) ? jreNotFoundErr
 				: "This application requires a Java Runtime Environment.";
 	}
 
-	public void setBundledJreErr(String bundledJreErr) {
-		this.bundledJreErr = bundledJreErr;
+	public void setJreNotFoundErr(String jreNotFoundErr) {
+		this.jreNotFoundErr = jreNotFoundErr;
 	}
 
 	public String getJreVersionErr() {
