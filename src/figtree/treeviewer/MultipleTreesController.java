@@ -56,6 +56,10 @@ public class MultipleTreesController extends AbstractController {
 			}
 		});
 
+		final JTextField treeLengthField = new JTextField("1.0");
+		treeLengthField.setEditable(false);
+		treeLengthField.setToolTipText("Sum of all branch lengths");
+
 		treeViewer.addTreeViewerListener(new TreeViewerListener() {
 			public void treeChanged() {
 				int index = treeViewer.getCurrentTreeIndex() + 1;
@@ -83,6 +87,8 @@ public class MultipleTreesController extends AbstractController {
         });
 		optionsPanel.addComponentWithLabel("Name:", treeNameLabel);
 		optionsPanel.addComponentWithLabel("Tree:", currentTreeSpinner);
+		optionsPanel.addSeparator();
+		optionsPanel.addComponentWithLabel("Tree length:", treeLengthField);
 
 	}
 
