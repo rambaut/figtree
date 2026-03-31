@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "make",
+			"targetName": "all",
+			"makeFileRelativePath": "head_src\\makefile",
+			"problemMatcher": [],
+			"label": "make: all",
+			"detail": "./head_src\\makefile",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}

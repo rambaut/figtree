@@ -35,8 +35,8 @@
 
     <target name="compile" depends="init">
         <!-- Compile the java code from ${src} into ${build} -->
-        <javac source="8" target="8" srcdir="${src}" destdir="${build}"
-            classpath="${lib}/activation.jar:${lib}/jebl.jar:${lib}/jam.jar:${lib}/batik-awt-util.jar:${lib}/batik-dom.jar:${lib}/batik-ext.jar:${lib}/batik-svggen.jar:${lib}/batik-util.jar:${lib}/batik-xml.jar:${lib}/xml-apis.jar:${lib}/iText.jar:${lib}/quaqua.jar:${lib}/jwt/servlet-api-2.5-6.0.2.jar:${lib}/jwt/jwt-3.1.7pre1.jar">
+        <javac release="11" srcdir="${src}" destdir="${build}"
+            classpath="${lib}/jebl.jar:${lib}/jam.jar:${lib}/batik-awt-util.jar:${lib}/batik-dom.jar:${lib}/batik-ext.jar:${lib}/batik-svggen.jar:${lib}/batik-util.jar:${lib}/batik-xml.jar:${lib}/xml-apis.jar:${lib}/iText.jar:${lib}/VAqua12.jar:${lib}/flatlaf-3.2.5.jar:${lib}/jwt/servlet-api-2.5-6.0.2.jar:${lib}/jwt/jwt-3.1.7pre1.jar">
             <include name="figtree/**"/>
         </javac>
         <copy todir="${build}" verbose="true">
@@ -54,6 +54,7 @@
             <zipgroupfileset dir="${lib}" includes="batik*.jar"/>
             <zipgroupfileset dir="${lib}" includes="xml-apis.jar"/>
             <zipgroupfileset dir="${lib}" includes="iText.jar"/>
+            <zipgroupfileset dir="${lib}" includes="flatlaf-3.2.5.jar"/>
             <fileset dir="${build}" includes="**/*.class,**/*.properties,**/*.png,**/*.gif"/>
             <manifest>
                 <attribute name="Built-By" value="${user.name}"/>
@@ -163,92 +164,137 @@
     </target>
 
     <property name="AppleSigner" value="Developer ID Application: Andrew Rambaut (9E4WXAQ6SE)" />
+    <!-- SHA-1 of the valid Developer ID cert: avoids ambiguity when two certs share the same name -->
+    <property name="AppleSignerHash" value="979926FBDE08C6F16DEA9E11A321E16F01502951" />
+    <!-- Use the bundled JDK's own jpackage -->
+    <property name="jpackage.exec"
+              value="/Users/rambaut/Library/Java/JavaVirtualMachines/azul-21.0.1/Contents/Home/bin/jpackage"/>
 
     <target name="mac_release" depends="dist"
-            description="release Mac version of FigTree">
-        <delete dir="${Mac_package_dir}" />
-        <!-- Create the release directory -->
-        <mkdir dir="${Mac_package_dir}" />
+            description="release Mac version of FigTree using jpackage (JDK 14+ required)">
 
-        <copy file="${dist}/figtree.jar" todir="${Mac_package_dir}/lib"/>
-        <copy file="${dist}/figtree-pdf.jar" todir="${Mac_package_dir}/QuickLook Plugin/FigTreeQuickLookPlugin.qlgenerator/Contents/Resources"/>
-        <copy todir="${Mac_package_dir}">
-            <fileset dir="${common_dir}/"/>
-        </copy>
-        <copy todir="${Mac_package_dir}/QuickLook Plugin">
-            <fileset dir="${Mac_dir}/QuickLook Plugin"/>
-        </copy>
+        <!-- Step 1: build unsigned .app image -->
+        <delete dir="${dist}/app-input"/>
+        <mkdir dir="${dist}/app-input"/>
+        <copy file="${dist}/figtree.jar" todir="${dist}/app-input"/>
+        <delete dir="${dist}/${name}.app"/>
 
-        <taskdef name="jarbundler" classname="com.ultramixer.jarbundler.JarBundler"/>
+        <exec executable="${jpackage.exec}" failonerror="true">
+            <arg value="--type"/><arg value="app-image"/>
+            <arg value="--name"/><arg value="${name}"/>
+            <arg value="--app-version"/><arg value="${version_number}"/>
+            <arg value="--input"/><arg value="${dist}/app-input"/>
+            <arg value="--main-jar"/><arg value="figtree.jar"/>
+            <arg value="--main-class"/><arg value="figtree.application.FigTreeApplication"/>
+            <arg value="--icon"/><arg value="JPackage/figtree/FigTree.icns"/>
+            <arg value="--dest"/><arg value="${dist}"/>
+            <arg value="--java-options"/><arg value="-Xmx4096M"/>
+            <arg value="--java-options"/><arg value="-Dapple.laf.useScreenMenuBar=true"/>
+            <arg value="--java-options"/><arg value="-Dapple.awt.application.name=${name}"/>
+            <arg value="--mac-package-identifier"/><arg value="uk.ac.ed.bio.figtree"/>
+            <arg value="--mac-package-name"/><arg value="${name}"/>
+            <arg value="--file-associations"/><arg value="JPackage/figtree/tree-file-associations.properties"/>
+            <arg value="--file-associations"/><arg value="JPackage/figtree/tre-file-associations.properties"/>
+        </exec>
 
-        <!-- create a jar bundle for the mac -->
-        <jarbundler dir="${Mac_package_dir}"
-                    name="${name} v${version}"
-                    mainclass="figtree.application.FigTreeApplication"
-                    icon="${Mac_dir}/icons/FigTree.icns"
-                    stubfile="${packaging_tools}/mac/universalJavaApplicationStub"
-					useJavaXKey="true"
-                    jvmversion="1.8+"
-                    vmoptions="-Xmx4096M"
-                    highresolutioncapable="true"
-                    arguments=""
-                    version="${version}"
-                    build="1"
-                    copyright="${name} v${version}, Copyright 2006-2025, Andrew Rambaut"
-                    bundleid="figtree" >
-            <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
-            <jarfileset dir="${dist}">
-                <include name="**/figtree.jar"/>
-            </jarfileset>
-            <jarfileset dir="${Mac_dir}/lib">
-                <include name="**/quaqua.jar"/>
-            </jarfileset>
-            <jarfileset dir="${Mac_dir}/lib">
-                <include name="libquaqua*.jnilib"/>
-            </jarfileset>
-            <documenttype name="FigTree tree file"
-                          extensions="tree tre trees ntf tf"
-                          iconFile="${Mac_dir}/icons/FigTreeDocIcon.icns"
-                          role="Editor"/>
-        </jarbundler>
+        <!-- Step 2: re-sign all bundled dylibs with -force flag to replace pre-existing JDK vendor signatures -->
+        <exec executable="bash" failonerror="true">
+            <arg value="-c"/>
+            <arg value="find '${dist}/${name}.app' \( -name '*.dylib' -o -name '*.jnilib' \) | while read f; do codesign --force -s '${AppleSignerHash}' --timestamp --options runtime --entitlements '${basedir}/JPackage/figtree/FigTree.entitlements' &quot;$f&quot; || exit 1; done"/>
+        </exec>
 
-        <!-- code signing -->
-        <exec executable="codesign">
+        <!-- Step 3: sign the full .app bundle (deep, replacing any prior signature) -->
+        <exec executable="codesign" failonerror="true">
+            <arg value="--force"/>
             <arg value="--deep"/>
-            <arg value="-s"/>
-            <arg value="${AppleSigner}"/>
-            <arg value="-v"/>
-            <arg value="${Mac_package_dir}/${name} v${version}.app"/>
+            <arg value="-s"/><arg value="${AppleSignerHash}"/>
+            <arg value="--timestamp"/>
+            <arg value="--options"/><arg value="runtime"/>
+            <arg value="--entitlements"/><arg value="JPackage/figtree/FigTree.entitlements"/>
+            <arg value="${dist}/${name}.app"/>
         </exec>
 
-        <!-- checking code signing -->
-        <exec executable="spctl">
-            <arg value="--assess"/>
-            <arg value="--verbose=4"/>
-            <arg value="${Mac_package_dir}/${name} v${version}.app"/>
+        <!-- Step 4: package the signed .app into a DMG -->
+        <exec executable="${jpackage.exec}" failonerror="true">
+            <arg value="--type"/><arg value="dmg"/>
+            <arg value="--name"/><arg value="${name}"/>
+            <arg value="--app-version"/><arg value="${version_number}"/>
+            <arg value="--app-image"/><arg value="${dist}/${name}.app"/>
+            <arg value="--dest"/><arg value="${release_dir}"/>
+            <arg value="--mac-package-identifier"/><arg value="uk.ac.ed.bio.figtree"/>
+            <arg value="--mac-package-name"/><arg value="${name}"/>
         </exec>
 
-        <!-- create disk image -->
-        <exec executable="/usr/bin/hdiutil">
-            <arg value="create"/>
-            <arg value="-ov"/>
-            <arg value="-srcfolder"/>
-            <arg value="${Mac_package_dir}"/>
-            <arg value="-volname"/>
-            <arg value="${name} v${version}"/>
-            <arg value="-imagekey"/>
-            <arg value="zlib-level=6"/>
-            <arg value="${release_dir}/${name} v${version}.dmg"/>
-        </exec>
+        <!--
+        Notarize the DMG for distribution outside the App Store (required on macOS 10.15+).
+        First store credentials once with:
+          xcrun notarytool store-credentials "figtree-notarize" -apple-id YOUR_APPLE_ID -team-id 9E4WXAQ6SE -password APP_SPECIFIC_PASSWORD
 
-        <exec executable="codesign">
-            <arg value="-s"/>
-            <arg value="${AppleSigner}"/>
-            <arg value="-v"/>
-            <arg value="${release_dir}/${name} v${version}.dmg"/>
+        <exec executable="xcrun" failonerror="true">
+            <arg value="notarytool"/><arg value="submit"/>
+            <arg value="${release_dir}/${name}-${version_number}.dmg"/>
+            <arg value="-keychain-profile"/><arg value="figtree-notarize"/>
+            <arg value="-wait"/>
         </exec>
+        <exec executable="xcrun" failonerror="true">
+            <arg value="stapler"/><arg value="staple"/>
+            <arg value="${release_dir}/${name}-${version_number}.dmg"/>
+        </exec>
+        -->
 
         <echo message="Mac version release is finished." />
+    </target>
+
+    <target name="windows_jpackage" depends="dist"
+            description="release Windows version of FigTree using jpackage with bundled JRE">
+
+        <delete dir="${dist}/app-input"/>
+        <mkdir dir="${dist}/app-input"/>
+        <copy file="${dist}/figtree.jar" todir="${dist}/app-input"/>
+
+        <exec executable="jpackage" failonerror="true">
+            <arg value="--type"/><arg value="exe"/>
+            <arg value="--name"/><arg value="${name}"/>
+            <arg value="--app-version"/><arg value="${version_number}"/>
+            <arg value="--input"/><arg value="${dist}/app-input"/>
+            <arg value="--main-jar"/><arg value="figtree.jar"/>
+            <arg value="--main-class"/><arg value="figtree.application.FigTreeApplication"/>
+            <arg value="--icon"/><arg value="${Windows_dir}/icons/FigTree.ico"/>
+            <arg value="--dest"/><arg value="${release_dir}"/>
+            <arg value="--java-options"/><arg value="-Xmx4096M"/>
+            <arg value="--win-menu"/>
+            <arg value="--win-shortcut"/>
+            <arg value="--win-dir-chooser"/>
+            <arg value="--file-associations"/><arg value="JPackage/figtree/tree-file-associations.properties"/>
+            <arg value="--file-associations"/><arg value="JPackage/figtree/tre-file-associations.properties"/>
+        </exec>
+
+        <echo message="Windows version release is finished (jpackage)." />
+    </target>
+
+    <target name="linux_jpackage" depends="dist"
+            description="release Linux version of FigTree using jpackage with bundled JRE">
+
+        <delete dir="${dist}/app-input"/>
+        <mkdir dir="${dist}/app-input"/>
+        <copy file="${dist}/figtree.jar" todir="${dist}/app-input"/>
+
+        <exec executable="jpackage" failonerror="true">
+            <arg value="--type"/><arg value="deb"/>
+            <arg value="--name"/><arg value="figtree"/>
+            <arg value="--app-version"/><arg value="${version_number}"/>
+            <arg value="--input"/><arg value="${dist}/app-input"/>
+            <arg value="--main-jar"/><arg value="figtree.jar"/>
+            <arg value="--main-class"/><arg value="figtree.application.FigTreeApplication"/>
+            <arg value="--icon"/><arg value="${Linux_dir}/icons/figtree.png"/>
+            <arg value="--dest"/><arg value="${release_dir}"/>
+            <arg value="--java-options"/><arg value="-Xmx4096M"/>
+            <arg value="--linux-shortcut"/>
+            <arg value="--file-associations"/><arg value="JPackage/figtree/tree-file-associations.properties"/>
+            <arg value="--file-associations"/><arg value="JPackage/figtree/tre-file-associations.properties"/>
+        </exec>
+
+        <echo message="Linux version release is finished (jpackage)." />
     </target>
 
     <!--

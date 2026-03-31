@@ -5,9 +5,9 @@
   <jar>./lib/figtree.jar</jar>
   <dontWrapJar>true</dontWrapJar>
   <jre>
-    <minVersion>1.8.0</minVersion>
+    <minVersion>11</minVersion>
     <initialHeapSize>64</initialHeapSize>
-    <maxHeapSize>1024</maxHeapSize>
+    <maxHeapSize>4096</maxHeapSize>
   </jre>    
   <versionInfo>
     <fileDescription>FigTree</fileDescription>

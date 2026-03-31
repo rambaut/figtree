@@ -45,8 +45,6 @@ import jebl.evolution.trees.Tree;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
@@ -311,50 +309,47 @@ public class FigTreeApplication extends MultiDocApplication {
         final boolean fastMode = arguments.hasOption("fast");
 
         if (Utils.isMacOSX()) {
-            if (Utils.getMacOSXMajorVersionNumber() >= 5) {
-                System.setProperty("apple.awt.brushMetalLook","true");
-            }
-            System.setProperty("apple.laf.useScreenMenuBar","true");
-            System.setProperty("apple.awt.draggableWindowBackground","true");
-            System.setProperty("apple.awt.showGrowBox","true");
-            System.setProperty("apple.awt.graphics.UseQuartz","true");
+            // Required for macOS native menu bar integration
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            // Required for proper app name in the menu bar
+            System.setProperty("apple.awt.application.name", "FigTree");
 
             try {
-                // set the VAqua Look and Feel in the UIManager
-                // This is a more modern L&F than the default Mac one
-                javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
-                    public void run() {
-                        try {
-                            UIManager.setLookAndFeel("org.violetlib.aqua.AquaLookAndFeel");
-                            lafLoaded = true;
-                        } catch (Exception e) {
-                            System.err.println("Failed to load AquaLookAndFeel");
-                        }
+                // VAqua is a modern native-style macOS L&F
+                SwingUtilities.invokeAndWait(() -> {
+                    try {
+                        UIManager.setLookAndFeel("org.violetlib.aqua.AquaLookAndFeel");
+                        lafLoaded = true;
+                    } catch (Exception e) {
+                        // VAqua not available; will fall through to FlatLaf
                     }
                 });
             } catch (Exception ignored) {
             }
-
-            UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
-            UIManager.put("SmallSystemFont", new Font("Lucida Grande", Font.PLAIN, 11));
         }
 
         if (!lafLoaded) {
-            UIManager.LookAndFeelInfo[] lafs = UIManager.getInstalledLookAndFeels();
-            for (UIManager.LookAndFeelInfo laf : lafs) {
-                System.out.println(laf);
-            }
-
             try {
-                // set the System Look and Feel in the UIManager
-                javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
-                    public void run() {
-                        try {
-                            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//                              UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                // FlatLaf provides a modern cross-platform look and feel
+                SwingUtilities.invokeAndWait(() -> {
+                    try {
+                        UIManager.setLookAndFeel("com.formdev.flatlaf.FlatLightLaf");
+                        lafLoaded = true;
+                    } catch (Exception e) {
+                        // FlatLaf not available; fall back to system L&F
+                    }
+                });
+            } catch (Exception ignored) {
+            }
+        }
+
+        if (!lafLoaded) {
+            try {
+                SwingUtilities.invokeAndWait(() -> {
+                    try {
+                        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 });
             } catch (Exception e) {
@@ -364,9 +359,25 @@ public class FigTreeApplication extends MultiDocApplication {
 
         java.net.URL url = FigTreeApplication.class.getResource("images/figtreeLogo.png");
         Icon icon = null;
+        Image iconImage = null;
 
         if (url != null) {
             icon = new ImageIcon(url);
+            iconImage = ((ImageIcon) icon).getImage();
+        }
+
+        // Set dock/taskbar icon programmatically (Java 9+, works on macOS and other platforms)
+        if (iconImage != null) {
+            try {
+                if (Taskbar.isTaskbarSupported()) {
+                    Taskbar taskbar = Taskbar.getTaskbar();
+                    if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) {
+                        taskbar.setIconImage(iconImage);
+                    }
+                }
+            } catch (Exception e) {
+                // Taskbar not available on this platform, ignore
+            }
         }
 
         final String nameString = "FigTree";

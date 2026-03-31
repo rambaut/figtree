@@ -1,0 +1,225 @@
+---
+triple:          'x86_64-apple-darwin'
+binary-path:     '/Users/alan/P/hack/VAquaRendering/out/master/debug/full/jni/libVAquaRendering-x86.dylib'
+relocations:
+  - { offsetInCU: 0x27, offset: 0x27, size: 0x8, addend: 0x0, symName: _registerAppearance, symObjAddr: 0x0, symBinAddr: 0x3C60, symSize: 0xE0 }
+  - { offsetInCU: 0x2F, offset: 0x2F, size: 0x8, addend: 0x0, symName: _configuredAppearanceID, symObjAddr: 0x298, symBinAddr: 0x161D0, symSize: 0x0 }
+  - { offsetInCU: 0x45, offset: 0x45, size: 0x8, addend: 0x0, symName: _configuredAppearanceID, symObjAddr: 0x298, symBinAddr: 0x161D0, symSize: 0x0 }
+  - { offsetInCU: 0x98, offset: 0x98, size: 0x8, addend: 0x0, symName: _knownAppearanceNames, symObjAddr: 0x10F0, symBinAddr: 0x16360, symSize: 0x0 }
+  - { offsetInCU: 0x111, offset: 0x111, size: 0x8, addend: 0x0, symName: _configuredAppearance, symBinAddr: 0x16568, symSize: 0x0 }
+  - { offsetInCU: 0x1A6, offset: 0x1A6, size: 0x8, addend: 0x0, symName: _registerAppearance, symObjAddr: 0x0, symBinAddr: 0x3C60, symSize: 0xE0 }
+  - { offsetInCU: 0x1E2, offset: 0x1E2, size: 0x8, addend: 0x0, symName: _updateCurrentAppearance, symObjAddr: 0xE0, symBinAddr: 0x3D40, symSize: 0x80 }
+  - { offsetInCU: 0x1FC, offset: 0x1FC, size: 0x8, addend: 0x0, symName: _setAppearance, symObjAddr: 0x160, symBinAddr: 0x3DC0, symSize: 0x138 }
+  - { offsetInCU: 0x204, offset: 0x204, size: 0x8, addend: 0x0, symName: _configuredAppearanceID, symObjAddr: 0x298, symBinAddr: 0x161D0, symSize: 0x0 }
+  - { offsetInCU: 0x27, offset: 0x26D, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaUIPainterBase_nativeRegisterAppearance, symObjAddr: 0x0, symBinAddr: 0x3F00, symSize: 0x170 }
+  - { offsetInCU: 0x60, offset: 0x2A6, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaUIPainterBase_nativeRegisterAppearance, symObjAddr: 0x0, symBinAddr: 0x3F00, symSize: 0x170 }
+  - { offsetInCU: 0xEF, offset: 0x335, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaUIPainterBase_nativeSetAppearance, symObjAddr: 0x170, symBinAddr: 0x4070, symSize: 0xB0 }
+  - { offsetInCU: 0x149, offset: 0x38F, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaUIPainterBase_nativeInvalidateAppearances, symObjAddr: 0x220, symBinAddr: 0x4120, symSize: 0xAA }
+  - { offsetInCU: 0x27, offset: 0x3092, size: 0x8, addend: 0x0, symName: '-[FakeParentWindow initWithStyle:]', symObjAddr: 0x0, symBinAddr: 0x41D0, symSize: 0x140 }
+  - { offsetInCU: 0x2EF, offset: 0x335A, size: 0x8, addend: 0x0, symName: _isActive, symObjAddr: 0x308C8, symBinAddr: 0x16368, symSize: 0x0 }
+  - { offsetInCU: 0x316, offset: 0x3381, size: 0x8, addend: 0x0, symName: _isEnabled, symObjAddr: 0x308E8, symBinAddr: 0x16388, symSize: 0x0 }
+  - { offsetInCU: 0x32C, offset: 0x3397, size: 0x8, addend: 0x0, symName: _currentWindow, symObjAddr: 0x308D8, symBinAddr: 0x16378, symSize: 0x0 }
+  - { offsetInCU: 0x3D91, offset: 0x6DFC, size: 0x8, addend: 0x0, symName: _fakeTexturedWindow, symObjAddr: 0x308E0, symBinAddr: 0x16380, symSize: 0x0 }
+  - { offsetInCU: 0x3DA7, offset: 0x6E12, size: 0x8, addend: 0x0, symName: _fakeDocumentWindow, symObjAddr: 0x308F0, symBinAddr: 0x16390, symSize: 0x0 }
+  - { offsetInCU: 0x3DBD, offset: 0x6E28, size: 0x8, addend: 0x0, symName: _myPanel, symObjAddr: 0x308F8, symBinAddr: 0x16398, symSize: 0x0 }
+  - { offsetInCU: 0x3E29, offset: 0x6E94, size: 0x8, addend: 0x0, symName: _buttonView, symObjAddr: 0x308D0, symBinAddr: 0x16370, symSize: 0x0 }
+  - { offsetInCU: 0x400F, offset: 0x707A, size: 0x8, addend: 0x0, symName: _useLayer, symObjAddr: 0x308C9, symBinAddr: 0x16369, symSize: 0x0 }
+  - { offsetInCU: 0x4025, offset: 0x7090, size: 0x8, addend: 0x0, symName: _osVersion, symObjAddr: 0x30900, symBinAddr: 0x163A0, symSize: 0x0 }
+  - { offsetInCU: 0x4087, offset: 0x70F2, size: 0x8, addend: 0x0, symName: _segmentedVersion, symObjAddr: 0xD888, symBinAddr: 0x16358, symSize: 0x0 }
+  - { offsetInCU: 0x40B5, offset: 0x7120, size: 0x8, addend: 0x0, symName: _sliderVersion, symObjAddr: 0xD88C, symBinAddr: 0x1635C, symSize: 0x0 }
+  - { offsetInCU: 0x40CB, offset: 0x7136, size: 0x8, addend: 0x0, symName: _fakeParentWindow, symObjAddr: 0x30908, symBinAddr: 0x163A8, symSize: 0x0 }
+  - { offsetInCU: 0x40E0, offset: 0x714B, size: 0x8, addend: 0x0, symName: _currentGraphicsContext, symObjAddr: 0x30910, symBinAddr: 0x163B0, symSize: 0x0 }
+  - { offsetInCU: 0x416B, offset: 0x71D6, size: 0x8, addend: 0x0, symName: _currentCGContext, symObjAddr: 0x30918, symBinAddr: 0x163B8, symSize: 0x0 }
+  - { offsetInCU: 0x486A, offset: 0x78D5, size: 0x8, addend: 0x0, symName: '-[FakeParentWindow initWithStyle:]', symObjAddr: 0x0, symBinAddr: 0x41D0, symSize: 0x140 }
+  - { offsetInCU: 0x4906, offset: 0x7971, size: 0x8, addend: 0x0, symName: '-[FakeParentWindow _semanticContext]', symObjAddr: 0x140, symBinAddr: 0x4310, symSize: 0x40 }
+  - { offsetInCU: 0x4951, offset: 0x79BC, size: 0x8, addend: 0x0, symName: '-[FakeParentWindow _shouldUseTexturedAppearanceForSegmentedCellInView:]', symObjAddr: 0x180, symBinAddr: 0x4350, symSize: 0x80 }
+  - { offsetInCU: 0x49AA, offset: 0x7A15, size: 0x8, addend: 0x0, symName: '-[FakeParentWindow setView:]', symObjAddr: 0x200, symBinAddr: 0x43D0, symSize: 0x50 }
+  - { offsetInCU: 0x49FF, offset: 0x7A6A, size: 0x8, addend: 0x0, symName: '-[FakeParentWindow clear]', symObjAddr: 0x250, symBinAddr: 0x4420, symSize: 0x40 }
+  - { offsetInCU: 0x4A48, offset: 0x7AB3, size: 0x8, addend: 0x0, symName: '-[FakeParentWindow setToolbar:]', symObjAddr: 0x290, symBinAddr: 0x4460, symSize: 0x50 }
+  - { offsetInCU: 0x4AA0, offset: 0x7B0B, size: 0x8, addend: 0x0, symName: '-[FakeParentWindow isKeyWindow]', symObjAddr: 0x2E0, symBinAddr: 0x44B0, symSize: 0x20 }
+  - { offsetInCU: 0x4ADE, offset: 0x7B49, size: 0x8, addend: 0x0, symName: '-[FakeParentWindow hasKeyAppearance]', symObjAddr: 0x300, symBinAddr: 0x44D0, symSize: 0x20 }
+  - { offsetInCU: 0x4B1C, offset: 0x7B87, size: 0x8, addend: 0x0, symName: '-[FakeParentWindow displayIfNeeded]', symObjAddr: 0x320, symBinAddr: 0x44F0, symSize: 0x10 }
+  - { offsetInCU: 0x4B56, offset: 0x7BC1, size: 0x8, addend: 0x0, symName: '-[MyPanel isKeyWindow]', symObjAddr: 0x330, symBinAddr: 0x4500, symSize: 0x20 }
+  - { offsetInCU: 0x4B94, offset: 0x7BFF, size: 0x8, addend: 0x0, symName: '-[MyPanel hasKeyAppearance]', symObjAddr: 0x350, symBinAddr: 0x4520, symSize: 0x20 }
+  - { offsetInCU: 0x4BD2, offset: 0x7C3D, size: 0x8, addend: 0x0, symName: '-[MyContentView initWithFrame:]', symObjAddr: 0x370, symBinAddr: 0x4540, symSize: 0x90 }
+  - { offsetInCU: 0x4C1F, offset: 0x7C8A, size: 0x8, addend: 0x0, symName: '-[MyContentView _semanticContext]', symObjAddr: 0x400, symBinAddr: 0x45D0, symSize: 0x70 }
+  - { offsetInCU: 0x4C5D, offset: 0x7CC8, size: 0x8, addend: 0x0, symName: '-[MyContentView setView:]', symObjAddr: 0x470, symBinAddr: 0x4640, symSize: 0x40 }
+  - { offsetInCU: 0x4C65, offset: 0x7CD0, size: 0x8, addend: 0x0, symName: '-[MyContentView clear]', symObjAddr: 0x4B0, symBinAddr: 0x4680, symSize: 0x80 }
+  - { offsetInCU: 0x4CA6, offset: 0x7D11, size: 0x8, addend: 0x0, symName: '-[MyContentView clear]', symObjAddr: 0x4B0, symBinAddr: 0x4680, symSize: 0x80 }
+  - { offsetInCU: 0x4D22, offset: 0x7D8D, size: 0x8, addend: 0x0, symName: '-[MyContentView isToolbar]', symObjAddr: 0x530, symBinAddr: 0x4700, symSize: 0x20 }
+  - { offsetInCU: 0x4D60, offset: 0x7DCB, size: 0x8, addend: 0x0, symName: '-[MyContentView setIsToolbar:]', symObjAddr: 0x550, symBinAddr: 0x4720, symSize: 0x30 }
+  - { offsetInCU: 0x4DA6, offset: 0x7E11, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_isLayerPaintingEnabled, symObjAddr: 0x580, symBinAddr: 0x4750, symSize: 0x20 }
+  - { offsetInCU: 0x4DE5, offset: 0x7E50, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_setLayerPaintingEnabled, symObjAddr: 0x5A0, symBinAddr: 0x4770, symSize: 0x20 }
+  - { offsetInCU: 0x4E2F, offset: 0x7E9A, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintIndeterminateProgressIndicator, symObjAddr: 0x5C0, symBinAddr: 0x4790, symSize: 0x170 }
+  - { offsetInCU: 0x4F16, offset: 0x7F81, size: 0x8, addend: 0x0, symName: _ensureWindowSize, symObjAddr: 0x730, symBinAddr: 0x4900, symSize: 0x170 }
+  - { offsetInCU: 0x4FB3, offset: 0x801E, size: 0x8, addend: 0x0, symName: _performGraphics, symObjAddr: 0x8A0, symBinAddr: 0x4A70, symSize: 0xA0 }
+  - { offsetInCU: 0x5056, offset: 0x80C1, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintIndeterminateProgressIndicator_block_invoke, symObjAddr: 0x940, symBinAddr: 0x4B10, symSize: 0x420 }
+  - { offsetInCU: 0x523A, offset: 0x82A5, size: 0x8, addend: 0x0, symName: _installContentView, symObjAddr: 0xD60, symBinAddr: 0x4F30, symSize: 0x90 }
+  - { offsetInCU: 0x5274, offset: 0x82DF, size: 0x8, addend: 0x0, symName: _setControlSize, symObjAddr: 0xDF0, symBinAddr: 0x4FC0, symSize: 0x190 }
+  - { offsetInCU: 0x52DE, offset: 0x8349, size: 0x8, addend: 0x0, symName: _setControlState, symObjAddr: 0xF80, symBinAddr: 0x5150, symSize: 0xF0 }
+  - { offsetInCU: 0x5318, offset: 0x8383, size: 0x8, addend: 0x0, symName: _displayView, symObjAddr: 0x1070, symBinAddr: 0x5240, symSize: 0xF0 }
+  - { offsetInCU: 0x5361, offset: 0x83CC, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintProgressIndicator, symObjAddr: 0x1160, symBinAddr: 0x5330, symSize: 0x160 }
+  - { offsetInCU: 0x5439, offset: 0x84A4, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintProgressIndicator_block_invoke, symObjAddr: 0x12C0, symBinAddr: 0x5490, symSize: 0x170 }
+  - { offsetInCU: 0x5547, offset: 0x85B2, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintButton, symObjAddr: 0x1430, symBinAddr: 0x5600, symSize: 0x170 }
+  - { offsetInCU: 0x564C, offset: 0x86B7, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintButton_block_invoke, symObjAddr: 0x15A0, symBinAddr: 0x5770, symSize: 0x3E0 }
+  - { offsetInCU: 0x57F0, offset: 0x885B, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintColorWell, symObjAddr: 0x1980, symBinAddr: 0x5B50, symSize: 0x180 }
+  - { offsetInCU: 0x58D7, offset: 0x8942, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintColorWell_block_invoke, symObjAddr: 0x1B00, symBinAddr: 0x5CD0, symSize: 0x1F0 }
+  - { offsetInCU: 0x5A2B, offset: 0x8A96, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativeSegmentedControlPainter_nativePaintSegmentedControl1, symObjAddr: 0x1CF0, symBinAddr: 0x5EC0, symSize: 0x460 }
+  - { offsetInCU: 0x5C4E, offset: 0x8CB9, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativeSegmentedControlPainter_nativePaintSegmentedControl1_block_invoke, symObjAddr: 0x2150, symBinAddr: 0x6320, symSize: 0x4E0 }
+  - { offsetInCU: 0x5DA9, offset: 0x8E14, size: 0x8, addend: 0x0, symName: ___copy_helper_block_e8_32r, symObjAddr: 0x2630, symBinAddr: 0x6800, symSize: 0x30 }
+  - { offsetInCU: 0x5DB1, offset: 0x8E1C, size: 0x8, addend: 0x0, symName: ___destroy_helper_block_e8_32r, symObjAddr: 0x2660, symBinAddr: 0x6830, symSize: 0x30 }
+  - { offsetInCU: 0x5DD5, offset: 0x8E40, size: 0x8, addend: 0x0, symName: ___destroy_helper_block_e8_32r, symObjAddr: 0x2660, symBinAddr: 0x6830, symSize: 0x30 }
+  - { offsetInCU: 0x5DF8, offset: 0x8E63, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativeSegmentedControlPainter_nativePaintSegmentedControl4, symObjAddr: 0x2690, symBinAddr: 0x6860, symSize: 0x520 }
+  - { offsetInCU: 0x605F, offset: 0x90CA, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativeSegmentedControlPainter_nativePaintSegmentedControl4_block_invoke, symObjAddr: 0x2BB0, symBinAddr: 0x6D80, symSize: 0x810 }
+  - { offsetInCU: 0x62CA, offset: 0x9335, size: 0x8, addend: 0x0, symName: _getSelectionFlag, symObjAddr: 0x33C0, symBinAddr: 0x7590, symSize: 0x70 }
+  - { offsetInCU: 0x62F9, offset: 0x9364, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativeDetermineSliderRenderingVersion, symObjAddr: 0x3430, symBinAddr: 0x7600, symSize: 0xC0 }
+  - { offsetInCU: 0x6368, offset: 0x93D3, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativeSegmentedControlPainter_nativeDetermineSegmentedButtonRenderingVersion, symObjAddr: 0x34F0, symBinAddr: 0x76C0, symSize: 0xC0 }
+  - { offsetInCU: 0x63D7, offset: 0x9442, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativeSegmentedControlPainter_nativeDetermineSegmentedButtonFixedHeight, symObjAddr: 0x35B0, symBinAddr: 0x7780, symSize: 0x180 }
+  - { offsetInCU: 0x645E, offset: 0x94C9, size: 0x8, addend: 0x0, symName: _runOnMainThread, symObjAddr: 0x3730, symBinAddr: 0x7900, symSize: 0x30 }
+  - { offsetInCU: 0x6489, offset: 0x94F4, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativeSegmentedControlPainter_nativeDetermineSegmentedButtonFixedHeight_block_invoke, symObjAddr: 0x3760, symBinAddr: 0x7930, symSize: 0x1C0 }
+  - { offsetInCU: 0x6588, offset: 0x95F3, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativeSegmentedControlPainter_nativeDetermineSegmentedButtonLayoutParameters, symObjAddr: 0x3920, symBinAddr: 0x7AF0, symSize: 0x460 }
+  - { offsetInCU: 0x66DA, offset: 0x9745, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativeSegmentedControlPainter_nativeDetermineSegmentedButtonLayoutParameters_block_invoke, symObjAddr: 0x3D80, symBinAddr: 0x7F50, symSize: 0x7C0 }
+  - { offsetInCU: 0x68AE, offset: 0x9919, size: 0x8, addend: 0x0, symName: ___copy_helper_block_e8_32r40r48r56r64r, symObjAddr: 0x4540, symBinAddr: 0x8710, symSize: 0xA0 }
+  - { offsetInCU: 0x68B6, offset: 0x9921, size: 0x8, addend: 0x0, symName: ___destroy_helper_block_e8_32r40r48r56r64r, symObjAddr: 0x45E0, symBinAddr: 0x87B0, symSize: 0x70 }
+  - { offsetInCU: 0x68DA, offset: 0x9945, size: 0x8, addend: 0x0, symName: ___destroy_helper_block_e8_32r40r48r56r64r, symObjAddr: 0x45E0, symBinAddr: 0x87B0, symSize: 0x70 }
+  - { offsetInCU: 0x68E2, offset: 0x994D, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativeDetermineButtonFixedHeight, symObjAddr: 0x4650, symBinAddr: 0x8820, symSize: 0x1A0 }
+  - { offsetInCU: 0x68FD, offset: 0x9968, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativeDetermineButtonFixedHeight, symObjAddr: 0x4650, symBinAddr: 0x8820, symSize: 0x1A0 }
+  - { offsetInCU: 0x6993, offset: 0x99FE, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativeDetermineButtonFixedHeight_block_invoke, symObjAddr: 0x47F0, symBinAddr: 0x89C0, symSize: 0x280 }
+  - { offsetInCU: 0x6AC4, offset: 0x9B2F, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativeDetermineButtonFixedWidth, symObjAddr: 0x4A70, symBinAddr: 0x8C40, symSize: 0x1A0 }
+  - { offsetInCU: 0x6B5A, offset: 0x9BC5, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativeDetermineButtonFixedWidth_block_invoke, symObjAddr: 0x4C10, symBinAddr: 0x8DE0, symSize: 0x220 }
+  - { offsetInCU: 0x6C7B, offset: 0x9CE6, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintComboBox, symObjAddr: 0x4E30, symBinAddr: 0x9000, symSize: 0x160 }
+  - { offsetInCU: 0x6D62, offset: 0x9DCD, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintComboBox_block_invoke, symObjAddr: 0x4F90, symBinAddr: 0x9160, symSize: 0x4C0 }
+  - { offsetInCU: 0x6FCB, offset: 0xA036, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintPopUpButton, symObjAddr: 0x5450, symBinAddr: 0x9620, symSize: 0x160 }
+  - { offsetInCU: 0x70B2, offset: 0xA11D, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintPopUpButton_block_invoke, symObjAddr: 0x55B0, symBinAddr: 0x9780, symSize: 0x2D0 }
+  - { offsetInCU: 0x7234, offset: 0xA29F, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintToolBarItemWell, symObjAddr: 0x5880, symBinAddr: 0x9A50, symSize: 0x30 }
+  - { offsetInCU: 0x72D8, offset: 0xA343, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintGroupBox, symObjAddr: 0x58B0, symBinAddr: 0x9A80, symSize: 0x140 }
+  - { offsetInCU: 0x73A1, offset: 0xA40C, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintGroupBox_block_invoke, symObjAddr: 0x59F0, symBinAddr: 0x9BC0, symSize: 0x150 }
+  - { offsetInCU: 0x749D, offset: 0xA508, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintListBox, symObjAddr: 0x5B40, symBinAddr: 0x9D10, symSize: 0x30 }
+  - { offsetInCU: 0x7550, offset: 0xA5BB, size: 0x8, addend: 0x0, symName: '-[MySearchFieldCell searchButtonRectForBounds:]', symObjAddr: 0x5B70, symBinAddr: 0x9D40, symSize: 0xD0 }
+  - { offsetInCU: 0x75EF, offset: 0xA65A, size: 0x8, addend: 0x0, symName: '+[MySearchField cellClass]', symObjAddr: 0x5C40, symBinAddr: 0x9E10, symSize: 0x30 }
+  - { offsetInCU: 0x762D, offset: 0xA698, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintTextField, symObjAddr: 0x5C70, symBinAddr: 0x9E40, symSize: 0x140 }
+  - { offsetInCU: 0x76F6, offset: 0xA761, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintTextField_block_invoke, symObjAddr: 0x5DB0, symBinAddr: 0x9F80, symSize: 0x390 }
+  - { offsetInCU: 0x78AA, offset: 0xA915, size: 0x8, addend: 0x0, symName: '-[MyTableDelegate numberOfRowsInTableView:]', symObjAddr: 0x6140, symBinAddr: 0xA310, symSize: 0x20 }
+  - { offsetInCU: 0x78F7, offset: 0xA962, size: 0x8, addend: 0x0, symName: '-[MyTableDelegate tableView:objectValueForTableColumn:row:]', symObjAddr: 0x6160, symBinAddr: 0xA330, symSize: 0x30 }
+  - { offsetInCU: 0x7962, offset: 0xA9CD, size: 0x8, addend: 0x0, symName: '-[MyTableDelegate tableView:viewForTableColumn:row:]', symObjAddr: 0x6190, symBinAddr: 0xA360, symSize: 0x130 }
+  - { offsetInCU: 0x7A21, offset: 0xAA8C, size: 0x8, addend: 0x0, symName: '-[MyTableDelegate tableView:sortDescriptorsDidChange:]', symObjAddr: 0x62C0, symBinAddr: 0xA490, symSize: 0x20 }
+  - { offsetInCU: 0x7A79, offset: 0xAAE4, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintTableColumnHeader, symObjAddr: 0x62E0, symBinAddr: 0xA4B0, symSize: 0x150 }
+  - { offsetInCU: 0x7B51, offset: 0xABBC, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintTableColumnHeader_block_invoke, symObjAddr: 0x6430, symBinAddr: 0xA600, symSize: 0x570 }
+  - { offsetInCU: 0x7D9E, offset: 0xAE09, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintSlider, symObjAddr: 0x69A0, symBinAddr: 0xAB70, symSize: 0x190 }
+  - { offsetInCU: 0x7EA3, offset: 0xAF0E, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintSlider_block_invoke, symObjAddr: 0x6B30, symBinAddr: 0xAD00, symSize: 0x140 }
+  - { offsetInCU: 0x7FE7, offset: 0xB052, size: 0x8, addend: 0x0, symName: _setupSliderView, symObjAddr: 0x6C70, symBinAddr: 0xAE40, symSize: 0x220 }
+  - { offsetInCU: 0x80F0, offset: 0xB15B, size: 0x8, addend: 0x0, symName: '-[ThumbCapturingSliderCell drawKnob:]', symObjAddr: 0x6E90, symBinAddr: 0xB060, symSize: 0x40 }
+  - { offsetInCU: 0x8139, offset: 0xB1A4, size: 0x8, addend: 0x0, symName: '-[ThumbCapturingSliderCell getCapturedBounds]', symObjAddr: 0x6ED0, symBinAddr: 0xB0A0, symSize: 0x40 }
+  - { offsetInCU: 0x8177, offset: 0xB1E2, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativeGetSliderThumbBounds, symObjAddr: 0x6F10, symBinAddr: 0xB0E0, symSize: 0x3A0 }
+  - { offsetInCU: 0x8297, offset: 0xB302, size: 0x8, addend: 0x0, symName: _performGraphicsRaw, symObjAddr: 0x72B0, symBinAddr: 0xB480, symSize: 0x90 }
+  - { offsetInCU: 0x830D, offset: 0xB378, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativeGetSliderThumbBounds_block_invoke, symObjAddr: 0x7340, symBinAddr: 0xB510, symSize: 0x1C0 }
+  - { offsetInCU: 0x8467, offset: 0xB4D2, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintSpinnerArrows, symObjAddr: 0x7500, symBinAddr: 0xB6D0, symSize: 0x150 }
+  - { offsetInCU: 0x853F, offset: 0xB5AA, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintSpinnerArrows_block_invoke, symObjAddr: 0x7650, symBinAddr: 0xB820, symSize: 0x210 }
+  - { offsetInCU: 0x866F, offset: 0xB6DA, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintSplitPaneDivider, symObjAddr: 0x7860, symBinAddr: 0xBA30, symSize: 0x150 }
+  - { offsetInCU: 0x8747, offset: 0xB7B2, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintSplitPaneDivider_block_invoke, symObjAddr: 0x79B0, symBinAddr: 0xBB80, symSize: 0x2B0 }
+  - { offsetInCU: 0x88CF, offset: 0xB93A, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintTitleBar, symObjAddr: 0x7C60, symBinAddr: 0xBE30, symSize: 0x170 }
+  - { offsetInCU: 0x89D4, offset: 0xBA3F, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintTitleBar_block_invoke, symObjAddr: 0x7DD0, symBinAddr: 0xBFA0, symSize: 0x2A0 }
+  - { offsetInCU: 0x8B6A, offset: 0xBBD5, size: 0x8, addend: 0x0, symName: _configureTitleBarButton, symObjAddr: 0x8070, symBinAddr: 0xC240, symSize: 0xC0 }
+  - { offsetInCU: 0x8BD4, offset: 0xBC3F, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativeGetTitleBarButtonLayoutInfo, symObjAddr: 0x8130, symBinAddr: 0xC300, symSize: 0x190 }
+  - { offsetInCU: 0x8C4C, offset: 0xBCB7, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativeGetTitleBarButtonLayoutInfo_block_invoke, symObjAddr: 0x82C0, symBinAddr: 0xC490, symSize: 0x5E0 }
+  - { offsetInCU: 0x8E2A, offset: 0xBE95, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintScrollBar, symObjAddr: 0x88A0, symBinAddr: 0xCA70, symSize: 0x190 }
+  - { offsetInCU: 0x8F11, offset: 0xBF7C, size: 0x8, addend: 0x0, symName: ___Java_org_violetlib_jnr_aqua_impl_AquaNativePainter_nativePaintScrollBar_block_invoke, symObjAddr: 0x8A30, symBinAddr: 0xCC00, symSize: 0x1D0 }
+  - { offsetInCU: 0x9043, offset: 0xC0AE, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_NativeSupport_getJavaRuntimeSupportVersion, symObjAddr: 0x8C00, symBinAddr: 0xCDD0, symSize: 0xD0 }
+  - { offsetInCU: 0x90D0, offset: 0xC13B, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_impl_NativeSupport_syslog, symObjAddr: 0x8CD0, symBinAddr: 0xCEA0, symSize: 0xB0 }
+  - { offsetInCU: 0x9147, offset: 0xC1B2, size: 0x8, addend: 0x0, symName: _setupSegmented, symObjAddr: 0x8D80, symBinAddr: 0xCF50, symSize: 0xD0 }
+  - { offsetInCU: 0x9165, offset: 0xC1D0, size: 0x8, addend: 0x0, symName: _initialize, symObjAddr: 0x8E50, symBinAddr: 0xD020, symSize: 0x20 }
+  - { offsetInCU: 0x917F, offset: 0xC1EA, size: 0x8, addend: 0x0, symName: ___initialize_block_invoke, symObjAddr: 0x8E70, symBinAddr: 0xD040, symSize: 0x20 }
+  - { offsetInCU: 0x91AF, offset: 0xC21A, size: 0x8, addend: 0x0, symName: _setupSlider, symObjAddr: 0x8E90, symBinAddr: 0xD060, symSize: 0x70 }
+  - { offsetInCU: 0x91CD, offset: 0xC238, size: 0x8, addend: 0x0, symName: _initOnMainThread, symObjAddr: 0x8F00, symBinAddr: 0xD0D0, symSize: 0x260 }
+  - { offsetInCU: 0x925C, offset: 0xC2C7, size: 0x8, addend: 0x0, symName: _cleanup, symObjAddr: 0x9160, symBinAddr: 0xD330, symSize: 0xB0 }
+  - { offsetInCU: 0x9276, offset: 0xC2E1, size: 0x8, addend: 0x0, symName: ___performGraphicsRaw_block_invoke, symObjAddr: 0x9210, symBinAddr: 0xD3E0, symSize: 0x60 }
+  - { offsetInCU: 0x9333, offset: 0xC39E, size: 0x8, addend: 0x0, symName: _setupRaw, symObjAddr: 0x9270, symBinAddr: 0xD440, symSize: 0x160 }
+  - { offsetInCU: 0x93CB, offset: 0xC436, size: 0x8, addend: 0x0, symName: ___copy_helper_block_e8_32b, symObjAddr: 0x93D0, symBinAddr: 0xD5A0, symSize: 0x30 }
+  - { offsetInCU: 0x93D3, offset: 0xC43E, size: 0x8, addend: 0x0, symName: ___destroy_helper_block_e8_32b, symObjAddr: 0x9400, symBinAddr: 0xD5D0, symSize: 0x30 }
+  - { offsetInCU: 0x93F7, offset: 0xC462, size: 0x8, addend: 0x0, symName: ___destroy_helper_block_e8_32b, symObjAddr: 0x9400, symBinAddr: 0xD5D0, symSize: 0x30 }
+  - { offsetInCU: 0x27, offset: 0x11477, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_coreui_CoreUIPainter_nativeJRSPaint, symObjAddr: 0x0, symBinAddr: 0xD610, symSize: 0x660 }
+  - { offsetInCU: 0xA9, offset: 0x114F9, size: 0x8, addend: 0x0, symName: _renderer, symObjAddr: 0x7888, symBinAddr: 0x163C0, symSize: 0x0 }
+  - { offsetInCU: 0xE9, offset: 0x11539, size: 0x8, addend: 0x0, symName: _integerClass, symObjAddr: 0x7890, symBinAddr: 0x163C8, symSize: 0x0 }
+  - { offsetInCU: 0x11F, offset: 0x1156F, size: 0x8, addend: 0x0, symName: _integerValueMethod, symObjAddr: 0x7898, symBinAddr: 0x163D0, symSize: 0x0 }
+  - { offsetInCU: 0x14A, offset: 0x1159A, size: 0x8, addend: 0x0, symName: _longClass, symObjAddr: 0x78A0, symBinAddr: 0x163D8, symSize: 0x0 }
+  - { offsetInCU: 0x15F, offset: 0x115AF, size: 0x8, addend: 0x0, symName: _longValueMethod, symObjAddr: 0x78A8, symBinAddr: 0x163E0, symSize: 0x0 }
+  - { offsetInCU: 0x174, offset: 0x115C4, size: 0x8, addend: 0x0, symName: _stringClass, symObjAddr: 0x78B0, symBinAddr: 0x163E8, symSize: 0x0 }
+  - { offsetInCU: 0x189, offset: 0x115D9, size: 0x8, addend: 0x0, symName: _booleanClass, symObjAddr: 0x78B8, symBinAddr: 0x163F0, symSize: 0x0 }
+  - { offsetInCU: 0x19E, offset: 0x115EE, size: 0x8, addend: 0x0, symName: _booleanValueMethod, symObjAddr: 0x78C0, symBinAddr: 0x163F8, symSize: 0x0 }
+  - { offsetInCU: 0x1B3, offset: 0x11603, size: 0x8, addend: 0x0, symName: _doubleClass, symObjAddr: 0x78C8, symBinAddr: 0x16400, symSize: 0x0 }
+  - { offsetInCU: 0x1C8, offset: 0x11618, size: 0x8, addend: 0x0, symName: _doubleValueMethod, symObjAddr: 0x78D0, symBinAddr: 0x16408, symSize: 0x0 }
+  - { offsetInCU: 0x2F0, offset: 0x11740, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_coreui_CoreUIPainter_nativeJRSPaint, symObjAddr: 0x0, symBinAddr: 0xD610, symSize: 0x660 }
+  - { offsetInCU: 0x559, offset: 0x119A9, size: 0x8, addend: 0x0, symName: _CopyCFTypeToJava, symObjAddr: 0x660, symBinAddr: 0xDC70, symSize: 0x4E0 }
+  - { offsetInCU: 0x652, offset: 0x11AA2, size: 0x8, addend: 0x0, symName: _throwException, symObjAddr: 0xB40, symBinAddr: 0xE150, symSize: 0xBA }
+  - { offsetInCU: 0x27, offset: 0x147C1, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_coreui_CoreUIPainter_nativePaint, symObjAddr: 0x0, symBinAddr: 0xE210, symSize: 0x850 }
+  - { offsetInCU: 0xB7, offset: 0x14851, size: 0x8, addend: 0x0, symName: _integerClass, symObjAddr: 0x89D8, symBinAddr: 0x16410, symSize: 0x0 }
+  - { offsetInCU: 0xED, offset: 0x14887, size: 0x8, addend: 0x0, symName: _integerValueMethod, symObjAddr: 0x89E0, symBinAddr: 0x16418, symSize: 0x0 }
+  - { offsetInCU: 0x118, offset: 0x148B2, size: 0x8, addend: 0x0, symName: _longClass, symObjAddr: 0x89E8, symBinAddr: 0x16420, symSize: 0x0 }
+  - { offsetInCU: 0x12D, offset: 0x148C7, size: 0x8, addend: 0x0, symName: _longValueMethod, symObjAddr: 0x89F0, symBinAddr: 0x16428, symSize: 0x0 }
+  - { offsetInCU: 0x142, offset: 0x148DC, size: 0x8, addend: 0x0, symName: _stringClass, symObjAddr: 0x89F8, symBinAddr: 0x16430, symSize: 0x0 }
+  - { offsetInCU: 0x157, offset: 0x148F1, size: 0x8, addend: 0x0, symName: _booleanClass, symObjAddr: 0x8A00, symBinAddr: 0x16438, symSize: 0x0 }
+  - { offsetInCU: 0x16C, offset: 0x14906, size: 0x8, addend: 0x0, symName: _booleanValueMethod, symObjAddr: 0x8A08, symBinAddr: 0x16440, symSize: 0x0 }
+  - { offsetInCU: 0x181, offset: 0x1491B, size: 0x8, addend: 0x0, symName: _doubleClass, symObjAddr: 0x8A10, symBinAddr: 0x16448, symSize: 0x0 }
+  - { offsetInCU: 0x196, offset: 0x14930, size: 0x8, addend: 0x0, symName: _doubleValueMethod, symObjAddr: 0x8A18, symBinAddr: 0x16450, symSize: 0x0 }
+  - { offsetInCU: 0x339, offset: 0x14AD3, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_aqua_coreui_CoreUIPainter_nativePaint, symObjAddr: 0x0, symBinAddr: 0xE210, symSize: 0x850 }
+  - { offsetInCU: 0x5D1, offset: 0x14D6B, size: 0x8, addend: 0x0, symName: _CopyCFTypeToJava, symObjAddr: 0x850, symBinAddr: 0xEA60, symSize: 0x4E0 }
+  - { offsetInCU: 0x6CA, offset: 0x14E64, size: 0x8, addend: 0x0, symName: _throwException, symObjAddr: 0xD30, symBinAddr: 0xEF40, symSize: 0xBA }
+  - { offsetInCU: 0x27, offset: 0x18081, size: 0x8, addend: 0x0, symName: __InitializeJRSProperties, symObjAddr: 0x0, symBinAddr: 0xF000, symSize: 0x30 }
+  - { offsetInCU: 0x38, offset: 0x18092, size: 0x8, addend: 0x0, symName: __InitializeJRSProperties, symObjAddr: 0x0, symBinAddr: 0xF000, symSize: 0x30 }
+  - { offsetInCU: 0x64, offset: 0x180BE, size: 0x8, addend: 0x0, symName: __InitializeJRSProperties.initialized, symObjAddr: 0x74D8, symBinAddr: 0x16458, symSize: 0x0 }
+  - { offsetInCU: 0x7A, offset: 0x180D4, size: 0x8, addend: 0x0, symName: __InitializeJRSProperties.coherent, symObjAddr: 0x74D9, symBinAddr: 0x16459, symSize: 0x0 }
+  - { offsetInCU: 0xA2, offset: 0x180FC, size: 0x8, addend: 0x0, symName: _widgetKey, symObjAddr: 0x7538, symBinAddr: 0x164B8, symSize: 0x0 }
+  - { offsetInCU: 0xC9, offset: 0x18123, size: 0x8, addend: 0x0, symName: _stateKey, symObjAddr: 0x7540, symBinAddr: 0x164C0, symSize: 0x0 }
+  - { offsetInCU: 0xDE, offset: 0x18138, size: 0x8, addend: 0x0, symName: _sizeKey, symObjAddr: 0x7548, symBinAddr: 0x164C8, symSize: 0x0 }
+  - { offsetInCU: 0xF3, offset: 0x1814D, size: 0x8, addend: 0x0, symName: _directionKey, symObjAddr: 0x7550, symBinAddr: 0x164D0, symSize: 0x0 }
+  - { offsetInCU: 0x108, offset: 0x18162, size: 0x8, addend: 0x0, symName: _orientationKey, symObjAddr: 0x7558, symBinAddr: 0x164D8, symSize: 0x0 }
+  - { offsetInCU: 0x11D, offset: 0x18177, size: 0x8, addend: 0x0, symName: _verticalAlignmentKey, symObjAddr: 0x7560, symBinAddr: 0x164E0, symSize: 0x0 }
+  - { offsetInCU: 0x132, offset: 0x1818C, size: 0x8, addend: 0x0, symName: _horizontalAlignmentKey, symObjAddr: 0x7568, symBinAddr: 0x164E8, symSize: 0x0 }
+  - { offsetInCU: 0x147, offset: 0x181A1, size: 0x8, addend: 0x0, symName: _positionKey, symObjAddr: 0x7570, symBinAddr: 0x164F0, symSize: 0x0 }
+  - { offsetInCU: 0x15C, offset: 0x181B6, size: 0x8, addend: 0x0, symName: _pressedPartKey, symObjAddr: 0x7578, symBinAddr: 0x164F8, symSize: 0x0 }
+  - { offsetInCU: 0x171, offset: 0x181CB, size: 0x8, addend: 0x0, symName: _variantKey, symObjAddr: 0x7580, symBinAddr: 0x16500, symSize: 0x0 }
+  - { offsetInCU: 0x186, offset: 0x181E0, size: 0x8, addend: 0x0, symName: _windowTypeKey, symObjAddr: 0x7588, symBinAddr: 0x16508, symSize: 0x0 }
+  - { offsetInCU: 0x19B, offset: 0x181F5, size: 0x8, addend: 0x0, symName: _maximumValueKey, symObjAddr: 0x7590, symBinAddr: 0x16510, symSize: 0x0 }
+  - { offsetInCU: 0x1B0, offset: 0x1820A, size: 0x8, addend: 0x0, symName: _animationStartTimeKey, symObjAddr: 0x7598, symBinAddr: 0x16518, symSize: 0x0 }
+  - { offsetInCU: 0x1C5, offset: 0x1821F, size: 0x8, addend: 0x0, symName: _animationTimeKey, symObjAddr: 0x75A0, symBinAddr: 0x16520, symSize: 0x0 }
+  - { offsetInCU: 0x1DA, offset: 0x18234, size: 0x8, addend: 0x0, symName: _focusedKey, symObjAddr: 0x74E0, symBinAddr: 0x16460, symSize: 0x0 }
+  - { offsetInCU: 0x1EF, offset: 0x18249, size: 0x8, addend: 0x0, symName: _indicatorOnlyKey, symObjAddr: 0x74E8, symBinAddr: 0x16468, symSize: 0x0 }
+  - { offsetInCU: 0x204, offset: 0x1825E, size: 0x8, addend: 0x0, symName: _noIndicatorKey, symObjAddr: 0x74F0, symBinAddr: 0x16470, symSize: 0x0 }
+  - { offsetInCU: 0x219, offset: 0x18273, size: 0x8, addend: 0x0, symName: _arrowsOnlyKey, symObjAddr: 0x74F8, symBinAddr: 0x16478, symSize: 0x0 }
+  - { offsetInCU: 0x22E, offset: 0x18288, size: 0x8, addend: 0x0, symName: _frameOnlyKey, symObjAddr: 0x7500, symBinAddr: 0x16480, symSize: 0x0 }
+  - { offsetInCU: 0x243, offset: 0x1829D, size: 0x8, addend: 0x0, symName: _segmentTrailingSeparatorKey, symObjAddr: 0x7508, symBinAddr: 0x16488, symSize: 0x0 }
+  - { offsetInCU: 0x258, offset: 0x182B2, size: 0x8, addend: 0x0, symName: _segmentLeadingSeparatorKey, symObjAddr: 0x7510, symBinAddr: 0x16490, symSize: 0x0 }
+  - { offsetInCU: 0x26D, offset: 0x182C7, size: 0x8, addend: 0x0, symName: _nothingToScrollKey, symObjAddr: 0x7518, symBinAddr: 0x16498, symSize: 0x0 }
+  - { offsetInCU: 0x282, offset: 0x182DC, size: 0x8, addend: 0x0, symName: _windowFrameDrawTitleSeparatorKey, symObjAddr: 0x7520, symBinAddr: 0x164A0, symSize: 0x0 }
+  - { offsetInCU: 0x297, offset: 0x182F1, size: 0x8, addend: 0x0, symName: _windowFrameDrawClippedKey, symObjAddr: 0x7528, symBinAddr: 0x164A8, symSize: 0x0 }
+  - { offsetInCU: 0x2A0, offset: 0x182FA, size: 0x8, addend: 0x0, symName: _get_boolean_number_value_for, symObjAddr: 0x940, symBinAddr: 0xF940, symSize: 0xA0 }
+  - { offsetInCU: 0x2CC, offset: 0x18326, size: 0x8, addend: 0x0, symName: _get_boolean_number_value_for.zero, symObjAddr: 0x75A8, symBinAddr: 0x16528, symSize: 0x0 }
+  - { offsetInCU: 0x2E2, offset: 0x1833C, size: 0x8, addend: 0x0, symName: _get_boolean_number_value_for.one, symObjAddr: 0x75B0, symBinAddr: 0x16530, symSize: 0x0 }
+  - { offsetInCU: 0x352, offset: 0x183AC, size: 0x8, addend: 0x0, symName: _valueKey, symObjAddr: 0x7530, symBinAddr: 0x164B0, symSize: 0x0 }
+  - { offsetInCU: 0x396, offset: 0x183F0, size: 0x8, addend: 0x0, symName: __SyncEncodedProperties, symObjAddr: 0x30, symBinAddr: 0xF030, symSize: 0x8D0 }
+  - { offsetInCU: 0x8A5, offset: 0x188FF, size: 0x8, addend: 0x0, symName: _get_boolean_value_for, symObjAddr: 0x900, symBinAddr: 0xF900, symSize: 0x40 }
+  - { offsetInCU: 0x8D4, offset: 0x1892E, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIConstants_getPtrForConstant, symObjAddr: 0x9E0, symBinAddr: 0xF9E0, symSize: 0x30 }
+  - { offsetInCU: 0x922, offset: 0x1897C, size: 0x8, addend: 0x0, symName: _init_and_check_constant_coherency, symObjAddr: 0xA10, symBinAddr: 0xFA10, symSize: 0x3E7 }
+  - { offsetInCU: 0x27, offset: 0x1B50F, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIControl_initNativeJRSUI, symObjAddr: 0x0, symBinAddr: 0xFE00, symSize: 0x70 }
+  - { offsetInCU: 0x44, offset: 0x1B52C, size: 0x8, addend: 0x0, symName: _gRenderer, symObjAddr: 0x7FC8, symBinAddr: 0x16538, symSize: 0x0 }
+  - { offsetInCU: 0x198, offset: 0x1B680, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIControl_initNativeJRSUI, symObjAddr: 0x0, symBinAddr: 0xFE00, symSize: 0x70 }
+  - { offsetInCU: 0x1E2, offset: 0x1B6CA, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIControl_getPtrOfBuffer, symObjAddr: 0x70, symBinAddr: 0xFE70, symSize: 0x60 }
+  - { offsetInCU: 0x23A, offset: 0x1B722, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIControl_getCFDictionary, symObjAddr: 0xD0, symBinAddr: 0xFED0, symSize: 0x30 }
+  - { offsetInCU: 0x284, offset: 0x1B76C, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIControl_disposeCFDictionary, symObjAddr: 0x100, symBinAddr: 0xFF00, symSize: 0x40 }
+  - { offsetInCU: 0x2D8, offset: 0x1B7C0, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIControl_syncChanges, symObjAddr: 0x140, symBinAddr: 0xFF40, symSize: 0x30 }
+  - { offsetInCU: 0x330, offset: 0x1B818, size: 0x8, addend: 0x0, symName: _doSyncChanges, symObjAddr: 0x170, symBinAddr: 0xFF70, symSize: 0x40 }
+  - { offsetInCU: 0x395, offset: 0x1B87D, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIControl_paintToCGContext, symObjAddr: 0x1B0, symBinAddr: 0xFFB0, symSize: 0x70 }
+  - { offsetInCU: 0x443, offset: 0x1B92B, size: 0x8, addend: 0x0, symName: _doPaintCGContext, symObjAddr: 0x220, symBinAddr: 0x10020, symSize: 0xB0 }
+  - { offsetInCU: 0x4F0, offset: 0x1B9D8, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIControl_paintChangesToCGContext, symObjAddr: 0x2D0, symBinAddr: 0x100D0, symSize: 0xA0 }
+  - { offsetInCU: 0x5BC, offset: 0x1BAA4, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIControl_paintImage, symObjAddr: 0x370, symBinAddr: 0x10170, symSize: 0x80 }
+  - { offsetInCU: 0x685, offset: 0x1BB6D, size: 0x8, addend: 0x0, symName: _doPaintImage, symObjAddr: 0x3F0, symBinAddr: 0x101F0, symSize: 0x180 }
+  - { offsetInCU: 0x78C, offset: 0x1BC74, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIControl_paintChangesImage, symObjAddr: 0x570, symBinAddr: 0x10370, symSize: 0xB0 }
+  - { offsetInCU: 0x873, offset: 0x1BD5B, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIControl_getNativeHitPart, symObjAddr: 0x620, symBinAddr: 0x10420, symSize: 0xF0 }
+  - { offsetInCU: 0x95D, offset: 0x1BE45, size: 0x8, addend: 0x0, symName: _CGRectMake, symObjAddr: 0x710, symBinAddr: 0x10510, symSize: 0x50 }
+  - { offsetInCU: 0x9C8, offset: 0x1BEB0, size: 0x8, addend: 0x0, symName: _CGPointMake, symObjAddr: 0x760, symBinAddr: 0x10560, symSize: 0x30 }
+  - { offsetInCU: 0xA15, offset: 0x1BEFD, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIUtils_00024ScrollBar_shouldUseScrollToClick, symObjAddr: 0x790, symBinAddr: 0x10590, symSize: 0x20 }
+  - { offsetInCU: 0xA54, offset: 0x1BF3C, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIControl_getNativePartBounds, symObjAddr: 0x7B0, symBinAddr: 0x105B0, symSize: 0x150 }
+  - { offsetInCU: 0xB58, offset: 0x1C040, size: 0x8, addend: 0x0, symName: _Java_org_violetlib_jnr_impl_jrs_JRSUIControl_getNativeScrollBarOffsetChange, symObjAddr: 0x900, symBinAddr: 0x10700, symSize: 0xC0 }
+  - { offsetInCU: 0xC4F, offset: 0x1C137, size: 0x8, addend: 0x0, symName: _syncChangesToControl, symObjAddr: 0x9C0, symBinAddr: 0x107C0, symSize: 0xF0 }
+  - { offsetInCU: 0xCE2, offset: 0x1C1CA, size: 0x8, addend: 0x0, symName: _getValueFor, symObjAddr: 0xAB0, symBinAddr: 0x108B0, symSize: 0x71 }
+...
