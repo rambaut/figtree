@@ -29,10 +29,10 @@
 
     Required extra property:
       jdk.bundle.dir     Absolute path to the JDK .jdk directory to embed.
-                         Install the Azul Zulu 23 universal binary cask with:
-                           brew install --cask zulu@21
-                         This installs a universal binary (aarch64 + x86_64)
-                         to /Library/Java/JavaVirtualMachines/zulu-21.jdk
+                         Install the Azul Zulu 21 universal binary via the
+                         Homebrew cask named zulu@21. This provides a universal
+                         binary (aarch64 + x86_64) installed at
+                         /Library/Java/JavaVirtualMachines/zulu-21.jdk
                          so a single DMG runs natively on both Apple Silicon
                          and Intel Macs.
 
