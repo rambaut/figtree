@@ -1,0 +1,311 @@
+<!--
+  build_release.xml
+
+  ANT build file used by GitHub Actions to package FigTree releases for
+  macOS. It is intentionally separate from build.xml so that CI packaging
+  concerns (pre-built JARs, hardened-runtime signing, notarisation) do not
+  pollute the local development build.
+
+  Usage (run on a macOS runner or locally after `ant -f build.xml dist`):
+
+    ant -f build_release.xml package-mac \
+        -Dversion=1.5.0
+
+    ant -f build_release.xml package-mac-bundled-jvm \
+        -Dversion=1.5.0 \
+        -Djdk.bundle.dir=/Library/Java/JavaVirtualMachines/zulu-23.jdk
+
+  Required property (must be supplied via -D or rely on default):
+    version              e.g. 1.5.0
+
+  Optional properties (all have sensible defaults):
+    extra_release_tag    e.g. -beta1   (default: empty)
+    dist.dir             directory containing pre-built figtree.jar
+                         (default: dist)
+
+  package-mac-bundled-jvm (depends on package-mac):
+    Embeds a JDK inside the .app bundle so the app is self-contained and
+    runs without requiring a system-installed Java.
+
+    Required extra property:
+      jdk.bundle.dir     Absolute path to the JDK .jdk directory to embed.
+                         Install the Azul Zulu 23 universal binary cask with:
+                           brew install -cask zulu@23
+                         This installs a universal binary (aarch64 + x86_64)
+                         to /Library/Java/JavaVirtualMachines/zulu-23.jdk
+                         so a single DMG runs natively on both Apple Silicon
+                         and Intel Macs.
+
+  Signing, DMG creation, notarisation and stapling are all handled by the
+  GitHub Actions workflow (.github/workflows/release.yml) so that this
+  target can be run locally without any Apple certificates.
+-->
+<project basedir="." default="package-all" name="FigTree-Release">
+
+    <!-- ============================================================
+         Version / release properties  (override with -D on CLI)
+         ============================================================ -->
+    <property name="version"           value="1.5.0"/>
+    <property name="version_number"    value="${version}"/>
+    <property name="extra_release_tag" value=""/>
+    <property name="jvm_version"       value="11.0"/>
+    <property name="copyright"         value="Copyright 2006-2026"/>
+
+    <!-- Pre-built JAR location -->
+    <property name="dist.dir"          value="dist"/>
+
+    <!-- ============================================================
+         Directory layout
+         ============================================================ -->
+    <property name="release_dir"     value="release"/>
+    <property name="common_dir"      value="${release_dir}/common"/>
+    <property name="Mac_dir"         value="${release_dir}/Mac"/>
+    <property name="packaging_tools" value="packaging_tools"/>
+
+    <!-- Package / app name -->
+    <property name="FigTree_name"         value="FigTree"/>
+    <property name="FigTree_package_name" value="FigTree"/>
+
+    <!-- Platform package staging directories -->
+    <property name="Mac_package_dir"
+              value="${Mac_dir}/${FigTree_package_name} v${version}"/>
+    <property name="Windows_dir"          value="${release_dir}/Windows"/>
+    <property name="Linux_dir"            value="${release_dir}/Linux"/>
+    <property name="Windows_package_dir"
+              value="${Windows_dir}/${FigTree_package_name} v${version}"/>
+    <property name="Linux_package_dir"
+              value="${Linux_dir}/${FigTree_name}_v${version}"/>
+
+
+    <!-- ==============================================================
+         package-mac
+         Produces:  release/Mac/FigTree v<version>/  — staging directory
+                    containing the unsigned FigTree.app bundle.
+
+         Runs on:   macOS runner only (requires jarbundler).
+
+         Signing, DMG creation, notarisation and stapling are all handled
+         by the GitHub Actions workflow so that this target can be run
+         locally without any Apple certificates.
+         ============================================================== -->
+    <target name="package-mac" description="Create Mac .app bundle (unsigned) in staging directory">
+        <delete dir="${Mac_package_dir}"/>
+        <mkdir  dir="${Mac_package_dir}"/>
+
+        <!-- Copy the pre-built fat JAR into the staging lib directory -->
+        <copy file="${dist.dir}/figtree.jar" todir="${Mac_package_dir}/lib"/>
+
+        <!-- Common files: README and example trees -->
+        <copy file="${common_dir}/README.txt" todir="${Mac_package_dir}"/>
+        <copy todir="${Mac_package_dir}/examples">
+            <fileset dir="examples"/>
+        </copy>
+
+        <taskdef name="jarbundler"
+                 classname="com.ultramixer.jarbundler.JarBundler"
+                 classpath="${packaging_tools}/mac/jarbundler-core-3.3.0.jar"/>
+
+        <!-- ── FigTree.app ──────────────────────────────────────── -->
+        <jarbundler dir="${Mac_package_dir}"
+                    name="${FigTree_name} v${version}"
+                    mainclass="figtree.application.FigTreeApplication"
+                    stubfile="${packaging_tools}/mac/universalJavaApplicationStub"
+                    useJavaXKey="true"
+                    icon="${Mac_dir}/icons/FigTree.icns"
+                    jvmversion="${jvm_version}"
+                    vmoptions="-Xmx4096M"
+                    highresolutioncapable="true"
+                    version="${version}"
+                    copyright="${FigTree_name} v${version}, ${copyright}, Andrew Rambaut"
+                    bundleid="uk.ac.ed.bio.figtree">
+            <documenttype name="FigTree tree document"
+                          extensions="tree"
+                          iconFile="${Mac_dir}/icons/FigTreeDocIcon.icns"
+                          role="Editor"/>
+            <documenttype name="FigTree tree document"
+                          extensions="tre"
+                          iconFile="${Mac_dir}/icons/FigTreeDocIcon.icns"
+                          role="Editor"/>
+            <documenttype name="FigTree NEXUS tree document"
+                          extensions="nex nexus"
+                          iconFile="${Mac_dir}/icons/FigTreeDocIcon.icns"
+                          role="Editor"/>
+            <jarfileset dir="${Mac_package_dir}/lib">
+                <include name="**/figtree.jar"/>
+            </jarfileset>
+            <javaproperty name="apple.laf.useScreenMenuBar"  value="true"/>
+            <javaproperty name="apple.awt.application.name" value="${FigTree_name}"/>
+        </jarbundler>
+
+        <echo message="Mac bundle created in: ${Mac_package_dir}"/>
+        <echo message="Next (CI): codesign .app, hdiutil create DMG, codesign DMG, notarytool, stapler."/>
+    </target>
+
+
+    <!-- ==============================================================
+         embed-jvm macrodef
+         Copies an external JDK into the .app bundle's PlugIns directory
+         and writes the JVMRuntime key into Info.plist.
+
+         universalJavaApplicationStub checks for JVMRuntime in the JavaX
+         dict of Info.plist; when present it uses the bundled JDK instead
+         of searching the system.
+
+         cp -rp is used instead of ANT <copy> so that symlinks and
+         execute bits inside the JDK tree are preserved exactly.
+         ============================================================== -->
+    <macrodef name="embed-jvm">
+        <attribute name="appdir" description="Path to the .app bundle"/>
+        <sequential>
+            <mkdir dir="@{appdir}/Contents/PlugIns"/>
+
+            <!-- Preserve symlinks and execute bits (required for a valid JDK) -->
+            <exec executable="cp" failonerror="true">
+                <arg value="-rp"/>
+                <arg value="${jdk.bundle.dir}"/>
+                <arg value="@{appdir}/Contents/PlugIns/"/>
+            </exec>
+
+            <!-- Point universalJavaApplicationStub at the bundled JVM -->
+            <exec executable="/usr/libexec/PlistBuddy" failonerror="true">
+                <arg value="-c"/>
+                <arg value="Add :JavaX:JVMRuntime string ${jdk.plugin.name}"/>
+                <arg value="@{appdir}/Contents/Info.plist"/>
+            </exec>
+        </sequential>
+    </macrodef>
+
+
+    <!-- ==============================================================
+         package-mac-bundled-jvm
+         Produces:  release/Mac/FigTree v<version>/  — same staging dir
+                    as package-mac but with a JDK embedded in the .app.
+
+         Requires:
+           -Djdk.bundle.dir=/path/to/zulu-23.jdk
+
+         The Azul Zulu 23 cask installs a universal binary (aarch64 +
+         x86_64) so one DMG runs natively on both Apple Silicon and
+         Intel Macs.
+
+         Note for CI signing:
+           Apple requires each Mach-O binary inside the PlugIns JDK to be
+           individually signed before the outer .app is submitted for
+           notarisation. Use "codesign -deep -force" which covers the
+           PlugIns directory recursively.
+         ============================================================== -->
+    <target name="package-mac-bundled-jvm" depends="package-mac"
+            description="Create Mac .app bundle with embedded Zulu 23 universal JDK">
+
+        <fail unless="jdk.bundle.dir"
+              message="Supply the JDK to embed via -Djdk.bundle.dir=/path/to/zulu-23.jdk"/>
+
+        <!-- Derive the PlugIns subfolder name from the last path component -->
+        <basename property="jdk.plugin.name" file="${jdk.bundle.dir}"/>
+
+        <echo message="Embedding JDK '${jdk.plugin.name}' into FigTree.app..."/>
+
+        <embed-jvm appdir="${Mac_package_dir}/${FigTree_name} v${version}.app"/>
+
+        <echo message="JDK '${jdk.plugin.name}' embedded into FigTree.app."/>
+        <echo message="Next (CI): codesign --deep --force .app (PlugIns binaries are covered),"/>
+        <echo message="           hdiutil create DMG, codesign DMG, notarytool, stapler."/>
+    </target>
+
+
+    <!-- ==============================================================
+         package-windows
+         Produces:  release/FigTree v<version><tag>.zip
+         Runs on:   macOS runner (the repo ships the macOS launch4j binaries,
+                    which cross-compile Windows PE executables on macOS).
+         ============================================================== -->
+    <target name="package-windows" description="Package Windows release (cross-compiled on macOS)">
+        <delete dir="${Windows_package_dir}"/>
+        <mkdir  dir="${Windows_package_dir}"/>
+
+        <!-- launch4j is bundled with macOS binaries in packaging_tools/windows/launch4j -->
+        <property name="launch4j.dir" location="${packaging_tools}/windows/launch4j"/>
+        <taskdef name="launch4j"
+                 classname="net.sf.launch4j.ant.Launch4jTask"
+                 classpath="${launch4j.dir}/launch4j.jar${path.separator}${launch4j.dir}/lib/xstream.jar"/>
+
+        <copy file="${dist.dir}/figtree.jar" todir="${Windows_package_dir}/lib"/>
+
+        <copy file="${common_dir}/README.txt" todir="${Windows_package_dir}"/>
+        <copy todir="${Windows_package_dir}/examples">
+            <fileset dir="examples"/>
+        </copy>
+
+        <!-- ── FigTree.exe ──────────────────────────────────────── -->
+        <launch4j configFile="${Windows_dir}/FigTree_launch4j.xml"
+                  jar="${dist.dir}/figtree.jar"
+                  outfile="${Windows_package_dir}/${FigTree_name} v${version}.exe"
+                  fileVersion="${version_number}.0"
+                  txtFileVersion="${version}"
+                  productVersion="${version_number}.0"
+                  txtProductVersion="${version}"/>
+
+        <zip destfile="${release_dir}/${FigTree_name} v${version}${extra_release_tag}.zip">
+            <zipfileset dir="${Windows_package_dir}"
+                        prefix="${FigTree_name} v${version}"/>
+        </zip>
+
+        <echo message="Windows package: ${release_dir}/${FigTree_name} v${version}${extra_release_tag}.zip"/>
+    </target>
+
+
+    <!-- ==============================================================
+         package-linux
+         Produces:  release/FigTree_v<version><tag>.tgz
+         Runs on:   macOS or Linux runner
+         Uses GNU tar format (via ANT tar task) for Linux compatibility.
+         ============================================================== -->
+    <target name="package-linux" description="Package Linux/Unix release">
+        <delete dir="${Linux_package_dir}"/>
+        <mkdir  dir="${Linux_package_dir}"/>
+
+        <copy todir="${Linux_package_dir}/bin">
+            <fileset dir="${Linux_dir}/scripts"/>
+        </copy>
+        <!-- Preserve executable bits on the shell scripts -->
+        <chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**"/>
+
+        <copy file="${Linux_dir}/icons/figtree.png" todir="${Linux_package_dir}/images"/>
+
+        <copy file="${dist.dir}/figtree.jar" todir="${Linux_package_dir}/lib"/>
+
+        <copy file="${common_dir}/README.txt" todir="${Linux_package_dir}"/>
+        <copy todir="${Linux_package_dir}/examples">
+            <fileset dir="examples"/>
+        </copy>
+
+        <!--
+            ANT's built-in tar task is Java-based and writes a POSIX-compatible
+            archive that GNU tar (Linux) reads correctly. The filemode attribute
+            on the bin tarfileset preserves executable permissions for scripts.
+        -->
+        <tar destfile="${release_dir}/${FigTree_name}_v${version}${extra_release_tag}.tgz"
+             compression="gzip"
+             longfile="gnu">
+            <tarfileset dir="${Linux_package_dir}"
+                        prefix="${FigTree_name}_v${version}"
+                        filemode="755">
+                <include name="bin/**"/>
+            </tarfileset>
+            <tarfileset dir="${Linux_package_dir}"
+                        prefix="${FigTree_name}_v${version}">
+                <exclude name="bin/**"/>
+                <include name="**/**"/>
+            </tarfileset>
+        </tar>
+
+        <echo message="Linux/Unix package: ${release_dir}/${FigTree_name}_v${version}${extra_release_tag}.tgz"/>
+    </target>
+
+
+    <!-- ── Convenience target: build all three packages ────────── -->
+    <target name="package-all"
+            depends="package-linux, package-windows, package-mac"
+            description="Build all three platform packages (macOS runner only)"/>
+
+</project>

@@ -18,16 +18,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-/**
- * TracerApp.java
- *
- * Title:			Tracer
- * Description:		An application for analysing MCMC trace files.
- * @author			Andrew Rambaut
- * @author			Alexei Drummond
- * @version			$Id$
- */
-
 package figtree.application;
 
 import com.itextpdf.text.DocumentException;
@@ -64,8 +54,7 @@ import java.util.List;
  */
 public class FigTreeApplication extends MultiDocApplication {
 
-    public static final String VERSION = "1.5.0_pre";
-    public static final String DATES = "2006-2025";
+
 
     public static FigTreeApplication application;
 
@@ -198,7 +187,7 @@ public class FigTreeApplication extends MultiDocApplication {
 
     public static void printTitle() {
         System.out.println();
-        centreLine("FigTree v" + VERSION + ", " + DATES, 60);
+        centreLine("FigTree " + FigTreeVersion.getVersionString() + ", " + FigTreeVersion.DATES, 60);
         centreLine("Tree Figure Drawing Tool", 60);
         centreLine("Andrew Rambaut", 60);
         System.out.println();
@@ -385,11 +374,11 @@ public class FigTreeApplication extends MultiDocApplication {
                 "<div style=\"font-family:'Helvetica Neue', Helvetica, Arial, 'Lucida Grande',sans-serif\">" +
                 "<p style=\"font-weight: 100; font-size: 36px\">FigTree</p>" +
                 "<p style=\"font-weight: 200; font-size: 14px\">Tree Figure Drawing Tool</p>" +
-                "<p style=\"font-weight: 300; font-size: 12px\">Version " + VERSION + "</p>" +
+                "<p style=\"font-weight: 300; font-size: 12px\">Version " + FigTreeVersion.getVersionString() + "</p>" +
                 "</div></html>";
         String aboutString = "<html>" +
                 "<div style=\"font-family:'Helvetica Neue', Helvetica, Arial, 'Lucida Grande',sans-serif\">" +
-                "<center>"+ DATES + ", Andrew Rambaut<br>" +
+                "<center>"+ FigTreeVersion.DATES + ", Andrew Rambaut<br>" +
                 "Institute of Evolutionary Biology, University of Edinburgh.<br>" +
                 "<a href=\"http://tree.bio.ed.ac.uk/\">http://tree.bio.ed.ac.uk/</a><br><br>" +
                 "Source code available from:<br>" +
@@ -407,7 +396,7 @@ public class FigTreeApplication extends MultiDocApplication {
 
         application.setDocumentFrameFactory(new DocumentFrameFactory() {
             public DocumentFrame createDocumentFrame(Application app, MenuBarFactory menuBarFactory) {
-                return new FigTreeFrame(nameString + " v" + VERSION, fastMode);
+                return new FigTreeFrame(nameString + " " + FigTreeVersion.getVersionString(), fastMode);
             }
         });
 

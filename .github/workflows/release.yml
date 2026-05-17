@@ -1,0 +1,407 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# FigTree — Release workflow
+#
+# Triggered by pushing a version tag (e.g. v1.5.0 or v1.5.0-beta1).
+#
+# Jobs
+# ────
+#  build-jars        ubuntu-latest   Compile Java sources, upload figtree.jar
+#                                    as a reusable artifact.
+#
+#  package           macos-latest    Download JAR, then produce all three
+#                                    platform packages in one runner:
+#                                      • Mac   – .app bundle → two signed DMGs
+#                                              → notarised + stapled
+#                                              (no JVM / Zulu 23 universal JVM)
+#                                      • Windows – .exe wrapper (cross-compiled
+#                                        with the bundled macOS launch4j) → ZIP
+#                                      • Linux   – shell script + JAR → GNU-tar TGZ
+#
+#  release           ubuntu-latest   Create a (draft) GitHub Release and attach
+#                                    all platform archives.
+#
+# Required GitHub repository secrets
+# ────────────────────────────────────
+#  MACOS_APP_CERT                Base64-encoded Developer ID Application .p12
+#                                  openssl pkcs12 -export ... | base64 | pbcopy
+#  MACOS_APP_CERT_PASSWORD       Password used when exporting the .p12
+#  KEYCHAIN_PASSWORD             Any random string; used for the temporary
+#                                  CI keychain (never leaves the runner)
+#  APPLE_NOTARIZE_APPLE_ID       Apple ID email address (e.g. user@example.com)
+#  APPLE_NOTARIZE_TEAM_ID        10-character Apple Team ID (e.g. 9E4WXAQ6SE)
+#  APPLE_NOTARIZE_PASSWORD       App-specific password from appleid.apple.com
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Only one release pipeline runs at a time; a newer tag cancels the old one.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # 1. Compile Java sources and upload the JAR as an artifact.
+  #    Using the cheapest runner for the CPU-heavy compilation step.
+  # ───────────────────────────────────────────────────────────────────────────
+  build-jars:
+    name: Build JAR
+    runs-on: ubuntu-latest
+
+    outputs:
+      version:        ${{ steps.parse-tag.outputs.version }}
+      version_number: ${{ steps.parse-tag.outputs.version_number }}
+      extra_tag:      ${{ steps.parse-tag.outputs.extra_tag }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Java 11 is used for compilation; source/target compatibility is set
+      # to 11 inside build.xml.
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      # Parse the tag into its component parts:
+      #   v1.5.0-beta1  →  version=1.5.0  extra_tag=-beta1
+      #   v1.5.0        →  version=1.5.0  extra_tag=
+      - name: Parse version from tag
+        id: parse-tag
+        run: |
+          TAG="${GITHUB_REF#refs/tags/v}"
+          VERSION="${TAG%%-*}"          # everything before the first hyphen
+          if [[ "$TAG" == *"-"* ]]; then
+            EXTRA_TAG="-${TAG#*-}"     # everything after the first hyphen
+          else
+            EXTRA_TAG=""
+          fi
+          echo "version=$VERSION"        >> "$GITHUB_OUTPUT"
+          echo "version_number=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "extra_tag=$EXTRA_TAG"    >> "$GITHUB_OUTPUT"
+          echo "Parsed: version=$VERSION  extra_tag=$EXTRA_TAG"
+
+      - name: Build JAR (ant dist)
+        run: |
+          ant -f build.xml dist \
+            -Dversion="${{ steps.parse-tag.outputs.version }}" \
+            -Dversion_number="${{ steps.parse-tag.outputs.version_number }}"
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: figtree-jar
+          path: dist/figtree.jar
+          retention-days: 1
+
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # 2. Build both Mac packages on a macOS runner.
+  #
+  #    Two DMGs are produced:
+  #      FigTree v<ver>-no-jvm.dmg    — no bundled JVM (requires system Java)
+  #      FigTree v<ver>.dmg           — Zulu 23 universal JDK embedded
+  #                                     (self-contained; no system Java needed;
+  #                                      runs natively on Apple Silicon + Intel)
+  #
+  #    The same staging directory is reused between the two:
+  #      1. Create .app bundle (no JVM)
+  #      2. Sign it  →  create + sign no-JVM DMG
+  #      3. Embed Zulu 23 JVM in-place (invalidates signatures)
+  #      4. Re-sign   →  create + sign bundled-JVM DMG
+  #      5. Notarise and staple both DMGs
+  # ───────────────────────────────────────────────────────────────────────────
+  package:
+    name: Package (Mac · Windows · Linux)
+    needs: build-jars
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 11 (ANT runtime)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      # Restore the JAR built in job 1
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: figtree-jar
+          path: dist/
+
+      # ── Convenience variables ──────────────────────────────────
+      - name: Set version env vars
+        run: |
+          echo "VERSION=${{ needs.build-jars.outputs.version }}"             >> "$GITHUB_ENV"
+          echo "VERSION_NUMBER=${{ needs.build-jars.outputs.version_number }}" >> "$GITHUB_ENV"
+          echo "EXTRA_TAG=${{ needs.build-jars.outputs.extra_tag }}"         >> "$GITHUB_ENV"
+
+      # ── launch4j native helpers must be executable ─────────────
+      - name: Make launch4j binaries executable
+        run: chmod +x packaging_tools/windows/launch4j/bin/ld packaging_tools/windows/launch4j/bin/windres
+
+      # ── Windows packaging ──────────────────────────────────────
+      - name: Package Windows (.exe + ZIP)
+        run: |
+          ant -f build_release.xml package-windows \
+            -Dversion="$VERSION" \
+            -Dversion_number="$VERSION_NUMBER" \
+            -Dextra_release_tag="$EXTRA_TAG" \
+            -Ddist.dir=dist
+
+      # ── Linux packaging ────────────────────────────────────────
+      - name: Package Linux (TGZ)
+        run: |
+          ant -f build_release.xml package-linux \
+            -Dversion="$VERSION" \
+            -Dversion_number="$VERSION_NUMBER" \
+            -Dextra_release_tag="$EXTRA_TAG" \
+            -Ddist.dir=dist
+
+      # ── Install Zulu 23 Universal JDK for embedding ───────────
+      #
+      # Azul Zulu's Homebrew cask installs a macOS universal binary
+      # (fat binary containing both aarch64 and x86_64 slices).
+      # macOS loads only the native slice at runtime, so the bundled JDK
+      # is natively fast on both Apple Silicon and Intel with no Rosetta
+      # overhead — and a single DMG covers both architectures.
+      - name: Install Zulu 23 Universal JDK for bundling
+        run: |
+          brew install --cask zulu@23
+          echo "JDK_BUNDLE_DIR=/Library/Java/JavaVirtualMachines/zulu-23.jdk" >> "$GITHUB_ENV"
+
+      # ── Mac code-signing setup ─────────────────────────────────
+      #
+      # We import the certificate into a short-lived keychain that only
+      # exists for the duration of this job. All secrets stay in memory;
+      # the decoded .p12 file is deleted immediately after import.
+      - name: Create signing keychain
+        env:
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          KEYCHAIN_PATH="$RUNNER_TEMP/figtree-signing.keychain-db"
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security default-keychain -s "$KEYCHAIN_PATH"
+          security unlock-keychain  -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          # Keep unlocked for up to 6 hours (notarisation wait can be slow)
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+
+      - name: Import Developer ID Application certificate
+        env:
+          CERT_B64:  ${{ secrets.MACOS_APP_CERT }}
+          CERT_PASS: ${{ secrets.MACOS_APP_CERT_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          printf '%s' "$CERT_B64" | base64 --decode > "$RUNNER_TEMP/app_cert.p12"
+          security import "$RUNNER_TEMP/app_cert.p12" \
+            -k "$KEYCHAIN_PATH" \
+            -P "$CERT_PASS" \
+            -T /usr/bin/codesign
+          rm -f "$RUNNER_TEMP/app_cert.p12"
+          security set-key-partition-list \
+            -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+      # Derive the full identity string from the imported cert so we do not
+      # have to hard-code it in the workflow or in a secret.
+      - name: Resolve signing identity
+        run: |
+          APP_SIGNER=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" \
+            | grep "Developer ID Application" \
+            | head -1 \
+            | awk '{print $2}')
+          echo "APP_SIGNER=$APP_SIGNER" >> "$GITHUB_ENV"
+          echo "Resolved Application signer: $APP_SIGNER"
+
+      # ── Step 1: create .app bundle without JVM ─────────────────
+      - name: Create Mac .app bundle (unsigned, no JVM)
+        run: |
+          ant -f build_release.xml package-mac \
+            -Dversion="$VERSION" \
+            -Dversion_number="$VERSION_NUMBER" \
+            -Dextra_release_tag="$EXTRA_TAG" \
+            -Ddist.dir=dist
+
+      # ── Step 2a: sign the no-JVM app ──────────────────────────
+      - name: Sign .app bundle (no JVM)
+        run: |
+          codesign \
+            --deep --force \
+            --options runtime \
+            --entitlements JPackage/figtree/FigTree.entitlements \
+            --sign "$APP_SIGNER" \
+            --verbose \
+            "release/Mac/FigTree v${VERSION}/FigTree v${VERSION}.app"
+
+      # ── Step 2b: create the no-JVM DMG ────────────────────────
+      - name: Create DMG (no JVM)
+        run: |
+          /usr/bin/hdiutil create -ov \
+            -srcfolder "release/Mac/FigTree v${VERSION}" \
+            -volname "FigTree v${VERSION} (no JVM)" \
+            "release/FigTree v${VERSION}${EXTRA_TAG}-no-jvm.dmg"
+
+      # ── Step 2c: sign the no-JVM DMG ──────────────────────────
+      - name: Sign DMG (no JVM)
+        run: |
+          codesign \
+            --sign "$APP_SIGNER" \
+            --verbose \
+            "release/FigTree v${VERSION}${EXTRA_TAG}-no-jvm.dmg"
+
+      # ── Step 3: embed Zulu 23 universal JVM into the .app ─────
+      #
+      # Embedding new files into Contents/PlugIns/ invalidates the
+      # existing codesign signature; the app is re-signed in step 4.
+      - name: Embed Zulu 23 JVM into .app bundle
+        run: |
+          APP_DIR="release/Mac/FigTree v${VERSION}/FigTree v${VERSION}.app"
+          JDK_NAME=$(basename "$JDK_BUNDLE_DIR")
+          mkdir -p "${APP_DIR}/Contents/PlugIns"
+          cp -rp "$JDK_BUNDLE_DIR" "${APP_DIR}/Contents/PlugIns/"
+          /usr/libexec/PlistBuddy \
+            -c "Add :JavaX:JVMRuntime string ${JDK_NAME}" \
+            "${APP_DIR}/Contents/Info.plist"
+
+      # ── Step 4a: re-sign with the bundled JDK now included ─────
+      #
+      # --deep covers the Mach-O binaries inside Contents/PlugIns/
+      # (the JDK's libjvm.dylib, libnet.dylib etc.) as required by
+      # Apple's notarisation service.
+      - name: Sign .app bundle (bundled Zulu 23 JVM)
+        run: |
+          codesign \
+            --deep --force \
+            --options runtime \
+            --entitlements JPackage/figtree/FigTree.entitlements \
+            --sign "$APP_SIGNER" \
+            --verbose \
+            "release/Mac/FigTree v${VERSION}/FigTree v${VERSION}.app"
+
+      # ── Step 4b: create the bundled-JVM DMG ───────────────────
+      - name: Create DMG (bundled Zulu 23 JVM)
+        run: |
+          /usr/bin/hdiutil create -ov \
+            -srcfolder "release/Mac/FigTree v${VERSION}" \
+            -volname "FigTree v${VERSION}" \
+            "release/FigTree v${VERSION}${EXTRA_TAG}.dmg"
+
+      # ── Step 4c: sign the bundled-JVM DMG ─────────────────────
+      - name: Sign DMG (bundled Zulu 23 JVM)
+        run: |
+          codesign \
+            --sign "$APP_SIGNER" \
+            --verbose \
+            "release/FigTree v${VERSION}${EXTRA_TAG}.dmg"
+
+      # ── Notarisation ───────────────────────────────────────────
+      #
+      # Both DMGs are submitted sequentially. xcrun notarytool --wait
+      # blocks until Apple's service responds (typically 2-10 minutes).
+      - name: Notarise DMGs
+        env:
+          APPLE_ID:      ${{ secrets.APPLE_NOTARIZE_APPLE_ID }}
+          TEAM_ID:       ${{ secrets.APPLE_NOTARIZE_TEAM_ID }}
+          NOTARIZE_PASS: ${{ secrets.APPLE_NOTARIZE_PASSWORD }}
+        run: |
+          xcrun notarytool submit "release/FigTree v${VERSION}${EXTRA_TAG}-no-jvm.dmg" \
+            --apple-id "$APPLE_ID" --team-id "$TEAM_ID" --password "$NOTARIZE_PASS" \
+            --wait --output-format plist
+          xcrun notarytool submit "release/FigTree v${VERSION}${EXTRA_TAG}.dmg" \
+            --apple-id "$APPLE_ID" --team-id "$TEAM_ID" --password "$NOTARIZE_PASS" \
+            --wait --output-format plist
+
+      - name: Staple notarisation tickets
+        run: |
+          xcrun stapler staple   "release/FigTree v${VERSION}${EXTRA_TAG}-no-jvm.dmg"
+          xcrun stapler validate "release/FigTree v${VERSION}${EXTRA_TAG}-no-jvm.dmg"
+          xcrun stapler staple   "release/FigTree v${VERSION}${EXTRA_TAG}.dmg"
+          xcrun stapler validate "release/FigTree v${VERSION}${EXTRA_TAG}.dmg"
+
+      # ── Clean up keychain ──────────────────────────────────────
+      - name: Delete signing keychain
+        if: always()
+        run: |
+          # Restore the login keychain as default before deleting ours;
+          # macOS runners reject deletion of the active default keychain.
+          security default-keychain -s ~/Library/Keychains/login.keychain-db
+          security delete-keychain "$KEYCHAIN_PATH" || true
+
+      # ── Upload artifacts ───────────────────────────────────────
+      - name: Upload Mac DMGs
+        uses: actions/upload-artifact@v4
+        with:
+          name: figtree-mac
+          path: "release/FigTree v*.dmg"
+
+      - name: Upload Windows ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: figtree-windows
+          path: "release/FigTree v*.zip"
+
+      - name: Upload Linux TGZ
+        uses: actions/upload-artifact@v4
+        with:
+          name: figtree-linux
+          path: "release/FigTree_v*.tgz"
+
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # 3. Create a draft GitHub Release and attach the two DMGs.
+  #
+  #    The release is created as a draft so you can review the artefacts and
+  #    edit the release notes before publishing. Pre-release tags (those
+  #    containing a hyphen, e.g. v1.5.0-beta1) are flagged as pre-releases.
+  # ───────────────────────────────────────────────────────────────────────────
+  release:
+    name: Create GitHub Release
+    needs: [build-jars, package]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download Mac DMG artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: figtree-mac
+          path: release-files/
+
+      - name: Download Windows ZIP artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: figtree-windows
+          path: release-files/
+
+      - name: Download Linux TGZ artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: figtree-linux
+          path: release-files/
+
+      - name: List release files
+        run: ls -lh release-files/
+
+      - name: Create GitHub Release (draft)
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "FigTree v${{ needs.build-jars.outputs.version }}${{ needs.build-jars.outputs.extra_tag }}"
+          draft: true
+          prerelease: ${{ needs.build-jars.outputs.extra_tag != '' }}
+          generate_release_notes: true
+          files: |
+            release-files/*.dmg
+            release-files/*.zip
+            release-files/*.tgz
