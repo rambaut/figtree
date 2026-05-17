@@ -113,8 +113,8 @@ jobs:
   #      1. jpackage --type app-image  →  FigTree.app  (unsigned)
   #      2. codesign --deep with hardened-runtime entitlements
   #      3. hdiutil create  →  FigTree v<ver>.dmg
-  #      4. codesign DMG
-  #      5. notarytool + stapler
+  #      4. notarytool submit --wait  (blocks until Apple responds)
+  #      5. stapler staple + validate
   # ───────────────────────────────────────────────────────────────────────────
   package-mac:
     name: Package (Mac)
@@ -221,32 +221,52 @@ jobs:
             -volname "FigTree v${VERSION}" \
             "release/FigTree v${VERSION}${EXTRA_TAG}.dmg"
 
-      # ── Step 4: sign the DMG ───────────────────────────────────
-      - name: Sign DMG
-        run: |
-          codesign \
-            --sign "$APP_SIGNER" \
-            --verbose \
-            "release/FigTree v${VERSION}${EXTRA_TAG}.dmg"
-
-      # ── Notarisation ───────────────────────────────────────────
+      # ── Step 4: notarise and staple ────────────────────────────
       #
-      # xcrun notarytool --wait blocks until Apple's service responds
-      # (typically 2-10 minutes).
+      # --output-format plist is intentionally NOT used here: some Xcode
+      # toolchain versions suppress the non-zero exit code when a submission
+      # is "Invalid" while that flag is active, letting the workflow continue
+      # to the stapler step against a ticket that doesn't exist in CloudKit
+      # (Error 65 "Record not found").  Plain-text output is easier to read
+      # in CI logs and reliably exits non-zero on rejection.
+      #
+      # The submission ID is captured so the full notarisation log can be
+      # fetched automatically if Apple rejects the submission.
       - name: Notarise DMG
         env:
           APPLE_ID:      ${{ secrets.APPLE_NOTARIZE_APPLE_ID }}
           TEAM_ID:       ${{ secrets.APPLE_NOTARIZE_TEAM_ID }}
           NOTARIZE_PASS: ${{ secrets.APPLE_NOTARIZE_PASSWORD }}
         run: |
-          xcrun notarytool submit "release/FigTree v${VERSION}${EXTRA_TAG}.dmg" \
-            --apple-id "$APPLE_ID" --team-id "$TEAM_ID" --password "$NOTARIZE_PASS" \
-            --wait --output-format plist
+          DMG="release/FigTree v${VERSION}${EXTRA_TAG}.dmg"
+
+          # Submit and wait; exits non-zero if Apple rejects the submission
+          NOTARY_OUTPUT=$(xcrun notarytool submit "$DMG" \
+            --apple-id  "$APPLE_ID" \
+            --team-id   "$TEAM_ID" \
+            --password  "$NOTARIZE_PASS" \
+            --wait 2>&1)
+          echo "$NOTARY_OUTPUT"
+
+          # Extract submission UUID for log retrieval
+          SUBMISSION_ID=$(printf '%s' "$NOTARY_OUTPUT" | grep ' id:' | head -1 | awk '{print $NF}')
+
+          # Fail loudly if Apple did not accept the submission
+          if ! printf '%s' "$NOTARY_OUTPUT" | grep -q 'status: Accepted'; then
+            echo "::error::Notarisation was not accepted."
+            if [ -n "$SUBMISSION_ID" ]; then
+              echo "Fetching notarisation log for submission $SUBMISSION_ID:"
+              xcrun notarytool log "$SUBMISSION_ID" \
+                --apple-id "$APPLE_ID" --team-id "$TEAM_ID" --password "$NOTARIZE_PASS" || true
+            fi
+            exit 1
+          fi
 
       - name: Staple notarisation ticket
         run: |
-          xcrun stapler staple   "release/FigTree v${VERSION}${EXTRA_TAG}.dmg"
-          xcrun stapler validate "release/FigTree v${VERSION}${EXTRA_TAG}.dmg"
+          DMG="release/FigTree v${VERSION}${EXTRA_TAG}.dmg"
+          xcrun stapler staple   "$DMG"
+          xcrun stapler validate "$DMG"
 
       # ── Clean up keychain ──────────────────────────────────────
       - name: Delete signing keychain
