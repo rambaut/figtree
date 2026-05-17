@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  *   v1.5.0          → VERSION="1.5.0"  EXTRA_TAG=""
  *   v1.5.0-beta1    → VERSION="1.5.0"  EXTRA_TAG="-beta1"
  *
- * Commits made after a tag are identified by the git-describe suffix
+ * Commits made af  ter a tag are identified by the git-describe suffix
  * (-N-gabcdef) which is stripped; EXTRA_TAG remains empty for those.
  *
  * @author Andrew Rambaut

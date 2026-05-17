@@ -2,18 +2,17 @@
   build_release.xml
 
   ANT build file used by GitHub Actions to package FigTree releases for
-  macOS. It is intentionally separate from build.xml so that CI packaging
-  concerns (pre-built JARs, hardened-runtime signing, notarisation) do not
-  pollute the local development build.
+  all platforms. It is intentionally separate from build.xml so that CI
+  packaging concerns (pre-built JARs, hardened-runtime signing, notarisation)
+  do not pollute the local development build.
 
   Usage (run on a macOS runner or locally after `ant -f build.xml dist`):
 
     ant -f build_release.xml package-mac \
         -Dversion=1.5.0
 
-    ant -f build_release.xml package-mac-bundled-jvm \
-        -Dversion=1.5.0 \
-        -Djdk.bundle.dir=/Library/Java/JavaVirtualMachines/zulu-21.jdk
+    ant -f build_release.xml package-linux \
+        -Dversion=1.5.0
 
   Required property (must be supplied via -D or rely on default):
     version              e.g. 1.5.0
@@ -23,18 +22,9 @@
     dist.dir             directory containing pre-built figtree.jar
                          (default: dist)
 
-  package-mac-bundled-jvm (depends on package-mac):
-    Embeds a JDK inside the .app bundle so the app is self-contained and
-    runs without requiring a system-installed Java.
-
-    Required extra property:
-      jdk.bundle.dir     Absolute path to the JDK .jdk directory to embed.
-                         Install the Azul Zulu 21 universal binary via the
-                         Homebrew cask named zulu@21. This provides a universal
-                         binary (aarch64 + x86_64) installed at
-                         /Library/Java/JavaVirtualMachines/zulu-21.jdk
-                         so a single DMG runs natively on both Apple Silicon
-                         and Intel Macs.
+  package-mac uses jpackage to produce a self-contained FigTree.app with
+  the JDK used to run jpackage bundled as the runtime. Requires JDK 14+
+  on PATH (JDK 21 recommended). No separate JVM install is needed.
 
   Signing, DMG creation, notarisation and stapling are all handled by the
   GitHub Actions workflow (.github/workflows/release.yml) so that this
@@ -48,7 +38,6 @@
     <property name="version"           value="1.5.0"/>
     <property name="version_number"    value="${version}"/>
     <property name="extra_release_tag" value=""/>
-    <property name="jvm_version"       value="11.0"/>
     <property name="copyright"         value="Copyright 2006-2026"/>
 
     <!-- Pre-built JAR location -->
@@ -79,146 +68,59 @@
 
     <!-- ==============================================================
          package-mac
-         Produces:  release/Mac/FigTree v<version>/  — staging directory
-                    containing the unsigned FigTree.app bundle.
+         Produces:  release/Mac/FigTree v<version>/FigTree.app
+                    alongside README.txt and examples/ — ready to DMG.
 
-         Runs on:   macOS runner only (requires jarbundler).
+         Runs on:   macOS runner only (jpackage cannot cross-compile).
+                    Requires JDK 14+ on PATH; JDK 21 recommended.
+
+         The JDK used to run jpackage is also bundled as the app runtime,
+         so the resulting app is self-contained — no system Java needed.
 
          Signing, DMG creation, notarisation and stapling are all handled
          by the GitHub Actions workflow so that this target can be run
          locally without any Apple certificates.
          ============================================================== -->
-    <target name="package-mac" description="Create Mac .app bundle (unsigned) in staging directory">
+    <target name="package-mac" description="Create Mac .app bundle using jpackage (unsigned, with bundled JRE)">
         <delete dir="${Mac_package_dir}"/>
         <mkdir  dir="${Mac_package_dir}"/>
 
-        <!-- Copy the pre-built fat JAR into the staging lib directory -->
-        <copy file="${dist.dir}/figtree.jar" todir="${Mac_package_dir}/lib"/>
+        <!-- jpackage writes FigTree.app into ${Mac_package_dir} -->
+        <exec executable="jpackage" failonerror="true">
+            <arg value="--type"/>
+            <arg value="app-image"/>
+            <arg value="--input"/>
+            <arg value="${dist.dir}"/>
+            <arg value="--main-jar"/>
+            <arg value="figtree.jar"/>
+            <arg value="--main-class"/>
+            <arg value="figtree.application.FigTreeApplication"/>
+            <arg value="--name"/>
+            <arg value="${FigTree_name}"/>
+            <arg value="--app-version"/>
+            <arg value="${version_number}"/>
+            <arg value="--icon"/>
+            <arg value="${Mac_dir}/icons/FigTree.icns"/>
+            <arg value="--dest"/>
+            <arg value="${Mac_package_dir}"/>
+            <arg value="--java-options"/>
+            <arg value="-Xmx4096m"/>
+            <arg value="--vendor"/>
+            <arg value="Andrew Rambaut"/>
+            <arg value="--copyright"/>
+            <arg value="${copyright} Andrew Rambaut"/>
+            <arg value="--mac-package-identifier"/>
+            <arg value="uk.ac.ed.bio.figtree"/>
+        </exec>
 
-        <!-- Common files: README and example trees -->
+        <!-- README and examples sit alongside FigTree.app in the DMG window -->
         <copy file="${common_dir}/README.txt" todir="${Mac_package_dir}"/>
         <copy todir="${Mac_package_dir}/examples">
             <fileset dir="examples"/>
         </copy>
 
-        <taskdef name="jarbundler"
-                 classname="com.ultramixer.jarbundler.JarBundler"
-                 classpath="${packaging_tools}/mac/jarbundler-core-3.3.0.jar"/>
-
-        <!-- ── FigTree.app ──────────────────────────────────────── -->
-        <jarbundler dir="${Mac_package_dir}"
-                    name="${FigTree_name} v${version}"
-                    mainclass="figtree.application.FigTreeApplication"
-                    stubfile="${packaging_tools}/mac/universalJavaApplicationStub"
-                    useJavaXKey="true"
-                    icon="${Mac_dir}/icons/FigTree.icns"
-                    jvmversion="${jvm_version}"
-                    vmoptions="-Xmx4096M"
-                    highresolutioncapable="true"
-                    version="${version}"
-                    copyright="${FigTree_name} v${version}, ${copyright}, Andrew Rambaut"
-                    bundleid="uk.ac.ed.bio.figtree">
-            <documenttype name="FigTree tree document"
-                          extensions="tree"
-                          iconFile="${Mac_dir}/icons/FigTreeDocIcon.icns"
-                          role="Editor"/>
-            <documenttype name="FigTree tree document"
-                          extensions="tre"
-                          iconFile="${Mac_dir}/icons/FigTreeDocIcon.icns"
-                          role="Editor"/>
-            <documenttype name="FigTree NEXUS tree document"
-                          extensions="nex nexus"
-                          iconFile="${Mac_dir}/icons/FigTreeDocIcon.icns"
-                          role="Editor"/>
-            <jarfileset dir="${Mac_package_dir}/lib">
-                <include name="**/figtree.jar"/>
-            </jarfileset>
-            <javaproperty name="apple.laf.useScreenMenuBar"  value="true"/>
-            <javaproperty name="apple.awt.application.name" value="${FigTree_name}"/>
-        </jarbundler>
-
-        <!-- jarbundler requires a parseable Double so we supply "11.0", but
-             universalJavaApplicationStub needs "11+" to mean "11 or higher".
-             Rewrite the JVMVersion key in Info.plist immediately after bundling. -->
-        <exec executable="/usr/libexec/PlistBuddy" failonerror="true">
-            <arg value="-c"/>
-            <arg value="Set :JavaX:JVMVersion 11+"/>
-            <arg value="${Mac_package_dir}/${FigTree_name} v${version}.app/Contents/Info.plist"/>
-        </exec>
-
-        <echo message="Mac bundle created in: ${Mac_package_dir}"/>
-        <echo message="Next (CI): codesign .app, hdiutil create DMG, codesign DMG, notarytool, stapler."/>
-    </target>
-
-
-    <!-- ==============================================================
-         embed-jvm macrodef
-         Copies an external JDK into the .app bundle's PlugIns directory
-         and writes the JVMRuntime key into Info.plist.
-
-         universalJavaApplicationStub checks for JVMRuntime in the JavaX
-         dict of Info.plist; when present it uses the bundled JDK instead
-         of searching the system.
-
-         cp -rp is used instead of ANT <copy> so that symlinks and
-         execute bits inside the JDK tree are preserved exactly.
-         ============================================================== -->
-    <macrodef name="embed-jvm">
-        <attribute name="appdir" description="Path to the .app bundle"/>
-        <sequential>
-            <mkdir dir="@{appdir}/Contents/PlugIns"/>
-
-            <!-- Preserve symlinks and execute bits (required for a valid JDK) -->
-            <exec executable="cp" failonerror="true">
-                <arg value="-rp"/>
-                <arg value="${jdk.bundle.dir}"/>
-                <arg value="@{appdir}/Contents/PlugIns/"/>
-            </exec>
-
-            <!-- Point universalJavaApplicationStub at the bundled JVM -->
-            <exec executable="/usr/libexec/PlistBuddy" failonerror="true">
-                <arg value="-c"/>
-                <arg value="Add :JavaX:JVMRuntime string ${jdk.plugin.name}"/>
-                <arg value="@{appdir}/Contents/Info.plist"/>
-            </exec>
-        </sequential>
-    </macrodef>
-
-
-    <!-- ==============================================================
-         package-mac-bundled-jvm
-         Produces:  release/Mac/FigTree v<version>/  — same staging dir
-                    as package-mac but with a JDK embedded in the .app.
-
-         Requires:
-           -Djdk.bundle.dir=/path/to/zulu-21.jdk
-
-         The Azul Zulu 21 cask installs a universal binary (aarch64 +
-         x86_64) so one DMG runs natively on both Apple Silicon and
-         Intel Macs.
-
-         Note for CI signing:
-           Apple requires each Mach-O binary inside the PlugIns JDK to be
-           individually signed before the outer .app is submitted for
-           notarisation. Use "codesign -deep -force" which covers the
-           PlugIns directory recursively.
-         ============================================================== -->
-    <target name="package-mac-bundled-jvm" depends="package-mac"
-            description="Create Mac .app bundle with embedded Zulu 21 universal JDK">
-
-        <fail unless="jdk.bundle.dir"
-              message="Supply the JDK to embed via -Djdk.bundle.dir=/path/to/zulu-21.jdk"/>
-
-        <!-- Derive the PlugIns subfolder name from the last path component -->
-        <basename property="jdk.plugin.name" file="${jdk.bundle.dir}"/>
-
-        <echo message="Embedding JDK '${jdk.plugin.name}' into FigTree.app..."/>
-
-        <embed-jvm appdir="${Mac_package_dir}/${FigTree_name} v${version}.app"/>
-
-        <echo message="JDK '${jdk.plugin.name}' embedded into FigTree.app."/>
-        <echo message="Next (CI): codesign --deep --force .app (PlugIns binaries are covered),"/>
-        <echo message="           hdiutil create DMG, codesign DMG, notarytool, stapler."/>
+        <echo message="Mac .app created in: ${Mac_package_dir}/FigTree.app"/>
+        <echo message="Next (CI): codesign .app, hdiutil create DMG, notarytool, stapler."/>
     </target>
 
 

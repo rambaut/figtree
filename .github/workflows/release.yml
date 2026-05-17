@@ -8,12 +8,12 @@
 #  build-jars        ubuntu-latest   Compile Java sources, upload figtree.jar
 #                                    as a reusable artifact.
 #
-#  package           macos-latest    Download JAR, then produce Mac and Linux
-#                                    packages:
-#                                      • Mac   – .app bundle → two signed DMGs
-#                                              → notarised + stapled
-#                                              (no JVM / Zulu 23 universal JVM)
-#                                      • Linux   – shell script + JAR → GNU-tar TGZ
+#  package-mac       macos-latest    Download JAR, run jpackage to produce a
+#                                    self-contained .app with bundled JRE
+#                                    → signed DMG → notarised + stapled
+#
+#  package-linux     ubuntu-latest   Download JAR, produce Linux package:
+#                                      • shell script + JAR → GNU-tar TGZ
 #
 #  package-windows   windows-latest  Download JAR, run jpackage to produce a
 #                                    self-contained app-image with bundled JRE
@@ -106,33 +106,30 @@ jobs:
 
 
   # ───────────────────────────────────────────────────────────────────────────
-  # 2. Build both Mac packages on a macOS runner.
+  # 2. Build Mac package on a macOS runner.
   #
-  #    Two DMGs are produced:
-  #      FigTree v<ver>-no-jvm.dmg    — no bundled JVM (requires system Java)
-  #      FigTree v<ver>.dmg           — Zulu 23 universal JDK embedded
-  #                                     (self-contained; no system Java needed;
-  #                                      runs natively on Apple Silicon + Intel)
-  #
-  #    The same staging directory is reused between the two:
-  #      1. Create .app bundle (no JVM)
-  #      2. Sign it  →  create + sign no-JVM DMG
-  #      3. Embed Zulu 23 JVM in-place (invalidates signatures)
-  #      4. Re-sign   →  create + sign bundled-JVM DMG
-  #      5. Notarise and staple both DMGs
+  #    jpackage creates a self-contained FigTree.app with the JDK 21 runtime
+  #    bundled inside (no system Java required). Steps:
+  #      1. jpackage --type app-image  →  FigTree.app  (unsigned)
+  #      2. codesign --deep with hardened-runtime entitlements
+  #      3. hdiutil create  →  FigTree v<ver>.dmg
+  #      4. codesign DMG
+  #      5. notarytool + stapler
   # ───────────────────────────────────────────────────────────────────────────
-  package:
-    name: Package (Mac · Windows · Linux)
+  package-mac:
+    name: Package (Mac)
     needs: build-jars
     runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 11 (ANT runtime)
+      # JDK 21 provides both jpackage (to build the .app) and the JRE that
+      # gets bundled inside it. No separate Zulu install needed.
+      - name: Set up JDK 21 (jpackage + bundled runtime)
         uses: actions/setup-java@v4
         with:
-          java-version: '11'
+          java-version: '21'
           distribution: 'temurin'
 
       # Restore the JAR built in job 1
@@ -148,29 +145,6 @@ jobs:
           echo "VERSION=${{ needs.build-jars.outputs.version }}"             >> "$GITHUB_ENV"
           echo "VERSION_NUMBER=${{ needs.build-jars.outputs.version_number }}" >> "$GITHUB_ENV"
           echo "EXTRA_TAG=${{ needs.build-jars.outputs.extra_tag }}"         >> "$GITHUB_ENV"
-
-      # ── launch4j native helpers must be executable ─────────────
-      # ── Windows packaging ──────────────────────────────────────
-      # ── Linux packaging ────────────────────────────────────────
-      - name: Package Linux (TGZ)
-        run: |
-          ant -f build_release.xml package-linux \
-            -Dversion="$VERSION" \
-            -Dversion_number="$VERSION_NUMBER" \
-            -Dextra_release_tag="$EXTRA_TAG" \
-            -Ddist.dir=dist
-
-      # ── Install Zulu 23 Universal JDK for embedding ───────────
-      #
-      # Azul Zulu's Homebrew cask installs a macOS universal binary
-      # (fat binary containing both aarch64 and x86_64 slices).
-      # macOS loads only the native slice at runtime, so the bundled JDK
-      # is natively fast on both Apple Silicon and Intel with no Rosetta
-      # overhead — and a single DMG covers both architectures.
-      - name: Install Zulu 21 Universal JDK for bundling
-        run: |
-          brew install --cask zulu@21
-          echo "JDK_BUNDLE_DIR=/Library/Java/JavaVirtualMachines/zulu-21.jdk" >> "$GITHUB_ENV"
 
       # ── Mac code-signing setup ─────────────────────────────────
       #
@@ -216,8 +190,8 @@ jobs:
           echo "APP_SIGNER=$APP_SIGNER" >> "$GITHUB_ENV"
           echo "Resolved Application signer: $APP_SIGNER"
 
-      # ── Step 1: create .app bundle without JVM ─────────────────
-      - name: Create Mac .app bundle (unsigned, no JVM)
+      # ── Step 1: create .app with jpackage ─────────────────────
+      - name: Create Mac .app bundle (jpackage, unsigned)
         run: |
           ant -f build_release.xml package-mac \
             -Dversion="$VERSION" \
@@ -225,8 +199,11 @@ jobs:
             -Dextra_release_tag="$EXTRA_TAG" \
             -Ddist.dir=dist
 
-      # ── Step 2a: sign the no-JVM app ──────────────────────────
-      - name: Sign .app bundle (no JVM)
+      # ── Step 2: sign the .app ──────────────────────────────────
+      #
+      # --deep recursively signs all Mach-O binaries inside the bundle,
+      # including the bundled JRE's dylibs, as required by notarisation.
+      - name: Sign .app bundle
         run: |
           codesign \
             --deep --force \
@@ -234,63 +211,18 @@ jobs:
             --entitlements packaging_tools/mac/FigTree.entitlements \
             --sign "$APP_SIGNER" \
             --verbose \
-            "release/Mac/FigTree v${VERSION}/FigTree v${VERSION}.app"
+            "release/Mac/FigTree v${VERSION}/FigTree.app"
 
-      # ── Step 2b: create the no-JVM DMG ────────────────────────
-      - name: Create DMG (no JVM)
-        run: |
-          /usr/bin/hdiutil create -ov \
-            -srcfolder "release/Mac/FigTree v${VERSION}" \
-            -volname "FigTree v${VERSION} (no JVM)" \
-            "release/FigTree v${VERSION}${EXTRA_TAG}-no-jvm.dmg"
-
-      # ── Step 2c: sign the no-JVM DMG ──────────────────────────
-      - name: Sign DMG (no JVM)
-        run: |
-          codesign \
-            --sign "$APP_SIGNER" \
-            --verbose \
-            "release/FigTree v${VERSION}${EXTRA_TAG}-no-jvm.dmg"
-
-      # ── Step 3: embed Zulu 23 universal JVM into the .app ─────
-      #
-      # Embedding new files into Contents/PlugIns/ invalidates the
-      # existing codesign signature; the app is re-signed in step 4.
-      - name: Embed Zulu 23 JVM into .app bundle
-        run: |
-          APP_DIR="release/Mac/FigTree v${VERSION}/FigTree v${VERSION}.app"
-          JDK_NAME=$(basename "$JDK_BUNDLE_DIR")
-          mkdir -p "${APP_DIR}/Contents/PlugIns"
-          cp -rp "$JDK_BUNDLE_DIR" "${APP_DIR}/Contents/PlugIns/"
-          /usr/libexec/PlistBuddy \
-            -c "Add :JavaX:JVMRuntime string ${JDK_NAME}" \
-            "${APP_DIR}/Contents/Info.plist"
-
-      # ── Step 4a: re-sign with the bundled JDK now included ─────
-      #
-      # --deep covers the Mach-O binaries inside Contents/PlugIns/
-      # (the JDK's libjvm.dylib, libnet.dylib etc.) as required by
-      # Apple's notarisation service.
-      - name: Sign .app bundle (bundled Zulu 23 JVM)
-        run: |
-          codesign \
-            --deep --force \
-            --options runtime \
-            --entitlements packaging_tools/mac/FigTree.entitlements \
-            --sign "$APP_SIGNER" \
-            --verbose \
-            "release/Mac/FigTree v${VERSION}/FigTree v${VERSION}.app"
-
-      # ── Step 4b: create the bundled-JVM DMG ───────────────────
-      - name: Create DMG (bundled Zulu 23 JVM)
+      # ── Step 3: create the DMG ─────────────────────────────────
+      - name: Create DMG
         run: |
           /usr/bin/hdiutil create -ov \
             -srcfolder "release/Mac/FigTree v${VERSION}" \
             -volname "FigTree v${VERSION}" \
             "release/FigTree v${VERSION}${EXTRA_TAG}.dmg"
 
-      # ── Step 4c: sign the bundled-JVM DMG ─────────────────────
-      - name: Sign DMG (bundled Zulu 23 JVM)
+      # ── Step 4: sign the DMG ───────────────────────────────────
+      - name: Sign DMG
         run: |
           codesign \
             --sign "$APP_SIGNER" \
@@ -299,25 +231,20 @@ jobs:
 
       # ── Notarisation ───────────────────────────────────────────
       #
-      # Both DMGs are submitted sequentially. xcrun notarytool --wait
-      # blocks until Apple's service responds (typically 2-10 minutes).
-      - name: Notarise DMGs
+      # xcrun notarytool --wait blocks until Apple's service responds
+      # (typically 2-10 minutes).
+      - name: Notarise DMG
         env:
           APPLE_ID:      ${{ secrets.APPLE_NOTARIZE_APPLE_ID }}
           TEAM_ID:       ${{ secrets.APPLE_NOTARIZE_TEAM_ID }}
           NOTARIZE_PASS: ${{ secrets.APPLE_NOTARIZE_PASSWORD }}
         run: |
-          xcrun notarytool submit "release/FigTree v${VERSION}${EXTRA_TAG}-no-jvm.dmg" \
-            --apple-id "$APPLE_ID" --team-id "$TEAM_ID" --password "$NOTARIZE_PASS" \
-            --wait --output-format plist
           xcrun notarytool submit "release/FigTree v${VERSION}${EXTRA_TAG}.dmg" \
             --apple-id "$APPLE_ID" --team-id "$TEAM_ID" --password "$NOTARIZE_PASS" \
             --wait --output-format plist
 
-      - name: Staple notarisation tickets
+      - name: Staple notarisation ticket
         run: |
-          xcrun stapler staple   "release/FigTree v${VERSION}${EXTRA_TAG}-no-jvm.dmg"
-          xcrun stapler validate "release/FigTree v${VERSION}${EXTRA_TAG}-no-jvm.dmg"
           xcrun stapler staple   "release/FigTree v${VERSION}${EXTRA_TAG}.dmg"
           xcrun stapler validate "release/FigTree v${VERSION}${EXTRA_TAG}.dmg"
 
@@ -337,6 +264,45 @@ jobs:
           name: figtree-mac
           path: "release/FigTree v*.dmg"
 
+
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # 3. Build Linux package on an Ubuntu runner.
+  # ───────────────────────────────────────────────────────────────────────────
+  package-linux:
+    name: Package (Linux)
+    needs: build-jars
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 11 (ANT runtime)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: figtree-jar
+          path: dist/
+
+      - name: Set version env vars
+        run: |
+          echo "VERSION=${{ needs.build-jars.outputs.version }}"             >> "$GITHUB_ENV"
+          echo "VERSION_NUMBER=${{ needs.build-jars.outputs.version_number }}" >> "$GITHUB_ENV"
+          echo "EXTRA_TAG=${{ needs.build-jars.outputs.extra_tag }}"         >> "$GITHUB_ENV"
+
+      - name: Package Linux (TGZ)
+        run: |
+          ant -f build_release.xml package-linux \
+            -Dversion="$VERSION" \
+            -Dversion_number="$VERSION_NUMBER" \
+            -Dextra_release_tag="$EXTRA_TAG" \
+            -Ddist.dir=dist
+
       - name: Upload Linux TGZ
         uses: actions/upload-artifact@v4
         with:
@@ -345,7 +311,7 @@ jobs:
 
 
   # ───────────────────────────────────────────────────────────────────────────
-  # 3. Build self-contained Windows package on a Windows runner.
+  # 4. Build self-contained Windows package on a Windows runner.
   #
   #    jpackage only produces packages for the host platform, so Windows
   #    packaging must run on windows-latest. The JDK is bundled into the
@@ -396,7 +362,7 @@ jobs:
 
 
   # ───────────────────────────────────────────────────────────────────────────
-  # 4. Create a draft GitHub Release and attach all platform archives.
+  # 5. Create a draft GitHub Release and attach all platform archives.
   #
   #    The release is created as a draft so you can review the artefacts and
   #    edit the release notes before publishing. Pre-release tags (those
@@ -404,7 +370,7 @@ jobs:
   # ───────────────────────────────────────────────────────────────────────────
   release:
     name: Create GitHub Release
-    needs: [build-jars, package, package-windows]
+    needs: [build-jars, package-mac, package-linux, package-windows]
     runs-on: ubuntu-latest
     permissions:
       contents: write
