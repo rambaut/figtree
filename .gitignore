@@ -4,7 +4,11 @@ build/*
 classes/*
 dist/*
 out/*
-FigTree*
 tests/*
 examples/*
+release/*
 .DS_Store
+.idea/*
+*.iml
+*.ipr
+*.iws
