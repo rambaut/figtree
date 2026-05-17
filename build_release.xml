@@ -137,6 +137,15 @@
             <javaproperty name="apple.awt.application.name" value="${FigTree_name}"/>
         </jarbundler>
 
+        <!-- jarbundler requires a parseable Double so we supply "11.0", but
+             universalJavaApplicationStub needs "11+" to mean "11 or higher".
+             Rewrite the JVMVersion key in Info.plist immediately after bundling. -->
+        <exec executable="/usr/libexec/PlistBuddy" failonerror="true">
+            <arg value="-c"/>
+            <arg value="Set :JavaX:JVMVersion 11+"/>
+            <arg value="${Mac_package_dir}/${FigTree_name} v${version}.app/Contents/Info.plist"/>
+        </exec>
+
         <echo message="Mac bundle created in: ${Mac_package_dir}"/>
         <echo message="Next (CI): codesign .app, hdiutil create DMG, codesign DMG, notarytool, stapler."/>
     </target>
