@@ -216,37 +216,44 @@
     <!-- ==============================================================
          package-windows
          Produces:  release/FigTree v<version><tag>.zip
-         Runs on:   macOS runner (the repo ships the macOS launch4j binaries,
-                    which cross-compile Windows PE executables on macOS).
+         Runs on:   Windows runner only — jpackage cannot cross-compile.
+                    Uses the JDK's jpackage tool to produce a self-contained
+                    app-image with a bundled JRE, then ZIPs it.
          ============================================================== -->
-    <target name="package-windows" description="Package Windows release (cross-compiled on macOS)">
-        <delete dir="${Windows_package_dir}"/>
-        <mkdir  dir="${Windows_package_dir}"/>
+    <target name="package-windows" description="Package Windows release using jpackage (requires Windows runner)">
+        <!-- jpackage writes the app-image to ${Windows_dir}/${FigTree_name}/ -->
+        <delete dir="${Windows_dir}/${FigTree_name}"/>
+        <mkdir  dir="${Windows_dir}"/>
 
-        <!-- launch4j is bundled with macOS binaries in packaging_tools/windows/launch4j -->
-        <property name="launch4j.dir" location="${packaging_tools}/windows/launch4j"/>
-        <taskdef name="launch4j"
-                 classname="net.sf.launch4j.ant.Launch4jTask"
-                 classpath="${launch4j.dir}/launch4j.jar${path.separator}${launch4j.dir}/lib/xstream.jar"/>
-
-        <copy file="${dist.dir}/figtree.jar" todir="${Windows_package_dir}/lib"/>
-
-        <copy file="${common_dir}/README.txt" todir="${Windows_package_dir}"/>
-        <copy todir="${Windows_package_dir}/examples">
-            <fileset dir="examples"/>
-        </copy>
-
-        <!-- ── FigTree.exe ──────────────────────────────────────── -->
-        <launch4j configFile="${Windows_dir}/FigTree_launch4j.xml"
-                  jar="${dist.dir}/figtree.jar"
-                  outfile="${Windows_package_dir}/${FigTree_name} v${version}.exe"
-                  fileVersion="${version_number}.0"
-                  txtFileVersion="${version}"
-                  productVersion="${version_number}.0"
-                  txtProductVersion="${version}"/>
+        <exec executable="jpackage" failonerror="true">
+            <arg value="--type"/>
+            <arg value="app-image"/>
+            <arg value="--input"/>
+            <arg value="${dist.dir}"/>
+            <arg value="--main-jar"/>
+            <arg value="figtree.jar"/>
+            <arg value="--main-class"/>
+            <arg value="figtree.application.FigTreeApplication"/>
+            <arg value="--name"/>
+            <arg value="${FigTree_name}"/>
+            <arg value="--app-version"/>
+            <arg value="${version}"/>
+            <arg value="--icon"/>
+            <arg value="${Windows_dir}/icons/FigTree.ico"/>
+            <arg value="--dest"/>
+            <arg value="${Windows_dir}"/>
+            <arg value="--java-options"/>
+            <arg value="-Xmx4096m"/>
+            <arg value="--vendor"/>
+            <arg value="Andrew Rambaut"/>
+            <arg value="--description"/>
+            <arg value="FigTree - Tree Figure Drawing Tool"/>
+            <arg value="--copyright"/>
+            <arg value="${copyright} Andrew Rambaut"/>
+        </exec>
 
         <zip destfile="${release_dir}/${FigTree_name} v${version}${extra_release_tag}.zip">
-            <zipfileset dir="${Windows_package_dir}"
+            <zipfileset dir="${Windows_dir}/${FigTree_name}"
                         prefix="${FigTree_name} v${version}"/>
         </zip>
 
@@ -303,9 +310,11 @@
     </target>
 
 
-    <!-- ── Convenience target: build all three packages ────────── -->
+    <!-- ── Convenience target: build Mac + Linux packages ─────── -->
+    <!--     Windows packaging requires a Windows runner; run           -->
+    <!--     package-windows separately on windows-latest in CI.        -->
     <target name="package-all"
-            depends="package-linux, package-windows, package-mac"
-            description="Build all three platform packages (macOS runner only)"/>
+            depends="package-linux, package-mac"
+            description="Build Mac and Linux packages (macOS runner). Windows uses package-windows on a Windows runner."/>
 
 </project>

@@ -8,14 +8,17 @@
 #  build-jars        ubuntu-latest   Compile Java sources, upload figtree.jar
 #                                    as a reusable artifact.
 #
-#  package           macos-latest    Download JAR, then produce all three
-#                                    platform packages in one runner:
+#  package           macos-latest    Download JAR, then produce Mac and Linux
+#                                    packages:
 #                                      • Mac   – .app bundle → two signed DMGs
 #                                              → notarised + stapled
 #                                              (no JVM / Zulu 23 universal JVM)
-#                                      • Windows – .exe wrapper (cross-compiled
-#                                        with the bundled macOS launch4j) → ZIP
 #                                      • Linux   – shell script + JAR → GNU-tar TGZ
+#
+#  package-windows   windows-latest  Download JAR, run jpackage to produce a
+#                                    self-contained app-image with bundled JRE
+#                                    → ZIP. (jpackage cannot cross-compile, so
+#                                    Windows packaging needs its own runner.)
 #
 #  release           ubuntu-latest   Create a (draft) GitHub Release and attach
 #                                    all platform archives.
@@ -147,18 +150,7 @@ jobs:
           echo "EXTRA_TAG=${{ needs.build-jars.outputs.extra_tag }}"         >> "$GITHUB_ENV"
 
       # ── launch4j native helpers must be executable ─────────────
-      - name: Make launch4j binaries executable
-        run: chmod +x packaging_tools/windows/launch4j/bin/ld packaging_tools/windows/launch4j/bin/windres
-
       # ── Windows packaging ──────────────────────────────────────
-      - name: Package Windows (.exe + ZIP)
-        run: |
-          ant -f build_release.xml package-windows \
-            -Dversion="$VERSION" \
-            -Dversion_number="$VERSION_NUMBER" \
-            -Dextra_release_tag="$EXTRA_TAG" \
-            -Ddist.dir=dist
-
       # ── Linux packaging ────────────────────────────────────────
       - name: Package Linux (TGZ)
         run: |
@@ -345,12 +337,6 @@ jobs:
           name: figtree-mac
           path: "release/FigTree v*.dmg"
 
-      - name: Upload Windows ZIP
-        uses: actions/upload-artifact@v4
-        with:
-          name: figtree-windows
-          path: "release/FigTree v*.zip"
-
       - name: Upload Linux TGZ
         uses: actions/upload-artifact@v4
         with:
@@ -359,7 +345,58 @@ jobs:
 
 
   # ───────────────────────────────────────────────────────────────────────────
-  # 3. Create a draft GitHub Release and attach the two DMGs.
+  # 3. Build self-contained Windows package on a Windows runner.
+  #
+  #    jpackage only produces packages for the host platform, so Windows
+  #    packaging must run on windows-latest. The JDK is bundled into the
+  #    app-image so no system Java is required to run FigTree on Windows.
+  # ───────────────────────────────────────────────────────────────────────────
+  package-windows:
+    name: Package (Windows)
+    needs: build-jars
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # JDK 21 includes jpackage and is used as the JRE bundled into the app.
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: figtree-jar
+          path: dist/
+
+      - name: Set version env vars
+        shell: bash
+        run: |
+          echo "VERSION=${{ needs.build-jars.outputs.version }}"             >> "$GITHUB_ENV"
+          echo "VERSION_NUMBER=${{ needs.build-jars.outputs.version_number }}" >> "$GITHUB_ENV"
+          echo "EXTRA_TAG=${{ needs.build-jars.outputs.extra_tag }}"         >> "$GITHUB_ENV"
+
+      - name: Package Windows (jpackage app-image + ZIP)
+        shell: bash
+        run: |
+          ant -f build_release.xml package-windows \
+            -Dversion="$VERSION" \
+            -Dversion_number="$VERSION_NUMBER" \
+            -Dextra_release_tag="$EXTRA_TAG" \
+            -Ddist.dir=dist
+
+      - name: Upload Windows ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: figtree-windows
+          path: "release/FigTree v*.zip"
+
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # 4. Create a draft GitHub Release and attach all platform archives.
   #
   #    The release is created as a draft so you can review the artefacts and
   #    edit the release notes before publishing. Pre-release tags (those
@@ -367,7 +404,7 @@ jobs:
   # ───────────────────────────────────────────────────────────────────────────
   release:
     name: Create GitHub Release
-    needs: [build-jars, package]
+    needs: [build-jars, package, package-windows]
     runs-on: ubuntu-latest
     permissions:
       contents: write
