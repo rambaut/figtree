@@ -111,7 +111,7 @@ jobs:
   #    jpackage creates a self-contained FigTree.app with the JDK 21 runtime
   #    bundled inside (no system Java required). Steps:
   #      1. jpackage --type app-image  →  FigTree.app  (unsigned)
-  #      2. codesign --deep with hardened-runtime entitlements
+  #      2. sign all dylibs + executables in Contents/runtime/ individually
   #      3. hdiutil create  →  FigTree v<ver>.dmg
   #      4. notarytool submit --wait  (blocks until Apple responds)
   #      5. stapler staple + validate
@@ -201,17 +201,46 @@ jobs:
 
       # ── Step 2: sign the .app ──────────────────────────────────
       #
-      # --deep recursively signs all Mach-O binaries inside the bundle,
-      # including the bundled JRE's dylibs, as required by notarisation.
+      # codesign --deep does NOT propagate --options runtime into
+      # jpackage's Contents/runtime/ directory.  The bundled JRE dylibs
+      # get signed but without the hardened-runtime flag, which causes
+      # Apple's notarisation service to reject the submission:
+      #   "The binary is not signed with a valid Developer ID certificate"
+      #   "The signature does not include a secure timestamp"
+      #
+      # Fix: sign every Mach-O binary inside the bundle individually
+      # (inside-out, innermost first), then sign the outer .app without
+      # --deep (inner items are already valid at that point).
       - name: Sign .app bundle
         run: |
-          codesign \
-            --deep --force \
+          APP="release/Mac/FigTree v${VERSION}/FigTree.app"
+          ENTITLEMENTS="packaging_tools/mac/FigTree.entitlements"
+
+          # 1. Sign all dylibs and shared objects (hardened runtime + timestamp)
+          find "$APP" -type f \( -name "*.dylib" -o -name "*.so" \) \
+            | while IFS= read -r f; do
+                codesign --force --options runtime --timestamp \
+                  --sign "$APP_SIGNER" "$f"
+              done
+
+          # 2. Sign executables inside the bundled runtime
+          #    (java, keytool, jspawnhelper, jpackageapplauncher, …)
+          #    Non-Mach-O files (shell scripts, text) are skipped silently.
+          find "$APP/Contents/runtime" -type f -perm -u+x \
+            | while IFS= read -r f; do
+                codesign --force --options runtime --timestamp \
+                  --sign "$APP_SIGNER" "$f" 2>/dev/null || true
+              done
+
+          # 3. Sign the outer .app — no --deep; all inner binaries are
+          #    already individually signed with the correct flags above.
+          codesign --force \
             --options runtime \
-            --entitlements packaging_tools/mac/FigTree.entitlements \
+            --timestamp \
+            --entitlements "$ENTITLEMENTS" \
             --sign "$APP_SIGNER" \
             --verbose \
-            "release/Mac/FigTree v${VERSION}/FigTree.app"
+            "$APP"
 
       # ── Step 3: create the DMG ─────────────────────────────────
       - name: Create DMG
