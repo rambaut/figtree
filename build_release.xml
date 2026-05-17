@@ -13,7 +13,7 @@
 
     ant -f build_release.xml package-mac-bundled-jvm \
         -Dversion=1.5.0 \
-        -Djdk.bundle.dir=/Library/Java/JavaVirtualMachines/zulu-23.jdk
+        -Djdk.bundle.dir=/Library/Java/JavaVirtualMachines/zulu-21.jdk
 
   Required property (must be supplied via -D or rely on default):
     version              e.g. 1.5.0
@@ -30,9 +30,9 @@
     Required extra property:
       jdk.bundle.dir     Absolute path to the JDK .jdk directory to embed.
                          Install the Azul Zulu 23 universal binary cask with:
-                           brew install -cask zulu@23
+                           brew install --cask zulu@21
                          This installs a universal binary (aarch64 + x86_64)
-                         to /Library/Java/JavaVirtualMachines/zulu-23.jdk
+                         to /Library/Java/JavaVirtualMachines/zulu-21.jdk
                          so a single DMG runs natively on both Apple Silicon
                          and Intel Macs.
 
@@ -191,9 +191,9 @@
                     as package-mac but with a JDK embedded in the .app.
 
          Requires:
-           -Djdk.bundle.dir=/path/to/zulu-23.jdk
+           -Djdk.bundle.dir=/path/to/zulu-21.jdk
 
-         The Azul Zulu 23 cask installs a universal binary (aarch64 +
+         The Azul Zulu 21 cask installs a universal binary (aarch64 +
          x86_64) so one DMG runs natively on both Apple Silicon and
          Intel Macs.
 
@@ -204,10 +204,10 @@
            PlugIns directory recursively.
          ============================================================== -->
     <target name="package-mac-bundled-jvm" depends="package-mac"
-            description="Create Mac .app bundle with embedded Zulu 23 universal JDK">
+            description="Create Mac .app bundle with embedded Zulu 21 universal JDK">
 
         <fail unless="jdk.bundle.dir"
-              message="Supply the JDK to embed via -Djdk.bundle.dir=/path/to/zulu-23.jdk"/>
+              message="Supply the JDK to embed via -Djdk.bundle.dir=/path/to/zulu-21.jdk"/>
 
         <!-- Derive the PlugIns subfolder name from the last path component -->
         <basename property="jdk.plugin.name" file="${jdk.bundle.dir}"/>

@@ -167,10 +167,10 @@ jobs:
       # macOS loads only the native slice at runtime, so the bundled JDK
       # is natively fast on both Apple Silicon and Intel with no Rosetta
       # overhead — and a single DMG covers both architectures.
-      - name: Install Zulu 23 Universal JDK for bundling
+      - name: Install Zulu 21 Universal JDK for bundling
         run: |
-          brew install --cask zulu@23
-          echo "JDK_BUNDLE_DIR=/Library/Java/JavaVirtualMachines/zulu-23.jdk" >> "$GITHUB_ENV"
+          brew install --cask zulu@21
+          echo "JDK_BUNDLE_DIR=/Library/Java/JavaVirtualMachines/zulu-21.jdk" >> "$GITHUB_ENV"
 
       # ── Mac code-signing setup ─────────────────────────────────
       #
