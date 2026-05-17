@@ -201,39 +201,53 @@ jobs:
 
       # ── Step 2: sign the .app ──────────────────────────────────
       #
-      # codesign --deep does NOT propagate --options runtime into
-      # jpackage's Contents/runtime/ directory.  The bundled JRE dylibs
-      # get signed but without the hardened-runtime flag, which causes
-      # Apple's notarisation service to reject the submission:
-      #   "The binary is not signed with a valid Developer ID certificate"
-      #   "The signature does not include a secure timestamp"
+      # jpackage embeds the JRE as Contents/runtime, which is itself a
+      # nested bundle (it has its own Contents/Info.plist and its main
+      # executable at Contents/MacOS/libjli.dylib).
       #
-      # Fix: sign every Mach-O binary inside the bundle individually
-      # (inside-out, innermost first), then sign the outer .app without
-      # --deep (inner items are already valid at that point).
+      # Signing order — always inside-out:
+      #   1. Individual dylibs/executables inside the JRE's Home tree
+      #      (leaf-level code; must be signed before sealing the bundle)
+      #   2. The Contents/runtime bundle as a whole
+      #      (creates a CodeResources seal; re-signs libjli.dylib correctly
+      #       as the bundle's main executable with --options runtime)
+      #   3. The outer FigTree.app
+      #      (seals the pre-signed runtime bundle; no --deep needed)
+      #
+      # Signing the runtime as a bundle in step 2 is the key fix:
+      # without it, the outer app signing re-signs libjli.dylib without
+      # --options runtime, producing "The signature of the binary is invalid".
       - name: Sign .app bundle
         run: |
           APP="release/Mac/FigTree v${VERSION}/FigTree.app"
+          RUNTIME="$APP/Contents/runtime"
           ENTITLEMENTS="packaging_tools/mac/FigTree.entitlements"
 
-          # 1. Sign all dylibs and shared objects (hardened runtime + timestamp)
-          find "$APP" -type f \( -name "*.dylib" -o -name "*.so" \) \
+          # 1a. Sign all dylibs and shared objects in the bundled JRE
+          find "$RUNTIME" -type f \( -name "*.dylib" -o -name "*.so" \) \
             | while IFS= read -r f; do
                 codesign --force --options runtime --timestamp \
                   --sign "$APP_SIGNER" "$f"
               done
 
-          # 2. Sign executables inside the bundled runtime
-          #    (java, keytool, jspawnhelper, jpackageapplauncher, …)
-          #    Non-Mach-O files (shell scripts, text) are skipped silently.
-          find "$APP/Contents/runtime" -type f -perm -u+x \
+          # 1b. Sign JRE executables (java, keytool, jspawnhelper, …)
+          #     Non-Mach-O files (shell scripts etc.) are silently skipped.
+          find "$RUNTIME/Contents/Home" -type f -perm -u+x \
             | while IFS= read -r f; do
                 codesign --force --options runtime --timestamp \
                   --sign "$APP_SIGNER" "$f" 2>/dev/null || true
               done
 
-          # 3. Sign the outer .app — no --deep; all inner binaries are
-          #    already individually signed with the correct flags above.
+          # 2. Sign Contents/runtime as a BUNDLE.
+          #    This creates the CodeResources seal and signs libjli.dylib
+          #    correctly as the bundle's main executable with hardened runtime.
+          codesign --force --options runtime --timestamp \
+            --sign "$APP_SIGNER" \
+            "$RUNTIME"
+
+          # 3. Sign the outer .app.
+          #    Contents/runtime is already properly signed; codesign seals
+          #    its bundle signature without re-signing any inner binaries.
           codesign --force \
             --options runtime \
             --timestamp \
