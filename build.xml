@@ -38,6 +38,7 @@
     <target name="git.commit" description="Store git revision in repository.commit" if="git.present">
         <exec executable="git" outputproperty="git.commit" failifexecutionfails="false" errorproperty="">
             <arg value="describe"/>
+            <arg value="--tags"/>
             <arg value="--always"/>
             <arg value="--dirty"/>
         </exec>
