@@ -25,6 +25,7 @@ import figtree.treeviewer.ControllerOptionsPanel;
 import figtree.treeviewer.TreeViewer;
 import figtree.treeviewer.decorators.ColourDecorator;
 import figtree.ui.PercentFormat;
+import figtree.ui.BarePercentFormat;
 import figtree.ui.RomanFormat;
 import jam.controlpalettes.AbstractController;
 import jam.controlpalettes.ControllerListener;
@@ -137,7 +138,7 @@ public class LegendPainterController extends AbstractController {
         NumberFormat format = legendPainter.getNumberFormat();
         int digits = format.getMaximumFractionDigits();
 
-        numericalFormatCombo = new JComboBox(new String[] { "Decimal", "Scientific", "Percent", "Roman"});
+        numericalFormatCombo = new JComboBox(new String[] { "Decimal", "Scientific", "Percent", "Bare Percent", "Roman"});
         numericalFormatCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 String formatType = (String) numericalFormatCombo.getSelectedItem();
@@ -149,6 +150,8 @@ public class LegendPainterController extends AbstractController {
                     format = new DecimalFormat(SCIENTIFIC_NUMBER_FORMATTING);
                 } else if (formatType.equals("Percent")) {
                     format = new PercentFormat();
+                } else if (formatType.equals("Bare Percent")) {
+                    format = new BarePercentFormat();
                 } else if (formatType.equals("Roman")) {
                     format = new RomanFormat();
                 }
